@@ -5,11 +5,12 @@
         <data xmlns="http://www.netbeans.org/ns/ruby-project/1">
             <name>odm_sl</name>
             <source-roots>
-                <root id="src.dir"/>
+                <root id="src.bin.dir"/>
+                <root id="src.dir" name="lib"/>
             </source-roots>
             <test-roots>
-                <root id="test.src.dir"/>
-                <root id="spec.src.dir"/>
+                <root id="test.src.dir" name="test"/>
+                <root id="spec.src.dir" name="RSpec"/>
             </test-roots>
         </data>
     </configuration>
