@@ -4,7 +4,7 @@
 
  
 require 'win32ole' # need this to use OLE automation
-require 'dl' # Windows API access (for messagebox)
+require 'fiddle' # Windows API access (for messagebox)
 require_relative 'constraint'
 require_relative 'candidate'
 require_relative 'competition'
@@ -105,17 +105,33 @@ class Excel_session
   end
 
   # Display a simple pop-up window with an OK button and
-  # the message _msg_.
+  # the message _message_.
+  #--
   # This uses a standard Windows message window via the Windows API.
-  def display_ok_box(msg)
-    message = msg
-    title = 'OTWorkplace'
+  # The win32 call here uses Fiddle, a standard library replacement for
+  # the earlier DL library (which is deprecated as of Ruby 2.0). The form
+  # of the call was created by BBT by taking the earlier DL-based call and
+  # modifying it while consulting the on-line Fiddle documentation until
+  # it worked.
+  def display_ok_box(message)
+    # Define 2 of the arguments for the Win32 function MessageBoxA
+    title = 'OTWorkplace'  # the title string of the dialog window
     buttons = 0 # 0 indicates that an OK button should be displayed.
-    user32 = DL.dlopen('user32')
-    # The code below was obtained from posts on the Ruby forum (www.ruby-forum.com),
-    # which attribute the 1.9 code to the Ruby development team.
-    msgbox = DL::CFunc.new(user32['MessageBoxA'], DL::TYPE_LONG, 'MessageBox')
-    r, rs = msgbox.call([0, message, title, buttons].pack('L!ppL!').unpack('L!*'))
+    # open the user32 DLL and obtain a handle for it (return type Fiddle::Handle)
+    user32 = Fiddle.dlopen('user32')
+    # Obtain a representation of the C function MessageBoxA, which exists
+    # in the user32 DLL.
+    # * The first argument names the function to be represented.
+    # * The second argument is the type signatures for the function's parameters.
+    # * The third argument is the type of the return value.
+    # In representing parameter types with Fiddle, integer numeric values are
+    # of type Fiddle::TYPE_LONG, and strings are of type Fiddle::TYPE_VOIDP.
+    msgbox = Fiddle::Function.new(user32['MessageBoxA'],
+      [Fiddle::TYPE_LONG,Fiddle::TYPE_VOIDP,Fiddle::TYPE_VOIDP,Fiddle::TYPE_LONG],
+      Fiddle::TYPE_LONG)
+    # Call the function, which displays the dialog box using the given
+    # parameter values.
+    r = msgbox.call(0, message, title, buttons)
     return r
   end
 
