@@ -5,16 +5,6 @@
  
 require 'win32ole' # need this to use OLE automation
 require 'fiddle' # Windows API access (for messagebox)
-require_relative 'constraint'
-require_relative 'candidate'
-require_relative 'competition'
-require_relative 'competition_list'
-require_relative 'comparative_tableau'
-require_relative 'skb_expansion'
-require_relative 'ranking_diagram'
-require_relative 'vt_page'
-require_relative 'ct_image'
-require_relative 'rcd_page'
 require_relative 'rcd_image'
 require_relative 'cell'
 

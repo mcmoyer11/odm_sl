@@ -2,7 +2,6 @@
 # 
 
 require_relative 'ercs_image'
-require_relative "vt_page"
 require_relative "ct_wl_pair"
 require_relative "sheet_error"
 require_relative "cell"
