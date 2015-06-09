@@ -1,7 +1,6 @@
 # Author: Bruce Tesar
 #
 
-require_relative 'rubot'
 require 'rcd'
 require 'comparative_tableau'
 

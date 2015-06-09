@@ -3,9 +3,8 @@
 
 require_relative 'system'
 require_relative '../lexicon'
-require_relative '../rubot'
-require 'rcd'
-require 'comparative_tableau'
+require_relative '../rcd'
+require_relative '../comparative_tableau'
 
 module SL
 

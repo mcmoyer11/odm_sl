@@ -8,9 +8,8 @@
 require_relative '../lib/sl/data'
 require_relative '../lib/hypothesis'
 require_relative '../lib/otlearn'
-require_relative '../lib/rubot'
-require 'excel_old'
-require 'factorial_typology'
+require_relative '../lib/excel_old'
+require_relative '../lib/factorial_typology'
 
 dataname = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_Typology.mar')
 
@@ -30,7 +29,7 @@ def generate_languages(dataname)
 end
 
 # Uncomment the line below to regenerate the language typology data.
-#generate_languages(dataname)
+generate_languages(dataname)
 
 sess = Excel_session.new
 sess.start_excel # open a new instance of Excel, with a blank worksheet

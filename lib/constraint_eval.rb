@@ -1,8 +1,7 @@
 # Author: Bruce Tesar
 #
  
-require_relative 'rubot'
-require 'constraint'
+require_relative 'constraint'
 
 # A Constraint_eval is an evaluatable constraint. In addition to a name and
 # an ID (which define a generic constraint), an evaluatable constraint

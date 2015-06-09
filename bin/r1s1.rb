@@ -6,8 +6,7 @@
  
 require_relative '../lib/otlearn'
 require_relative '../lib/sl/data'
-require_relative '../lib/rubot'
-require 'excel'
+require_relative '../lib/excel_old'
 
 dataname = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_LgA.mar')
 

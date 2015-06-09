@@ -13,10 +13,8 @@ require_relative '../lexical_entry'
 require_relative '../most_harmonic'
 require_relative '../hypothesis'
 require_relative '../otlearn/data_manip'
-require 'facets/array/product' # Adds cartesian product to class Array.
-require_relative '../rubot'
-require 'competition'
-require 'competition_list'
+require_relative '../competition'
+require_relative '../competition_list'
 
 module SL
 

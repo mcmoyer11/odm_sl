@@ -6,8 +6,7 @@ require 'REXML/syncenumerator'
 require_relative '../constraint_eval'
 require_relative '../ui_correspondence'
 require_relative '../word'
-require_relative '../rubot'
-require 'competition'
+require_relative '../competition'
 
 module SL
 

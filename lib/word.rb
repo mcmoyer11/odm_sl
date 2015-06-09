@@ -4,8 +4,7 @@
 require_relative 'input'
 require_relative 'output'
 require_relative 'io_correspondence'
-require_relative 'rubot'
-require 'candidate'
+require_relative 'candidate'
 
 # A Word is a Candidate (input, output, opt?, constraints),
 # combined with an IO correspondence relation and a reference to

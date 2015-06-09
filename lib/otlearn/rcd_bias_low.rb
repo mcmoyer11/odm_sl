@@ -1,8 +1,7 @@
 # Author: Bruce Tesar
 #
  
-require_relative '../rubot'
-require 'rcd'
+require_relative '../rcd'
 
 module OTLearn
   
