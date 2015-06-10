@@ -9,6 +9,7 @@
                 <root id="src.dir" name="lib"/>
             </source-roots>
             <test-roots>
+                <root id="test.temp.dir"/>
                 <root id="test.src.dir" name="test"/>
                 <root id="spec.src.dir" name="RSpec"/>
             </test-roots>
