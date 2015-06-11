@@ -7,6 +7,7 @@
 require_relative '../lib/otlearn'
 require_relative '../lib/sl/data'
 require_relative '../lib/excel_old'
+require_relative '../lib/csv_output'
 
 dataname = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_LgA.mar')
 
@@ -30,12 +31,15 @@ hyp.label = label
 #
 lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
 #
-sess = Excel_session.new
-sess.start_excel # open a new instance of Excel, with a blank worksheet
-sess.put_learning_results(lang_sim)
-unless lang_sim.learning_successful? then
-  puts "#{hyp.label} not learned:\n"
-  puts "#{lang_sim.results_list.last.to_s}\n"
-end
-#
-sess.display_ok_box('Done!')
+#sess = Excel_session.new
+#sess.start_excel # open a new instance of Excel, with a blank worksheet
+#sess.put_learning_results(lang_sim)
+#unless lang_sim.learning_successful? then
+#  puts "#{hyp.label} not learned:\n"
+#  puts "#{lang_sim.results_list.last.to_s}\n"
+#end
+##
+#sess.display_ok_box('Done!')
+
+csv = CSV_Output.new(lang_sim)
+csv.write_to_file
