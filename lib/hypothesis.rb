@@ -1,8 +1,8 @@
 # Author: Bruce Tesar
 #
 
-require 'rcd'
-require 'comparative_tableau'
+require_relative 'rcd'
+require_relative 'comparative_tableau'
 
 # A hypothesis contains a linguistic system reference, a grammar, and a
 # list of supporting ercs.
