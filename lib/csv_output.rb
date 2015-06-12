@@ -16,28 +16,41 @@ class CSV_Output
   
   def format_results
     hyp = @lang_sim.hypothesis
-    @page_image[1,1] = hyp.label
+    # Put the language label in row 2, leaving row 1 as a header row.
+    @page_image[2,1] = hyp.label
+    # TODO: indicate if learning succeeded.
     @lang_sim.results_list.each do |entry|
-#      range(ws,row,1,row,1).value = "#{entry.label}:"
-#      row, col = learning_result_to_ws(ws, entry, row+1, 1)
+      # Leave a blank line, and put the entry label in column 1.
+      next_row = @page_image.row_count+2
+      @page_image[next_row,1] = entry.label
+      # Test result components are frozen, so dup before updating.
       hyp = entry.hypothesis.dup
+      # Update grammar to contain the faith-low bias ranking.
       rcd_result = hyp.update_grammar{|ercs| OTLearn::RcdFaithLow.new(ercs)}
-      @result_image = RCD_image.new({:rcd=>rcd_result})
-      next_cell = Cell.new(@page_image.row_count+1, 1)
-      @page_image.put_range(next_cell, @result_image.sheet)
+      # Build the image of the entry (support and lexicon), and write it
+      # to the page starting in column 2.
+      result_image = RCD_image.new({:rcd=>rcd_result})
+      next_cell = Cell.new(@page_image.row_count+1, 2)
+      @page_image.put_range(next_cell, result_image.sheet)
     end
-    # pad the first row so that empty cells contain a blank
-    # TODO: make this add an initial line with blanks (not nil) for cell values.
-    # That way, the CSV editor will display all of the columns, and all column
-    # headers will be blank.
+    # Pad the first row so that any empty cells contain a blank (not nil).
+    # The first row is treated as a header row by the NetBeans CSV editor,
+    # and if an entry is nil, the CSV editor ignores the entire column,
+    # truncating the display in the editor.
     (1..@page_image.col_count).each do |col|
       @page_image.put_cell(Cell.new(1,col)," ") unless @page_image.get_cell(Cell.new(1,col))
     end
   end
   private :format_results
   
+  # Write the CSV-formatted results to the file temp/output.csv.
   def write_to_file
-    CSV.open('temp/output.csv', "w", {:write_headers=>true}) do |csv|
+    # Assumes that this source file is in the lib folder (not a subfolder of
+    # lib), and that the temp folder is a sibling folder to lib.
+    # TODO: change so that the destination file is a parameter to the method.
+    out_file_name = File.join(File.dirname(__FILE__),'..','temp','output.csv')
+    CSV.open(out_file_name, "w", {:write_headers=>true}) do |csv|
+      # TODO: add an iterator #each_row to class Sheet.
       @page_image.to_a.each do |row|
         csv << row
       end
