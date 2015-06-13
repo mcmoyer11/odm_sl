@@ -1,6 +1,4 @@
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
+# Author: Bruce Tesar
 
 require_relative 'sheet'
 require_relative 'otlearn/rcd_bias_low'
@@ -15,10 +13,12 @@ class CSV_Output
   end
   
   def format_results
-    hyp = @lang_sim.hypothesis
     # Put the language label in row 2, leaving row 1 as a header row.
-    @page_image[2,1] = hyp.label
-    # TODO: indicate if learning succeeded.
+    @page_image[2,1] = @lang_sim.hypothesis.label
+    # Indicate if learning succeeded, by checking the last result in the
+    # language simulation.
+    @page_image[3,1] = "Learned: #{@lang_sim.results_list[-1].all_correct?}"
+    # Write each simulation result to the output.
     @lang_sim.results_list.each do |entry|
       # Leave a blank line, and put the entry label in column 1.
       next_row = @page_image.row_count+2
