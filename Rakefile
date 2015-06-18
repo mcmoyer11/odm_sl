@@ -10,6 +10,7 @@ require 'rake/clean'
 require 'rubygems/package_task'
 require 'rdoc/task'
 require 'rake/testtask'
+require 'rspec/core/rake_task'
 
 spec = Gem::Specification.new do |s|
   s.name = 'odm_sl'
@@ -45,3 +46,7 @@ Rake::TestTask.new do |t|
   t.test_files = FileList['test/**/*.rb']
 end
 
+RSpec::Core::RakeTask.new do |spec|
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.rspec_opts = [Dir["lib"].to_a.join(':')]
+end
