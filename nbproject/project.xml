@@ -7,6 +7,7 @@
             <source-roots>
                 <root id="src.bin.dir"/>
                 <root id="src.dir" name="lib"/>
+                <root id="src.data.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.temp.dir"/>
