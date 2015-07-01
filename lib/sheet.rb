@@ -117,6 +117,10 @@ class Sheet
     sheet_range.all? {|cell| get_cell(cell).nil?}
   end
 
+  #***********************
+  #*** Private Methods ***
+  #***********************
+  
   def extend_bounds(start_cell, range_image)
     row_last = start_cell.row + range_image.row_count - 1
     col_last = start_cell.col + range_image.col_count - 1
