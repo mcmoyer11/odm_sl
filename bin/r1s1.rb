@@ -2,11 +2,10 @@
 #
 # Generates output data for Language A (aka L20), stores them in a Marshal
 # file (outputs_1r1s_LgA.mar), and then learns from the generated outputs,
-# displaying the steps and results of learning in Excel.
+# displaying the steps and results of learning in a CSV file.
  
 require_relative '../lib/otlearn'
 require_relative '../lib/sl/data'
-#require_relative '../lib/excel_old'
 require_relative '../lib/csv_output'
 
 dataname = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_LgA.mar')
@@ -30,16 +29,6 @@ hyp.label = label
 # Learning
 #
 lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
-#
-#sess = Excel_session.new
-#sess.start_excel # open a new instance of Excel, with a blank worksheet
-#sess.put_learning_results(lang_sim)
-#unless lang_sim.learning_successful? then
-#  puts "#{hyp.label} not learned:\n"
-#  puts "#{lang_sim.results_list.last.to_s}\n"
-#end
-##
-#sess.display_ok_box('Done!')
 
 csv = CSV_Output.new(lang_sim)
 out_file_path = File.join(File.dirname(__FILE__),'..','temp')
