@@ -6,7 +6,7 @@
  
 require_relative '../lib/otlearn'
 require_relative '../lib/sl/data'
-require_relative '../lib/excel_old'
+#require_relative '../lib/excel_old'
 require_relative '../lib/csv_output'
 
 dataname = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_LgA.mar')
@@ -42,4 +42,6 @@ lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
 #sess.display_ok_box('Done!')
 
 csv = CSV_Output.new(lang_sim)
-csv.write_to_file
+out_file_path = File.join(File.dirname(__FILE__),'..','temp')
+out_file = File.join(out_file_path,"#{lang_sim.hypothesis.label}.csv")
+csv.write_to_file(out_file)

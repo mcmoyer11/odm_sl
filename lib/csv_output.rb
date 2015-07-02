@@ -43,13 +43,10 @@ class CSV_Output
   end
   private :format_results
   
-  # Write the CSV-formatted results to the file temp/output.csv.
-  def write_to_file
-    # Assumes that this source file is in the lib folder (not a subfolder of
-    # lib), and that the temp folder is a sibling folder to lib.
-    # TODO: change so that the destination file is a parameter to the method.
-    out_file_name = File.join(File.dirname(__FILE__),'..','temp','output.csv')
-    CSV.open(out_file_name, "w", {:write_headers=>true}) do |csv|
+  # Write the CSV-formatted results to the file _destination_.
+  # It writes the column headers as the first line.
+  def write_to_file(destination)
+    CSV.open(destination, "w", {:write_headers=>true}) do |csv|
       # TODO: add an iterator #each_row to class Sheet.
       @page_image.to_a.each do |row|
         csv << row
