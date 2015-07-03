@@ -3,7 +3,7 @@
 # Generates the entire topology for the SL system with
 # monosyllabic morphemes and root+suffix words.
 # Tests learning on every language in the typology.
-# All output is written to an Excel workbook.
+# All output is written to CSV files, one file for each language.
 
 require_relative '../lib/sl/data'
 require_relative '../lib/hypothesis'
