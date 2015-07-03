@@ -8,7 +8,7 @@
 require_relative '../lib/sl/data'
 require_relative '../lib/hypothesis'
 require_relative '../lib/otlearn'
-require_relative '../lib/excel_old'
+require_relative '../lib/csv_output'
 require_relative '../lib/factorial_typology'
 
 dataname = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_Typology.mar')
@@ -31,8 +31,6 @@ end
 # Uncomment the line below to regenerate the language typology data.
 generate_languages(dataname)
 
-sess = Excel_session.new
-sess.start_excel # open a new instance of Excel, with a blank worksheet
 #
 # Learning
 #
@@ -44,7 +42,11 @@ File.open(dataname, 'rb') do |fin|
     hyp.label = label
     # Language learning
     lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
-    sess.put_learning_results(lang_sim)
+    # Write the results to a CSV file, with the language label as the filename.
+    csv = CSV_Output.new(lang_sim)
+    out_file_path = File.join(File.dirname(__FILE__),'..','temp')
+    out_file = File.join(out_file_path,"#{lang_sim.hypothesis.label}.csv")
+    csv.write_to_file(out_file)
     # Report to STDOUT if language was not successfully learned
     unless lang_sim.learning_successful?
       puts "#{hyp.label} not learned:\n"
@@ -52,4 +54,3 @@ File.open(dataname, 'rb') do |fin|
     end
   end
 end
-sess.display_ok_box('Done!')
