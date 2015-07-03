@@ -3,6 +3,7 @@
 require_relative 'sheet'
 require_relative 'otlearn/rcd_bias_low'
 require_relative 'rcd_image'
+require_relative 'lexicon_image'
 require 'csv'
 
 class CSV_Output
@@ -10,6 +11,17 @@ class CSV_Output
     @lang_sim = lang_sim
     @page_image = Sheet.new
     format_results
+  end
+  
+  # Write the CSV-formatted results to the file _destination_.
+  # It writes the column headers as the first line.
+  def write_to_file(destination)
+    CSV.open(destination, "w", {:write_headers=>true}) do |csv|
+      # TODO: add an iterator #each_row to class Sheet.
+      @page_image.to_a.each do |row|
+        csv << row
+      end
+    end
   end
   
   def format_results
@@ -27,11 +39,16 @@ class CSV_Output
       hyp = entry.hypothesis.dup
       # Update grammar to contain the faith-low bias ranking.
       rcd_result = hyp.update_grammar{|ercs| OTLearn::RcdFaithLow.new(ercs)}
-      # Build the image of the entry (support and lexicon), and write it
+      # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = RCD_image.new({:rcd=>rcd_result})
       next_cell = Cell.new(@page_image.row_count+1, 2)
       @page_image.put_range(next_cell, result_image.sheet)
+      # Build the image of the lexicon, and write it
+      # to the page starting in column 2, 2 rows after the support.
+      lex_image = Lexicon_image.new(hyp.grammar.lexicon)
+      next_cell = Cell.new(@page_image.row_count+2, 2)
+      @page_image.put_range(next_cell, lex_image.sheet)
     end
     # Pad the first row so that any empty cells contain a blank (not nil).
     # The first row is treated as a header row by the NetBeans CSV editor,
@@ -42,16 +59,5 @@ class CSV_Output
     end
   end
   private :format_results
-  
-  # Write the CSV-formatted results to the file _destination_.
-  # It writes the column headers as the first line.
-  def write_to_file(destination)
-    CSV.open(destination, "w", {:write_headers=>true}) do |csv|
-      # TODO: add an iterator #each_row to class Sheet.
-      @page_image.to_a.each do |row|
-        csv << row
-      end
-    end
-  end
   
 end # class CSV_Output
