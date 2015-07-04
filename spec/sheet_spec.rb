@@ -159,4 +159,55 @@ describe Sheet do
 #      end
 #    end
   end
+  
+  context "Cell (4,1)" do
+    before(:each) do
+      @cell = instance_double("Cell", :row => 4, :col => 1)
+    end
+    
+    it "has a cell translation, with respect to (5,5), of (8,5)" do
+      ref_cell = instance_double("Cell", :row => 5, :col => 5)
+      expect(Sheet.translate_cell(@cell, ref_cell)).to eq(Cell.new(8,5))
+    end
+    
+    it "has a cell translation, with respect to (1,1), of (4,1)" do
+      ref_cell = instance_double("Cell", :row => 1, :col => 1)
+      expect(Sheet.translate_cell(@cell, ref_cell)).to eq(Cell.new(4,1))
+    end
+    
+    it "has a cell translation, with respect to (6,3), of (9,3)" do
+      ref_cell = instance_double("Cell", :row => 6, :col => 3)
+      expect(Sheet.translate_cell(@cell, ref_cell)).to eq(Cell.new(9,3))
+    end
+  end
+  
+  context "Sheet [[1,2],[3,4]]" do
+    before(:each) do
+      @sheet = Sheet.new_from_a([[1,2],[3,4]])
+    end
+    
+    context "with sheet [[11,12],[13,14]] put with reference cell (2,1)" do
+      before(:each) do
+        @ref_cell = instance_double("Cell", :row => 2, :col => 1)
+        @source_sheet = Sheet.new_from_a([[11,12],[13,14]])
+        @sheet.put_range(@ref_cell, @source_sheet)
+      end
+      
+      it "has value 11 at [2,1]" do
+        expect(@sheet[2,1]).to eq(11)
+      end
+      
+      it "has value 12 at [2,2]" do
+        expect(@sheet[2,2]).to eq(12)
+      end
+      
+      it "has value 13 at [3,1]" do
+        expect(@sheet[3,1]).to eq(13)
+      end
+      
+      it "has value 14 at [3,2]" do
+        expect(@sheet[3,2]).to eq(14)
+      end
+    end
+  end
 end # describe Sheet

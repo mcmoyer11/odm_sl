@@ -104,7 +104,7 @@ class Sheet
     source_range = CellRange.new(1,1,source.row_count,source.col_count)
     source_range.each do |cell|
       source_value = source.get_cell(cell)
-      target_cell = cell.translate(cell_first)
+      target_cell = Sheet.translate_cell(cell, cell_first)
       self.put_cell(target_cell, source_value)
     end
     return source
@@ -115,6 +115,31 @@ class Sheet
   def all_nil?
     sheet_range = CellRange.new(1,1,row_count,col_count)
     sheet_range.all? {|cell| get_cell(cell).nil?}
+  end
+
+  #*********************
+  #*** Class Methods ***
+  #*********************
+
+  # Returns the translation of +cell+ relative to +ref_cell+.
+  # If the original frame of reference for +cell+ (starting at row 1, col 1),
+  # were moved so that it started at +ref_cell+ (starting at ref_row, ref_col),
+  # then +cell+ of the original frame of reference would correspond,
+  # in the new frame of reference, to the cell returned by this method.
+  # 
+  # This is useful for translating cells when one sheet is embedded somewhere
+  # within another sheet; +ref_cell+ is the beginning of the range in the
+  # larger sheet where the smaller sheet is being embedded.
+  #
+  # Sheet.translate_cell() is the inverse of Sheet.relative_to_cell().
+  #---
+  # Because sheets start their indexing from 1, the translation of a cell
+  # is accomplished with the formula (for both row and col) of
+  #   cell + ref_cell - 1
+  # The translation of cell (2,3) w.r.t. cell (5,2) is (6,4).
+  def Sheet.translate_cell(cell, ref_cell)
+    Cell.new(cell.row + ref_cell.row - 1,
+             cell.col + ref_cell.col - 1)
   end
 
   #***********************
