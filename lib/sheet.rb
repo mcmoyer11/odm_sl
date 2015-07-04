@@ -84,7 +84,7 @@ class Sheet
     cell_first = Cell.new(source_range.row_first, source_range.col_first)
     source_range.each do |cell|
       source_value = self.get_cell(cell)
-      target_cell = cell.relative_to(cell_first)
+      target_cell = Sheet.relative_to_cell(cell,cell_first)
       target.put_cell(target_cell, source_value)
     end
     return target
@@ -122,16 +122,16 @@ class Sheet
   #*********************
 
   # Returns the translation of +cell+ relative to +ref_cell+.
-  # If the original frame of reference for +cell+ (starting at row 1, col 1),
-  # were moved so that it started at +ref_cell+ (starting at ref_row, ref_col),
-  # then +cell+ of the original frame of reference would correspond,
-  # in the new frame of reference, to the cell returned by this method.
+  # If the original frame of reference for +cell+ (starting at row 1, col 1)
+  # was inserted into a new frame of reference so that the original started
+  # at +ref_cell+ in the new frame, then +cell+ of the original frame would
+  # correspond, in the new frame, to the cell returned by this method.
   # 
   # This is useful for translating cells when one sheet is embedded somewhere
   # within another sheet; +ref_cell+ is the beginning of the range in the
-  # larger sheet where the smaller sheet is being embedded.
+  # new sheet where the original sheet is being embedded.
   #
-  # Sheet.translate_cell() is the inverse of Sheet.relative_to_cell().
+  # Sheet.translate_cell() is the reverse of Sheet.relative_to_cell().
   #---
   # Because sheets start their indexing from 1, the translation of a cell
   # is accomplished with the formula (for both row and col) of
@@ -140,6 +140,28 @@ class Sheet
   def Sheet.translate_cell(cell, ref_cell)
     Cell.new(cell.row + ref_cell.row - 1,
              cell.col + ref_cell.col - 1)
+  end
+
+  # Returns the address of +cell+ relative to +ref_cell+
+  # If, within the original frame of reference for +cell+ (starting at
+  # row 1, col 1), a new frame of reference were extracted starting at
+  # +ref_cell+ of the original frame,  then +cell+ of the original frame
+  # would correspond, in the new frame, to the cell returned by this method.
+  #
+  # This is useful when a range is being extracted from an original sheet
+  # to form its own sheet. +ref_cell+ is the first cell in the original
+  # sheet where the range is being extracted from.
+  # 
+  # Sheet.relative_to_cell() is the reverse of Sheet.translate_cell().
+  #---
+  # Because sheets start their indexing from 1, the location of a cell
+  # relative to a ref cell is accomplished with the formula (for both row and
+  # col) of
+  #   cell - ref_cell + 1
+  # The location of cell (3,4) relative to cell (2,3) is (2,2),
+  def Sheet.relative_to_cell(cell, ref_cell)
+    Cell.new(cell.row - ref_cell.row + 1,
+             cell.col - ref_cell.col + 1)
   end
 
   #***********************

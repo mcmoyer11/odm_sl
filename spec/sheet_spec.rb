@@ -137,28 +137,11 @@ describe Sheet do
     it "returns an array equivalent to the original" do
       expect(@sheet.to_a).to eq @ar
     end
-
-# TODO: the Cell mocks don't currently respond to some needed msgs.
-# Does this indicate that some functionality needs to be refactored
-# from Cell to Sheet? #translate(), #relative_to()
-# 
-#    context "returns a sheet image for range(2,2,3,3)" do
-#      before(:each) do
-#        @sran = instance_double("CellRange", :row_first=>2, :col_first=>2,
-#          :row_last=>3, :col_last=>3)
-#        cell1 = instance_double("Cell", :row=>2, :col=>2)
-#        cell2 = instance_double("Cell", :row=>2, :col=>3)
-#        cell3 = instance_double("Cell", :row=>3, :col=>2)
-#        cell4 = instance_double("Cell", :row=>3, :col=>3)
-#        allow(@sran).to receive(:each).and_yield(cell1).and_yield(cell2).and_yield(cell3).and_yield(cell4)
-#        @img = @sheet.get_range(@sran)
-#      end
-#      
-#      it "with value 5 for [1,1]" do
-#        expect(@img[1,1]).to eq 5
-#      end
-#    end
   end
+  
+  #*********************************************************
+  # Specs for cell translation into a new frame of reference
+  #*********************************************************
   
   context "Cell (4,1)" do
     before(:each) do
@@ -178,7 +161,7 @@ describe Sheet do
     it "has a cell translation, with respect to (6,3), of (9,3)" do
       ref_cell = instance_double("Cell", :row => 6, :col => 3)
       expect(Sheet.translate_cell(@cell, ref_cell)).to eq(Cell.new(9,3))
-    end
+    end    
   end
   
   context "Sheet [[1,2],[3,4]]" do
@@ -207,6 +190,82 @@ describe Sheet do
       
       it "has value 14 at [3,2]" do
         expect(@sheet[3,2]).to eq(14)
+      end
+    end
+  end
+  
+  #**********************************************************************
+  # Specs for cell retrieval relative to a non-origin frame of reference.
+  #**********************************************************************
+  
+  context "Cell (7,4)" do
+    before(:each) do
+      @cell = instance_double("Cell", :row => 7, :col => 4)
+    end
+    
+    it "is located, in reference frame starting (1,1), at (7,4)" do
+      ref_cell = instance_double("Cell", :row => 1, :col => 1)
+      expect(Sheet.relative_to_cell(@cell,ref_cell)).to eq(Cell.new(7,4))
+    end
+    
+    it "is located, in reference frame starting (2,3), at (6,2)" do
+      ref_cell = instance_double("Cell", :row => 2, :col => 3)
+      expect(Sheet.relative_to_cell(@cell,ref_cell)).to eq(Cell.new(6,2))
+    end
+  end
+  
+  context "Sheet [[1,2,3],[4,5,6],[7,8,9]]" do
+    before(:each) do
+      @sheet = Sheet.new_from_a([[1,2,3],[4,5,6],[7,8,9]])
+    end
+    
+    context "returns a sheet of range (2,3,2,3) that" do
+      before(:each) do
+        @range = CellRange.new(2,3,2,3)
+        @new_sheet = @sheet.get_range(@range)
+      end
+      
+      it "has one row" do
+        expect(@new_sheet.row_count).to eq(1)
+      end
+      
+      it "has one column" do
+        expect(@new_sheet.col_count).to eq(1)
+      end
+      
+      it "has value 6 at position (1,1)" do
+        expect(@new_sheet[1,1]).to eq(6)
+      end
+    end
+    
+    context "returns a sheet of range (2,1,3,2) that" do
+      before(:each) do
+        @range = CellRange.new(2,1,3,2)
+        @new_sheet = @sheet.get_range(@range)
+      end
+      
+      it "has two rows" do
+        expect(@new_sheet.row_count).to eq(2)
+      end
+      
+      it "has two columns" do
+        expect(@new_sheet.col_count).to eq(2)
+      end
+      
+      it "has value 4 at position (1,1)" do
+        expect(@new_sheet[1,1]).to eq(4)
+      end
+      
+      it "has value 5 at position (1,2)" do
+        expect(@new_sheet[1,2]).to eq(5)
+      end
+      
+      it "has value 7 at position (2,1)" do
+        expect(@new_sheet[2,1]).to eq(7)
+      end
+      
+      it "has value 8 at position (2,2)" do
+        expect(@new_sheet[2,2]).to eq(8)
       end
     end
   end

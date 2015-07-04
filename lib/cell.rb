@@ -26,14 +26,6 @@ class Cell
     return CellRange.new_from_cells(self,self)
   end
 
-  # Returns the address of self relative to +ref_cell+, that is, adopting
-  # a frame of reference where +ref_cell+ is the first cell.
-  #
-  # Cell#relative_to() is the inverse of Cell#translate().
-  def relative_to(ref_cell)
-    Cell.new(self.row-ref_cell.row+1, self.col-ref_cell.col+1)
-  end
-
   # Returns true if +cell+ has the same row and column indices
   # as self.
   def eql?(cell)
