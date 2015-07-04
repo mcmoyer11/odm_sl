@@ -67,29 +67,6 @@ class CellRange
     return Cell.new(row_last,col_last)
   end
 
-  # Returns the translation of self relative to the translation
-  # of the original first cell (1,1) to +ref_cell+.
-  # This is useful for translating ranges when one sheet is embedded somewhere
-  # within another sheet; +ref_cell+ is the beginning of the range in the
-  # larger sheet where the smaller sheet is being embedded.
-  #
-  # CellRange#translate() is the inverse of CellRange#relative_to().
-  def translate(ref_cell)
-    new_cell_first = cell_first.translate(ref_cell)
-    new_cell_last = cell_last.translate(ref_cell)
-    return CellRange.new_from_cells(new_cell_first, new_cell_last)
-  end
-
-  # Returns the address of self relative to +ref_cell+, that is, adopting
-  # a frame of reference where +ref_cell+ is the first cell.
-  #
-  # CellRange#relative_to() is the inverse of CellRange#translate().
-  def relative_to(ref_cell)
-    new_cell_first = cell_first.relative_to(ref_cell)
-    new_cell_last = cell_last.relative_to(ref_cell)
-    return CellRange.new_from_cells(new_cell_first, new_cell_last)
-  end
-
   # Yields a Cell for each element in the cellrange, starting with the
   # first cell, and proceeding across each row, from first row to last,
   # ending at the last cell.
