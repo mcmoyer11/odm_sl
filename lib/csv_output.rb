@@ -17,7 +17,8 @@ class CSV_Output
   # It writes the column headers as the first line.
   def write_to_file(destination)
     CSV.open(destination, "w", {:write_headers=>true}) do |csv|
-      # TODO: add an iterator #each_row to class Sheet.
+      # Convert the page sheet to an array, and send each row of the array
+      # to CSV.
       @page_image.to_a.each do |row|
         csv << row
       end
