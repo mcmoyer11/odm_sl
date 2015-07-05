@@ -3,7 +3,8 @@
 # Generates output data for Language A (aka L20), and learns from the
 # generated outputs, storing results of learning in a CSV file.
  
-require_relative '../lib/otlearn'
+require_relative '../lib/otlearn/data_manip'
+require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/sl/data'
 require_relative '../lib/csv_output'
 

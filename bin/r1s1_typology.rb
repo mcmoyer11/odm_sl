@@ -7,7 +7,8 @@
 
 require_relative '../lib/sl/data'
 require_relative '../lib/hypothesis'
-require_relative '../lib/otlearn'
+require_relative '../lib/otlearn/data_manip'
+require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/csv_output'
 require_relative '../lib/factorial_typology'
 
