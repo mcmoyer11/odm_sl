@@ -1,16 +1,16 @@
-# 
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
- 
+# Author: Bruce Tesar
 
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
 require 'rubygems/package_task'
 require 'rdoc/task'
-require 'rake/testtask'
+#require 'rake/testtask'
 require 'rspec/core/rake_task'
+require 'cucumber/rake/task'
+
+BROWSER = "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
+PROJECT_DIR = File.dirname(__FILE__)
 
 spec = Gem::Specification.new do |s|
   s.name = 'odm_sl'
@@ -49,4 +49,30 @@ end
 RSpec::Core::RakeTask.new do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
   spec.rspec_opts = [Dir["lib"].to_a.join(':')]
+end
+
+Cucumber::Rake::Task.new do |t|
+  t.cucumber_opts = "--format pretty"
+end
+
+Cucumber::Rake::Task.new("cucumber_html","Generate cucumber HTML") do |t|
+  t.cucumber_opts = "-f html -o temp/cucumber_report.html"
+end
+
+desc "clear the temp dir"
+task :clear_temp do
+  Dir.glob("#{PROJECT_DIR}/temp/**/*").each do |f|
+    File.delete f
+  end
+end
+
+desc "display cucumber in browser"
+task :cucumber_in_browser => [:clear_temp, :cucumber_html] do
+  begin
+    sh "\"#{BROWSER}\" file://#{PROJECT_DIR}/temp/cucumber_report.html"
+  rescue
+    # For some reason, the shell call to Firefox returns a non-normal return
+    # code, so the rescue command captures the return code and prevents
+    # rake from aborting.
+  end  
 end
