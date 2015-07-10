@@ -9,6 +9,7 @@ require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 
 # Full path to browser used to display HTML output.
+# TODO: find a portable way to access the local system-default browser.
 BROWSER = "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
 
 # Top-level project directory.
@@ -23,24 +24,40 @@ Rake::RDocTask.new do |rdoc|
   rdoc.options << '--line-numbers'
 end
 
-RSpec::Core::RakeTask.new do |spec|
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rspec_opts = [Dir["lib"].to_a.join(':')]
-end
-
-Cucumber::Rake::Task.new do |t|
-  t.cucumber_opts = "--format pretty"
-end
-
-Cucumber::Rake::Task.new("cucumber_html","Generate cucumber HTML") do |t|
-  t.cucumber_opts = "-f html -o temp/cucumber_report.html"
-end
-
 desc "delete all files in the temp dir"
 task :clear_temp do
   Dir.glob("#{PROJECT_DIR}/temp/**/*").each do |f|
     File.delete f
   end
+end
+
+#************
+# RSpec Tasks
+#************
+
+RSpec::Core::RakeTask.new do |t|
+end
+
+RSpec::Core::RakeTask.new(:spec_html) do |t|
+  t.rspec_opts = "-f html -o temp/rspec_report.html"
+end
+
+desc "display RSpec in browser"
+task :spec_in_browser => [:clear_temp, :spec_html] do
+  # Call the browser defined in BROWSER, and display the rspec report.
+  system("\"#{BROWSER}\" file://#{PROJECT_DIR}/temp/rspec_report.html")
+end
+
+#***************
+# Cucumber Tasks
+#***************
+
+Cucumber::Rake::Task.new do |t|
+  t.cucumber_opts = "--format pretty"
+end
+
+Cucumber::Rake::Task.new(:cucumber_html, "Generate cucumber HTML") do |t|
+  t.cucumber_opts = "-f html -o temp/cucumber_report.html"
 end
 
 desc "display cucumber in browser"
@@ -49,7 +66,9 @@ task :cucumber_in_browser => [:clear_temp, :cucumber_html] do
   system("\"#{BROWSER}\" file://#{PROJECT_DIR}/temp/cucumber_report.html")
 end
 
-# Rake tasks for packaging
+#**********
+# Packaging
+#**********
 
 spec = Gem::Specification.new do |s|
   s.name = 'odm_sl'
