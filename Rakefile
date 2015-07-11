@@ -7,10 +7,7 @@ require 'rubygems/package_task'
 require 'rdoc/task'
 require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
-
-# Full path to browser used to display HTML output.
-# TODO: find a portable way to access the local system-default browser.
-BROWSER = "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
+require 'launchy'
 
 # Top-level project directory.
 PROJECT_DIR = File.dirname(__FILE__)
@@ -44,8 +41,8 @@ end
 
 desc "display RSpec in browser"
 task :spec_in_browser => [:clear_temp, :spec_html] do
-  # Call the browser defined in BROWSER, and display the rspec report.
-  system("\"#{BROWSER}\" file://#{PROJECT_DIR}/temp/rspec_report.html")
+  # Display the rspec report in the system's default browser.
+  Launchy.open("#{PROJECT_DIR}/temp/rspec_report.html")
 end
 
 #***************
@@ -62,8 +59,8 @@ end
 
 desc "display cucumber in browser"
 task :cucumber_in_browser => [:clear_temp, :cucumber_html] do
-  # Call the browser defined in BROWSER, and display the cucumber report.
-  system("\"#{BROWSER}\" file://#{PROJECT_DIR}/temp/cucumber_report.html")
+  # Display the cucumber report in the system's default browser.
+  Launchy.open("#{PROJECT_DIR}/temp/cucumber_report.html")
 end
 
 #**********
