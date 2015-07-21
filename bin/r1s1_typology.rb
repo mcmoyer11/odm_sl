@@ -11,6 +11,12 @@ require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/csv_output'
 require_relative '../lib/factorial_typology'
+require_relative '../lib/sl/system'
+require_relative '../lib/input_factory'
+
+# Set up System instance
+system = SL::System.instance
+system.set_input_factory(Input_factory.new)
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the SL system, with each root and each suffix

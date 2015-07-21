@@ -7,6 +7,7 @@ require_relative '../constraint_eval'
 require_relative '../ui_correspondence'
 require_relative '../word'
 require_relative '../competition'
+require_relative '../input_factory'
 
 module SL
 
@@ -42,6 +43,14 @@ module SL
       @constraints.freeze # freeze the constraint list
     end
 
+    # Sets the input factory object for creating new input objects.
+    # *NOTE*: must be called before using the System instance.
+    # This dependence is set in this way due to the fact that System
+    # is a Singleton class.
+    def set_input_factory(factory)
+      @input_factory = factory
+    end
+
     # Returns the list of constraints (each constraint is a Constraint object).
     # Note that the returned list is frozen, as are the constraints that
     # it contains.
@@ -66,7 +75,7 @@ module SL
     # relation for the input, with an entry for each corresponding pair of
     # underlying/input syllables.
     def input_from_morphword(mw, gram)
-      input = Input.new
+      input = @input_factory.new_input
       input.morphword = mw
       mw.each do |m| # for each morpheme in the morph_word, in order
         uf = gram.get_uf(m)

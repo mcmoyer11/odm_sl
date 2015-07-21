@@ -1,11 +1,13 @@
 # Author: Bruce Tesar
 
 require 'sl/system'
+require 'input_factory'
 
 describe SL::System do
   context "The SL System" do
     before(:each) do
       @system = SL::System.instance
+      @system.set_input_factory(Input_factory.new)
     end
 
     context "returns a constraint list" do

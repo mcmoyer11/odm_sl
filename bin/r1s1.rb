@@ -7,6 +7,12 @@ require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/sl/data'
 require_relative '../lib/csv_output'
+require_relative '../lib/sl/system'
+require_relative '../lib/input_factory'
+
+# Set up System instance
+system = SL::System.instance
+system.set_input_factory(Input_factory.new)
 
 # Set up the language label and the output file_pathname.
 lang_label = "LgA"
