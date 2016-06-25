@@ -5,7 +5,9 @@ require 'constraint'
 describe Constraint do
   context "A new markedness Constraint with name Constraint1 and ID Con1" do
     before(:each) do
-      @constraint = Constraint.new("Constraint1", "Con1", Constraint::MARK, 'a')
+      @constraint = Constraint.new("Constraint1", "Con1", Constraint::MARK) do |cand|
+        (cand=="candidate") ? 7 : 2 # if "candidate", return 7, else return 2
+      end
     end
 
     it "should return name string Constraint1" do
@@ -27,11 +29,21 @@ describe Constraint do
     it "should return a to_s string of Con1:Constraint1" do
       expect(@constraint.to_s).to eq("Con1:Constraint1")
     end
+    
+    it 'should assess 7 violations to candidate "candidate"' do
+      expect(@constraint.eval_candidate("candidate")).to eq(7)
+    end
+
+    it 'should assess 2 violations to candidate "bob"' do
+      expect(@constraint.eval_candidate("bob")).to eq(2)
+    end
   end
 
   context "A new faithfulness Constraint with name Cname and ID Cid" do
     before(:each) do
-      @constraint = Constraint.new("Cname", "Cid", Constraint::FAITH, 'a')
+      @constraint = Constraint.new("Cname", "Cid", Constraint::FAITH) do |cand|
+        return 0
+      end
     end
 
     it "should return name string Cname" do
@@ -57,9 +69,9 @@ describe Constraint do
   
   context "A constraint" do
     before(:each) do
-      @buddy1 = Constraint.new("buddy", "b", Constraint::MARK, 'a')
-      @buddy2 = Constraint.new("buddy", "b", Constraint::MARK, 'a')
-      @notbuddy = Constraint.new("notbuddy", "n", Constraint::MARK, 'a')
+      @buddy1 = Constraint.new("buddy", "b", Constraint::MARK)
+      @buddy2 = Constraint.new("buddy", "b", Constraint::MARK)
+      @notbuddy = Constraint.new("notbuddy", "n", Constraint::MARK)
     end
     
     it "should be == to another constraint with the same name" do
@@ -89,13 +101,22 @@ describe Constraint do
 
   context "A new constraint set properly to MARK" do
     it "should not raise a RuntimeError" do
-      expect {Constraint.new("FCon", "1", Constraint::MARK, 'a')}.not_to raise_error
+      expect {Constraint.new("FCon", "1", Constraint::MARK)}.not_to raise_error
     end
   end
   
   context "A new Constraint with type set to OTHER" do
     it "should raise a RuntimeError" do
-      expect {Constraint.new("FCon", "1", "OTHER", 'a')}.to raise_error(RuntimeError)
+      expect {Constraint.new("FCon", "1", "OTHER")}.to raise_error(RuntimeError)
+    end
+  end
+  
+  context "A new constraint with no evaluation block" do
+    before(:each) do
+      @constraint = Constraint.new("FCon", "1", Constraint::MARK)
+    end
+    it "should raise an exception if used to evaluate a candidate" do
+      expect{@constraint.eval_candidate("cand")}.to raise_error(RuntimeError)
     end
   end
 

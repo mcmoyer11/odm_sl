@@ -260,12 +260,24 @@ module SL
     # return the number of violations of that constraint in the candidate.
     def constraint_list
       list = []
-      list << @nolong = Constraint.new("NoLong", 1, MARK, "SL::System.instance.nolong_eval")
-      list << @wsp = Constraint.new("WSP", 2, MARK, "SL::System.instance.wsp_eval")
-      list << @ml = Constraint.new("ML", 3, MARK, "SL::System.instance.ml_eval")
-      list << @mr = Constraint.new("MR", 4, MARK, "SL::System.instance.mr_eval")
-      list << @idstress = Constraint.new("IDStress", 5, FAITH, "SL::System.instance.idstress_eval")
-      list << @idlength = Constraint.new("IDLength", 6, FAITH, "SL::System.instance.idlength_eval")
+      list << @nolong = Constraint.new("NoLong", 1, MARK) do |cand|
+        SL::System.instance.nolong_eval.call(cand)
+      end
+      list << @wsp = Constraint.new("WSP", 2, MARK) do |cand|
+        SL::System.instance.wsp_eval.call(cand)
+      end
+      list << @ml = Constraint.new("ML", 3, MARK) do |cand|
+        SL::System.instance.ml_eval.call(cand)
+      end
+      list << @mr = Constraint.new("MR", 4, MARK) do |cand|
+        SL::System.instance.mr_eval.call(cand)
+      end
+      list << @idstress = Constraint.new("IDStress", 5, FAITH) do |cand|
+        SL::System.instance.idstress_eval.call(cand)
+      end
+      list << @idlength = Constraint.new("IDLength", 6, FAITH) do |cand|
+        SL::System.instance.idlength_eval.call(cand)
+      end
       return list
     end
 

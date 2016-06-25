@@ -27,7 +27,7 @@ class Constraint
   # The block parameter _eval_ is the violation evaluation function; it should
   # take, as a parameter, a candidate, and return the number of times
   # that candidate violates this constraint.
-  def initialize(name, id, type, eval)
+  def initialize(name, id, type, &eval)
     @name = name
     # Store the symbol version of the name; faster for purposes of #==().
     @symbol = name.to_sym
@@ -44,8 +44,8 @@ class Constraint
     else
       raise "Type must be either ::MARK or ::FAITH, cannot be #{type}"
     end
-    # store the evaluation function
-    @eval_func_string = eval
+    # store the evaluation function (passed as a code block)
+    @eval_function = eval
   end
 
   # Returns the name of the constraint.
@@ -90,8 +90,10 @@ class Constraint
   # Returns the number of times this constraint is violated by the
   # parameter candidate.
   def eval_candidate(cand)
-    eval_func = eval @eval_func_string
-    eval_func.call(cand) # call the stored code block.
+    if @eval_function.nil?
+      raise "Constraint: no evaluation function was provided, and then #eval_candidate was called."
+    end
+    @eval_function.call(cand) # call the stored code block.
   end
   
   # Returns a string consisting of the constraint's id, followed
