@@ -24,7 +24,7 @@ module SL
     include Singleton
 
     # Create local references to the constraint type constants.
-    # This is strictly for convenience, so that the "Constraint_eval::"
+    # This is strictly for convenience, so that the "Constraint::"
     # prefix doesn't have to appear in the constraint definitions below.
     # Note: done this way because constants cannot be aliased.
 
@@ -33,11 +33,10 @@ module SL
     # Indicates that a constraint is a faithfulness constraint.
     FAITH = Constraint::FAITH
 
-    # Creates the constraint list and freezes it, as well as freezing
-    # each of the constraints. Creation of <em>constraint_list</em>
-    # also initializes the constraint attributes (nolong(), etc.).
+    # Creates the constraints and the constraint list.
+    # Freezes the constraints and the constraint list.
     def initialize
-      initialize_eval_procs
+      initialize_constraints
       @constraints = constraint_list # private method creating the list
       @constraints.each {|con| con.freeze} # freeze the constraints
       @constraints.freeze # freeze the constraint list
@@ -47,6 +46,9 @@ module SL
     # *NOTE*: must be called before using the System instance.
     # This dependence is set in this way due to the fact that System
     # is a Singleton class.
+    # The call sequence should be something like:
+    # *  system = SL::System.instance
+    # *  system.set_input_factory(Input_factory.new)
     def set_input_factory(factory)
       @input_factory = factory
     end
@@ -56,17 +58,17 @@ module SL
     # it contains.
     def constraints() return @constraints end
 
-    # Returns the markedness constraint nolong.
+    # Returns the markedness constraint NoLong.
     def nolong() return @nolong end
-    # Returns the markedness constraint wsp.
+    # Returns the markedness constraint WSP.
     def wsp() return @wsp end
-    # Returns the markedness constraint ml.
+    # Returns the markedness constraint ML.
     def ml() return @ml end
-    # Returns the markedness constraint mr.
+    # Returns the markedness constraint MR.
     def mr() return @mr end
-    # Returns the faithfulness constraint idstress.
+    # Returns the faithfulness constraint IDStress.
     def idstress() return @idstress end
-    # Returns the faithfulness constraint idlength.
+    # Returns the faithfulness constraint IDLength.
     def idlength() return @idlength end
 
     # Accepts parameters of a morph_word and a grammar. It builds an input form
@@ -169,34 +171,19 @@ module SL
       return word
     end
 
-    #
-    # The constraint evaluation procedure declarations.
-    #
-
-    def nolong_eval() return @nolong_eval end
-    def wsp_eval() return @wsp_eval end
-    def ml_eval() return @ml_eval end
-    def mr_eval() return @mr_eval end
-    def idstress_eval() return @idstress_eval end
-    def idlength_eval() return @idlength_eval end
-
     private
-
-    def initialize_eval_procs
-      # NoLong
-      @nolong_eval = lambda do |cand|
+    def initialize_constraints
+      @nolong = Constraint.new("NoLong", 1, MARK) do |cand|
         cand.output.inject(0) do |sum, syl|
           if syl.long? then sum+1 else sum end
         end
       end
-      # WSP
-      @wsp_eval = lambda do |cand|
+      @wsp = Constraint.new("WSP", 2, MARK) do |cand|
         cand.output.inject(0) do |sum, syl|
           if syl.long? && syl.unstressed? then sum+1 else sum end
         end
       end
-      # ML
-      @ml_eval = lambda do |cand|
+      @ml = Constraint.new("ML", 3, MARK) do |cand|
         viol_count = 0
         for syl in cand.output do
           break if syl.main_stress?
@@ -204,8 +191,7 @@ module SL
         end
         viol_count
       end
-      # MR
-      @mr_eval = lambda do |cand|
+      @mr = Constraint.new("MR", 4, MARK) do |cand|
         viol_count = 0
         stress_found = false
         for syl in cand.output do
@@ -214,8 +200,7 @@ module SL
         end
         viol_count
       end
-      # IDStress
-      @idstress_eval = lambda do |cand|
+      @idstress = Constraint.new("IDStress", 5, FAITH) do |cand|
         cand.io_corr.inject(0) do |sum, pair|
           if pair[0].stress_unset? then sum
           elsif pair[0].main_stress?!=pair[1].main_stress? then sum+1
@@ -223,15 +208,26 @@ module SL
           end
         end
       end
-      # IDLength
-      @idlength_eval = lambda do |cand|
+      @idlength = Constraint.new("IDLength", 6, FAITH) do |cand|
         cand.io_corr.inject(0) do |sum, pair|
           if pair[0].length_unset? then sum
           elsif pair[0].long?!=pair[1].long? then sum+1
           else sum
           end
         end
-      end
+      end      
+    end
+    
+    # Define the constraint list.
+    def constraint_list
+      list = []
+      list << @nolong
+      list << @wsp
+      list << @ml
+      list << @mr
+      list << @idstress
+      list << @idlength
+      return list
     end
 
     # Takes a word partial description (full input, partial output), along with
@@ -250,35 +246,6 @@ module SL
       new_w.output << out_syl
       new_w.io_corr << [in_syl,out_syl]
       return new_w
-    end
-
-    # Define the constraint list.
-    # Each constraint has a label, a number, and a string defining the
-    # violation evaluation procedure. Passing the eval string as an argument
-    # to #eval will return a reference to a Proc, itself the actual violation
-    # evaluation procedure. Calling that Proc with a candidate will
-    # return the number of violations of that constraint in the candidate.
-    def constraint_list
-      list = []
-      list << @nolong = Constraint.new("NoLong", 1, MARK) do |cand|
-        SL::System.instance.nolong_eval.call(cand)
-      end
-      list << @wsp = Constraint.new("WSP", 2, MARK) do |cand|
-        SL::System.instance.wsp_eval.call(cand)
-      end
-      list << @ml = Constraint.new("ML", 3, MARK) do |cand|
-        SL::System.instance.ml_eval.call(cand)
-      end
-      list << @mr = Constraint.new("MR", 4, MARK) do |cand|
-        SL::System.instance.mr_eval.call(cand)
-      end
-      list << @idstress = Constraint.new("IDStress", 5, FAITH) do |cand|
-        SL::System.instance.idstress_eval.call(cand)
-      end
-      list << @idlength = Constraint.new("IDLength", 6, FAITH) do |cand|
-        SL::System.instance.idlength_eval.call(cand)
-      end
-      return list
     end
 
   end # class SL::System

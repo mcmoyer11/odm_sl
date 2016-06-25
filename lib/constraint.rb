@@ -89,6 +89,8 @@ class Constraint
 
   # Returns the number of times this constraint is violated by the
   # parameter candidate.
+  # Raises a RuntimeError if no evaluation function block was provided at
+  # the time the constraint was constructed.
   def eval_candidate(cand)
     if @eval_function.nil?
       raise "Constraint: no evaluation function was provided, and then #eval_candidate was called."
