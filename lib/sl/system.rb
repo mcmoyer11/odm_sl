@@ -3,7 +3,7 @@
  
 require 'singleton'
 require 'REXML/syncenumerator'
-require_relative '../constraint_eval'
+require_relative '../constraint'
 require_relative '../ui_correspondence'
 require_relative '../word'
 require_relative '../competition'
@@ -29,9 +29,9 @@ module SL
     # Note: done this way because constants cannot be aliased.
 
     # Indicates that a constraint is a markedness constraint.
-    MARK = Constraint_eval::MARK
+    MARK = Constraint::MARK
     # Indicates that a constraint is a faithfulness constraint.
-    FAITH = Constraint_eval::FAITH
+    FAITH = Constraint::FAITH
 
     # Creates the constraint list and freezes it, as well as freezing
     # each of the constraints. Creation of <em>constraint_list</em>
@@ -260,12 +260,12 @@ module SL
     # return the number of violations of that constraint in the candidate.
     def constraint_list
       list = []
-      list << @nolong = Constraint_eval.new("NoLong", 1, MARK, "SL::System.instance.nolong_eval")
-      list << @wsp = Constraint_eval.new("WSP", 2, MARK, "SL::System.instance.wsp_eval")
-      list << @ml = Constraint_eval.new("ML", 3, MARK, "SL::System.instance.ml_eval")
-      list << @mr = Constraint_eval.new("MR", 4, MARK, "SL::System.instance.mr_eval")
-      list << @idstress = Constraint_eval.new("IDStress", 5, FAITH, "SL::System.instance.idstress_eval")
-      list << @idlength = Constraint_eval.new("IDLength", 6, FAITH, "SL::System.instance.idlength_eval")
+      list << @nolong = Constraint.new("NoLong", 1, MARK, "SL::System.instance.nolong_eval")
+      list << @wsp = Constraint.new("WSP", 2, MARK, "SL::System.instance.wsp_eval")
+      list << @ml = Constraint.new("ML", 3, MARK, "SL::System.instance.ml_eval")
+      list << @mr = Constraint.new("MR", 4, MARK, "SL::System.instance.mr_eval")
+      list << @idstress = Constraint.new("IDStress", 5, FAITH, "SL::System.instance.idstress_eval")
+      list << @idlength = Constraint.new("IDLength", 6, FAITH, "SL::System.instance.idlength_eval")
       return list
     end
 
