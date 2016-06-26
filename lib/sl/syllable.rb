@@ -21,16 +21,21 @@ module SL
     # Returns a syllable, initialized to the parameters if provided. Otherwise,
     # returns a syllable with unset features, and an empty string for the
     # morpheme.
-    def initialize(stress=Stress_feat.new, length=Length_feat.new, morph="")
-      @stress = stress
-      @length = length
-      @morpheme = morph # label of the morpheme this syllable is affiliated with.
+    def initialize
+      @stress = Stress_feat.new
+      @length = Length_feat.new
+      @morpheme = "" # label of the morpheme this syllable is affiliated with.
     end
 
-    # A duplicate makes copies of the features, so that they may be altered
+    # A duplicate has copies of the features, so that they may be altered
     # independently of the original syllable's features.
     def dup
-      self.class.new(@stress.dup, @length.dup, @morpheme)
+      dup_syl = self.class.new
+      dup_syl.set_morpheme(self.morpheme)
+      each_feature do |f|
+        dup_syl.set_feature(f.type,f.value)
+      end
+      return dup_syl
     end
 
     # Protected accessors, only used for #==()
