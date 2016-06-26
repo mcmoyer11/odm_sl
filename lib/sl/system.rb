@@ -3,11 +3,12 @@
  
 require 'singleton'
 require 'REXML/syncenumerator'
+require_relative 'syllable'
 require_relative '../constraint'
+require_relative '../input'
 require_relative '../ui_correspondence'
 require_relative '../word'
 require_relative '../competition'
-require_relative '../input_factory'
 
 module SL
 
@@ -20,6 +21,14 @@ module SL
   # description with respect to a given grammar.
   #
   # This is a singleton class.
+  #
+  # =Non-injected Class Dependencies
+  # * SL::Syllable
+  # * Constraint
+  # * Input
+  # * UICorrespondence
+  # * Word
+  # * Competition
   class System
     include Singleton
 
@@ -33,24 +42,12 @@ module SL
     # Indicates that a constraint is a faithfulness constraint.
     FAITH = Constraint::FAITH
 
-    # Creates the constraints and the constraint list.
-    # Freezes the constraints and the constraint list.
+    # Creates and freezes the constraints and the constraint list.
     def initialize
       initialize_constraints
       @constraints = constraint_list # private method creating the list
       @constraints.each {|con| con.freeze} # freeze the constraints
       @constraints.freeze # freeze the constraint list
-    end
-
-    # Sets the input factory object for creating new input objects.
-    # *NOTE*: must be called before using the System instance.
-    # This dependence is set in this way due to the fact that System
-    # is a Singleton class.
-    # The call sequence should be something like:
-    # *  system = SL::System.instance
-    # *  system.set_input_factory(Input_factory.new)
-    def set_input_factory(factory)
-      @input_factory = factory
     end
 
     # Returns the list of constraints (each constraint is a Constraint object).
@@ -77,7 +74,7 @@ module SL
     # relation for the input, with an entry for each corresponding pair of
     # underlying/input syllables.
     def input_from_morphword(mw, gram)
-      input = @input_factory.new_input
+      input = Input.new
       input.morphword = mw
       mw.each do |m| # for each morpheme in the morph_word, in order
         uf = gram.get_uf(m)
@@ -97,7 +94,7 @@ module SL
     # All candidates in the competition share the same input object. The outputs
     # for candidates may also share some of their syllable objects.
     def gen(input)
-      start_rep = Word.new(SYSTEM,input) # full input, but empty output, io_corr
+      start_rep = Word.new(self,input) # full input, but empty output, io_corr
       start_rep.output.morphword = input.morphword
       # create two lists of partial candidates, distinguished by whether or
       # not they contain a syllable with main stress.
@@ -148,13 +145,13 @@ module SL
           under = Underlying.new
           # create a new UF syllable for each syllable of m in the output
           syls_of_m = output.find_all{|syl| syl.morpheme==m}
-          syls_of_m.each { |x| under << SL::Syllable.new.set_morpheme(m) }
+          syls_of_m.each { |x| under << Syllable.new.set_morpheme(m) }
           gram.lexicon << Lexical_Entry.new(m,under)
         end
       end
       # Construct the input form
       input = input_from_morphword(mw, gram)
-      word = Word.new(SYSTEM,input,output)
+      word = Word.new(self,input,output)
       # create 1-to-1 IO correspondence
       if input.size != output.size then
         raise "Input size #{input.size} not equal to output size #{output.size}."
@@ -172,6 +169,9 @@ module SL
     end
 
     private
+    
+    # This defines the constraints, and stores each in the appropriate
+    # class variable.
     def initialize_constraints
       @nolong = Constraint.new("NoLong", 1, MARK) do |cand|
         cand.output.inject(0) do |sum, syl|
