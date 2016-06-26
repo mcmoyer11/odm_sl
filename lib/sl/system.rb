@@ -22,7 +22,7 @@ module SL
   #
   # This is a singleton class.
   #
-  # =Non-injected Class Dependencies
+  # ===Non-injected Class Dependencies
   # * SL::Syllable
   # * Constraint
   # * Input
