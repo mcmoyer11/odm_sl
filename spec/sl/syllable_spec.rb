@@ -3,7 +3,7 @@
 require 'sl/syllable'
 
 describe SL::Syllable do
-  context "A new Syllable with no constructor parameters" do
+  context "A new Syllable" do
     before(:each) do
       @syllable = SL::Syllable.new
     end
@@ -31,6 +31,67 @@ describe SL::Syllable do
     it "should have string representation ??" do
       expect(@syllable.to_s).to eq("??")
     end
+    context "when #each_feature is called" do
+      before(:each) do
+        @features = []
+        @syllable.each_feature{|f| @features << f}
+      end
+      it "should yield two features" do
+        expect(@features.size).to eq(2)
+      end
+      it "should yield a length feature" do
+        expect(@features[0].type).to eq(SL::Length_feat::LENGTH)
+      end
+      it "should yield a stress feature" do
+        expect(@features[1].type).to eq(SL::Stress_feat::STRESS)
+      end
+    end
+    context "when set to unstressed and short" do
+      before(:each) do
+        @syllable.set_unstressed.set_short
+      end
+      context "#get_feature returns a stress feature" do
+        before(:each) do
+          @s_feat = @syllable.get_feature(SL::Stress_feat::STRESS)
+        end
+        it "returns a stress feature that is of type STRESS" do
+          expect(@s_feat.type).to eq(SL::Stress_feat::STRESS)
+        end
+        it "returns a stress feature that is unstressed" do
+          expect(@s_feat.unstressed?).to be true
+        end
+      end
+      context "#get_feature returns a length feature" do
+        before(:each) do
+          @s_feat = @syllable.get_feature(SL::Length_feat::LENGTH)
+        end
+        it "returns a length feature that is of type LENGTH" do
+          expect(@s_feat.type).to eq(SL::Length_feat::LENGTH)
+        end
+        it "returns a length feature that is short" do
+          expect(@s_feat.short?).to be true
+        end
+      end
+      it "get_feature raises an exception when given an invalid type" do
+        expect{@syllable.get_feature("not_a_type")}.to raise_exception
+      end
+    end
+    context "when #set_feature sets stress with value main stress" do
+      before(:each) do
+        s_feat = SL::Stress_feat.new
+        s_feat.set_main_stress
+        @syllable.set_feature(s_feat.type, s_feat.value)
+      end
+      it "has a set stress feature" do
+        expect(@syllable.stress_unset?).to be false
+      end
+      it "has main stress" do
+        expect(@syllable.main_stress?).to be true
+      end
+    end
+    it "#set_feature raises an exception when given an invalid feature type" do
+      expect{@syllable.set_feature("invalid", "value")}.to raise_exception
+    end
     
     context "when set to main stress" do
       before(:each) do
@@ -49,7 +110,6 @@ describe SL::Syllable do
         expect(@syllable.unstressed?).to be false
       end
     end
-
     context "when set to long" do
       before(:each) do
         @syllable.set_long
@@ -112,5 +172,4 @@ describe SL::Syllable do
     end
   end
   
-  #TODO: specs for the generic interface: #each_feature, #get_feature
 end # describe SL::Syllable

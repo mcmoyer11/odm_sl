@@ -184,7 +184,14 @@ module SL
       raise "SL::Syllable#get_feature(): parameter #{type.to_s} is not a valid feature type."
     end
 
-    # TODO: create a set_feature(feat_type,val) method
+    # Sets the _feature_type_ feature of the syllable to _feature_value_.
+    # Returns a reference to the syllable's feature.
+    # Raises an exception if _feature_type_ is not a valid type.
+    def set_feature(feature_type, feature_value)
+      syl_feat = get_feature(feature_type) # raises exception if invalid type
+      syl_feat.value = feature_value #TODO: validate feature value
+      return syl_feat
+    end
 
   end # class Syllable
 
