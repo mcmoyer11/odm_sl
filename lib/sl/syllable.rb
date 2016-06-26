@@ -28,7 +28,7 @@ module SL
     end
 
     # A duplicate makes copies of the features, so that they may be altered
-    # independently of the original's features.
+    # independently of the original syllable's features.
     def dup
       self.class.new(@stress.dup, @length.dup, @morpheme)
     end
