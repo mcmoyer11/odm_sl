@@ -63,6 +63,13 @@ module SL
       yield MAIN_STRESS
     end
 
+    # Returns true if _val_ is a valid value for the feature. Returns
+    # false otherwise.
+    def valid_value?(val)
+      each_value{|v| return true if val==v}
+      return false
+    end
+    
   end # class Stress_feat
 
 end # module SL
