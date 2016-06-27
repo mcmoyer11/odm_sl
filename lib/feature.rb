@@ -6,10 +6,13 @@
 class Feature
   attr_accessor :value, :type
 
+  # constant representing the feature value for an unset feature
+  UNSET = nil
+
   # A feature type is set to _type_. The feature value is initialized
-  # to unset (which is represented with nil).
+  # to unset.
   def initialize(type)
-    @value = nil
+    @value = UNSET
     @type = type
   end
 
@@ -26,7 +29,7 @@ class Feature
 
   # Returns true if a feature is unset; false otherwise.
   def unset?
-    return @value.nil?
+    @value==UNSET
   end
   
 end

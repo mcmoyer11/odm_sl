@@ -194,7 +194,11 @@ module SL
     # Raises an exception if _feature_type_ is not a valid type.
     def set_feature(feature_type, feature_value)
       syl_feat = get_feature(feature_type) # raises exception if invalid type
-      syl_feat.value = feature_value #TODO: validate feature value
+      # raise an exception if invalid value
+      unless syl_feat.valid_value?(feature_value) or feature_value==Feature::UNSET
+        raise "SL::Syllable#set_feature invalid feature value parameter: #{feature_value}"
+      end
+      syl_feat.value = feature_value
       return syl_feat
     end
 
