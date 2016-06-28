@@ -4,7 +4,12 @@
 # This is the base class for features; subclasses will provide the specific
 # properties (like possible values) for specific feature types.
 class Feature
-  attr_accessor :value, :type
+  
+  # the value for this particular instance of the feature
+  attr_accessor :value
+
+  # the feature type
+  attr_accessor :type
 
   # constant representing the feature value for an unset feature
   UNSET = nil

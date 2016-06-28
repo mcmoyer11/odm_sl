@@ -15,7 +15,11 @@
 # Convenience methods are provided to accessing and modifying the value
 # of the feature: #value and #value=.
 class FeatureInstance
-  attr_reader :element, :feature
+  # The feature-bearing element (e.g., a segment)
+  attr_reader :element
+  
+  # Reference to a particular feature of the feature-bearing element.
+  attr_reader :feature
 
   # Creates a new feature instance, referencing _element_ and its _feature_.
   def initialize(element, feature)

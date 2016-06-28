@@ -6,7 +6,15 @@ require_relative 'rcd_image'
 require_relative 'lexicon_image'
 require 'csv'
 
+# Constructs a CSV (comma-separated value) representation of the data from
+# a language learning simulation. The simulation object is passed as
+# a parameter to the constructor, and an internal formatted result is
+# automatically constructed. A separate method, #write_to_file, can be
+# used to write the CSV formatted output to a file.
+# Uses the CSV library.
 class CSV_Output
+  # Takes a language learning simulation as parameter _land_sim_, and
+  # automatically constructs a CSV image of the results.
   def initialize(lang_sim)
     @lang_sim = lang_sim
     @page_image = Sheet.new

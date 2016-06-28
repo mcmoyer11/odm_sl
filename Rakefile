@@ -28,6 +28,18 @@ task :clear_temp do
   end
 end
 
+desc "display RDoc in browser"
+task :rdoc_in_browser do
+  # Display the rdoc documentation in the system's default browser.
+  Launchy.open("#{PROJECT_DIR}/doc/rdoc/index.html")  
+end
+
+desc "Regenerate RDoc and display in browser"
+task :rerdoc_in_browser => [:rerdoc] do
+  # Display the rdoc documentation in the system's default browser.
+  Launchy.open("#{PROJECT_DIR}/doc/rdoc/index.html")  
+end
+
 #************
 # RSpec Tasks
 #************

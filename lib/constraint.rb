@@ -13,9 +13,11 @@
 # each constraint, with all constraint-referring objects containing references
 # to those same constraints.
 class Constraint
-  # The constraint type constants
-  MARK  = :markedness    # the markedness constraint type
-  FAITH = :faithfulness  # the faithfulness constraint type
+  # the markedness constraint type constant
+  MARK  = :markedness
+  
+  # the faithfulness constraint type constant
+  FAITH = :faithfulness
   
   # Returns a constraint.
   # The parameter _id_ is an abbreviated label used for constructing labels for

@@ -10,7 +10,11 @@ require_relative 'ui_correspondence'
 # formed by concatenating the underlying forms of the morphemes of
 # a lexical word.
 class Input < Array
-  attr_accessor :morphword, :ui_corr
+  # the morphword associated with the input
+  attr_accessor :morphword
+  
+  # the UI (underlying <-> input) correspondence
+  attr_accessor :ui_corr
 
   # Creates a new input, with an empty morphological word, and an empty
   # underlying-input (UI) correspondence relation.
