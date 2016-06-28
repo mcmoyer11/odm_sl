@@ -103,6 +103,9 @@ module SL
     return lang
   end
 
+  # Given a list of morphwords _words_ and a grammar _gram_, this constructs
+  # the input for each morphword, generates the competition for each input,
+  # and returns the list of competitions.
   def SL.competitions_from_morphwords(words, gram)
     # Generate the corresponding input for each morphological word
     inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,gram)}
@@ -114,6 +117,13 @@ module SL
     return comp_list
   end
 
+  # Generates a list of competitions and a grammar with a lexicon of
+  # corresponding morphemes. This can be used, for instance, to generate
+  # learning data via OTLearn.generate_learning_data_from_competitions().
+  #
+  # This method generates the paradigm 1r1s, with all of the possible
+  # 1-syllable roots and all of the possible 1-syllable suffixes, and
+  # words formed from all possible root+suffix combinations.
   def SL.generate_competitions_1r1s
     # Generate the morphemes
     roots = SL.generate_morphemes(1, Morpheme::ROOT, 0)
@@ -124,6 +134,8 @@ module SL
     suffixes.each{|suf_le| gram.lexicon.add(suf_le)}
     # Morphology: create all combinations of one root and one suffix
     word_parts = roots.product(suffixes)
+    # Next line: how to include free roots as (monomorphemic) words
+    # word_parts += roots.product()
     words = word_parts.map do |parts|
       # Add the morphemes of the combination to a new morphological word.
       parts.inject(MorphWord.new){|w,le| w.add(le.morpheme); w}
@@ -133,6 +145,13 @@ module SL
     return comp_list, gram
   end
   
+  # Generates a list of competitions and a grammar with a lexicon of
+  # corresponding morphemes. This can be used, for instance, to generate
+  # learning data via OTLearn.generate_learning_data_from_competitions().
+  #
+  # This method generates the paradigm 2r1s, with all of the possible
+  # 2-syllable roots and all of the possible 1-syllable suffixes, and
+  # words formed from all possible root+suffix combinations.
   def SL.generate_competitions_2r1s
     # Generate the morphemes
     roots = SL.generate_morphemes(2, Morpheme::ROOT, 0)
@@ -152,65 +171,30 @@ module SL
     return comp_list, gram
   end
 
-def SL.generate_competitions_1p_2r
-    # Generate the morphemes
-    roots = SL.generate_morphemes(2, Morpheme::ROOT, 0)
-    prefixes = SL.generate_morphemes(1, Morpheme::PREFIX, 0)
-    # Create a new grammar, and add all of the morphemes to the lexicon.
-    gram = Grammar.new
-    roots.each{|root_le| gram.lexicon.add(root_le)}
-    prefixes.each{|pre_le| gram.lexicon.add(pre_le)}
-    # Morphology: create all combinations of one root and one prefix
-    word_parts = roots.product(prefixes)
-    words = word_parts.map do |parts|
-      # Add the morphemes of the combination to a new morphological word.
-      parts.inject(MorphWord.new){|w,le| w.add(le.morpheme); w}
-    end
-    # Generate the competition for each morphword
-    comp_list = competitions_from_morphwords(words, gram)
-    return comp_list, gram
-end
-
-  def SL.generate_default_inputs
-    gram = Grammar.new
-    # Generate the possible monosyllabic roots and suffixes
-    roots = SL.generate_morphemes(1, Morpheme::ROOT, 0)
-    suffixes = SL.generate_morphemes(1, Morpheme::SUFFIX, 0)
-    # Create all combinations of root-suffix
-    # Make sure the roots are first in the cartesian product, because they
-    # must be added first when constructing MorphWords.
-    word_parts = roots.product(suffixes)
-    #
-    # Next line: how to include free roots as (monomorphemic) words
-    # word_parts += roots.product()
-    #
-    # Convert each morpheme-tuple into a MorphWord
-    words = word_parts.map{|t| t.inject(MorphWord.new){|w,le| w.add(le.morpheme); w}}
-    # Add the morphemes to the lexicon
-    roots.each{|root_le| gram.lexicon.add(root_le)}
-    suffixes.each{|suf_le| gram.lexicon.add(suf_le)}
-    # Generate the input for each morph_word.
-    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,gram)}
-    return inputs, gram
-  end
-
-  #--
-  # Data for testing purposes.
-  #++
-  
-  def SL.generate_words_lang_a
-    inputs, gram = SL.generate_default_inputs
-    competitions = inputs.map{|i| SYSTEM.gen(i)}
-    comp_list = Competition_list.new.concat(competitions)
-    winner_list, hyp = OTLearn::generate_learning_data_from_competitions(comp_list, SL.hier_a,Grammar)
-    return winner_list, hyp
-  end
-  
-  def SL.generate_outputs_lang_a
-    inputs, gram = SL.generate_default_inputs
-    lang = SL.generate_language(SL.hier_a, inputs, gram)
-    outputs = lang.map{|w| w.output}
-    return outputs
+  # Generates a list of competitions and a grammar with a lexicon of
+  # corresponding morphemes. This can be used, for instance, to generate
+  # learning data via OTLearn.generate_learning_data_from_competitions().
+  #
+  # This method generates the paradigm 1p2r, with all of the possible
+  # 1-syllable prefixes and all of the possible 2-syllable roots, and
+  # words formed from all possible prefix+root combinations.
+  def SL.generate_competitions_1p_2r
+      # Generate the morphemes
+      roots = SL.generate_morphemes(2, Morpheme::ROOT, 0)
+      prefixes = SL.generate_morphemes(1, Morpheme::PREFIX, 0)
+      # Create a new grammar, and add all of the morphemes to the lexicon.
+      gram = Grammar.new
+      roots.each{|root_le| gram.lexicon.add(root_le)}
+      prefixes.each{|pre_le| gram.lexicon.add(pre_le)}
+      # Morphology: create all combinations of one root and one prefix
+      word_parts = roots.product(prefixes)
+      words = word_parts.map do |parts|
+        # Add the morphemes of the combination to a new morphological word.
+        parts.inject(MorphWord.new){|w,le| w.add(le.morpheme); w}
+      end
+      # Generate the competition for each morphword
+      comp_list = competitions_from_morphwords(words, gram)
+      return comp_list, gram
   end
 
 #--
@@ -222,13 +206,6 @@ end
     hier = Hierarchy.new
     hier << [SYSTEM.wsp] << [SYSTEM.idstress] << [SYSTEM.ml] <<
       [SYSTEM.mr] << [SYSTEM.idlength] << [SYSTEM.nolong]
-    return hier
-  end
-
-  def SL.hier_lang8
-    hier = Hierarchy.new
-    hier << [SYSTEM.wsp] << [SYSTEM.idlength] << [SYSTEM.nolong] <<
-      [SYSTEM.mr] << [SYSTEM.ml] << [SYSTEM.idstress]
     return hier
   end
 end # module SL
