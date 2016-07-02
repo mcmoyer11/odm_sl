@@ -38,7 +38,7 @@ module Test
         it "does not assign L to constraint M2" do
           expect(@erc1.l?(@m2)).to be false
         end
-        it "assigns W to constraint M1" do
+        it "assigns W to constraint M2" do
           expect(@erc1.w?(@m2)).to be true
         end
         it "has M1 as a markedness constraint" do
