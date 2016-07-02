@@ -8,7 +8,7 @@ require_relative '../../test/helpers/quick_erc'
 # defined within the module Test.
 
 module Test
-  describe "Test method Test.quick_erc()" do
+  RSpec.describe "Test method Test.quick_erc()" do
     context "Quick_erc with input [ML,MW]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,MW])

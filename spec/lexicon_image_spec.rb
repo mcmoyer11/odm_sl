@@ -2,7 +2,7 @@
 
 require 'lexicon_image'
 
-describe Lexicon_image do
+RSpec.describe Lexicon_image do
   context "An empty lexicon should produce an image" do
     before(:each) do
       @lexicon = instance_double("Lexicon")

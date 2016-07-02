@@ -25,7 +25,7 @@ require_relative '../test/helpers/quick_erc'
 require 'comparative_tableau'
 
 module Test
-  describe Rcd do
+  RSpec.describe Rcd do
     context "Rcd with CT [[ML,MW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,MW])

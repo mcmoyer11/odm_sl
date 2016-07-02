@@ -3,7 +3,7 @@
 require 'sl/syllable'
 require 'feature'
 
-describe SL::Syllable do
+RSpec.describe SL::Syllable do
   context "A new Syllable" do
     before(:each) do
       @syllable = SL::Syllable.new

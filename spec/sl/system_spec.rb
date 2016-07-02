@@ -2,7 +2,7 @@
 
 require 'sl/system'
 
-describe SL::System do
+RSpec.describe SL::System do
   context "The SL System" do
     before(:each) do
       @system = SL::System.instance

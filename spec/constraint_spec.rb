@@ -2,7 +2,7 @@
 
 require 'constraint'
 
-describe Constraint do
+RSpec.describe Constraint do
   context "A new markedness Constraint with name Constraint1 and ID Con1" do
     before(:each) do
       @constraint = Constraint.new("Constraint1", "Con1", Constraint::MARK) do |cand|

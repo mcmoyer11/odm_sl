@@ -2,7 +2,7 @@
 
 require 'sl/stress_feat'
 
-describe SL::Stress_feat do
+RSpec.describe SL::Stress_feat do
   context "A new Stress_feat" do
     before(:each) do
       @stress_feat = SL::Stress_feat.new

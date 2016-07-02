@@ -2,7 +2,7 @@
 
 require 'feature'
 
-describe Feature do
+RSpec.describe Feature do
   context "A new Feature of type GROG" do
     before(:each) do
       @feature = Feature.new("GROG")

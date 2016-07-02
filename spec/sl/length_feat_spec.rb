@@ -2,7 +2,7 @@
 
 require 'sl/length_feat'
 
-describe SL::Length_feat do
+RSpec.describe SL::Length_feat do
   context "A new Length_feat" do
     before(:each) do
       @length_feat = SL::Length_feat.new

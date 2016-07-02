@@ -2,7 +2,7 @@
 
 require 'feature_instance'
 
-describe FeatureInstance do
+RSpec.describe FeatureInstance do
   context "A new FeatureInstance" do
     before(:each) do
       @element = double("element")

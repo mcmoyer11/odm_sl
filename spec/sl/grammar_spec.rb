@@ -2,7 +2,7 @@
 
 require 'sl/grammar'
 
-describe SL::Grammar do
+RSpec.describe SL::Grammar do
   context "A new Grammar with no constructor parameters" do
     before(:each) do
       @grammar = SL::Grammar.new
