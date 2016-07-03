@@ -354,7 +354,55 @@ RSpec.describe SL::System do
   #**************************
   # Specs for #parse_output()
   #**************************
+
+  RSpec.shared_examples "parsed output" do
+    it "with output == to the starting output" do
+      expect(@word.output).to eq(@output)
+    end
+    it "with input matching the lexical entries" do
+      expect(@word.input).to eq(@input)
+    end
+    it "with morphword matching the output's morphword" do
+      expect(@word.morphword).to eq(@morphword)
+    end
+    it "input syl1 has IO correspondent output syl1" do
+      expect(@word.io_corr.out_corr(@word.input[0])).to eq(@word.output[0])
+    end
+    it "input syl2 has IO correspondent output syl2" do
+      expect(@word.io_corr.out_corr(@word.input[1])).to eq(@word.output[1])
+    end
+    it "output syl1 has IO correspondent input syl1" do
+      expect(@word.io_corr.in_corr(@word.output[0])).to eq(@word.input[0])
+    end
+    it "output syl2 has IO correspondent input syl2" do
+      expect(@word.io_corr.in_corr(@word.output[1])).to eq(@word.input[1])
+    end    
+  end
   
-  #TODO: specs for #parse_output
+  context "with lexicon including r1 /s./ and s1 /S:/" do
+    before(:each) do
+      lex = instance_double("Lexicon")
+      allow(lex).to receive(:any?).and_return(true,true) # both morphemes are in the lexicon
+      @gram = instance_double("SL::Grammar")
+      allow(@gram).to receive(:lexicon).and_return(lex)
+      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+      allow(@gram).to receive(:get_uf).with("r1").and_return([@in_sylr1])
+      @in_syls1 = SL::Syllable.new.set_main_stress.set_long.set_morpheme("s1")
+      allow(@gram).to receive(:get_uf).with("s1").and_return([@in_syls1])
+      @input = Input.new << @in_sylr1.dup << @in_syls1.dup # distinct objects from the ones in the lexicon
+    end
+    context "and output s.S. it parses to a candidate" do
+      before(:each) do
+        @out_syl1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+        @out_syl2 = SL::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
+        @morphword = instance_double("Morphword")
+        allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
+        @output = Output.new << @out_syl1 << @out_syl2
+        @output.morphword = @morphword
+        @word = @system.parse_output(@output,@gram)
+      end
+      include_examples "parsed output"
+    end
+  end
   
 end # describe SL::System
