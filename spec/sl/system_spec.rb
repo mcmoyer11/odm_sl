@@ -247,6 +247,53 @@ RSpec.describe SL::System do
   # objects must be replicated.
   # Here, the actual classes Input and Syllable are used.
 
+  # *** 1-Syllable Examples ***
+  
+  RSpec.shared_examples "1-syllable Word" do
+    it "has input == to the original input" do
+      expect(@word.input).to eq(@input)
+    end
+    it "has morphword r1" do
+      expect(@word.morphword).to eq("r1")
+    end
+    it "has input syl1 associated with r1" do
+      expect(@word.input[0].morpheme).to eq("r1")
+    end
+    it "input syl1 has IO correspondent output syl1" do
+      expect(@word.io_corr.out_corr(@word.input[0])).to eq(@word.output[0])
+    end
+    it "output syl1 has IO correspondent input syl1" do
+      expect(@word.io_corr.in_corr(@word.output[0])).to eq(@word.input[0])
+    end
+  end
+
+  context "Given input /s:/" do
+    before(:each) do
+      @syl = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
+      @input = Input.new
+      @input.morphword = "r1"
+      @input << @syl
+      @competition = @system.gen(@input)
+    end
+    it "gen generates a competition with 6 constraints" do
+      expect(@competition.constraint_list.size).to eq(6)
+    end
+    it "generates 2 candidates" do
+      expect(@competition.size).to eq(2)
+    end
+    ["S.","S:"].each do |out_str|
+      context "candidate with output #{out_str}" do
+        before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
+        it "generates candidate with output #{out_str}" do
+          expect(@word).not_to be nil
+        end
+        include_examples "1-syllable Word"
+      end
+    end
+  end
+
+  # *** 2-Syllable Examples ***
+  
   RSpec.shared_examples "2-syllable Word" do
     it "has input == to the original input" do
       expect(@word.input).to eq(@input)
@@ -292,31 +339,6 @@ RSpec.describe SL::System do
     end
   end
   
-  context "Given input /s:/" do
-    before(:each) do
-      @syl = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
-      @input = Input.new
-      @input.morphword = "r1"
-      @input << @syl
-      @competition = @system.gen(@input)
-    end
-    it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
-    end
-    it "generates 2 candidates" do
-      expect(@competition.size).to eq(2)
-    end
-    ["S.","S:"].each do |out_str|
-      context "candidate with output #{out_str}" do
-        before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
-        it "generates candidate with output #{out_str}" do
-          expect(@word).not_to be nil
-        end
-#        include_examples "1-syllable Word"
-      end
-    end
-  end
-
   context "Given input /s:S./" do
     before(:each) do
       @syl1 = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
