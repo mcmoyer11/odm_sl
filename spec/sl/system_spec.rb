@@ -246,19 +246,55 @@ RSpec.describe SL::System do
   # newly created mock objects, *and* duplication of state of duped mock
   # objects must be replicated.
   # Here, the actual classes Input and Syllable are used.
-  
-  # This is a helper method for tests of #gen(). It returns true if the
-  # given competition _comp_ includes a candidate with an output matching the
-  # given output _output_.
-  def output_present?(comp, output)
-    comp.any? do |cand|
-      cand.output.to_s == output
-    end    
+
+  RSpec.shared_examples "2-syllable Word" do
+    it "has input == to the original input" do
+      expect(@word.input).to eq(@input)
+    end
+    it "has morphword r1s1" do
+      expect(@word.morphword).to eq("r1s1")
+    end
+    it "has input syl1 associated with r1" do
+      expect(@word.input[0].morpheme).to eq("r1")
+    end
+    it "has input syl2 associated with s1" do
+      expect(@word.input[1].morpheme).to eq("s1")
+    end
+    it "input syl1 has IO correspondent output syl1" do
+      expect(@word.io_corr.out_corr(@word.input[0])).to eq(@word.output[0])
+    end
+    it "input syl2 has IO correspondent output syl2" do
+      expect(@word.io_corr.out_corr(@word.input[1])).to eq(@word.output[1])
+    end
+    it "output syl1 has IO correspondent input syl1" do
+      expect(@word.io_corr.in_corr(@word.output[0])).to eq(@word.input[0])
+    end
+    it "output syl2 has IO correspondent input syl2" do
+      expect(@word.io_corr.in_corr(@word.output[1])).to eq(@word.input[1])
+    end
+  end
+
+  RSpec.shared_examples "2-syllable outputs" do
+    it "gen generates a competition with 6 constraints" do
+      expect(@competition.constraint_list.size).to eq(6)
+    end
+    it "generates 8 candidates" do
+      expect(@competition.size).to eq(8)
+    end
+    ["S.s.","S.s:","S:s.","S:s:","s.S.","s.S:","s:S.","s:S:"].each do |out_str|
+      context "candidate with output #{out_str}" do
+        before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
+        it "generates candidate with output #{out_str}" do
+          expect(@word).not_to be nil
+        end
+        include_examples "2-syllable Word"
+      end
+    end
   end
   
   context "Given input /s:/" do
     before(:each) do
-      @syl = SL::Syllable.new.set_unstressed.set_long
+      @syl = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
       @input = Input.new
       @input.morphword = "r1"
       @input << @syl
@@ -270,53 +306,27 @@ RSpec.describe SL::System do
     it "generates 2 candidates" do
       expect(@competition.size).to eq(2)
     end
-    it "generates candidate with output S." do
-      expect(output_present?(@competition, "S.")).to be true
-    end
-    it "generates candidate with output S:" do
-      expect(output_present?(@competition, "S:")).to be true
+    ["S.","S:"].each do |out_str|
+      context "candidate with output #{out_str}" do
+        before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
+        it "generates candidate with output #{out_str}" do
+          expect(@word).not_to be nil
+        end
+#        include_examples "1-syllable Word"
+      end
     end
   end
 
   context "Given input /s:S./" do
     before(:each) do
-      @syl1 = SL::Syllable.new.set_unstressed.set_long
-      @syl2 = SL::Syllable.new.set_main_stress.set_short
+      @syl1 = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
+      @syl2 = SL::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
       @input = Input.new
       @input.morphword = "r1s1"
       @input << @syl1 << @syl2
       @competition = @system.gen(@input)
     end
-    it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
-    end
-    it "generates 8 candidates" do
-      expect(@competition.size).to eq(8)
-    end
-    it "generates candidate with output S.s." do
-      expect(output_present?(@competition, "S.s.")).to be true
-    end
-    it "generates candidate with output S.s:" do
-      expect(output_present?(@competition, "S.s:")).to be true
-    end
-    it "generates candidate with output S:s." do
-      expect(output_present?(@competition, "S:s.")).to be true
-    end
-    it "generates candidate with output S:s:" do
-      expect(output_present?(@competition, "S:s:")).to be true
-    end
-    it "generates candidate with output s.S." do
-      expect(output_present?(@competition, "s.S.")).to be true
-    end
-    it "generates candidate with output s.S:" do
-      expect(output_present?(@competition, "s.S:")).to be true
-    end
-    it "generates candidate with output s:S." do
-      expect(output_present?(@competition, "s:S.")).to be true
-    end
-    it "generates candidate with output s:S:" do
-      expect(output_present?(@competition, "s:S:")).to be true
-    end
+    include_examples "2-syllable outputs"
   end
   
   #**************************
