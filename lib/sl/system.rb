@@ -9,6 +9,8 @@ require_relative '../input'
 require_relative '../ui_correspondence'
 require_relative '../word'
 require_relative '../competition'
+require_relative '../underlying'
+require_relative '../lexical_entry'
 
 module SL
 
