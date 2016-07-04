@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
 require 'sl/system'
+require 'lexical_entry'
 
 RSpec.describe SL::System do
   before(:each) do
@@ -402,6 +403,51 @@ RSpec.describe SL::System do
         @word = @system.parse_output(@output,@gram)
       end
       include_examples "parsed output"
+    end
+  end
+
+  context "with a lexicon containing only r1 /s./" do
+    before(:each) do
+      @lex = instance_double("Lexicon")
+      allow(@lex).to receive(:any?).and_return(true,false) # only r1 is in the lexicon
+      @gram = instance_double("SL::Grammar")
+      allow(@gram).to receive(:lexicon).and_return(@lex)
+      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+      allow(@gram).to receive(:get_uf).with("r1").and_return([@in_sylr1])
+      @in_syls1 = SL::Syllable.new.set_morpheme("s1")
+      allow(@gram).to receive(:get_uf).with("s1").and_return([@in_syls1]) # should only be called *after* the lexical entry would have been added
+      # the input *after* the new lexical entry for s1 is created
+      @input = Input.new << @in_sylr1.dup << @in_syls1.dup # distinct objects from the ones in the lexicon
+    end
+    context "and output s.S." do
+      before(:each) do
+        @out_syl1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+        @out_syl2 = SL::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
+        @morphword = instance_double("Morphword")
+        allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
+        @output = Output.new << @out_syl1 << @out_syl2
+        @output.morphword = @morphword
+      end
+      it "creates a new lexical entry for s1" do
+        # There is no simple way to test the argument given to :<<, i.e.,
+        # the lexical entry. This might be a job for a test spy, or
+        # a partial test dummy, but I won't pursue it at this time.
+        expect(@lex).to receive(:<<).once
+        @word = @system.parse_output(@output,@gram)
+      end
+      context "when parsed," do
+        before(:each) do
+          allow(@lex).to receive(:<<).once
+          @word = @system.parse_output(@output,@gram)
+        end
+        include_examples "parsed output"
+        it "the word's 2nd input syllable is unset for stress" do
+          expect(@word.input[1].stress_unset?).to be true
+        end
+        it "the word's 2nd input syllable is unset for length" do
+          expect(@word.input[1].length_unset?).to be true
+        end
+      end
     end
   end
   
