@@ -10,9 +10,10 @@
                 <root id="src.data.dir"/>
             </source-roots>
             <test-roots>
-                <root id="test.temp.dir"/>
-                <root id="test.src.dir" name="test"/>
                 <root id="spec.src.dir" name="RSpec"/>
+                <root id="test.features.dir" name="Cucumber"/>
+                <root id="test.src.dir" name="test"/>
+                <root id="test.temp.dir"/>
             </test-roots>
         </data>
     </configuration>
