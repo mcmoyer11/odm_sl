@@ -3,7 +3,10 @@
 
 # Stores a list of competitions comprising a dataset. 
 class Competition_list < Array
+  # A label for the competition list; defaults to "NoLabel".
   attr_accessor :label
+  
+  # Constructs an empty list, with label _label_.
   def initialize(label = "NoLabel")
     @label = label
   end

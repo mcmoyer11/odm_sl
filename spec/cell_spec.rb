@@ -2,7 +2,7 @@
 
 require 'cell'
 
-describe Cell do
+RSpec.describe Cell do
   context "A cell constructed for (2,3)" do
     before(:each) do
       @cell = Cell.new(2,3)

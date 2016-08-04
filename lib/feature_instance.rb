@@ -11,8 +11,15 @@
 # A FeatureInstance is designed to be immutable: references to the
 # feature-bearing element and the feature are passed to the constructor,
 # and no other methods are available to later modify the feature instance.
+# *However*, it is possible to change the value of the referenced feature.
+# Convenience methods are provided to accessing and modifying the value
+# of the feature: #value and #value=.
 class FeatureInstance
-  attr_reader :element, :feature
+  # The feature-bearing element (e.g., a segment)
+  attr_reader :element
+  
+  # Reference to a particular feature of the feature-bearing element.
+  attr_reader :feature
 
   # Creates a new feature instance, referencing _element_ and its _feature_.
   def initialize(element, feature)

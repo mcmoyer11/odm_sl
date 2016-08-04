@@ -2,7 +2,7 @@
 
 require 'sheet'
 
-describe Sheet do
+RSpec.describe Sheet do
   context "A newly created sheet" do
     before(:each) do
       @sheet = Sheet.new

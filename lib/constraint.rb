@@ -1,22 +1,35 @@
 # Author: Bruce Tesar
 #
 
-# A basic OT constraint, consisting of a name and an id.
+# A basic OT constraint, consisting of a name, an id, a type, and an
+# evaluation procedure for assigning violations to candidates.
 # Only the name is considered when constraints are compared for equality.
 # The id is an abbreviated label used for constructing labels for
 # complex objects, e.g., residues in *FRed*.
 # Constraints are used as keys for hashes (e.g., in ercs), so they should
 # not be altered once constructed. It is a good idea to freeze the
 # constraint objects once they have been created.
-# Ideally, any OT system or analysis
-# should have just a single object for each constraint, with all
-# constraint-referring objects containing references to those same
-# constraints.
+# Ideally, any OT system or analysis should have just a single object for
+# each constraint, with all constraint-referring objects containing references
+# to those same constraints.
 class Constraint
-  # Returns a constraint with the given name and id.
-  # The id is an abbreviated label used for constructing labels for
+  # the markedness constraint type constant
+  MARK  = :markedness
+  
+  # the faithfulness constraint type constant
+  FAITH = :faithfulness
+  
+  # Returns a constraint.
+  # The parameter _id_ is an abbreviated label used for constructing labels for
   # complex objects, e.g., residues in *FRed*.
-  def initialize(name, id)
+  # The parameter _type_ must be one of the constants, or an exception will
+  # be raised.
+  # * Constraint::MARK     markedness constraint
+  # * Constraint::FAITH    faithfulness constraint
+  # The block parameter _eval_ is the violation evaluation function; it should
+  # take, as a parameter, a candidate, and return the number of times
+  # that candidate violates this constraint.
+  def initialize(name, id, type, &eval)
     @name = name
     # Store the symbol version of the name; faster for purposes of #==().
     @symbol = name.to_sym
@@ -24,6 +37,17 @@ class Constraint
     # name once and store it.
     @hash_value = @name.hash
     @id = id.to_s
+    # Make sure the parametric type is a correct value, and store a
+    # corresponding boolean value in the instance variable @markedness.
+    if type == MARK then
+      @markedness = true
+    elsif type == FAITH then
+      @markedness = false
+    else
+      raise "Type must be either ::MARK or ::FAITH, cannot be #{type}"
+    end
+    # store the evaluation function (passed as a code block)
+    @eval_function = eval
   end
 
   # Returns the name of the constraint.
@@ -55,6 +79,27 @@ class Constraint
     @hash_value
   end
 
+  # Returns true if this is a markedness constraint, and false otherwise.
+  def markedness?
+    return @markedness
+  end
+
+  # Returns true if this is a faithfulness constraint, and false otherwise.
+  def faithfulness?
+    return !@markedness
+  end
+
+  # Returns the number of times this constraint is violated by the
+  # parameter candidate.
+  # Raises a RuntimeError if no evaluation function block was provided at
+  # the time the constraint was constructed.
+  def eval_candidate(cand)
+    if @eval_function.nil?
+      raise "Constraint: no evaluation function was provided, and then #eval_candidate was called."
+    end
+    @eval_function.call(cand) # call the stored code block.
+  end
+  
   # Returns a string consisting of the constraint's id, followed
   # by a colon, followed by the constraint's name.
   def to_s()

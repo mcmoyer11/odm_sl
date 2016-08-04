@@ -7,12 +7,15 @@ require_relative 'comparative_tableau'
 # A hypothesis contains a linguistic system reference, a grammar, and a
 # list of supporting ercs.
 class Hypothesis
+  # The grammar object (incl. a ranking and a lexicon) for the hypothesis
+  attr_reader :grammar
   
-  attr_reader :grammar, :erc_list
+  # The list of ERCs included in this hypothesis
+  attr_reader :erc_list
 
   # Creates a new hypothesis containing grammar _gram_. If no ERC list is
   # provided as a parameter, then a new Comparative_tableau is created
-  # as an empty intial list.
+  # as an empty initial list.
   # Upon construction, consistency of the ERC list is immediately checked with
   # RCD. If the ERC list is consistent, the grammar's hierarchy is replaced by
   # the hierarchy constructed by RCD. If the ERC list is inconsistent, the

@@ -2,7 +2,7 @@
 
 require 'lexicon_image'
 
-describe Lexicon_image do
+RSpec.describe Lexicon_image do
   context "An empty lexicon should produce an image" do
     before(:each) do
       @lexicon = instance_double("Lexicon")
@@ -28,7 +28,7 @@ describe Lexicon_image do
   
   context "A lexicon with root r1 /x/" do
     before(:each) do
-      @root1 = instance_double("Morpheme", :label => "r1", :uf => "x")
+      @root1 = instance_double("Lexical_Entry", :label => "r1", :uf => "x")
       @lexicon = instance_double("Lexicon")
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([@root1])
@@ -56,8 +56,8 @@ describe Lexicon_image do
 
   context "A lexicon with root 1 r1 /x/ and root r2 /y/" do
     before(:each) do
-      @root1 = instance_double("Morpheme", :label => "r1", :uf => "x")
-      @root2 = instance_double("Morpheme", :label => "r2", :uf => "y")
+      @root1 = instance_double("Lexical_Entry", :label => "r1", :uf => "x")
+      @root2 = instance_double("Lexical_Entry", :label => "r2", :uf => "y")
       @lexicon = instance_double("Lexicon")
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([@root1, @root2])
@@ -97,8 +97,8 @@ describe Lexicon_image do
 
   context "A lexicon with root 1 r1 /x/ and suffix s1 /y/" do
     before(:each) do
-      @root1 = instance_double("Morpheme", :label => "r1", :uf => "x")
-      @suff1 = instance_double("Morpheme", :label => "s1", :uf => "y")
+      @root1 = instance_double("Lexical_Entry", :label => "r1", :uf => "x")
+      @suff1 = instance_double("Lexical_Entry", :label => "s1", :uf => "y")
       @lexicon = instance_double("Lexicon")
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([@root1])
@@ -134,9 +134,9 @@ describe Lexicon_image do
 
   context "A lexicon with prefix p1 /a/, root r1 /x/ and suffix s1 /y/" do
     before(:each) do
-      @pref1 = instance_double("Morpheme", :label => "p1", :uf => "a")
-      @root1 = instance_double("Morpheme", :label => "r1", :uf => "x")
-      @suff1 = instance_double("Morpheme", :label => "s1", :uf => "y")
+      @pref1 = instance_double("Lexical_Entry", :label => "p1", :uf => "a")
+      @root1 = instance_double("Lexical_Entry", :label => "r1", :uf => "x")
+      @suff1 = instance_double("Lexical_Entry", :label => "s1", :uf => "y")
       @lexicon = instance_double("Lexicon")
       allow(@lexicon).to receive(:get_prefixes).and_return([@pref1])
       allow(@lexicon).to receive(:get_roots).and_return([@root1])

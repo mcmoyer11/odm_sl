@@ -21,16 +21,21 @@ module SL
     # Returns a syllable, initialized to the parameters if provided. Otherwise,
     # returns a syllable with unset features, and an empty string for the
     # morpheme.
-    def initialize(stress=Stress_feat.new, length=Length_feat.new, morph="")
-      @stress = stress
-      @length = length
-      @morpheme = morph # label of the morpheme this syllable is affiliated with.
+    def initialize
+      @stress = Stress_feat.new
+      @length = Length_feat.new
+      @morpheme = "" # label of the morpheme this syllable is affiliated with.
     end
 
-    # A duplicate makes copies of the features, so that they may be altered
-    # independently of the original's features.
+    # A duplicate has copies of the features, so that they may be altered
+    # independently of the original syllable's features.
     def dup
-      self.class.new(@stress.dup, @length.dup, @morpheme)
+      dup_syl = self.class.new
+      dup_syl.set_morpheme(self.morpheme)
+      each_feature do |f|
+        dup_syl.set_feature(f.type,f.value)
+      end
+      return dup_syl
     end
 
     # Protected accessors, only used for #==()
@@ -184,7 +189,18 @@ module SL
       raise "SL::Syllable#get_feature(): parameter #{type.to_s} is not a valid feature type."
     end
 
-    # TODO: create a set_feature(feat_type,val) method
+    # Sets the _feature_type_ feature of the syllable to _feature_value_.
+    # Returns a reference to the syllable's feature.
+    # Raises an exception if _feature_type_ is not a valid type.
+    def set_feature(feature_type, feature_value)
+      syl_feat = get_feature(feature_type) # raises exception if invalid type
+      # raise an exception if invalid value
+      unless syl_feat.valid_value?(feature_value) or feature_value==Feature::UNSET
+        raise "SL::Syllable#set_feature invalid feature value parameter: #{feature_value}"
+      end
+      syl_feat.value = feature_value
+      return syl_feat
+    end
 
   end # class Syllable
 
