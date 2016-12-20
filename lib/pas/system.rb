@@ -69,6 +69,8 @@ module PAS
     def idstress() return @idstress end
     # Returns the faithfulness constraint IDLength.
     def idlength() return @idlength end
+    # Returns the markedness constraint CULM
+    def culm() return @culm end
 
     # Accepts parameters of a morph_word and a grammar. It builds an input form
     # by concatenating the syllables of the underlying forms of each of the
@@ -130,8 +132,10 @@ module PAS
       # the constraint violations.
       competition = Competition.new
       main_stress_assigned.each{|c| c.eval; competition.push(c)}
+      #probably also going to do this for non main_stress assigned list
       return competition
     end
+    
 
     # Constructs a full structural description for the given output using the
     # lexicon of the given grammar. The constructed input will stand in
@@ -217,8 +221,13 @@ module PAS
           else sum
           end
         end
-      end      
-    end
+      end
+      @culm = Constraint.new("Culm", 7, MARK) do |cand|
+        cand.output.inject(0) do |sum, syl|
+          if syl.unstressed? then sum+1 else sum end
+          end
+        end
+      end
     
     # Define the constraint list.
     def constraint_list
@@ -229,6 +238,7 @@ module PAS
       list << @mr
       list << @idstress
       list << @idlength
+      list << @culm
       return list
     end
 

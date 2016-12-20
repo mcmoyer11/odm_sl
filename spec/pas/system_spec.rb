@@ -15,8 +15,8 @@ RSpec.describe PAS::System do
     before(:each) do
       @con_list = @system.constraints
     end
-    it "with 6 constraints" do
-      expect(@con_list.size).to eq(6)
+    it "with 7 constraints" do
+      expect(@con_list.size).to eq(7)
     end
     it "containing WSP" do
       expect(@con_list).to include(@system.wsp)
@@ -36,6 +36,10 @@ RSpec.describe PAS::System do
     it "containing Ident[length]" do
       expect(@con_list).to include(@system.idlength)
     end
+    it "containing Culm" do
+      expect(@con_list).to include(@system.culm)
+    end
+    
   end
   context "System, given candidate" do
     before(:each) do
@@ -84,6 +88,10 @@ RSpec.describe PAS::System do
       it "assigns 0 violations of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(0)
       end
+      it "assigns 0 violation of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(0)
+      end
+      
     end
     context "/s:/[S]" do
       before(:each) do
@@ -121,9 +129,12 @@ RSpec.describe PAS::System do
       end
       it "assigns 1 violation of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(1)
-      end        
+      end    
+      it "assigns 0 violations of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(0)
+      end
     end
-    context "/ss:/[Ss:]" do
+    context "/s.s:/[S.s:]" do
       before(:each) do
         # input syllable 1
         @syli1 = double("Syli1")
@@ -173,7 +184,11 @@ RSpec.describe PAS::System do
       end
       it "assigns 0 violations of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(0)
-      end        
+      end
+      it "assigns 1 violation of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(1)
+      end
+      
     end
   end
 
@@ -276,8 +291,8 @@ RSpec.describe PAS::System do
       @input << @syl
       @competition = @system.gen(@input)
     end
-    it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
+    it "gen generates a competition with 7 constraints" do
+      expect(@competition.constraint_list.size).to eq(7)
     end
     it "generates 2 candidates" do
       expect(@competition.size).to eq(2)
@@ -323,8 +338,8 @@ RSpec.describe PAS::System do
   end
 
   RSpec.shared_examples "2-syllable outputs" do
-    it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
+    it "gen generates a competition with 7 constraints" do
+      expect(@competition.constraint_list.size).to eq(7)
     end
     it "generates 8 candidates" do
       expect(@competition.size).to eq(8)
