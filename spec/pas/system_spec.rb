@@ -190,6 +190,63 @@ RSpec.describe PAS::System do
       end
       
     end
+    
+    # to test Culm on a word without any main stress assigned.
+    context "/s.s:/[s.s:]" do
+      before(:each) do
+        # input syllable 1
+        @syli1 = double("Syli1")
+        @input << @syli1
+        allow(@syli1).to receive(:long?).and_return(false)
+        allow(@syli1).to receive(:unstressed?).and_return(true)
+        allow(@syli1).to receive(:main_stress?).and_return(false)
+        allow(@syli1).to receive(:stress_unset?).and_return(false)
+        allow(@syli1).to receive(:length_unset?).and_return(false)
+        # input syllable 2
+        @syli2 = double("Syli2")
+        @input << @syli2
+        allow(@syli2).to receive(:long?).and_return(true)
+        allow(@syli2).to receive(:unstressed?).and_return(true)
+        allow(@syli2).to receive(:main_stress?).and_return(false)
+        allow(@syli2).to receive(:stress_unset?).and_return(false)
+        allow(@syli2).to receive(:length_unset?).and_return(false)
+        # output syllable 1
+        @sylo1 = double("Sylo1")
+        @output << @sylo1
+        allow(@sylo1).to receive(:long?).and_return(false)
+        allow(@sylo1).to receive(:unstressed?).and_return(true)
+        allow(@sylo1).to receive(:main_stress?).and_return(false)
+        # output syllable 2
+        @sylo2 = double("Sylo2")
+        @output << @sylo2
+        allow(@sylo2).to receive(:long?).and_return(true)
+        allow(@sylo2).to receive(:unstressed?).and_return(true)
+        allow(@sylo2).to receive(:main_stress?).and_return(false)
+        # IO correspondence
+        @io_corr << [@syli1, @sylo1] << [@syli2, @sylo2]
+      end
+      it "assigns 1 violation of NoLong" do
+        expect(@system.nolong.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 1 violation of WSP" do
+        expect(@system.wsp.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 0 violations of ML" do
+        expect(@system.ml.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violation of MR" do
+        expect(@system.mr.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violation of IDStress" do
+        expect(@system.idstress.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violations of IDLength" do
+        expect(@system.idlength.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 2 violations of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(2)
+      end
+    end
   end
 
   #****************************************
@@ -265,7 +322,7 @@ RSpec.describe PAS::System do
 
   # *** 1-Syllable Examples ***
   
-  RSpec.shared_examples "1-syllable Word" do
+  RSpec.shared_examples "PAS 1-syllable Word" do
     it "has input == to the original input" do
       expect(@word.input).to eq(@input)
     end
@@ -303,14 +360,14 @@ RSpec.describe PAS::System do
         it "generates candidate with output #{out_str}" do
           expect(@word).not_to be nil
         end
-        include_examples "1-syllable Word"
+        include_examples "PAS 1-syllable Word"
       end
     end
   end
 
   # *** 2-Syllable Examples ***
   
-  RSpec.shared_examples "2-syllable Word" do
+  RSpec.shared_examples "PAS 2-syllable Word" do
     it "has input == to the original input" do
       expect(@word.input).to eq(@input)
     end
@@ -337,7 +394,7 @@ RSpec.describe PAS::System do
     end
   end
 
-  RSpec.shared_examples "2-syllable outputs" do
+  RSpec.shared_examples "PAS 2-syllable outputs" do
     it "gen generates a competition with 7 constraints" do
       expect(@competition.constraint_list.size).to eq(7)
     end
@@ -350,7 +407,7 @@ RSpec.describe PAS::System do
         it "generates candidate with output #{out_str}" do
           expect(@word).not_to be nil
         end
-        include_examples "2-syllable Word"
+        include_examples "PAS 2-syllable Word"
       end
     end
   end
@@ -364,14 +421,14 @@ RSpec.describe PAS::System do
       @input << @syl1 << @syl2
       @competition = @system.gen(@input)
     end
-    include_examples "2-syllable outputs"
+    include_examples "PAS 2-syllable outputs"
   end
   
   #**************************
   # Specs for #parse_output()
   #**************************
 
-  RSpec.shared_examples "parsed output" do
+  RSpec.shared_examples "PAS parsed output" do
     it "with output == to the starting output" do
       expect(@word.output).to eq(@output)
     end
@@ -417,7 +474,7 @@ RSpec.describe PAS::System do
         @output.morphword = @morphword
         @word = @system.parse_output(@output,@gram)
       end
-      include_examples "parsed output"
+      include_examples "PAS parsed output"
     end
   end
 
@@ -455,7 +512,7 @@ RSpec.describe PAS::System do
           allow(@lex).to receive(:<<).once
           @word = @system.parse_output(@output,@gram)
         end
-        include_examples "parsed output"
+        include_examples "PAS parsed output"
         it "the word's 2nd input syllable is unset for stress" do
           expect(@word.input[1].stress_unset?).to be true
         end

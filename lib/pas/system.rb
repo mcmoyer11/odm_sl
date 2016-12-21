@@ -189,10 +189,17 @@ module PAS
           if syl.long? && syl.unstressed? then sum+1 else sum end
         end
       end
+#      @ml = Constraint.new("ML", 3, MARK) do |cand|
+#        viol_count = 0
+#        for syl in cand.output do
+#          break if syl.main_stress?
+#          viol_count += 1
+#        end
+#        viol_count
+#      end
       @ml = Constraint.new("ML", 3, MARK) do |cand|
         viol_count = 0
-        for syl in cand.output do
-          break if syl.main_stress?
+        if stress_found = false
           viol_count += 1
         end
         viol_count
