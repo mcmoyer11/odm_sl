@@ -74,7 +74,7 @@ RSpec.describe PAS::Syllable do
         end
       end
       it "get_feature raises an exception when given an invalid type" do
-        expect{@syllable.get_feature("not_a_type")}.to raise_exception
+        expect{@syllable.get_feature("not_a_type")}.to raise_exception(RuntimeError)
       end
     end
     context "when #set_feature sets stress with value main stress" do
@@ -91,10 +91,10 @@ RSpec.describe PAS::Syllable do
       end
     end
     it "#set_feature raises an exception when given an invalid feature type" do
-      expect{@syllable.set_feature("invalid", "value")}.to raise_exception
+      expect{@syllable.set_feature("invalid", "value")}.to raise_exception(RuntimeError)
     end
     it "#set_feature does not raise an exception when given an unset feature value" do
-      expect{@syllable.set_feature(PAS::Length_feat::LENGTH, Feature::UNSET)}.not_to raise_exception
+      expect{@syllable.set_feature(PAS::Length_feat::LENGTH, Feature::UNSET)}.not_to raise_exception(RuntimeError)
     end
     
     context "when set to main stress" do

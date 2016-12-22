@@ -175,6 +175,58 @@ RSpec.describe SL::System do
         expect(@system.idlength.eval_candidate(@cand)).to eq(0)
       end        
     end
+    context "/s.s:/[s.S:]" do
+      before(:each) do
+        # input syllable 1
+        @syli1 = double("Syli1")
+        @input << @syli1
+        allow(@syli1).to receive(:long?).and_return(false)
+        allow(@syli1).to receive(:unstressed?).and_return(true)
+        allow(@syli1).to receive(:main_stress?).and_return(false)
+        allow(@syli1).to receive(:stress_unset?).and_return(false)
+        allow(@syli1).to receive(:length_unset?).and_return(false)
+        # input syllable 2
+        @syli2 = double("Syli2")
+        @input << @syli2
+        allow(@syli2).to receive(:long?).and_return(true)
+        allow(@syli2).to receive(:unstressed?).and_return(true)
+        allow(@syli2).to receive(:main_stress?).and_return(false)
+        allow(@syli2).to receive(:stress_unset?).and_return(false)
+        allow(@syli2).to receive(:length_unset?).and_return(false)
+        # output syllable 1
+        @sylo1 = double("Sylo1")
+        @output << @sylo1
+        allow(@sylo1).to receive(:long?).and_return(false)
+        allow(@sylo1).to receive(:unstressed?).and_return(true)
+        allow(@sylo1).to receive(:main_stress?).and_return(false)
+        # output syllable 2
+        @sylo2 = double("Sylo2")
+        @output << @sylo2
+        allow(@sylo2).to receive(:long?).and_return(true)
+        allow(@sylo2).to receive(:unstressed?).and_return(false)
+        allow(@sylo2).to receive(:main_stress?).and_return(true)
+        # IO correspondence
+        @io_corr << [@syli1, @sylo1] << [@syli2, @sylo2]
+      end
+      it "assigns 1 violation of NoLong" do
+        expect(@system.nolong.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 0 violation of WSP" do
+        expect(@system.wsp.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 1 violations of ML" do
+        expect(@system.ml.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 0 violation of MR" do
+        expect(@system.mr.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 1 violation of IDStress" do
+        expect(@system.idstress.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 0 violations of IDLength" do
+        expect(@system.idlength.eval_candidate(@cand)).to eq(0)
+      end
+    end
   end
 
   #****************************************

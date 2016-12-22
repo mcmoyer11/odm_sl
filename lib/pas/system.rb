@@ -189,18 +189,15 @@ module PAS
           if syl.long? && syl.unstressed? then sum+1 else sum end
         end
       end
-#      @ml = Constraint.new("ML", 3, MARK) do |cand|
-#        viol_count = 0
-#        for syl in cand.output do
-#          break if syl.main_stress?
-#          viol_count += 1
-#        end
-#        viol_count
-#      end
       @ml = Constraint.new("ML", 3, MARK) do |cand|
         viol_count = 0
-        if stress_found = false
-          viol_count += 1
+        # only apply when there's a main stress in the cand
+        main_stress_found = cand.output.main_stress?
+        if main_stress_found then
+          for syl in cand.output do
+            break if syl.main_stress?
+            viol_count += 1
+          end
         end
         viol_count
       end
@@ -229,13 +226,17 @@ module PAS
           end
         end
       end
+      # this only give a single violation to stress-less outputs
       @culm = Constraint.new("Culm", 7, MARK) do |cand|
-        cand.output.inject(0) do |sum, syl|
-          if syl.unstressed? then sum+1 else sum end
-          end
+        not_violated = cand.output.main_stress?
+        if not_violated then 
+          viol_count = 0
+        else 
+          viol_count = 1
         end
+        viol_count
       end
-    
+    end
     # Define the constraint list.
     def constraint_list
       list = []
