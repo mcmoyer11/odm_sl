@@ -39,7 +39,6 @@ RSpec.describe PAS::System do
     it "containing Culm" do
       expect(@con_list).to include(@system.culm)
     end
-    
   end
   context "System, given candidate" do
     before(:each) do
@@ -453,10 +452,10 @@ RSpec.describe PAS::System do
     it "gen generates a competition with 7 constraints" do
       expect(@competition.constraint_list.size).to eq(7)
     end
-    it "generates 2 candidates" do
-      expect(@competition.size).to eq(2)
+    it "generates 4 candidates" do
+      expect(@competition.size).to eq(4)
     end
-    ["S.","S:"].each do |out_str|
+    ["s.","s:","S.","S:"].each do |out_str|
       context "candidate with output #{out_str}" do
         before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
         it "generates candidate with output #{out_str}" do
@@ -500,10 +499,10 @@ RSpec.describe PAS::System do
     it "gen generates a competition with 7 constraints" do
       expect(@competition.constraint_list.size).to eq(7)
     end
-    it "generates 8 candidates" do
-      expect(@competition.size).to eq(8)
+    it "generates 12 candidates" do
+      expect(@competition.size).to eq(12)
     end
-    ["S.s.","S.s:","S:s.","S:s:","s.S.","s.S:","s:S.","s:S:"].each do |out_str|
+    ["S.s.","S.s:","S:s.","S:s:","s.S.","s.S:","s:S.","s:S:","s.s.","s.s:","s:s:","s:s."].each do |out_str|
       context "candidate with output #{out_str}" do
         before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
         it "generates candidate with output #{out_str}" do

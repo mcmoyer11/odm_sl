@@ -132,7 +132,8 @@ module PAS
       # the constraint violations.
       competition = Competition.new
       main_stress_assigned.each{|c| c.eval; competition.push(c)}
-      #probably also going to do this for non main_stress assigned list
+      #also evaluate the candidates without main stress
+      no_stress_yet.each{|c| c.eval; competition.push(c)}
       return competition
     end
     
@@ -270,7 +271,7 @@ module PAS
 
   end # class PAS::System
 
-  # The system object for the linguistic system PAS (stress-length).
+  # The system object for the linguistic system PAS (pitch-accent/stress).
   SYSTEM = System.instance
 
 end # module PAS
