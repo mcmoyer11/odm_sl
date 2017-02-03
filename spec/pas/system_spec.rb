@@ -577,6 +577,18 @@ RSpec.describe PAS::System do
       end
       include_examples "PAS parsed output"
     end
+    context "and output s.s. it parses to a candidate" do
+       before(:each) do
+        @out_syl1 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+        @out_syl2 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("s1")
+        @morphword = instance_double("Morphword")
+        allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
+        @output = Output.new << @out_syl1 << @out_syl2
+        @output.morphword = @morphword
+        @word = @system.parse_output(@output,@gram)
+      end
+      include_examples "PAS parsed output"
+    end
   end
 
   context "with a lexicon containing only r1 /s./" do
