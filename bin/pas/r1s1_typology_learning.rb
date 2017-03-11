@@ -12,7 +12,6 @@ require_relative '../../lib/otlearn/language_learning'
 require_relative '../../lib/csv_output'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/rcd_bias_low'
-require_relative '../../lib/otlearn/mock_lang'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix
@@ -55,7 +54,7 @@ def write_learning_results_to_csv(lang_sim, csv_file)
 end
 
 #***********************************
-# Actual creation of the typology
+# Actual execution of the simulation
 #***********************************
 
 # Generate the language typology data.
@@ -72,66 +71,37 @@ read_languages_from_file(data_file) do |label, outputs|
 end
 puts "The typology has #{lang_count} languages."
 
-
-#***************************************************
-# Turning the typology into something easy to read.
-#***************************************************
-
-# Instead of making a +to_s+ on the factorial typology, I wrote the outputs
-# and the hierarchy for each language into a file (this works very well)
-out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
-out_file = File.join(out_file_path,"pas_typology.csv")
-File.open("pas_typology.csv","w+") do |file|
-    lang_list.each do |lang|
-      file.write(lang.label.to_s + "\t")
-      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
-      lang.winners.each do |w|
-        file.write(w.to_s + "\n")
-      end
-    end
-end
-
-# Create a file with the hierarchy for each language.
-out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
-out_file = File.join(out_file_path,"pas_hierarchies.csv")
-File.open("pas_hierarchies.csv", "w+") do |file|
-  lang_list.each do |lang|
-    file.write(lang.label.to_s + "\t")
-    file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
-  end
-end
-
-
-# Look at the languages with winners that are non-culminative.
-out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
-out_file = File.join(out_file_path,"pas_non-culm_winners.csv")
-non_culm_winners = File.open("pas_non-culm_winners.csv","w+") do |file| 
-  read_languages_from_file(data_file) do |label, outputs|
-    outputs.each do |o|
-      unless o.main_stress?
-        file.write(label.to_s + "\n" + o.morphword.to_s + o.to_s + "\n")
-      end 
+# Learn the languages, writing output for each to a separate file.
+out_filepath = File.join(File.dirname(__FILE__),'..','..','temp')
+read_languages_from_file(data_file) do |label, outputs|
+  # Create a new, blank hypothesis, and assign it the label of the language.
+  hyp = Hypothesis.new(PAS::Grammar.new)
+  hyp.label = label
+  
+  # Run learning on the language inside an Exception block to catch cases where
+  # learning fails. A created class of Exceptions, LearnEx, returns a 
+  # +language_learning+ object, which shows the stages of learning up to the point
+  # where learning fails, and a +consistent_feature_val_list+, which shows which
+  # feature-value-pairs are causing an error in the +language_learning+ file.
+  lang_sim = nil
+  begin
+    lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
+  rescue LearnEx => detail
+    if lang_sim == nil
+      STDERR.puts "More than one single matching feature passes error testing on #{label}."
+      # Assign the Exception object to +lang_sim+ so a language_learning object
+      # can be fed to +learning_sucessful?+
+      lang_sim = detail.lang_learn
+      # Output to the STDERR window the feature-value-pairs which are causing the 
+      # learning to crash in the first place
+      STDERR.puts detail.consistent_feature_value_list
     end
   end
-end
-
-
-# Pull the four languages that are failing learning: 32, 45, 46, 59
-fails = lang_list.keep_if { |lang|
-  lang.label.to_s == "L32" ||
-  lang.label.to_s == "L45" ||
-  lang.label.to_s == "L46" ||
-  lang.label.to_s == "L59" }
-
-# Write those four to a file
-File.open("pas_learning_fails.csv","w+") do |file|
-    fails.each do |lang|
-      file.write(lang.label.to_s + "\t")
-      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
-      lang.winners.each do |w|
-        file.write(w.to_s + "\n")
-      end
-    end
-end
-
-
+  # Write the results to a CSV file, with the language label as the filename.
+  out_file = File.join(out_filepath,"#{lang_sim.hypothesis.label}.csv")
+  write_learning_results_to_csv(lang_sim, out_file)
+  # Report to STDOUT if language was not successfully learned
+  unless lang_sim.learning_successful?
+    puts "#{hyp.label} not learned."
+  end  
+ end

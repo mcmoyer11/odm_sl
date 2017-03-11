@@ -57,4 +57,9 @@ class FeatureValuePair
     @feature_instance.feature.value = @alt_value
   end
 
+  # Make it easy to read what the features are that are causing learning to fail
+  def to_s
+    "Feature #{@feature_instance} with hypothesized value #{@alt_value} is consistent."
+  end
+  
 end
