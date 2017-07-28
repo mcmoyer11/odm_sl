@@ -7,10 +7,6 @@
 # to efficiently determine things like the ERC arrow operator
 # and fusion via subset methods.
 
-# Uses an enhancement of the standard library's Set class, such that
-# equivalent sets receive identical hash values.
-require_relative 'set_hashable'
-
 # An Elementary Ranking Condition (ERC). Given a set of constraints,
 # each constraint is assigned one of three values:
 # W:: prefers the winner
