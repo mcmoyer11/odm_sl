@@ -126,6 +126,7 @@ module OTLearn
       end
       return loser
     end
+    protected :select_loser
 
     # Returns true if any change at all was made to the hypothesis
     # by MRCD. Returns false otherwise.
