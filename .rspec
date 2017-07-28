@@ -1,0 +1,7 @@
+# Author: Bruce Tesar
+#
+# RSpec default options
+# ./.rspec is loaded automatically by RSpec
+
+# load the contents of spec/spec_helper.rb
+--require spec_helper
