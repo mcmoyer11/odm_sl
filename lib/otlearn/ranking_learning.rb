@@ -3,6 +3,7 @@
 
 require_relative 'data_manip'
 require_relative 'mrcd'
+require_relative 'rcd_bias_low'
 
 module OTLearn
   
@@ -18,14 +19,14 @@ module OTLearn
   def OTLearn::ranking_learning_faith_low(word_list, hypothesis)
     winner_list = data_dup_and_match_output(word_list)
     # Use the faith-low ranking bias for ranking learning
-    mrcd_result = MrcdFaithLow.new(winner_list, hypothesis)
+    mrcd_result = Mrcd.new(winner_list, hypothesis, OTLearn::RcdFaithLow)
     return mrcd_result.any_change?
   end
   
   def OTLearn::ranking_learning_mark_low(word_list, hypothesis)
     winner_list = data_dup_and_match_output(word_list)
     # Use the mark-low ranking bias for ranking learning
-    mrcd_result = MrcdMarkLow.new(winner_list, hypothesis)
+    mrcd_result = Mrcd.new(winner_list, hypothesis, OTLearn::RcdMarkLow)
     return mrcd_result.any_change?    
   end
   

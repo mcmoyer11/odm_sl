@@ -27,17 +27,18 @@ module OTLearn
     # from the initial grammar hypothesis _hypothesis_. The _word_list_
     # is duplicated internally, so the internal copy is independent of the list
     # passed as the parameter.
-    def initialize(word_list, hypothesis)
+    def initialize(word_list, hypothesis, rcd_class = Rcd)
       @sys = hypothesis.system
       # Make a duplicate copy of each word, so that components of Win-Lose
       # pairs cannot be altered, regardless of what subsequently happens
       # to the parameter word list (after this method has completed).
       @word_list = word_list.map{|word| word.dup}
       @hypothesis = hypothesis
+      @rcd_class = rcd_class
       @added_pairs = []
       @any_change = run_mrcd
     end
-
+    
     # Returns the list of words treated as winners.
     def word_list() @word_list end
 
@@ -47,6 +48,12 @@ module OTLearn
     # The winner-loser pairs added to the hypothesis by this execution of Mrcd.
     def added_pairs() @added_pairs end
 
+    # Returns true if any change at all was made to the hypothesis
+    # by MRCD. Returns false otherwise.
+    def any_change?
+      @any_change
+    end
+    
     # Runs MRCD on the given word list, using the given hypothesis.
     # MRCD is applied to each word of the list in turn; passes are made
     # through the word list until a pass is completed without any change
@@ -128,47 +135,22 @@ module OTLearn
     end
     protected :select_loser
 
-    # Returns true if any change at all was made to the hypothesis
-    # by MRCD. Returns false otherwise.
-    def any_change?
-      @any_change
-    end
-    
-    # Calculates the constraint hierarchy for the given WL pairs using
-    # the default "as high as possible" RCD ranking bias. This bias could be
-    # changed by overriding this method in subclasses.
+    # Calculates the constraint hierarchy for the given WL pairs by
+    # constructing an instance of the rcd_class while passing it the WL pairs.
+    # The value of the rcd_class determines the ranking bias used in
+    # creating the hierarchy.
     def update(wl_pairs)
-      Rcd.new(wl_pairs)
+      rcd_class.new(wl_pairs)
     end
     protected :update
     
+    # Return the class of RCD object to be used to construct a ranking for
+    # a set of WL pairs. The class determines the ranking bias.
+    def rcd_class
+      @rcd_class
+    end
+    protected :rcd_class
+
   end # class Mrcd
-
-  # This is a subclass of Mrcd that uses a "faithfulness-low" ranking
-  # bias instead of the default RCD "as high as possible" bias.
-  # The interface is identical to Mrcd: a winner list and a hypothesis are
-  # given to the constructor, and Mrcd is automatically run.
-  class MrcdFaithLow < Mrcd
-    # Calculates the constraint hierarchy for the given WL pairs using
-    # a faithfulness-low ranking bias.
-    def update(wl_pairs)
-      RcdFaithLow.new(wl_pairs)
-    end
-    protected :update
-  end
-
-  # This is a subclass of Mrcd that uses a "markedness-low" ranking
-  # bias instead of the default RCD "as high as possible" bias. The
-  # interface is identical to Mrcd.
-  # The interface is identical to Mrcd: a winner list and a hypothesis are
-  # given to the constructor, and Mrcd is automatically run.
-  class MrcdMarkLow < Mrcd
-    # Calculates the constraint hierarchy for the given WL pairs using
-    # a markedness-low ranking bias.
-    def update(wl_pairs)
-      RcdMarkLow.new(wl_pairs)
-    end
-    protected :update
-  end
 
 end # module OTLearn
