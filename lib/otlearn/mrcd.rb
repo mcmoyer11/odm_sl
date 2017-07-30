@@ -120,12 +120,13 @@ module OTLearn
     # appropriate loser exists, nil is returned.
     def select_loser(winner)
       # find the most harmonic candidates
-      mh = MostHarmonic.new(@competition, @hypothesis.grammar.hierarchy)
+      hierarchy = rcd_class.new(@hypothesis.erc_list).hierarchy
+      mh = MostHarmonic.new(@competition, hierarchy)
       # select an appropriate most harmonic candidate (if any) to be the loser
       loser = mh.find do |cand|
         if cand.ident_viols?(winner) then
           false # don't select a loser with identical violations
-        elsif mh.more_harmonic?(winner, cand, @hypothesis.grammar.hierarchy)
+        elsif mh.more_harmonic?(winner, cand, hierarchy)
           false # don't select a loser that is already less harmonic
         else
           true

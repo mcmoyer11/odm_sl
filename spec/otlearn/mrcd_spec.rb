@@ -6,7 +6,7 @@ require 'sl/grammar'
 require 'otlearn/rcd_bias_low'
 require_relative '../../test/helpers/quick_erc'
 
-RSpec.fdescribe "MRCD" do
+RSpec.describe "MRCD" do
   context "with default rcd class and an empty word list" do
     before(:each) do
       @word_list = []
