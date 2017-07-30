@@ -48,6 +48,7 @@ class Hypothesis
     return Hypothesis.new(@grammar.dup_hier_only, @erc_list.dup)
   end
 
+  # Returns a reference to the linguistic system underlying the grammar.
   def system
     @grammar.system
   end
