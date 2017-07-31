@@ -26,8 +26,8 @@ class Hypothesis
     else
       @erc_list = erc_list
     end
-    # check the erc list for consistency
-    update_grammar
+    # check the erc list for consistency (initializing @rcd_result)
+    check_consistency
   end
   
   # Returns a copy of the hypothesis, with a duplicated grammar and erc list.
@@ -64,24 +64,23 @@ class Hypothesis
 
   # Returns true if the hypothesis is currently consistent; false otherwise.
   def consistent?
-    return @consistent
+    return @rcd_result.consistent?
   end
   
   # Adds an erc, and checks the consistency of the updated list.
-  # Returns the Rcd object used to determine consistency.
+  # Returns true if the ercs are consistent, false otherwise.
   def add_erc(erc)
     @erc_list << erc
-    update_grammar
+    check_consistency
   end
 
   # Checks to see if the ercs are consistent.
-  # Returns the Rcd object used to determine consistency.
-  def update_grammar
-    rcd_result = Rcd.new(@erc_list)
-    @consistent = rcd_result.consistent?
-    return rcd_result
+  # Returns true if the ercs are consistent, false otherwise.
+  def check_consistency
+    @rcd_result = Rcd.new(@erc_list)
+    return consistent?
   end
-  private :update_grammar
+  private :check_consistency
 
   # Returns a string containing string representations of
   # the lexicon and the ERC list of this hypothesis.
