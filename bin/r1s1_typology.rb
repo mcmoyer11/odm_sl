@@ -64,7 +64,8 @@ data_file = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_Typology.
 write_language_list_to_file(lang_list, data_file)
 
 # Learn the languages, writing output for each to a separate file.
-out_filepath = File.join(File.dirname(__FILE__),'..','temp')
+out_filepath = File.join(File.dirname(__FILE__),'..','temp','sl_learning')
+Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank hypothesis, and assign it the label of the language.
   hyp = Hypothesis.new(SL::Grammar.new)

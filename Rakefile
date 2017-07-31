@@ -12,6 +12,17 @@ require 'launchy'
 # Top-level project directory.
 PROJECT_DIR = File.dirname(__FILE__)
 
+desc "delete all files/directories in the temp dir"
+task :clear_temp do
+  Dir.glob("#{PROJECT_DIR}/temp/*").each do |f|
+    rm_rf(f, :verbose => false)
+  end
+end
+
+#***********
+# RDoc Tasks
+#***********
+
 Rake::RDocTask.new do |rdoc|
   files =['README', 'LICENSE', 'lib/**/*.rb', 'bin/**/*.rb']
   rdoc.rdoc_files.add(files)
@@ -19,13 +30,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "odm_sl Docs"
   rdoc.rdoc_dir = 'doc/rdoc' # rdoc output folder
   rdoc.options << '--line-numbers'
-end
-
-desc "delete all files in the temp dir"
-task :clear_temp do
-  Dir.glob("#{PROJECT_DIR}/temp/**/*").each do |f|
-    File.delete f
-  end
 end
 
 desc "display RDoc in browser"
@@ -44,14 +48,36 @@ end
 # RSpec Tasks
 #************
 
-RSpec::Core::RakeTask.new do |t|
+desc "" # undocumented, so won't appear in default raketask list
+RSpec::Core::RakeTask.new(:spec_unit) do |t|
+  t.rspec_opts = "--tag ~acceptance"
 end
 
+desc "run RSpec unit specs (not acceptance)"
+task :spec => [:clear_temp, :spec_unit]
+
+desc "" # undocumented, so won't appear in default raketask list
+RSpec::Core::RakeTask.new(:spec_acceptance_tests) do |t|
+  t.rspec_opts = "--tag acceptance"
+end
+
+desc "run RSpec acceptance specs"
+task :spec_acceptance => [:clear_temp, :spec_acceptance_tests]
+
+desc "diff the learning of all 24 SL languages (acceptance specs)"
+task :spec_diff_sl do
+  kdiff3 = "C:/Programs/kdiff3/kdiff3.exe"
+  sl_fixture_dir = "#{PROJECT_DIR}/test/fixtures/sl_learning"
+  generated_dir = "#{PROJECT_DIR}/temp/sl_learning"
+  system "#{kdiff3} #{sl_fixture_dir} #{generated_dir}"
+end
+
+desc "run RSpec specs with HTML output"
 RSpec::Core::RakeTask.new(:spec_html) do |t|
   t.rspec_opts = "-f html -o temp/rspec_report.html"
 end
 
-desc "display RSpec in browser"
+desc "display all RSpec specs in a browser"
 task :spec_in_browser => [:clear_temp, :spec_html] do
   # Display the rspec report in the system's default browser.
   Launchy.open("#{PROJECT_DIR}/temp/rspec_report.html")
