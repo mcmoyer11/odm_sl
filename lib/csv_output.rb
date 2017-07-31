@@ -46,8 +46,8 @@ class CSV_Output
       @page_image[next_row,1] = entry.label
       # Test result components are frozen, so dup before updating.
       hyp = entry.hypothesis.dup
-      # Update grammar to contain the faith-low bias ranking.
-      rcd_result = hyp.update_grammar{|ercs| OTLearn::RcdFaithLow.new(ercs)}
+      # Compute the faith-low bias ranking.
+      rcd_result = OTLearn::RcdFaithLow.new(hyp.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = RCD_image.new({:rcd=>rcd_result})

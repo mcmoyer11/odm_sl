@@ -85,9 +85,6 @@ module OTLearn
     # winner-loser pairs added to the hypothesis.
     def run_mrcd_on_single(winner)
       local_added_pairs = []
-      # Set the hypothesis hierarchy using whichever ranking bias is currently
-      # desired; the ranking bias is in the method #update().
-      @hypothesis.update_grammar {|ercs| update(ercs)}
       # Generate all candidates for the input of the winner.
       @competition = @sys.gen(winner.input)
       loser = select_loser(winner)

@@ -17,9 +17,7 @@ class Hypothesis
   # provided as a parameter, then a new Comparative_tableau is created
   # as an empty initial list.
   # Upon construction, consistency of the ERC list is immediately checked with
-  # RCD. If the ERC list is consistent, the grammar's hierarchy is replaced by
-  # the hierarchy constructed by RCD. If the ERC list is inconsistent, the
-  # grammar's hierarchy is set to nil.
+  # RCD.
   def initialize(gram, erc_list=nil)
     @grammar = gram
     if erc_list.nil?
@@ -28,7 +26,7 @@ class Hypothesis
     else
       @erc_list = erc_list
     end
-    # Use RCD to check for consistency, and reset the hierarchy
+    # check the erc list for consistency
     update_grammar
   end
   
@@ -69,39 +67,21 @@ class Hypothesis
     return @consistent
   end
   
-  # Adds an erc to the list, and updates the grammar.
-  # An optional block provides the code for generating the updated
-  # grammar (some variation of Rcd). If no block is provided, then
-  # update_grammar is called with no block (resulting in the use of
-  # regular RCD).
+  # Adds an erc, and checks the consistency of the updated list.
+  # Returns the Rcd object used to determine consistency.
   def add_erc(erc)
     @erc_list << erc
-    if block_given?
-      update_grammar {|e| yield(e)}
-    else
-      update_grammar
-    end
+    update_grammar
   end
 
-  # Checks to see if the ercs are consistent, and updates the constraint
-  # hierarchy in the grammar.
-  # An optional block provides the code for generating the updated
-  # grammar (some variation of Rcd). If no block is provided, then
-  # regular RCD is used (all constraints has high as possible).
+  # Checks to see if the ercs are consistent.
+  # Returns the Rcd object used to determine consistency.
   def update_grammar
-    if block_given?
-      rcd_result = yield(@erc_list)
-    else
-      rcd_result = Rcd.new(@erc_list)
-    end
+    rcd_result = Rcd.new(@erc_list)
     @consistent = rcd_result.consistent?
-    if @consistent then
-      @grammar.hierarchy = rcd_result.hierarchy
-    else
-      @grammar.hierarchy = nil
-    end
     return rcd_result
   end
+  private :update_grammar
 
   # Returns a string containing string representations of
   # the lexicon and the ERC list of this hypothesis.

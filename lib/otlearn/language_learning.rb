@@ -127,8 +127,6 @@ module OTLearn
     # * For each newly set feature, check for new ranking information.
     # It passes repeatedly through the list of winners until a pass is made
     # with no changes to the grammar.
-    # Finally, the constraint hierarchy of the hypothesis is updated with
-    # the Faith-Low version of RCD.
     # A boolean is returned indicating if the grammar was changed at all
     # during the execution of this method.
     def run_single_forms_until_no_change(winners, hyp)
@@ -163,7 +161,6 @@ module OTLearn
         end
         grammar_ever_changed = true if grammar_changed_on_pass
       end
-      hyp.update_grammar {|ercs| OTLearn::RcdFaithLow.new(ercs)}
       return grammar_ever_changed
     end
 
