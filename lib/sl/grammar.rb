@@ -3,27 +3,23 @@
 
 require_relative 'system'
 require_relative '../lexicon'
-require_relative '../rcd'
-require_relative '../comparative_tableau'
 
 module SL
 
   # A grammar for the SL linguistic system consists of a reference to
-  # the SL::System linguistic system, a constraint hierarchy, and a lexicon.
+  # the SL::System linguistic system and a lexicon.
   class Grammar
-    attr_accessor :hierarchy, :lexicon
+    
+    # The lexicon for the grammar.
+    attr_accessor :lexicon
 
     # Stores the linguistic system associated with this grammar.
     # In this case, the SL (stress-length) linguistic system.
     @@system = System.instance
 
-    # Returns a new grammar. If a hierarchy or a lexicon are not provided
-    # as parameters, default initial values are used:
-    # * the default initial lexicon is empty
-    # * the default initial hierarchy results from applying RCD to an empty
-    #   comparative tableau.
-    def initialize(hier=default_initial_hierarchy, lex=default_initial_lexicon)
-      @hierarchy = hier
+    # Returns a new grammar. If a lexicon is not provided as a parameter,
+    # the default initial lexicon is empty.
+    def initialize(lex=Lexicon.new)
       @lexicon = lex
     end
 
@@ -32,23 +28,18 @@ module SL
       @@system
     end
 
-    # Returns a copy of the grammar, with duplicates of the hierarchy and
-    # the lexicon.
-    # The duplicate of the hierarchy contains references to the same constraint
-    # objects, but duplicated strata.
+    # Returns a deep copy of the grammar, with a duplicates of the lexicon.
     # The duplicate of the lexicon contains duplicates of the lexical entries,
     # and the duplicate lexical entries contain duplicates of the underlying
     # forms but references to the very same morpheme objects.
     def dup
-      return self.class.new(@hierarchy.dup, @lexicon.dup)
+      return self.class.new(@lexicon.dup)
     end
 
-    # Returns a copy of the grammar, with a duplicate of the hierarchy, but
-    # a reference to the very same lexicon object.
-    # The duplicate of the hierarchy contains references to the same constraint
-    # objects, but duplicated strata.
-    def dup_hier_only
-      return self.class.new(@hierarchy.dup, @lexicon)
+    # Returns a shallow copy of the grammar, with a reference to the very
+    # same lexicon object.
+    def dup_shallow
+      return self.class.new(@lexicon)
     end
 
     # Returns the underlying form for the given morpheme, as stored in
@@ -58,19 +49,6 @@ module SL
       lex_entry = @lexicon.find{|entry| entry.morpheme==morph} # get the lexical entry
       return nil if lex_entry.nil?
       return lex_entry.uf  # return the underlying form
-    end
-
-    private
-
-    # The default initial hierarchy is the one resulting from applying RCD
-    # to an empty comparative tableau.
-    def default_initial_hierarchy
-      Rcd.new(Comparative_tableau.new('empty',system.constraints)).hierarchy
-    end
-
-    # The default lexicon is simply a new (empty) lexicon.
-    def default_initial_lexicon
-      Lexicon.new
     end
 
   end # class Grammar

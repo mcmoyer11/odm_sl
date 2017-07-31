@@ -3,7 +3,7 @@
 require 'sl/grammar'
 
 RSpec.describe SL::Grammar do
-  context "A new Grammar with no constructor parameters" do
+  context "A new Grammar, when not given a lexicon," do
     before(:each) do
       @grammar = SL::Grammar.new
       @morph = double("Morpheme")
@@ -19,16 +19,15 @@ RSpec.describe SL::Grammar do
     end
   end
   
-  context "A new grammar constructed with parameters" do
+  context "A new grammar, when given a lexicon," do
     before(:each) do
-      @hier = double("Hierarchy")
       @morph = "the_morph"
       @lex_entry = double("Lexical_Entry")
       allow(@lex_entry).to receive(:uf).and_return("the_uf")
       allow(@lex_entry).to receive(:morpheme).and_return("the_morph")
       # The lexicon has the basic interface of Array, so use an Array to mock it.
       @lex = [@lex_entry]
-      @grammar = SL::Grammar.new(@hier, @lex)
+      @grammar = SL::Grammar.new(@lex)
     end
     it "returns the given lexicon" do
       expect(@grammar.lexicon).to eq(@lex)
@@ -50,9 +49,9 @@ RSpec.describe SL::Grammar do
         expect(@gram.lexicon).not_to equal(@dup.lexicon)
       end
     end
-    context "when duplicated with dup_hier_only" do
+    context "when duplicated with dup_shallow" do
       before(:each) do
-        @dup = @gram.dup_hier_only
+        @dup = @gram.dup_shallow
       end
       it "should have the same object for lexicon" do
         expect(@gram.lexicon).to equal(@dup.lexicon)

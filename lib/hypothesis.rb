@@ -43,7 +43,7 @@ class Hypothesis
   # want to test different candidates for consistency, but will not be
   # altering the lexicon in the process.
   def dup_same_lexicon
-    return Hypothesis.new(@grammar.dup_hier_only, @erc_list.dup)
+    return Hypothesis.new(@grammar.dup_shallow, @erc_list.dup)
   end
 
   # Returns a reference to the linguistic system underlying the grammar.
