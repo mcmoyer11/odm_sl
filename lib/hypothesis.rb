@@ -7,7 +7,7 @@ require_relative 'comparative_tableau'
 # A hypothesis contains a linguistic system reference, a grammar, and a
 # list of supporting ercs.
 class Hypothesis
-  # The grammar object (incl. a ranking and a lexicon) for the hypothesis
+  # The grammar object for the hypothesis
   attr_reader :grammar
   
   # The list of ERCs included in this hypothesis
@@ -104,9 +104,8 @@ class Hypothesis
   end
 
   # Returns a string containing string representations of
-  # the hierarchy, the lexicon, and the ERC list of this hypothesis.
+  # the lexicon and the ERC list of this hypothesis.
   def to_s
-    out_str = @grammar.hierarchy.to_s + "\n"
     out_str += @grammar.lexicon.to_s + "\n"
     out_str += @erc_list.join("\n")
     out_str

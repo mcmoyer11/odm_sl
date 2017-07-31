@@ -87,16 +87,12 @@ module SL
   end
   
   # Generates the optimal candidates with respect to constraint
-  # hierarchy _hier_ for each input in _inputs_, using the lexicon
-  # in grammar _gram_. The hierarchy in _gram_ is set to _hier_.
-  # _gram_ needs to already contain a lexicon with entries for all
-  # of the morphemes appearing in the inputs.
+  # hierarchy _hier_ for each input in _inputs_.
   # Returns a list of the optimal candidates of the language.
-  def SL.generate_language(hier, inputs, gram)
+  def SL.generate_language(hier, inputs)
     competitions = inputs.map{|i| SYSTEM.gen(i)}
     comp_list = Competition_list.new.concat(competitions)
-    gram.hierarchy = hier
-    comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,gram.hierarchy)}
+    comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,hier)}
     # each competition returns a list of winners; collapse to one-level list.
     lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
     lang.each{|winner| winner.assert_opt}

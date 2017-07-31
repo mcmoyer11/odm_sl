@@ -18,14 +18,15 @@ module OTLearn
     # respect to the provided _hypothesis_.
     def initialize(winners, hypothesis, label="NoLabel")
       @label = label
+      @system = hypothesis.system
       # Dup the hypothesis, so it can be frozen.
       @hypothesis = hypothesis.dup
       # Dup the winners, and then adjust their UI correspondence relns
       # to refer to the dup hypothesis.
       @winners = winners.map{|win| win.dup}
       @winners.each{|win| win.sync_with_hypothesis!(@hypothesis)}
-      # Reset the ranking, using "faithfulness low".
-      @hypothesis.update_grammar {|ercs| RcdFaithLow.new(ercs)}
+      # Generate the test ranking, using "faithfulness low".
+      @hierarchy = RcdFaithLow.new(@hypothesis.erc_list).hierarchy
       # Initialize lists for failed and successful winners
       @failed_winner_info_list = []
       @success_winners = []
@@ -45,11 +46,21 @@ module OTLearn
       @label
     end
 
+    # Returns a reference to the linguistic system in use.
+    def system
+      @system
+    end
+    
     # Returns the grammar hypothesis used in this test.
     # NOTE: returned object is frozen, and cannot be altered.
     # Create a duplicate to alter it.
     def hypothesis()
       @hypothesis
+    end
+    
+    # Returns the hierarchy used in the evaluation of winners.
+    def hierarchy()
+      @hierarchy
     end
 
     # Returns true if all winners in the winner list are the sole optima
@@ -114,13 +125,10 @@ module OTLearn
     # first element a list of optimal candidates with an output distinct
     # from _winner_, and the second element a boolean: true if _winner_
     # is an optimum, false otherwise.
-    #
-    # Optimality is assessed relative to the current hypothesis (the one
-    # provided when the GrammarTest was created).
     def check_winner(winner)
-      competition = @hypothesis.system.gen(winner.input)
+      competition = system.gen(winner.input)
       # find the most harmonic candidates
-      mh = MostHarmonic.new(competition, @hypothesis.grammar.hierarchy)
+      mh = MostHarmonic.new(competition, hierarchy)
       # find optima with output distinct from the winner
       alt_list = []
       winner_optimal = false
