@@ -96,7 +96,7 @@ module OTLearn
         # because the winner-loser pair itself is frozen.
         label = new_pair.label
         label.replace(winner.morphword.to_s)
-        # Add the new pair to the hypothesis, and re-calc the hierarchy.
+        # Add the new pair to the hypothesis.
         local_added_pairs << new_pair
         @hypothesis.add_erc(new_pair)
         break unless @hypothesis.consistent?
@@ -133,15 +133,6 @@ module OTLearn
     end
     protected :select_loser
 
-    # Calculates the constraint hierarchy for the given WL pairs by
-    # constructing an instance of the rcd_class while passing it the WL pairs.
-    # The value of the rcd_class determines the ranking bias used in
-    # creating the hierarchy.
-    def update(wl_pairs)
-      rcd_class.new(wl_pairs)
-    end
-    protected :update
-    
     # Return the class of RCD object to be used to construct a ranking for
     # a set of WL pairs. The class determines the ranking bias.
     def rcd_class
