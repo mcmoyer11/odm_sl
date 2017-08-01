@@ -98,7 +98,7 @@ module OTLearn
         label.replace(winner.morphword.to_s)
         # Add the new pair to the hypothesis, and re-calc the hierarchy.
         local_added_pairs << new_pair
-        @hypothesis.add_erc(new_pair) {|ercs| update(ercs)}
+        @hypothesis.add_erc(new_pair)
         break unless @hypothesis.consistent?
         loser = select_loser(winner)
       end
