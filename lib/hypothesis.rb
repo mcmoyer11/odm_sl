@@ -4,8 +4,9 @@
 require_relative 'rcd'
 require_relative 'comparative_tableau'
 
-# A hypothesis contains a linguistic system reference, a grammar, and a
-# list of supporting ercs.
+# A hypothesis contains a grammar and a list of supporting ercs.
+# The grammar is presumed to contain a lexicon and a reference to
+# the linguistic system in use.
 class Hypothesis
   # The grammar object for the hypothesis
   attr_reader :grammar
@@ -20,12 +21,10 @@ class Hypothesis
   # RCD.
   def initialize(gram, erc_list=nil)
     @grammar = gram
-    if erc_list.nil?
-      @erc_list = Comparative_tableau.new("Hypothesis::@erc_list",
-        gram.system.constraints)
-    else
-      @erc_list = erc_list
-    end
+    @erc_list = erc_list
+    # If parameter was nil, create a new, empty erc list
+    @erc_list ||= Comparative_tableau.new("Hypothesis::@erc_list",
+        @grammar.system.constraints)
     # check the erc list for consistency (initializing @rcd_result)
     check_consistency
   end
@@ -51,8 +50,9 @@ class Hypothesis
     @grammar.system
   end
 
-  # Returns the label of the hypothesis (equivalent to the ERC list
-  # of the hypothesis).
+  # Returns the label of the hypothesis.
+  #--
+  # The same as the label of the ERC list of the hypothesis.
   def label
     @erc_list.label
   end
