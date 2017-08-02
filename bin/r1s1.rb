@@ -17,7 +17,7 @@ out_file = File.join(out_file_path,"#{lang_label}.csv")
 File.delete(out_file) if File.exist?(out_file)
 
 # Generate the output forms of the language.
-comp_list, gram = SL.generate_competitions_1r1s
+comp_list = SL.generate_competitions_1r1s
 winners, hyp =
   OTLearn.generate_learning_data_from_competitions(comp_list, SL.hier_a, SL::Grammar)
 outputs = winners.map{|win| win.output}

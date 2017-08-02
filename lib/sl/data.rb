@@ -113,8 +113,8 @@ module SL
     return comp_list
   end
 
-  # Generates a list of competitions and a grammar with a lexicon of
-  # corresponding morphemes. This can be used, for instance, to generate
+  # Generates a list of competitions, one for each possible input of
+  # a prescribed paradigm. This can be used, for instance, to generate
   # learning data via OTLearn.generate_learning_data_from_competitions().
   #
   # This method generates the paradigm 1r1s, with all of the possible
@@ -138,11 +138,11 @@ module SL
     end
     # Generate the competition for each morphword
     comp_list = competitions_from_morphwords(words, gram)
-    return comp_list, gram
+    return comp_list
   end
   
-  # Generates a list of competitions and a grammar with a lexicon of
-  # corresponding morphemes. This can be used, for instance, to generate
+  # Generates a list of competitions, one for each possible input of
+  # a prescribed paradigm. This can be used, for instance, to generate
   # learning data via OTLearn.generate_learning_data_from_competitions().
   #
   # This method generates the paradigm 2r1s, with all of the possible
@@ -164,11 +164,11 @@ module SL
     end
     # Generate the competition for each morphword
     comp_list = competitions_from_morphwords(words, gram)
-    return comp_list, gram
+    return comp_list
   end
 
-  # Generates a list of competitions and a grammar with a lexicon of
-  # corresponding morphemes. This can be used, for instance, to generate
+  # Generates a list of competitions, one for each possible input of
+  # a prescribed paradigm. This can be used, for instance, to generate
   # learning data via OTLearn.generate_learning_data_from_competitions().
   #
   # This method generates the paradigm 1p2r, with all of the possible
@@ -190,7 +190,7 @@ module SL
       end
       # Generate the competition for each morphword
       comp_list = competitions_from_morphwords(words, gram)
-      return comp_list, gram
+      return comp_list
   end
 
 #--
