@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
 require 'sl/system'
+require 'lexicon'
 require 'lexical_entry'
 
 RSpec.describe SL::System do
@@ -182,9 +183,15 @@ RSpec.describe SL::System do
   #****************************************
   context "System with a lexicon including r1 /s./ and s4 /S:/" do
     before(:each) do
-      @gram = double()
-      allow(@gram).to receive(:get_uf).with("r1").and_return(["s."])
-      allow(@gram).to receive(:get_uf).with("s4").and_return(["S:"])
+      @lex_entry_r1 = double("lex_entry_r1")
+      allow(@lex_entry_r1).to receive(:nil?).and_return(false)
+      allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
+      allow(@lex_entry_r1).to receive(:uf).and_return(["s."])
+      @lex_entry_s4 = double("lex_entry_s4")
+      allow(@lex_entry_s4).to receive(:nil?).and_return(false)
+      allow(@lex_entry_s4).to receive(:morpheme).and_return("s4")
+      allow(@lex_entry_s4).to receive(:uf).and_return(["S:"])
+      @lexicon = [@lex_entry_r1, @lex_entry_s4]
     end
     context "with morphword ['r1']" do
       before(:each) do
@@ -192,15 +199,15 @@ RSpec.describe SL::System do
         allow(@mw).to receive(:each).and_yield("r1")
       end
       it "#input_from_morphword returns input with morphword r1" do
-        input = @system.input_from_morphword(@mw, @gram)
+        input = @system.input_from_morphword(@mw, @lexicon)
         expect(input.morphword).to eq(@mw)
       end
       it "#input_from_morphword returns input [s.]" do
-        input = @system.input_from_morphword(@mw, @gram)
+        input = @system.input_from_morphword(@mw, @lexicon)
         expect(input).to eq(["s."])
       end
       it "#input_from_morphword returns input with 1 ui pair [s.,s.]" do
-        input = @system.input_from_morphword(@mw, @gram)
+        input = @system.input_from_morphword(@mw, @lexicon)
         ui_corr = input.ui_corr
         expect(ui_corr.size).to eq(1)
         expect(ui_corr[0]).to eq(["s.","s."])
@@ -212,15 +219,15 @@ RSpec.describe SL::System do
         allow(@mw).to receive(:each).and_yield("r1").and_yield("s4")
       end
       it "#input_from_morphword returns input with morphword r1s4" do
-        input = @system.input_from_morphword(@mw, @gram)
+        input = @system.input_from_morphword(@mw, @lexicon)
         expect(input.morphword).to eq(@mw)
       end
       it "#input_from_morphword returns input [s.,S:]" do
-        input = @system.input_from_morphword(@mw, @gram)
+        input = @system.input_from_morphword(@mw, @lexicon)
         expect(input).to eq(["s.","S:"])
       end
       it "#input_from_morphword returns input with 2 ui pairs, [s.,s.] and [S:,S:]" do
-        input = @system.input_from_morphword(@mw, @gram)
+        input = @system.input_from_morphword(@mw, @lexicon)
         ui_corr = input.ui_corr
         expect(ui_corr.size).to eq(2)
         expect(ui_corr[0]).to eq(["s.","s."])
@@ -230,9 +237,8 @@ RSpec.describe SL::System do
     it "raises an exception when the morpheme has no lexical entry" do
       mw = double()
       bad_m = double(:label => "x1")
-      allow(@gram).to receive(:get_uf).with(bad_m).and_return(nil)
       allow(mw).to receive(:each).and_yield(bad_m)
-      expect {@system.input_from_morphword(mw, @gram)}.to raise_error(RuntimeError)
+      expect {@system.input_from_morphword(mw, @lexicon)}.to raise_error(RuntimeError)
     end
   end
   
@@ -382,14 +388,19 @@ RSpec.describe SL::System do
   
   context "with lexicon including r1 /s./ and s1 /S:/" do
     before(:each) do
-      lex = instance_double("Lexicon")
-      allow(lex).to receive(:any?).and_return(true,true) # both morphemes are in the lexicon
+      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+      @lex_entry_r1 = double("lex_entry_r1")
+      allow(@lex_entry_r1).to receive(:nil?).and_return(false)
+      allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
+      allow(@lex_entry_r1).to receive(:uf).and_return([@in_sylr1])
+      @in_syls1 = SL::Syllable.new.set_main_stress.set_long.set_morpheme("s1")
+      @lex_entry_s1 = double("lex_entry_s1")
+      allow(@lex_entry_s1).to receive(:nil?).and_return(false)
+      allow(@lex_entry_s1).to receive(:morpheme).and_return("s1")
+      allow(@lex_entry_s1).to receive(:uf).and_return([@in_syls1])
+      lex = [@lex_entry_r1, @lex_entry_s1]
       @gram = instance_double("SL::Grammar")
       allow(@gram).to receive(:lexicon).and_return(lex)
-      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
-      allow(@gram).to receive(:get_uf).with("r1").and_return([@in_sylr1])
-      @in_syls1 = SL::Syllable.new.set_main_stress.set_long.set_morpheme("s1")
-      allow(@gram).to receive(:get_uf).with("s1").and_return([@in_syls1])
       @input = Input.new << @in_sylr1.dup << @in_syls1.dup # distinct objects from the ones in the lexicon
     end
     context "and output s.S. it parses to a candidate" do
@@ -408,14 +419,25 @@ RSpec.describe SL::System do
 
   context "with a lexicon containing only r1 /s./" do
     before(:each) do
+      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+      @lex_entry_r1 = double("lex_entry_r1")
+      allow(@lex_entry_r1).to receive(:nil?).and_return(false)
+      allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
+      allow(@lex_entry_r1).to receive(:uf).and_return([@in_sylr1])
+      
       @lex = instance_double("Lexicon")
       allow(@lex).to receive(:any?).and_return(true,false) # only r1 is in the lexicon
+      allow(@lex).to receive(:find).and_return(@lex_entry_r1,nil) # only r1 is in the lexicon
       @gram = instance_double("SL::Grammar")
       allow(@gram).to receive(:lexicon).and_return(@lex)
-      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
-      allow(@gram).to receive(:get_uf).with("r1").and_return([@in_sylr1])
+
       @in_syls1 = SL::Syllable.new.set_morpheme("s1")
-      allow(@gram).to receive(:get_uf).with("s1").and_return([@in_syls1]) # should only be called *after* the lexical entry would have been added
+      @lex_entry_s1 = double("lex_entry_s1")
+      allow(@lex_entry_s1).to receive(:nil?).and_return(false)
+      allow(@lex_entry_s1).to receive(:morpheme).and_return("s1")
+      allow(@lex_entry_s1).to receive(:uf).and_return([@in_syls1])
+      
+      allow(@lex).to receive(:find).and_return(@lex_entry_r1,@lex_entry_s1) # should only be called *after* the lexical entry would have been added
       # the input *after* the new lexical entry for s1 is created
       @input = Input.new << @in_sylr1.dup << @in_syls1.dup # distinct objects from the ones in the lexicon
     end

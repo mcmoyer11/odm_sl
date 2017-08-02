@@ -103,8 +103,9 @@ module SL
   # the input for each morphword, generates the competition for each input,
   # and returns the list of competitions.
   def SL.competitions_from_morphwords(words, gram)
+    lexicon = gram.lexicon
     # Generate the corresponding input for each morphological word
-    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,gram)}
+    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,lexicon)}
     # Generate the corresponding competition for each input
     competitions = inputs.map{|i| SYSTEM.gen(i)}
     # Convert the array of competitions into a proper Competition_list.

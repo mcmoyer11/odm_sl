@@ -47,7 +47,7 @@ class Input < Array
   # has been duplicated (creating a lexicon with distinct underlying elements).
   def sync_with_hypothesis!(hyp)
     # Get the input for the morph_word with respect to the new hypothesis.
-    new_input = hyp.system.input_from_morphword(@morphword,hyp.grammar)
+    new_input = hyp.system.input_from_morphword(@morphword,hyp.grammar.lexicon)
     # Create a synchronized iterator for old (self) and new input forms
     gen = REXML::SyncEnumerator.new(self,new_input)
     # For each element of the inputs
