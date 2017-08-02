@@ -1,7 +1,6 @@
 # Author: Bruce Tesar
 #
  
-require_relative 'rcd_bias_low'
 require_relative '../most_harmonic'
 require_relative '../rcd'
 
