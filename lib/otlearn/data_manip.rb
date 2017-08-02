@@ -141,7 +141,7 @@ module OTLearn
     # parse_output() adds the morphemes of the output forms to the lexicon,
     # and constructs a UI correspondence for the input of each word, connecting
     # to the underlying forms of the lexicon of the new hypothesis.
-    winner_list = outputs.map{|out| hyp.system.parse_output(out, hyp.grammar)}
+    winner_list = outputs.map{|out| hyp.system.parse_output(out, hyp.grammar.lexicon)}
     return winner_list, hyp
   end
   

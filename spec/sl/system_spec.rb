@@ -3,6 +3,8 @@
 require 'sl/system'
 require 'lexicon'
 require 'lexical_entry'
+require 'morph_word'
+require 'sl/syllable'
 
 RSpec.describe SL::System do
   before(:each) do
@@ -51,7 +53,7 @@ RSpec.describe SL::System do
     context "/S:/[S:]" do
       before(:each) do
         # input syllable
-        @syli1 = double("Syli1")
+        @syli1 = instance_double(SL::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(true)
         allow(@syli1).to receive(:unstressed?).and_return(false)
@@ -59,7 +61,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # output syllable
-        @sylo1 = double("Sylo1")
+        @sylo1 = instance_double(SL::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(true)
         allow(@sylo1).to receive(:unstressed?).and_return(false)
@@ -89,7 +91,7 @@ RSpec.describe SL::System do
     context "/s:/[S]" do
       before(:each) do
         # input syllable
-        @syli1 = double("Syli1")
+        @syli1 = instance_double(SL::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(true)
         allow(@syli1).to receive(:unstressed?).and_return(true)
@@ -97,7 +99,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # output syllable
-        @sylo1 = double("Sylo1")
+        @sylo1 = instance_double(SL::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(false)
         allow(@sylo1).to receive(:unstressed?).and_return(false)
@@ -127,7 +129,7 @@ RSpec.describe SL::System do
     context "/ss:/[Ss:]" do
       before(:each) do
         # input syllable 1
-        @syli1 = double("Syli1")
+        @syli1 = instance_double(SL::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(false)
         allow(@syli1).to receive(:unstressed?).and_return(true)
@@ -135,7 +137,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # input syllable 2
-        @syli2 = double("Syli2")
+        @syli2 = instance_double(SL::Syllable, "Syli2")
         @input << @syli2
         allow(@syli2).to receive(:long?).and_return(true)
         allow(@syli2).to receive(:unstressed?).and_return(true)
@@ -143,13 +145,13 @@ RSpec.describe SL::System do
         allow(@syli2).to receive(:stress_unset?).and_return(false)
         allow(@syli2).to receive(:length_unset?).and_return(false)
         # output syllable 1
-        @sylo1 = double("Sylo1")
+        @sylo1 = instance_double(SL::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(false)
         allow(@sylo1).to receive(:unstressed?).and_return(false)
         allow(@sylo1).to receive(:main_stress?).and_return(true)
         # output syllable 2
-        @sylo2 = double("Sylo2")
+        @sylo2 = instance_double(SL::Syllable, "Sylo2")
         @output << @sylo2
         allow(@sylo2).to receive(:long?).and_return(true)
         allow(@sylo2).to receive(:unstressed?).and_return(true)
@@ -183,11 +185,11 @@ RSpec.describe SL::System do
   #****************************************
   context "System with a lexicon including r1 /s./ and s4 /S:/" do
     before(:each) do
-      @lex_entry_r1 = double("lex_entry_r1")
+      @lex_entry_r1 = instance_double(Lexical_Entry, "lex_entry_r1")
       allow(@lex_entry_r1).to receive(:nil?).and_return(false)
       allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
       allow(@lex_entry_r1).to receive(:uf).and_return(["s."])
-      @lex_entry_s4 = double("lex_entry_s4")
+      @lex_entry_s4 = instance_double(Lexical_Entry, "lex_entry_s4")
       allow(@lex_entry_s4).to receive(:nil?).and_return(false)
       allow(@lex_entry_s4).to receive(:morpheme).and_return("s4")
       allow(@lex_entry_s4).to receive(:uf).and_return(["S:"])
@@ -195,7 +197,7 @@ RSpec.describe SL::System do
     end
     context "with morphword ['r1']" do
       before(:each) do
-        @mw = double()
+        @mw = instance_double(MorphWord, "morphword ['r1']")
         allow(@mw).to receive(:each).and_yield("r1")
       end
       it "#input_from_morphword returns input with morphword r1" do
@@ -398,9 +400,7 @@ RSpec.describe SL::System do
       allow(@lex_entry_s1).to receive(:nil?).and_return(false)
       allow(@lex_entry_s1).to receive(:morpheme).and_return("s1")
       allow(@lex_entry_s1).to receive(:uf).and_return([@in_syls1])
-      lex = [@lex_entry_r1, @lex_entry_s1]
-      @gram = instance_double("SL::Grammar")
-      allow(@gram).to receive(:lexicon).and_return(lex)
+      @lex = [@lex_entry_r1, @lex_entry_s1]
       @input = Input.new << @in_sylr1.dup << @in_syls1.dup # distinct objects from the ones in the lexicon
     end
     context "and output s.S. it parses to a candidate" do
@@ -411,7 +411,7 @@ RSpec.describe SL::System do
         allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
         @output = Output.new << @out_syl1 << @out_syl2
         @output.morphword = @morphword
-        @word = @system.parse_output(@output,@gram)
+        @word = @system.parse_output(@output,@lex)
       end
       include_examples "parsed output"
     end
@@ -420,19 +420,17 @@ RSpec.describe SL::System do
   context "with a lexicon containing only r1 /s./" do
     before(:each) do
       @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
-      @lex_entry_r1 = double("lex_entry_r1")
+      @lex_entry_r1 = instance_double(Lexical_Entry, "lex_entry_r1")
       allow(@lex_entry_r1).to receive(:nil?).and_return(false)
       allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
       allow(@lex_entry_r1).to receive(:uf).and_return([@in_sylr1])
       
-      @lex = instance_double("Lexicon")
+      @lex = instance_double(Lexicon, "lexicon")
       allow(@lex).to receive(:any?).and_return(true,false) # only r1 is in the lexicon
       allow(@lex).to receive(:find).and_return(@lex_entry_r1,nil) # only r1 is in the lexicon
-      @gram = instance_double("SL::Grammar")
-      allow(@gram).to receive(:lexicon).and_return(@lex)
 
       @in_syls1 = SL::Syllable.new.set_morpheme("s1")
-      @lex_entry_s1 = double("lex_entry_s1")
+      @lex_entry_s1 = instance_double(Lexical_Entry, "lex_entry_s1")
       allow(@lex_entry_s1).to receive(:nil?).and_return(false)
       allow(@lex_entry_s1).to receive(:morpheme).and_return("s1")
       allow(@lex_entry_s1).to receive(:uf).and_return([@in_syls1])
@@ -455,12 +453,12 @@ RSpec.describe SL::System do
         # the lexical entry. This might be a job for a test spy, or
         # a partial test dummy, but I won't pursue it at this time.
         expect(@lex).to receive(:<<).once
-        @word = @system.parse_output(@output,@gram)
+        @word = @system.parse_output(@output,@lex)
       end
       context "when parsed," do
         before(:each) do
           allow(@lex).to receive(:<<).once
-          @word = @system.parse_output(@output,@gram)
+          @word = @system.parse_output(@output,@lex)
         end
         include_examples "parsed output"
         it "the word's 2nd input syllable is unset for stress" do

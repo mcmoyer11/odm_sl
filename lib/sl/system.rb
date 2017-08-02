@@ -137,12 +137,11 @@ module SL
     end
 
     # Constructs a full structural description for the given output using the
-    # lexicon of the given grammar. The constructed input will stand in
+    # given lexicon. The constructed input will stand in
     # 1-to-1 IO correspondence with the output; an exception is thrown if
     # the number of syllables in the lexical entry of each morpheme doesn't
     # match the number of syllables for that morpheme in the output.
-    def parse_output(output, gram)
-      lexicon = gram.lexicon
+    def parse_output(output, lexicon)
       mw = output.morphword
       # If any morphemes aren't currently in the lexicon, create new entries, with
       # the same number of syllables as in the output, and all features unset.
