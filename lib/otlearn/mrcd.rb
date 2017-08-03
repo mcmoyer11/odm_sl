@@ -84,9 +84,8 @@ module OTLearn
     # winner-loser pairs added to the hypothesis.
     def run_mrcd_on_single(winner)
       local_added_pairs = []
-      # Generate all candidates for the input of the winner.
-      @competition = @sys.gen(winner.input)
-      loser = select_loser(winner)
+#      loser = select_loser(winner, @sys, hypothesis)
+      loser = Select_loser_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
       # Error-driven processing is complete when no informative losers remain.
       while !loser.nil? do
         # Create a new WL pair.
@@ -99,7 +98,8 @@ module OTLearn
         local_added_pairs << new_pair
         @hypothesis.add_erc(new_pair)
         break unless @hypothesis.consistent?
-        loser = select_loser(winner)
+#        loser = select_loser(winner, @sys, hypothesis)
+        loser = Select_loser_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
       end
       return local_added_pairs
     end
@@ -114,10 +114,12 @@ module OTLearn
     # harmonic even though one is more harmonic than the other, when both
     # have conflicting violations with a third candidate on a stratum). If no
     # appropriate loser exists, nil is returned.
-    def select_loser(winner)
+    def select_loser(winner, sys, hyp)
+      # Generate all candidates for the input of the winner.
+      competition = sys.gen(winner.input)
       # find the most harmonic candidates
-      hierarchy = rcd_class.new(@hypothesis.erc_list).hierarchy
-      mh = MostHarmonic.new(@competition, hierarchy)
+      hierarchy = rcd_class.new(hyp.erc_list).hierarchy
+      mh = MostHarmonic.new(competition, hierarchy)
       # select an appropriate most harmonic candidate (if any) to be the loser
       loser = mh.find do |cand|
         if cand.ident_viols?(winner) then
