@@ -27,7 +27,7 @@ module OTLearn
     # from the initial grammar hypothesis _hypothesis_. The _word_list_
     # is duplicated internally, so the internal copy is independent of the list
     # passed as the parameter.
-    def initialize(word_list, hypothesis, rcd_class = Rcd)
+    def initialize(word_list, hypothesis, selector)
       @sys = hypothesis.system
       # Make a duplicate copy of each word, so that components of Win-Lose
       # pairs cannot be altered, regardless of what subsequently happens
@@ -35,7 +35,7 @@ module OTLearn
       @word_list = word_list.map{|word| word.dup}
       @hypothesis = hypothesis
       @added_pairs = []
-      @selector = LoserSelector_by_ranking.new(@sys, rcd_class)
+      @selector = selector  # loser selector
       @any_change = run_mrcd
     end
     
@@ -85,7 +85,7 @@ module OTLearn
     # winner-loser pairs added to the hypothesis.
     def run_mrcd_on_single(winner)
       local_added_pairs = []
-      loser = @selector.select_loser(winner, hypothesis.erc_list)
+      loser = @selector.select_loser(winner, @hypothesis.erc_list)
       # Error-driven processing is complete when no informative losers remain.
       while !loser.nil? do
         # Create a new WL pair.
@@ -98,7 +98,7 @@ module OTLearn
         local_added_pairs << new_pair
         @hypothesis.add_erc(new_pair)
         break unless @hypothesis.consistent?
-        loser = @selector.select_loser(winner, hypothesis.erc_list)
+        loser = @selector.select_loser(winner, @hypothesis.erc_list)
       end
       return local_added_pairs
     end

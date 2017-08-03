@@ -2,8 +2,8 @@
 
 require 'otlearn/mrcd'
 require 'hypothesis'
+require 'loserselector_by_ranking'
 require 'sl/grammar'
-require 'otlearn/rcd_bias_low'
 require_relative '../../test/helpers/quick_erc'
 
 RSpec.describe "MRCD" do
@@ -11,7 +11,8 @@ RSpec.describe "MRCD" do
     before(:each) do
       @word_list = []
       @hypothesis = Hypothesis.new(SL::Grammar.new)
-      @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis)
+      selector = LoserSelector_by_ranking.new(@hypothesis.system)
+      @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis, selector)
     end
     it "should not have any changes to the hypothesis" do
       expect(@mrcd.any_change?).not_to be true
@@ -21,7 +22,8 @@ RSpec.describe "MRCD" do
     before(:each) do
       @word_list = []
       @hypothesis = Hypothesis.new(SL::Grammar.new)
-      @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis, OTLearn::RcdFaithLow)
+      selector = LoserSelector_by_ranking.new(@hypothesis.system, OTLearn::RcdFaithLow)
+      @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis, selector)
     end
     it "should not have any changes to the hypothesis" do
       expect(@mrcd.any_change?).not_to be true

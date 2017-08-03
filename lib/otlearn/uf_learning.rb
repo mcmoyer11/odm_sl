@@ -2,6 +2,7 @@
 #
 
 require_relative 'data_manip'
+require 'loserselector_by_ranking'
 require_relative '../feature_instance'
 require_relative '../feature_value_pair'
 
@@ -132,7 +133,8 @@ module OTLearn
       # still refer to elements of the lexicon of the duplicate hypothesis.
       hyp = main_hypothesis.dup_same_lexicon
       # Test the contrast set, using the conflicting feature combination
-      Mrcd.new(contrast_set, hyp)
+      selector = LoserSelector_by_ranking.new(main_hypothesis.system)
+      Mrcd.new(contrast_set, hyp, selector)
       return true if hyp.consistent?
     end
     return false # none of the combinations were consistent.    

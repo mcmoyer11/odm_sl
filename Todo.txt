@@ -1,13 +1,6 @@
 Todo List for odm_sl
 
-class Mrcd
-Move the creation of the LoserSelector_by_ranking object outside of Mrcd,
-and to every place where an Mrcd object is created, and pass it into
-instances of Mrcd.
-
-Delete the old Mrcd#select_loser method.
-
-Document class Select_loser_by ranking
+Document class LoserSelector_by_ranking
 
 Create some more substantive specs for Mrcd.
 

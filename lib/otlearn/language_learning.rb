@@ -4,7 +4,7 @@
 require_relative 'contrast_pair'
 require_relative 'ranking_learning'
 require_relative 'grammar_test'
-require_relative 'rcd_bias_low'
+require_relative '../loserselector_by_ranking'
 require_relative 'uf_learning'
 require_relative 'mrcd'
 require_relative 'data_manip'
@@ -318,7 +318,8 @@ module OTLearn
         OTLearn::mismatches_input_to_output(word) { |mismatched_word| mismatch_list << mismatched_word }
       end
       # Run MRCD to see if the mismatched candidates are consistent.
-      return Mrcd.new(mismatch_list, hyp)
+      selector = LoserSelector_by_ranking.new(@hyp.system)
+      return Mrcd.new(mismatch_list, hyp, selector)
     end
 
     protected :execute_learning, :run_single_forms_until_no_change,

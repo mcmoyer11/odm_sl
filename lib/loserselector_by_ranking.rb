@@ -1,10 +1,11 @@
 # Author: Bruce Tesar
 #
 
+require 'rcd'
 require 'most_harmonic'
 
 class LoserSelector_by_ranking
-  def initialize(sys, rcd_class)
+  def initialize(sys, rcd_class = Rcd)
     @system = sys
     @rcd_class = rcd_class
     @optimizer_class = MostHarmonic
