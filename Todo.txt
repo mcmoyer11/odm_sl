@@ -1,6 +1,8 @@
 Todo List for odm_sl
 
-Document class LoserSelector_by_ranking
+Change Mrcd so that it doesn't return any side effects via Hypothesis.
+The additional ercs should only be returned via the method call to
+the Mrcd object.
 
 Create some more substantive specs for Mrcd.
 

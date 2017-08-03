@@ -27,7 +27,7 @@ RSpec.describe LoserSelector_by_ranking do
       @select_loser_by_ranking = LoserSelector_by_ranking.new(@sys,rcd_class)
       optimizer = class_double(MostHarmonic, "optimizer")
       @select_loser_by_ranking = LoserSelector_by_ranking.new(@sys,rcd_class)      
-      @select_loser_by_ranking.set_optimizer(optimizer)
+#      @select_loser_by_ranking.set_optimizer(optimizer)
     end
 
     it "computes the constraint hierarchy"
@@ -50,7 +50,7 @@ RSpec.describe LoserSelector_by_ranking do
       allow(rcd_object).to receive(:hierarchy)
       optimizer = class_double(MostHarmonic, "optimizer")
       @select_loser_by_ranking = LoserSelector_by_ranking.new(@sys,rcd_class)      
-      @select_loser_by_ranking.set_optimizer(optimizer)
+#      @select_loser_by_ranking.set_optimizer(optimizer)
     end
     it "computes the ranking"
     it "finds the optimal candidates"
