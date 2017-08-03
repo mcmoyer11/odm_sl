@@ -1,18 +1,17 @@
 Todo List for odm_sl
 
 class Mrcd
-Move the creation of the Select_loser_by_ranking object outside of Mrcd,
+Move the creation of the LoserSelector_by_ranking object outside of Mrcd,
 and to every place where an Mrcd object is created, and pass it into
 instances of Mrcd.
 
 Delete the old Mrcd#select_loser method.
 
 Document class Select_loser_by ranking
-Perhaps rename it to LoserSelector_by_ranking
 
 Create some more substantive specs for Mrcd.
 
-Either find some reasonable way to unit-test Select_loser_by_ranking,
+Either find some reasonable way to unit-test LoserSelector_by_ranking,
 or delete the pending specs for it.
 
 Track down and correct the specs that aren't specific enough about

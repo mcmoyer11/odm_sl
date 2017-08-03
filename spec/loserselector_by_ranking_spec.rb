@@ -1,9 +1,9 @@
 # Author: Bruce Tesar
 
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'select_loser_by_ranking'
+require 'loserselector_by_ranking'
 
-RSpec.describe Select_loser_by_ranking do
+RSpec.describe LoserSelector_by_ranking do
   before(:each) do
     @winner = instance_double(Candidate, "winner")
     @input = "input"
@@ -24,9 +24,9 @@ RSpec.describe Select_loser_by_ranking do
       allow(rcd_class).to receive(:new).with(@erc_list).and_return(rcd_object)
       hierarchy = instance_double(Hierarchy)
       allow(rcd_object).to receive(:hierarchy).and_return(hierarchy)
-      @select_loser_by_ranking = Select_loser_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)
+      @select_loser_by_ranking = LoserSelector_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)
       optimizer = class_double(MostHarmonic, "optimizer")
-      @select_loser_by_ranking = Select_loser_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)      
+      @select_loser_by_ranking = LoserSelector_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)      
       @select_loser_by_ranking.set_optimizer(optimizer)
     end
 
@@ -49,7 +49,7 @@ RSpec.describe Select_loser_by_ranking do
       allow(rcd_class).to receive(:new).with(@erc_list).and_return(rcd_object)
       allow(rcd_object).to receive(:hierarchy)
       optimizer = class_double(MostHarmonic, "optimizer")
-      @select_loser_by_ranking = Select_loser_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)      
+      @select_loser_by_ranking = LoserSelector_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)      
       @select_loser_by_ranking.set_optimizer(optimizer)
     end
     it "computes the ranking"

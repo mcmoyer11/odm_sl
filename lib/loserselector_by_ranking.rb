@@ -3,7 +3,7 @@
 
 require 'most_harmonic'
 
-class Select_loser_by_ranking
+class LoserSelector_by_ranking
   def initialize(winner,sys,hypothesis,rcd_class)
     @winner = winner
     @system = sys
@@ -34,4 +34,4 @@ class Select_loser_by_ranking
     end
     return loser
   end
-end # class Select_loser_by_ranking
+end # class LoserSelector_by_ranking

@@ -3,6 +3,7 @@
  
 require_relative '../most_harmonic'
 require_relative '../rcd'
+require_relative '../loserselector_by_ranking'
 
 module OTLearn
 
@@ -85,7 +86,7 @@ module OTLearn
     def run_mrcd_on_single(winner)
       local_added_pairs = []
 #      loser = select_loser(winner, @sys, hypothesis)
-      loser = Select_loser_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
+      loser = LoserSelector_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
       # Error-driven processing is complete when no informative losers remain.
       while !loser.nil? do
         # Create a new WL pair.
@@ -99,7 +100,7 @@ module OTLearn
         @hypothesis.add_erc(new_pair)
         break unless @hypothesis.consistent?
 #        loser = select_loser(winner, @sys, hypothesis)
-        loser = Select_loser_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
+        loser = LoserSelector_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
       end
       return local_added_pairs
     end
