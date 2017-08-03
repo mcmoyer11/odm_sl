@@ -34,8 +34,8 @@ module OTLearn
       # to the parameter word list (after this method has completed).
       @word_list = word_list.map{|word| word.dup}
       @hypothesis = hypothesis
-      @rcd_class = rcd_class
       @added_pairs = []
+      @selector = LoserSelector_by_ranking.new(@sys, rcd_class)
       @any_change = run_mrcd
     end
     
@@ -85,8 +85,7 @@ module OTLearn
     # winner-loser pairs added to the hypothesis.
     def run_mrcd_on_single(winner)
       local_added_pairs = []
-#      loser = select_loser(winner, @sys, hypothesis)
-      loser = LoserSelector_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
+      loser = @selector.select_loser(winner, hypothesis.erc_list)
       # Error-driven processing is complete when no informative losers remain.
       while !loser.nil? do
         # Create a new WL pair.
@@ -99,48 +98,11 @@ module OTLearn
         local_added_pairs << new_pair
         @hypothesis.add_erc(new_pair)
         break unless @hypothesis.consistent?
-#        loser = select_loser(winner, @sys, hypothesis)
-        loser = LoserSelector_by_ranking.new(winner, @sys, hypothesis, rcd_class).select_loser
+        loser = @selector.select_loser(winner, hypothesis.erc_list)
       end
       return local_added_pairs
     end
     protected :run_mrcd_on_single
-
-    # Select an informative loser candidate, if one exists. The selection
-    # is done by computing a list of all of the most harmonic candidates
-    # with respect to the given hypothesis, using the CTie criterion,
-    # and then looking for a member of that list that does not have identical
-    # violations to the winner and is not already less harmonic than
-    # the winner (CTie makes it possible for two candidates to "tie" as most
-    # harmonic even though one is more harmonic than the other, when both
-    # have conflicting violations with a third candidate on a stratum). If no
-    # appropriate loser exists, nil is returned.
-    def select_loser(winner, sys, hyp)
-      # Generate all candidates for the input of the winner.
-      competition = sys.gen(winner.input)
-      # find the most harmonic candidates
-      hierarchy = rcd_class.new(hyp.erc_list).hierarchy
-      mh = MostHarmonic.new(competition, hierarchy)
-      # select an appropriate most harmonic candidate (if any) to be the loser
-      loser = mh.find do |cand|
-        if cand.ident_viols?(winner) then
-          false # don't select a loser with identical violations
-        elsif mh.more_harmonic?(winner, cand, hierarchy)
-          false # don't select a loser that is already less harmonic
-        else
-          true
-        end
-      end
-      return loser
-    end
-    protected :select_loser
-
-    # Return the class of RCD object to be used to construct a ranking for
-    # a set of WL pairs. The class determines the ranking bias.
-    def rcd_class
-      @rcd_class
-    end
-    protected :rcd_class
 
   end # class Mrcd
 

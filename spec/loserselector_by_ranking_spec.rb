@@ -24,9 +24,9 @@ RSpec.describe LoserSelector_by_ranking do
       allow(rcd_class).to receive(:new).with(@erc_list).and_return(rcd_object)
       hierarchy = instance_double(Hierarchy)
       allow(rcd_object).to receive(:hierarchy).and_return(hierarchy)
-      @select_loser_by_ranking = LoserSelector_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)
+      @select_loser_by_ranking = LoserSelector_by_ranking.new(@sys,rcd_class)
       optimizer = class_double(MostHarmonic, "optimizer")
-      @select_loser_by_ranking = LoserSelector_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)      
+      @select_loser_by_ranking = LoserSelector_by_ranking.new(@sys,rcd_class)      
       @select_loser_by_ranking.set_optimizer(optimizer)
     end
 
@@ -35,7 +35,7 @@ RSpec.describe LoserSelector_by_ranking do
     it "finds the optimal candidates"
     it "returns nil" do
       pending
-      expect(@select_loser_by_ranking.select_loser).to be nil
+      expect(@select_loser_by_ranking.select_loser(@winner,@hypothesis.erc_list)).to be nil
     end
   end
 
@@ -49,14 +49,14 @@ RSpec.describe LoserSelector_by_ranking do
       allow(rcd_class).to receive(:new).with(@erc_list).and_return(rcd_object)
       allow(rcd_object).to receive(:hierarchy)
       optimizer = class_double(MostHarmonic, "optimizer")
-      @select_loser_by_ranking = LoserSelector_by_ranking.new(@winner,@sys,@hypothesis,rcd_class)      
+      @select_loser_by_ranking = LoserSelector_by_ranking.new(@sys,rcd_class)      
       @select_loser_by_ranking.set_optimizer(optimizer)
     end
     it "computes the ranking"
     it "finds the optimal candidates"
     it "returns the sole optimum" do
       pending
-      expect(@select_loser_by_ranking.select_loser).to eq @loser
+      expect(@select_loser_by_ranking.select_loser(@winner,@hypothesis.erc_list)).to eq @loser
     end
   end
   
