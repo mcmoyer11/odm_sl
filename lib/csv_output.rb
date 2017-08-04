@@ -44,10 +44,8 @@ class CSV_Output
       # Leave a blank line, and put the entry label in column 1.
       next_row = @page_image.row_count+2
       @page_image[next_row,1] = entry.label
-      # Test result components are frozen, so dup before updating.
-      hyp = entry.hypothesis.dup
       # Compute the faith-low bias ranking.
-      rcd_result = OTLearn::RcdFaithLow.new(hyp.erc_list)
+      rcd_result = OTLearn::RcdFaithLow.new(entry.hypothesis.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = RCD_image.new({:rcd=>rcd_result})
@@ -55,7 +53,7 @@ class CSV_Output
       @page_image.put_range(next_cell, result_image.sheet)
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
-      lex_image = Lexicon_image.new(hyp.grammar.lexicon)
+      lex_image = Lexicon_image.new(entry.hypothesis.grammar.lexicon)
       next_cell = Cell.new(@page_image.row_count+2, 2)
       @page_image.put_range(next_cell, lex_image.sheet)
     end

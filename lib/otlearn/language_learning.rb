@@ -307,8 +307,8 @@ module OTLearn
     # by #mismatch_consistency_check).
     def mismatch_consistency_check(hypothesis, word_list)
       # Dup hypothesis and words, so originals aren't modified.
-      hyp = hypothesis.dup
-      w_list = word_list.map { |winner| winner.dup.sync_with_hypothesis!(hyp) }
+      hyp = hypothesis.dup_same_lexicon
+      w_list = word_list.map { |winner| winner.dup }
       # Set each word's input so that features unset in the hypothesis lexicon
       # mismatch their output correspondents. A given output could appear
       # more than once in the mismatch list ONLY if there are suprabinary
