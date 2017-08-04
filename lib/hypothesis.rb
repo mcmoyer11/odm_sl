@@ -16,15 +16,17 @@ class Hypothesis
 
   # Creates a new hypothesis containing grammar _gram_. If no ERC list is
   # provided as a parameter, then a new Comparative_tableau is created
-  # as an empty initial list.
+  # as an empty initial list. If an _erc_list_ is provided, its contents
+  # are copied into a new ERC list specific to this hypothesis.
   # Upon construction, consistency of the ERC list is immediately checked with
   # RCD.
   def initialize(gram, erc_list=nil)
     @grammar = gram
-    @erc_list = erc_list
-    # If parameter was nil, create a new, empty erc list
-    @erc_list ||= Comparative_tableau.new("Hypothesis::@erc_list",
+    @erc_list = Comparative_tableau.new("Hypothesis::@erc_list",
         @grammar.system.constraints)
+    unless erc_list.nil?
+      erc_list.each {|erc| @erc_list << erc}
+    end
     # check the erc list for consistency (initializing @rcd_result)
     check_consistency
   end
