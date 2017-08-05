@@ -110,6 +110,8 @@ module OTLearn
   # tests the word list as is (with all input features already set) using
   # mrcd, and returns the result (consistency: true/false).
   def OTLearn.eval_over_conflict_features(c_features, contrast_set, main_hypothesis)
+    # Create a loser selector for Mrcd; the same object can be used for all passes
+    selector = LoserSelector_by_ranking.new(main_hypothesis.system)
     # Generate a list of feature-value pairs, one for each possible value of
     # each conflict feature.
     feat_values_list = FeatureValuePair.all_values_pairs(c_features)
@@ -127,15 +129,9 @@ module OTLearn
         # Set every occurrence of the feature in the contrast set to the alt value.
         OTLearn::set_input_features(feat_pair.feature_instance, feat_pair.alt_value, contrast_set)
       end
-      # Duplicate the hypothesis, because testing the contrast set will
-      # modify the given hypothesis. No need to dup the lexicon, so don't;
-      # that way, the UI correspondences of the inputs in the contrast set
-      # still refer to elements of the lexicon of the duplicate hypothesis.
-      hyp = main_hypothesis.dup_same_lexicon
       # Test the contrast set, using the conflicting feature combination
-      selector = LoserSelector_by_ranking.new(main_hypothesis.system)
-      Mrcd.new(contrast_set, hyp, selector)
-      return true if hyp.consistent?
+      mrcd_result = Mrcd.new(contrast_set, main_hypothesis, selector)
+      return true if mrcd_result.hypothesis.consistent?
     end
     return false # none of the combinations were consistent.    
   end

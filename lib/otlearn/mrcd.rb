@@ -11,9 +11,11 @@ module OTLearn
   # Demotion to a given list of words with respect to a given hypothesis.
   # The word list and hypothesis are provided as arguments to the
   # constructor, Mrcd#new. The MRCD algorithm is immediately executed
-  # as part of construction of the Mrcd object. The hypothesis object
-  # passed into the constructor is directly updated by MRCD, and will
-  # typically have been changed once Mrcd#new is finished.
+  # as part of construction of the Mrcd object.
+  # 
+  # Both the word list and the hypothesis passed to the constructor
+  # are duplicated internally prior to use, so that the original objects
+  # passed in are not affected by the operations of Mrcd.
   #
   # Once an Mrcd object has been constructed, it should be treated only
   # as a source of results; no further computation can be initiated on
@@ -24,25 +26,26 @@ module OTLearn
 
     # Returns a new Mrcd object, with the results of executing
     # MultiRecursive Constraint Demotion (MRCD) to _word_list_ starting
-    # from the initial grammar hypothesis _hypothesis_. The _word_list_
-    # is duplicated internally, so the internal copy is independent of the list
-    # passed as the parameter.
+    # from the initial grammar hypothesis _hypothesis_. Both _word_list_
+    # and _hypothesis_ are duplicated internally before use. MRCD uses
+    # _selector_ as the loser selection object.
     def initialize(word_list, hypothesis, selector)
-      @sys = hypothesis.system
       # Make a duplicate copy of each word, so that components of Win-Lose
-      # pairs cannot be altered, regardless of what subsequently happens
-      # to the parameter word list (after this method has completed).
+      # pairs cannot be altered externally.
       @word_list = word_list.map{|word| word.dup}
-      @hypothesis = hypothesis
-      @added_pairs = []
+      # Duplicate the hypothesis, so that no changes due to MRCD are
+      # propagated to the original parameter, and so that the internal
+      # hypothesis cannot be altered externally.
+      @hypothesis = hypothesis.dup_same_lexicon
       @selector = selector  # loser selector
+      @added_pairs = []
       @any_change = run_mrcd
     end
     
     # Returns the list of words treated as winners.
     def word_list() @word_list end
 
-    # Returns the hypothesis used during learning.
+    # Returns the internal hypothesis used during learning.
     def hypothesis() @hypothesis end
 
     # The winner-loser pairs added to the hypothesis by this execution of Mrcd.

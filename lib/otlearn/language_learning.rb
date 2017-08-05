@@ -306,8 +306,6 @@ module OTLearn
     # result.hypothesis.consistent? (where result is the Mrcd object returned
     # by #mismatch_consistency_check).
     def mismatch_consistency_check(hypothesis, word_list)
-      # Dup hypothesis and words, so originals aren't modified.
-      hyp = hypothesis.dup_same_lexicon
       w_list = word_list.map { |winner| winner.dup }
       # Set each word's input so that features unset in the hypothesis lexicon
       # mismatch their output correspondents. A given output could appear
@@ -319,7 +317,8 @@ module OTLearn
       end
       # Run MRCD to see if the mismatched candidates are consistent.
       selector = LoserSelector_by_ranking.new(@hyp.system)
-      return Mrcd.new(mismatch_list, hyp, selector)
+      mrcd = Mrcd.new(mismatch_list, hypothesis, selector)
+      return mrcd
     end
 
     protected :execute_learning, :run_single_forms_until_no_change,
