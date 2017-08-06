@@ -9,9 +9,6 @@ Create some more substantive specs for Mrcd.
 Either find some reasonable way to unit-test LoserSelector_by_ranking,
 or delete the pending specs for it.
 
-Track down and correct the specs that aren't specific enough about
-what type of raised exception is expected. Get rid of those warnings.
-
 Turn Hypothesis into an Erc_list class. Then have SL::Grammar
 accept both an erc_list and a lexicon. For purely surface-driven
 systems with no lexicon, create a system with a Grammar class that only
