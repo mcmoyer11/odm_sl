@@ -43,7 +43,9 @@ RSpec.describe Win_lose_pair do
   it "indicates that C2 has a preference" do
     expect(@win_lose_pair.e?("C2")).not_to be true
   end
-  it "does not respond to the preference-setting methods of Erc"
+  it "does not respond to the preference-setting methods of Erc" do
+    expect(@win_lose_pair).not_to respond_to(:set_w, :set_l, :set_e)
+  end
 
   context "with mis-matching inputs" do
     before do

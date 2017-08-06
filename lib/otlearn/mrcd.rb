@@ -93,10 +93,7 @@ module OTLearn
       while !loser.nil? do
         # Create a new WL pair.
         new_pair = Win_lose_pair.new(winner, loser)
-        # Set the pair label to the morphword string rep.; done with replace()
-        # because the winner-loser pair itself is frozen.
-        label = new_pair.label
-        label.replace(winner.morphword.to_s)
+        new_pair.label = winner.morphword.to_s
         # Add the new pair to the hypothesis.
         local_added_pairs << new_pair
         @hypothesis.add_erc(new_pair)
