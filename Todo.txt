@@ -1,8 +1,9 @@
 Todo List for odm_sl
 
-Change Mrcd so that it doesn't return any side effects via Hypothesis.
-The additional ercs should only be returned via the method call to
-the Mrcd object.
+Refactor Win_lose_pair so that it uses delegation instead of inheritance.
+Control access to methods instead of freezing. Eliminate the OTWP-specific
+label manipulation (that should be done by the caller, if at all). Then
+clean up the goofy label manipulation done in Mrcd.
 
 Create some more substantive specs for Mrcd.
 
