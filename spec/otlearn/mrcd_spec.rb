@@ -22,7 +22,7 @@ RSpec.describe "MRCD" do
     before(:each) do
       @word_list = []
       @hypothesis = Hypothesis.new(SL::Grammar.new)
-      selector = LoserSelector_by_ranking.new(@hypothesis.system, OTLearn::RcdFaithLow)
+      selector = LoserSelector_by_ranking.new(@hypothesis.system, rcd_class: OTLearn::RcdFaithLow)
       @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis, selector)
     end
     it "should not have any changes to the hypothesis" do

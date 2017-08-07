@@ -21,7 +21,7 @@ module OTLearn
   def OTLearn::ranking_learning_faith_low(word_list, hypothesis)
     winner_list = data_dup_and_match_output(word_list)
     # Use the faith-low ranking bias for ranking learning
-    selector = LoserSelector_by_ranking.new(hypothesis.system, OTLearn::RcdFaithLow)
+    selector = LoserSelector_by_ranking.new(hypothesis.system, rcd_class: OTLearn::RcdFaithLow)
     mrcd_result = Mrcd.new(winner_list, hypothesis, selector)
     mrcd_result.added_pairs.each { |pair| hypothesis.add_erc(pair) }
     return mrcd_result.any_change?
@@ -41,7 +41,7 @@ module OTLearn
   def OTLearn::ranking_learning_mark_low(word_list, hypothesis)
     winner_list = data_dup_and_match_output(word_list)
     # Use the mark-low ranking bias for ranking learning
-    selector = LoserSelector_by_ranking.new(hypothesis.system, OTLearn::RcdMarkLow)
+    selector = LoserSelector_by_ranking.new(hypothesis.system, rcd_class: OTLearn::RcdMarkLow)
     mrcd_result = Mrcd.new(winner_list, hypothesis, selector)
     mrcd_result.added_pairs.each { |pair| hypothesis.add_erc(pair) }
     return mrcd_result.any_change?    

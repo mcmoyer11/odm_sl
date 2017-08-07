@@ -21,10 +21,10 @@ class LoserSelector_by_ranking
   
   # Takes a linguistic system _sys_ and a class _rcd_class_ for a variation of
   # the RCD algorithm (the ranking bias should be built into the rcd class).
-  def initialize(sys, rcd_class = Rcd)
+  def initialize(sys, rcd_class: Rcd, optimizer_class: MostHarmonic)
     @system = sys
     @rcd_class = rcd_class
-    @optimizer_class = MostHarmonic
+    @optimizer_class = optimizer_class
   end
 
   # Looks for an informative loser to pair with _winner_, relative to the
