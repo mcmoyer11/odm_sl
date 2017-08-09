@@ -104,11 +104,6 @@ class Word < Candidate
     return out_feat_corr_of_in(in_feat_inst)
   end
 
-  # Returns a reference to the linguistic system.
-  def system
-    @system
-  end
-
   # Returns a deep copy of the word, with distinct input syllables and features,
   # distinct output elements and features, and appropriately revises UI and
   # IO correspondences.
@@ -190,7 +185,7 @@ class Word < Candidate
   # accessing the constraint violation counts (but after the candidate is
   # complete).
   def eval
-    @system.constraints.each do |con|
+    constraint_list.each do |con|
       set_viols(con, con.eval_candidate(self))
     end
     return self

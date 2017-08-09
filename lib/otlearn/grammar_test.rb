@@ -50,6 +50,7 @@ module OTLearn
     def system
       @system
     end
+    protected :system
     
     # Returns the grammar hypothesis used in this test.
     # NOTE: returned object is frozen, and cannot be altered.
