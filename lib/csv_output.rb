@@ -53,7 +53,7 @@ class CSV_Output
       @page_image.put_range(next_cell, result_image.sheet)
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
-      lex_image = Lexicon_image.new(entry.hypothesis.grammar.lexicon)
+      lex_image = Lexicon_image.new(entry.hypothesis.lexicon)
       next_cell = Cell.new(@page_image.row_count+2, 2)
       @page_image.put_range(next_cell, lex_image.sheet)
     end

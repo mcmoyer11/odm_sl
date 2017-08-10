@@ -4,13 +4,9 @@
 require_relative 'rcd'
 require_relative 'comparative_tableau'
 
-# A hypothesis contains a grammar and a list of supporting ercs.
-# The grammar is presumed to contain a lexicon and a reference to
-# the linguistic system in use.
+# A hypothesis contains a lexicon, a list of supporting ercs,
+# and a reference to the linguistic system in use.
 class Hypothesis
-  # The grammar object for the hypothesis
-  attr_reader :grammar
-  
   # The list of ERCs included in this hypothesis
   attr_reader :erc_list
   
@@ -25,8 +21,10 @@ class Hypothesis
   # RCD.
   def initialize(gram, erc_list=nil)
     @grammar = gram
+    @lexicon = gram.lexicon
+    @system = gram.system
     @label = "Hypothesis"
-    @erc_list = Comparative_tableau.new(@label, @grammar.system.constraints)
+    @erc_list = Comparative_tableau.new(@label, @system.constraints)
     unless erc_list.nil?
       erc_list.each {|erc| @erc_list << erc}
       @label = erc_list.label
@@ -54,9 +52,19 @@ class Hypothesis
     return hyp
   end
 
+  # Returns the lexicon.
+  def lexicon
+    return @lexicon
+  end
+  
+  # Returns the underlying form assigned to morpheme +morph+ in the lexicon.
+  def get_uf(morph)
+    return @grammar.get_uf(morph)
+  end
+  
   # Returns a reference to the linguistic system underlying the grammar.
   def system
-    @grammar.system
+    @system
   end
 
   # Returns true if the hypothesis is currently consistent; false otherwise.
@@ -82,7 +90,7 @@ class Hypothesis
   # Returns a string containing string representations of
   # the lexicon and the ERC list of this hypothesis.
   def to_s
-    out_str += @grammar.lexicon.to_s + "\n"
+    out_str += @lexicon.to_s + "\n"
     out_str += @erc_list.join("\n")
     out_str
   end

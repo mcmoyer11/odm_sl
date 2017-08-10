@@ -10,6 +10,7 @@ RSpec.describe "A hypothesis" do
     @constraint_list = ["C1","C2"]
     allow(@system).to receive(:constraints).and_return(@constraint_list)
     allow(@grammar).to receive(:system).and_return(@system)
+    allow(@grammar).to receive(:lexicon).and_return("lexicon")
   end
   context "with no ercs" do
     before(:each) do
@@ -23,6 +24,9 @@ RSpec.describe "A hypothesis" do
     end
     it "returns a reference to the linguistic system" do
       expect(@hypothesis.system).to equal @system
+    end
+    it "returns the provided lexicon" do
+      expect(@hypothesis.lexicon).to eq "lexicon"
     end
   end
   context "with one erc added" do
@@ -79,6 +83,7 @@ RSpec.describe "A hypothesis" do
           @diff_grammar = double('diff_grammar')
           allow(@grammar).to receive(:dup).and_return(@diff_grammar)
           allow(@diff_grammar).to receive(:system).and_return(@system)
+          allow(@diff_grammar).to receive(:lexicon).and_return("lexicon")
           @dup_hyp = @hypothesis.dup
         end
         it "the dup is consistent" do
@@ -102,6 +107,7 @@ RSpec.describe "A hypothesis" do
           @diff_grammar = double('diff_grammar')
           allow(@grammar).to receive(:dup_shallow).and_return(@diff_grammar)
           allow(@diff_grammar).to receive(:system).and_return(@system)
+          allow(@diff_grammar).to receive(:lexicon).and_return("lexicon")
           @dup_hyp = @hypothesis.dup_same_lexicon
         end
         it "the dup is consistent" do

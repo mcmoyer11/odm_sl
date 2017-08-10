@@ -226,7 +226,7 @@ module OTLearn
     unset_features = []
     morpheme_list.each do |morph|
       # find all of the unset features for that morpheme
-      uf = main_hypothesis.grammar.get_uf(morph)
+      uf = main_hypothesis.get_uf(morph)
       uf.each do |el| # for each correspondence level element of the uf
         el.each_feature do |f|
           unset_features << FeatureInstance.new(el,f) if f.unset?
