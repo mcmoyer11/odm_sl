@@ -9,6 +9,9 @@ module SL
   # A grammar for the SL linguistic system consists of a reference to
   # the SL::System linguistic system and a lexicon.
   class Grammar
+    extend Forwardable
+    
+    def_delegators :@erc_list, :label, :label=, :consistent?, :add_erc
     
     # The list of ercs defining the ranking information of the grammar.
     attr_reader :erc_list
@@ -51,6 +54,12 @@ module SL
       lex_entry = @lexicon.find{|entry| entry.morpheme==morph} # get the lexical entry
       return nil if lex_entry.nil?
       return lex_entry.uf  # return the underlying form
+    end
+    
+    def to_s
+      out_str += @lexicon.to_s + "\n"
+      out_str += @erc_list.erc_list.join("\n")
+      out_str
     end
 
   end # class Grammar
