@@ -3,13 +3,16 @@
 require 'sl/grammar'
 
 RSpec.describe SL::Grammar do
-  context "A new Grammar, when not given a lexicon," do
+  context "A new Grammar, with no parameters," do
     before(:each) do
       @grammar = SL::Grammar.new
       @morph = double("Morpheme")
     end
     it "returns a reference to SYSTEM" do
       expect(@grammar.system).to eq(SL::SYSTEM)
+    end
+    it "returns an empty ERC list" do
+      expect(@grammar.erc_list).to be_empty
     end
     it "returns an empty lexicon" do
       expect(@grammar.lexicon.size).to eq(0)
@@ -27,7 +30,7 @@ RSpec.describe SL::Grammar do
       allow(@lex_entry).to receive(:morpheme).and_return("the_morph")
       # The lexicon has the basic interface of Array, so use an Array to mock it.
       @lex = [@lex_entry]
-      @grammar = SL::Grammar.new(@lex)
+      @grammar = SL::Grammar.new(lexicon: @lex)
     end
     it "returns the given lexicon" do
       expect(@grammar.lexicon).to eq(@lex)
@@ -45,6 +48,9 @@ RSpec.describe SL::Grammar do
       before(:each) do
         @dup = @gram.dup
       end
+      it "should have distinct objects for the ERC list" do
+        expect(@gram.erc_list).not_to equal(@dup.erc_list)
+      end
       it "should have distinct objects for lexicon" do
         expect(@gram.lexicon).not_to equal(@dup.lexicon)
       end
@@ -52,6 +58,9 @@ RSpec.describe SL::Grammar do
     context "when duplicated with dup_shallow" do
       before(:each) do
         @dup = @gram.dup_shallow
+      end
+      it "should have distinct objects for the ERC list" do
+        expect(@gram.erc_list).not_to equal(@dup.erc_list)
       end
       it "should have the same object for lexicon" do
         expect(@gram.lexicon).to equal(@dup.lexicon)

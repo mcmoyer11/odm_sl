@@ -10,22 +10,23 @@ module SL
   # the SL::System linguistic system and a lexicon.
   class Grammar
     
+    # The list of ercs defining the ranking information of the grammar.
+    attr_reader :erc_list
+    
     # The lexicon for the grammar.
-    attr_accessor :lexicon
+    attr_reader :lexicon
 
-    # Stores the linguistic system associated with this grammar.
-    # In this case, the SL (stress-length) linguistic system.
-    @@system = System.instance
+    # The linguistic system associated with this grammar.
+    attr_reader :system
 
-    # Returns a new grammar. If a lexicon is not provided as a parameter,
-    # the default initial lexicon is empty.
-    def initialize(lex=Lexicon.new)
-      @lexicon = lex
-    end
-
-    # Returns a reference to the linguistic system associated with this grammar.
-    def system
-      @@system
+    # Returns a new grammar.
+    # The default initial ERC list and lexicon are empty.
+    # The default linguistic system is SL::System.
+    def initialize(erc_list: nil, lexicon: Lexicon.new, system: System.instance)
+      @system = system
+      @erc_list = erc_list
+      @erc_list ||= Comparative_tableau.new("SL::Grammar", @system.constraints)
+      @lexicon = lexicon
     end
 
     # Returns a deep copy of the grammar, with a duplicates of the lexicon.
@@ -33,18 +34,19 @@ module SL
     # and the duplicate lexical entries contain duplicates of the underlying
     # forms but references to the very same morpheme objects.
     def dup
-      return self.class.new(@lexicon.dup)
+      return self.class.new(erc_list: erc_list.dup, lexicon: lexicon.dup, system: system)
     end
 
     # Returns a shallow copy of the grammar, with a reference to the very
     # same lexicon object.
     def dup_shallow
-      return self.class.new(@lexicon)
+      return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
     end
 
     # Returns the underlying form for the given morpheme, as stored in
     # the grammar's lexicon. Returns nil if the morpheme does not appear
     # in the lexicon.
+    # TODO: move this into the Lexicon class itself. Then have Grammar simply delegate.
     def get_uf(morph)
       lex_entry = @lexicon.find{|entry| entry.morpheme==morph} # get the lexical entry
       return nil if lex_entry.nil?
