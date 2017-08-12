@@ -23,7 +23,9 @@ winners, hyp =
 outputs = winners.map{|win| win.output}
 
 # Create a new, blank hypothesis, and assign it the label of the language.
-hyp = Hypothesis.new(SL::Grammar.new)
+#hyp = Hypothesis.new(SL::Grammar.new)
+hyp = SL::Grammar.new
+
 hyp.label = lang_label
 
 # Run learning on the language outputs, starting with the blank hypothesis.

@@ -68,7 +68,8 @@ out_filepath = File.join(File.dirname(__FILE__),'..','temp','sl_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank hypothesis, and assign it the label of the language.
-  hyp = Hypothesis.new(SL::Grammar.new)
+#  hyp = Hypothesis.new(SL::Grammar.new)
+  hyp = SL::Grammar.new
   hyp.label = label
   # Run learning on the language
   lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)

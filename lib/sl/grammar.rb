@@ -2,6 +2,7 @@
 #
 
 require_relative 'system'
+require 'forwardable'
 require_relative '../lexicon'
 
 module SL
@@ -11,7 +12,7 @@ module SL
   class Grammar
     extend Forwardable
     
-    def_delegators :@erc_list, :label, :label=, :consistent?, :add_erc
+    def_delegators :@erc_list, :label, :label=
     
     # The list of ercs defining the ranking information of the grammar.
     attr_reader :erc_list
@@ -30,7 +31,30 @@ module SL
       @erc_list = erc_list
       @erc_list ||= Comparative_tableau.new("SL::Grammar", @system.constraints)
       @lexicon = lexicon
+      @rcd_result = nil
     end
+
+    # Adds an erc, and checks the consistency of the updated list.
+    # Returns true if the ercs are consistent, false otherwise.
+    # TODO: move this method to your erc_list class, and then delegate it from here.
+    def add_erc(erc)
+      erc_list << erc
+      check_consistency
+    end
+
+    # Returns true if the hypothesis is currently consistent; false otherwise.
+    def consistent?
+      return @rcd_result.consistent? unless @rcd_result.nil?
+      check_consistency
+    end
+  
+    # Checks to see if the ercs are consistent.
+    # Returns true if the ercs are consistent, false otherwise.
+    def check_consistency
+      @rcd_result = Rcd.new(@erc_list)
+      return @rcd_result.consistent?
+    end
+    private :check_consistency
 
     # Returns a deep copy of the grammar, with a duplicates of the lexicon.
     # The duplicate of the lexicon contains duplicates of the lexical entries,
@@ -43,6 +67,10 @@ module SL
     # Returns a shallow copy of the grammar, with a reference to the very
     # same lexicon object.
     def dup_shallow
+      return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
+    end
+
+    def dup_same_lexicon
       return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
     end
 

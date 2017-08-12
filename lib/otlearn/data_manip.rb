@@ -121,7 +121,8 @@ module OTLearn
     # Extract the outputs of the grammatical candidates of the language.
     outputs = lang_ct.winners.map{|winner| winner.output}
     # Construct a new hypothesis with an empty lexicon and no WL pairs.
-    hypothesis = Hypothesis.new(grammar_class.new)
+#    hypothesis = Hypothesis.new(grammar_class.new)
+    hypothesis = grammar_class.new
     return outputs, hypothesis
   end
 
@@ -135,7 +136,8 @@ module OTLearn
     # Obtain the output forms of the language
     outputs = lang.map{|winner| winner.output}
     # Obtain a fresh, empty hypothesis.
-    hyp = Hypothesis.new(grammar_class.new)
+#    hyp = Hypothesis.new(grammar_class.new)
+    hyp = grammar_class.new
     # Convert the outputs to full words, using the new hypothesis,
     # populating the lexicon with the morphemes of the outputs in the process.
     # parse_output() adds the morphemes of the output forms to the lexicon,

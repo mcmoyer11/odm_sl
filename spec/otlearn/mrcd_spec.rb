@@ -10,7 +10,8 @@ RSpec.describe "MRCD" do
   context "with default rcd class and an empty word list" do
     before(:each) do
       @word_list = []
-      @hypothesis = Hypothesis.new(SL::Grammar.new)
+#      @hypothesis = Hypothesis.new(SL::Grammar.new)
+      @hypothesis = SL::Grammar.new
       selector = LoserSelector_by_ranking.new(@hypothesis.system)
       @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis, selector)
     end
@@ -21,7 +22,8 @@ RSpec.describe "MRCD" do
   context "with rcd class faith_low and an empty word list" do
     before(:each) do
       @word_list = []
-      @hypothesis = Hypothesis.new(SL::Grammar.new)
+#      @hypothesis = Hypothesis.new(SL::Grammar.new)
+      @hypothesis = SL::Grammar.new
       selector = LoserSelector_by_ranking.new(@hypothesis.system, rcd_class: OTLearn::RcdFaithLow)
       @mrcd = OTLearn::Mrcd.new(@word_list, @hypothesis, selector)
     end
