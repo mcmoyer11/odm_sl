@@ -18,18 +18,17 @@ File.delete(out_file) if File.exist?(out_file)
 
 # Generate the output forms of the language.
 comp_list = SL.generate_competitions_1r1s
-winners, hyp =
+winners =
   OTLearn.generate_learning_data_from_competitions(comp_list, SL.hier_a, SL::Grammar)
 outputs = winners.map{|win| win.output}
 
-# Create a new, blank hypothesis, and assign it the label of the language.
-#hyp = Hypothesis.new(SL::Grammar.new)
-hyp = SL::Grammar.new
+# Create a new, blank grammar, and assign it the label of the language.
+grammar = SL::Grammar.new
 
-hyp.label = lang_label
+grammar.label = lang_label
 
-# Run learning on the language outputs, starting with the blank hypothesis.
-lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
+# Run learning on the language outputs, starting with the blank grammar.
+lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
 
 # Write the learning results to the CSV file.
 csv = CSV_Output.new(lang_sim)
@@ -37,5 +36,5 @@ csv.write_to_file(out_file)
 
 # Report to STDOUT if language was not successfully learned
 unless lang_sim.learning_successful?
-  puts "#{hyp.label} not learned."
+  puts "#{grammar.label} not learned."
 end  

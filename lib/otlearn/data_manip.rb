@@ -115,36 +115,28 @@ module OTLearn
 
   # Takes a language in the form of a comparative tableau of WL pairs (with
   # each represented form of the language appearing as a winner in at least
-  # one pair), along with the grammar class object for the linguistic system,
-  # and returns a list of the winner outputs and an associated fresh hypothesis.
-  def OTLearn::convert_ct_to_learning_data(lang_ct, grammar_class)
+  # one pair), and returns a list of the winner outputs.
+  def OTLearn::convert_ct_to_learning_data(lang_ct)
     # Extract the outputs of the grammatical candidates of the language.
     outputs = lang_ct.winners.map{|winner| winner.output}
-    # Construct a new hypothesis with an empty lexicon and no WL pairs.
-#    hypothesis = Hypothesis.new(grammar_class.new)
-    hypothesis = grammar_class.new
-    return outputs, hypothesis
+    return outputs
   end
 
   # Takes a competition list, a constraint hierarchy, and a grammar class
   # object for a linguistic system, and returns a list of the winners with
-  # respect to the hierarchy, and a corresponding empty hypothesis. The winners
-  # have inputs with no set features (matching the lexicon).
+  # respect to the hierarchy.
+  # The winners have inputs with no set features (matching the lexicon).
+  # TODO: is this method needed?
   def OTLearn::generate_learning_data_from_competitions(comp_list, hier, grammar_class)
     # Obtain the optimal candidates for the given hierarchy.
     lang = generate_language_from_competitions(comp_list, hier)
     # Obtain the output forms of the language
     outputs = lang.map{|winner| winner.output}
-    # Obtain a fresh, empty hypothesis.
-#    hyp = Hypothesis.new(grammar_class.new)
-    hyp = grammar_class.new
-    # Convert the outputs to full words, using the new hypothesis,
-    # populating the lexicon with the morphemes of the outputs in the process.
-    # parse_output() adds the morphemes of the output forms to the lexicon,
-    # and constructs a UI correspondence for the input of each word, connecting
-    # to the underlying forms of the lexicon of the new hypothesis.
-    winner_list = outputs.map{|out| hyp.system.parse_output(out, hyp.lexicon)}
-    return winner_list, hyp
+    # Obtain a fresh, empty grammar.
+    grammar = grammar_class.new
+    # Convert the outputs to full words.
+    winner_list = outputs.map{|out| grammar.system.parse_output(out, grammar.lexicon)}
+    return winner_list
   end
   
 end # module OTLearn

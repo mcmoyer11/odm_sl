@@ -6,7 +6,6 @@
 # All output is written to CSV files, one file for each language.
 
 require_relative '../lib/sl/data'
-require_relative '../lib/hypothesis'
 require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/csv_output'
@@ -28,7 +27,7 @@ end
 def write_language_list_to_file(lang_list, data_file)
   File.open(data_file, 'wb') do |f|
     lang_list.each do |lang|
-      outputs, hyp = OTLearn::convert_ct_to_learning_data(lang, SL::Grammar)
+      outputs = OTLearn::convert_ct_to_learning_data(lang)
       Marshal.dump(["Lg#{lang.label}",outputs], f)
     end
   end  
@@ -67,17 +66,16 @@ write_language_list_to_file(lang_list, data_file)
 out_filepath = File.join(File.dirname(__FILE__),'..','temp','sl_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
-  # Create a new, blank hypothesis, and assign it the label of the language.
-#  hyp = Hypothesis.new(SL::Grammar.new)
-  hyp = SL::Grammar.new
-  hyp.label = label
+  # Create a new, blank grammar, and assign it the label of the language.
+  grammar = SL::Grammar.new
+  grammar.label = label
   # Run learning on the language
-  lang_sim = OTLearn::LanguageLearning.new(outputs, hyp)
+  lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
   # Write the results to a CSV file, with the language label as the filename.
   out_file = File.join(out_filepath,"#{lang_sim.hypothesis.label}.csv")
   write_learning_results_to_csv(lang_sim, out_file)
   # Report to STDOUT if language was not successfully learned
   unless lang_sim.learning_successful?
-    puts "#{hyp.label} not learned."
+    puts "#{grammar.label} not learned."
   end  
 end
