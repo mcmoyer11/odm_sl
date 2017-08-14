@@ -1,9 +1,5 @@
 Todo List for odm_sl
 
-Eliminate references to class Hypothesis throughout the rest of the code.
-Examine specs for Hypothesis to possibly scavange specs to move to other
-classes. Then, delete class Hypothesis and its specs.
-
 Create an Erc_list class. For purely surface-driven
 systems with no lexicon, create a system with a Grammar class that only
 takes an erc_list. Then the learning methods should be accepting and
