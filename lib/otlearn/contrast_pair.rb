@@ -39,7 +39,7 @@ module OTLearn
     # lexicon. Make duplicates of the failed winners, and synchronize
     # them with _hyp_.
     f_winners = test_result.failed_winners.map do |winner|
-      winner.dup.sync_with_hypothesis!(hyp)
+      winner.dup.sync_with_grammar!(hyp)
     end
     # For each failed winner, look for qualifying contrast pairs
     f_winners.each do |failed_winner|

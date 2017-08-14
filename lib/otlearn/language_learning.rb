@@ -258,7 +258,7 @@ module OTLearn
     # its successful value (the one matching its output correspondent in the
     # previously failed winner).
     def select_most_restrictive_uf(failed_winner_orig, main_grammar, success_winners)
-      failed_winner = failed_winner_orig.dup.sync_with_hypothesis!(main_grammar)
+      failed_winner = failed_winner_orig.dup.sync_with_grammar!(main_grammar)
       # Find the unset underlying feature instances
       unset_uf_features = OTLearn::find_unset_features_in_words([failed_winner],main_grammar)
       # Set, in turn, each unset feature to match its output correspondent.

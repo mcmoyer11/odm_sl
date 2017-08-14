@@ -173,10 +173,10 @@ class Word < Candidate
   end
 
   # Changes the UI correspondence of the input so that underlying correspondents
-  # are elements of the lexicon in _hyp_. Useful when a hypothesis
+  # are elements of the lexicon in +grammar+. Useful when a grammar
   # has been duplicated (creating a lexicon with distinct underlying elements).
-  def sync_with_hypothesis!(hyp)
-    input.sync_with_grammar!(hyp)
+  def sync_with_grammar!(grammar)
+    input.sync_with_grammar!(grammar)
     return self
   end
 

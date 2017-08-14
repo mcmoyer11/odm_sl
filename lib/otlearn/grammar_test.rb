@@ -24,7 +24,7 @@ module OTLearn
       # Dup the winners, and then adjust their UI correspondence relations
       # to refer to the dup grammar.
       @winners = winners.map{|win| win.dup}
-      @winners.each{|win| win.sync_with_hypothesis!(@grammar)}
+      @winners.each{|win| win.sync_with_grammar!(@grammar)}
       # Generate the test ranking, using "faithfulness low".
       # TODO: inject a hierarchy construction object via the constructor.
       @hierarchy = RcdFaithLow.new(@grammar.erc_list).hierarchy
