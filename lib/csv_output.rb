@@ -35,7 +35,7 @@ class CSV_Output
   
   def format_results
     # Put the language label in row 2, leaving row 1 as a header row.
-    @page_image[2,1] = @lang_sim.hypothesis.label
+    @page_image[2,1] = @lang_sim.grammar.label
     # Indicate if learning succeeded, by checking the last result in the
     # language simulation.
     @page_image[3,1] = "Learned: #{@lang_sim.results_list[-1].all_correct?}"

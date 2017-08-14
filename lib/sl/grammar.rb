@@ -8,10 +8,13 @@ require_relative '../lexicon'
 module SL
 
   # A grammar for the SL linguistic system consists of a reference to
-  # the SL::System linguistic system and a lexicon.
+  # the SL::System linguistic system, a list of ERCs, and a lexicon.
   class Grammar
     extend Forwardable
-    
+
+    # TODO: make label an attribute of Grammar; make sure it is set properly
+    # via grammar everywhere (as opposed to the erc_list / ComparativeTableau
+    # having a crucial label being set directly).
     def_delegators :@erc_list, :label, :label=
     
     # The list of ercs defining the ranking information of the grammar.
@@ -42,14 +45,14 @@ module SL
       check_consistency
     end
 
-    # Returns true if the hypothesis is currently consistent; false otherwise.
+    # Returns true if the ERC list is currently consistent; false otherwise.
     def consistent?
       return @rcd_result.consistent? unless @rcd_result.nil?
       check_consistency
     end
   
-    # Checks to see if the ercs are consistent.
-    # Returns true if the ercs are consistent, false otherwise.
+    # Checks to see if the ERC list is consistent by running RCD.
+    # Returns true if the ERC list is consistent, false otherwise.
     def check_consistency
       @rcd_result = Rcd.new(@erc_list)
       return @rcd_result.consistent?
@@ -70,6 +73,7 @@ module SL
       return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
     end
 
+    # TODO: standardize your .dup* conventions, and implement only those.
     def dup_same_lexicon
       return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
     end

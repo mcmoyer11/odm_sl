@@ -1,12 +1,10 @@
 Todo List for odm_sl
 
-Fold the functions of the current SL::Grammar into Hypothesis. After Hypothesis
-is able to substitute for SL::Grammar, build a new SL::Grammar that is simply
-a proxy for Hypothesis, so that Hypothesis essentially becomes the new
-base grammar class.
+Eliminate references to class Hypothesis throughout the rest of the code.
+Examine specs for Hypothesis to possibly scavange specs to move to other
+classes. Then, delete class Hypothesis and its specs.
 
-Create an Erc_list class. Then have SL::Grammar
-accept both an erc_list and a lexicon. For purely surface-driven
+Create an Erc_list class. For purely surface-driven
 systems with no lexicon, create a system with a Grammar class that only
 takes an erc_list. Then the learning methods should be accepting and
 passing around Grammar objects of the sort they are expecting.

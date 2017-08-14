@@ -72,10 +72,10 @@ read_languages_from_file(data_file) do |label, outputs|
   # Run learning on the language
   lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
   # Write the results to a CSV file, with the language label as the filename.
-  out_file = File.join(out_filepath,"#{lang_sim.hypothesis.label}.csv")
+  out_file = File.join(out_filepath,"#{label}.csv")
   write_learning_results_to_csv(lang_sim, out_file)
   # Report to STDOUT if language was not successfully learned
   unless lang_sim.learning_successful?
-    puts "#{grammar.label} not learned."
+    puts "#{label} not learned."
   end  
 end

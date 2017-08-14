@@ -131,7 +131,7 @@ module OTLearn
       end
       # Test the contrast set, using the conflicting feature combination
       mrcd_result = Mrcd.new(contrast_set, main_hypothesis, selector)
-      return true if mrcd_result.hypothesis.consistent?
+      return true if mrcd_result.grammar.consistent?
     end
     return false # none of the combinations were consistent.    
   end

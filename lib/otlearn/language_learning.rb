@@ -14,7 +14,7 @@ module OTLearn
 
   # A LanguageLearning object instantiates a particular instance of
   # language learning. An instance is created with a set of outputs
-  # (the data to be learned from), and a starting hypothesis (which
+  # (the data to be learned from), and a starting grammar (which
   # will likely be altered during the course of learning).
   #
   # The learning proceeds in the following stages, in order:
@@ -24,25 +24,25 @@ module OTLearn
   #   * Try a contrast pair; if none are successful, try minimum uf setting.
   #   * If either of these is successful, and the language is not yet learned,
   #     run another round of single form learning.
-  # After each stage in which hypothesis change occurs, the state of
+  # After each stage in which grammar change occurs, the state of
   # the learner is stored and evaluated in a GrammarTest object. These
   # objects are stored in a list, obtainable via #results_list().
   #
   # Learning is initiated upon construction of the object.
   class LanguageLearning
 
-    # Executes learning on _outputs_ with respect to _hypothesis_, and
+    # Executes learning on +outputs+ with respect to +grammar+, and
     # stores the results in the returned LanguageLearning object.
-    def initialize(outputs, hypothesis)
+    def initialize(outputs, grammar)
       @outputs = outputs
-      @hyp = hypothesis
+      @grammar = grammar
       @results_list = []
-      # Convert the outputs to full words, using the new hypothesis,
+      # Convert the outputs to full words, using the grammar,
       # populating the lexicon with the morphemes of the outputs in the process.
       # parse_output() adds the morphemes of the output forms to the lexicon,
       # and constructs a UI correspondence for the input of each word, connecting
-      # to the underlying forms of the lexicon of the new hypothesis.
-      @winner_list = @outputs.map{|out| @hyp.system.parse_output(out, @hyp.lexicon)}
+      # to the underlying forms of the lexicon.
+      @winner_list = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @learning_successful = execute_learning
     end
 
@@ -52,8 +52,8 @@ module OTLearn
     # Returns the winners (full candidates) that were used as interpretations of the outputs.
     def data_winners() return @winner_list end
 
-    # Returns the final grammar hypothesis that was the result of learning.
-    def hypothesis() return @hyp end
+    # Returns the final grammar that was the result of learning.
+    def grammar() return @grammar end
 
     # Returns a boolean indicating if learning was successful.
     def learning_successful?() return @learning_successful end
@@ -71,12 +71,12 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning
       # Phonotactic learning
-      OTLearn::ranking_learning_faith_low(@winner_list, @hyp)
-      @results_list << OTLearn::GrammarTest.new(@winner_list, @hyp, "Phonotactic Learning")
+      OTLearn::ranking_learning_faith_low(@winner_list, @grammar)
+      @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Phonotactic Learning")
       return true if @results_list.last.all_correct?
       # Single form UF learning
-      run_single_forms_until_no_change(@winner_list, @hyp)
-      @results_list << OTLearn::GrammarTest.new(@winner_list, @hyp, "Single Form Learning")
+      run_single_forms_until_no_change(@winner_list, @grammar)
+      @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
       return true if @results_list.last.all_correct?
       # Pursue further learning until the language is learned, or no
       # further improvement is made.
@@ -84,15 +84,15 @@ module OTLearn
       while learning_change
         learning_change = false
         # First, try to learn from a contrast pair
-        contrast_pair = run_contrast_pair(@winner_list, @hyp, @results_list.last)
+        contrast_pair = run_contrast_pair(@winner_list, @grammar, @results_list.last)
         unless contrast_pair.nil?
-          @results_list << OTLearn::GrammarTest.new(@winner_list, @hyp, "Contrast Pair Learning")
+          @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of minimal UF learning
-          set_feature = run_minimal_uf_for_failed_winner(@winner_list, @hyp, @results_list.last)
+          set_feature = run_minimal_uf_for_failed_winner(@winner_list, @grammar, @results_list.last)
           unless set_feature.nil?
-            @results_list << OTLearn::GrammarTest.new(@winner_list, @hyp, "Minimal UF Learning")
+            @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
             learning_change = true
           end
         end
@@ -102,9 +102,9 @@ module OTLearn
         break unless learning_change
         return true if @results_list.last.all_correct?
         # Follow up with another round of single form learning
-        change_on_single_forms = run_single_forms_until_no_change(@winner_list, @hyp)
+        change_on_single_forms = run_single_forms_until_no_change(@winner_list, @grammar)
         if change_on_single_forms then
-          @results_list << OTLearn::GrammarTest.new(@winner_list, @hyp, "Single Form Learning")
+          @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
           return true if @results_list.last.all_correct?
         end
       end
@@ -115,8 +115,8 @@ module OTLearn
       return @results_list.last.all_correct?
     end
 
-    # This method processes all of the words in _winners_, one at a time in
-    # order, with respect to the hypothesis _hyp_. Each winner is processed
+    # This method processes all of the words in +winners+, one at a time in
+    # order, with respect to the grammar +grammar+. Each winner is processed
     # as follows:
     # * Error test the winner: see if it is the sole optimum for the
     #   mismatched input (all unset features assigned opposite their
@@ -129,7 +129,7 @@ module OTLearn
     # with no changes to the grammar.
     # A boolean is returned indicating if the grammar was changed at all
     # during the execution of this method.
-    def run_single_forms_until_no_change(winners, hyp)
+    def run_single_forms_until_no_change(winners, grammar)
       grammar_ever_changed = false
       grammar_changed_on_pass = true
       while grammar_changed_on_pass do
@@ -137,24 +137,24 @@ module OTLearn
         winners.each do |winner|
           # Error test the winner by checking to see if it is the sole
           # optimum for the mismatched input using the Faith-Low hierarchy.
-          error_test = OTLearn::GrammarTest.new([winner], hyp)
+          error_test = OTLearn::GrammarTest.new([winner], grammar)
           # Unless no error is detected, try learning with the winner.
           unless error_test.all_correct? then
             # Check the winner to see if it is the sole optimum for
             # the matched input; if not, more ranking info is gained.
-            new_ranking_info = OTLearn::ranking_learning_faith_low([winner], hyp)
+            new_ranking_info = OTLearn::ranking_learning_faith_low([winner], grammar)
             grammar_changed_on_pass = true if new_ranking_info
             # Check the mismatched input for consistency.
             # Unless the mismatched winner is consistent, attempt to set
             # each unset feature of the winner.
-            consistency_result = mismatch_consistency_check(hyp, [winner])
-            unless consistency_result.hypothesis.consistent?
-              set_feature_list = OTLearn.set_uf_values([winner], hyp)
+            consistency_result = mismatch_consistency_check(grammar, [winner])
+            unless consistency_result.grammar.consistent?
+              set_feature_list = OTLearn.set_uf_values([winner], grammar)
               grammar_changed_on_pass = true unless set_feature_list.empty?
               # For each newly set feature, check words unfaithfully mapping that
               # feature for new ranking information.
               set_feature_list.each do |set_f|
-                OTLearn::new_rank_info_from_feature(hyp, winners, set_f)
+                OTLearn::new_rank_info_from_feature(grammar, winners, set_f)
               end
             end
           end
@@ -171,11 +171,11 @@ module OTLearn
     # This method returns the first contrast pair that was able to set
     # at least one underlying feature. If none of the constructed
     # contrast pairs is able to set any features, nil is returned.
-    def run_contrast_pair(winner_list, hyp, prior_result)
+    def run_contrast_pair(winner_list, grammar, prior_result)
       # Create an external iterator which calls generate_contrast_pair()
       # to generate contrast pairs.
       cp_gen = Enumerator.new do |result|
-        OTLearn::generate_contrast_pair(result, winner_list, hyp, prior_result)
+        OTLearn::generate_contrast_pair(result, winner_list, grammar, prior_result)
       end
       # Process contrast pairs until one is found that sets an underlying
       # feature, or until all contrast pairs have been processed.
@@ -183,11 +183,11 @@ module OTLearn
         contrast_pair = cp_gen.next
         # Process the contrast pair, and return a list of any features
         # that were newly set during the processing.
-        set_feature_list = OTLearn::set_uf_values(contrast_pair, hyp)
+        set_feature_list = OTLearn::set_uf_values(contrast_pair, grammar)
         # For each newly set feature, see if any new ranking information
         # is now available.
         set_feature_list.each do |set_f|
-          OTLearn::new_rank_info_from_feature(hyp, winner_list, set_f)
+          OTLearn::new_rank_info_from_feature(grammar, winner_list, set_f)
         end
         # If an underlying feature was set, return the contrast pair.
         # Otherwise, keep processing contrast pairs.
@@ -227,43 +227,43 @@ module OTLearn
     # of a failed winner. Future work will be needed to determine if
     # the learner should evaluate each failed winner, and then select
     # the failed winner requiring the minimal number of set features.
-    def run_minimal_uf_for_failed_winner(winner_list, hyp, prior_result)
+    def run_minimal_uf_for_failed_winner(winner_list, grammar, prior_result)
       fw_list = prior_result.failed_winners
       set_feature = nil
       fw_list.each do |failed_winner|
         # Get the FeatureValuePair of the feature and its succeeding value.
-        fv_pair = select_most_restrictive_uf(failed_winner, hyp, prior_result.success_winners)
+        fv_pair = select_most_restrictive_uf(failed_winner, grammar, prior_result.success_winners)
         unless fv_pair.nil?
           fv_pair.set_to_alt_value  # Set the feature permanently in the lexicon.
           set_feature = fv_pair.feature_instance
           # Check for any new ranking information based on the newly set feature.
-          OTLearn::new_rank_info_from_feature(hyp, winner_list, set_feature)
+          OTLearn::new_rank_info_from_feature(grammar, winner_list, set_feature)
           break # Stop looking once the first successful feature is found.
         end
       end
       return set_feature
     end
 
-    # Finds the unset underlying form feature of _failed_winner_ that,
+    # Finds the unset underlying form feature of +failed_winner+ that,
     # when assigned a value matching its output correspondent,
-    # makes _failed_winner_ consistent with the success winners. Consistency
-    # is evaluated with respect to the parameter _main_hypothesis_ with its
+    # makes +failed_winner+ consistent with the success winners. Consistency
+    # is evaluated with respect to the parameter +main_grammar+ with its
     # lexicon augmented to include the tested underlying feature value, and with
     # the other unset features given input values opposite of their output values).
     #
     # Returns nil if none of the features succeeds.
     # Raises an exception if more than one underlying feature succeeds.
     # Returns the successful underlying feature (and value) if exactly one of them succeeds.
-    # The return value is a _FeatureValuePair_: the underlying feature instance and
+    # The return value is a +FeatureValuePair+: the underlying feature instance and
     # its successful value (the one matching its output correspondent in the
     # previously failed winner).
-    def select_most_restrictive_uf(failed_winner_orig, main_hypothesis, success_winners)
-      failed_winner = failed_winner_orig.dup.sync_with_hypothesis!(main_hypothesis)
+    def select_most_restrictive_uf(failed_winner_orig, main_grammar, success_winners)
+      failed_winner = failed_winner_orig.dup.sync_with_hypothesis!(main_grammar)
       # Find the unset underlying feature instances
-      unset_uf_features = OTLearn::find_unset_features_in_words([failed_winner],main_hypothesis)
+      unset_uf_features = OTLearn::find_unset_features_in_words([failed_winner],main_grammar)
       # Set, in turn, each unset feature to match its output correspondent.
       # For each case, test the success winners and the current failed winner
-      # for collective consistency with the hypothesis.
+      # for collective consistency with the grammar.
       # TODO: generalize from one set feature to minimum number
       consistent_feature_val_list = []
       unset_uf_features.each do |ufeat|
@@ -273,11 +273,11 @@ module OTLearn
         # Add the failed winner to (a dup of) the list of success winners.
         word_list = success_winners.dup
         word_list << failed_winner
-        # Check the list of words for consistency, using the main hypothesis,
+        # Check the list of words for consistency, using the main grammar,
         # with each word's unset features mismatching their output correspondents.
-        mrcd_result = mismatch_consistency_check(main_hypothesis, word_list)
+        mrcd_result = mismatch_consistency_check(main_grammar, word_list)
         # If result is consistent, add the UF value to the list.
-        if mrcd_result.hypothesis.consistent? then
+        if mrcd_result.grammar.consistent? then
           ufeat_val_pair = FeatureValuePair.new(ufeat, ufeat.value)
           consistent_feature_val_list << ufeat_val_pair
         end
@@ -293,21 +293,21 @@ module OTLearn
       return consistent_feature_val_list[0] # the single element of the list.
     end
 
-    # Given a list of words and a hypothesis, check the word list for
-    # consistency with the hypothesis using MRCD. Any features unset
-    # in the lexicon of the hypothesis are set in the input of a word
+    # Given a list of words and a grammar, check the word list for
+    # consistency with the grammar using MRCD. Any features unset
+    # in the lexicon of the grammar are set in the input of a word
     # to the value opposite its output correspondent in the word.
     # The mismatching is done separately for each word (the same unset feature
     # for a morpheme might be assigned different values in the inputs of
     # different words containing that morpheme, depending on what the outputs
     # of those words are).
     # Returns the Mrcd object containing the results.
-    # To find out if the word list is consistent with the hypothesis, call
-    # result.hypothesis.consistent? (where result is the Mrcd object returned
+    # To find out if the word list is consistent with the grammar, call
+    # result.grammar.consistent? (where result is the Mrcd object returned
     # by #mismatch_consistency_check).
-    def mismatch_consistency_check(hypothesis, word_list)
+    def mismatch_consistency_check(grammar, word_list)
       w_list = word_list.map { |winner| winner.dup }
-      # Set each word's input so that features unset in the hypothesis lexicon
+      # Set each word's input so that features unset in the lexicon
       # mismatch their output correspondents. A given output could appear
       # more than once in the mismatch list ONLY if there are suprabinary
       # features (a suprabinary feature can mismatch in more than one way).
@@ -316,8 +316,8 @@ module OTLearn
         OTLearn::mismatches_input_to_output(word) { |mismatched_word| mismatch_list << mismatched_word }
       end
       # Run MRCD to see if the mismatched candidates are consistent.
-      selector = LoserSelector_by_ranking.new(@hyp.system)
-      mrcd = Mrcd.new(mismatch_list, hypothesis, selector)
+      selector = LoserSelector_by_ranking.new(@grammar.system)
+      mrcd = Mrcd.new(mismatch_list, grammar, selector)
       return mrcd
     end
 
