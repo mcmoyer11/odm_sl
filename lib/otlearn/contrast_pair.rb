@@ -15,15 +15,15 @@ module OTLearn
   # 
   # Example:
   #   cp_gen = Enumerator.new do |result|
-  #     OTLearn::generate_contrast_pair(result, winner_list, hyp, prior_result)
+  #     OTLearn::generate_contrast_pair(result, winner_list, grammar, prior_result)
   #   end
   #   loop {contrast_pair = cp_gen.next; <...>}
   #--
   # Values (contrast pairs) are returned by calling cp_return.yield(<pair>).
   #++
   #
-  # Given a list of winners for the language, the current hypothesis, and
-  # the GrammarTest result for the winners on that hypothesis, this method
+  # Given a list of winners for the language, a grammar, and
+  # the GrammarTest result for the winners on that grammar, this method
   # identifies failed winners (ones whose optimality is not yet ensured).
   # For each failed winner (FW) in sequence, other winners are searched for that:
   # * share a morpheme with the FW;
@@ -33,20 +33,20 @@ module OTLearn
   # * the failed winner has at least one feature that needs setting;
   # * the alternating unset feature ensures some additional mutual restriction
   #   between the forms of the pair beyond processing each in isolation.
-  def OTLearn::generate_contrast_pair(cp_return, winners, hyp, test_result=nil)
-    test_result ||= GrammarTest.new(winners, hyp)
+  def OTLearn::generate_contrast_pair(cp_return, winners, grammar, test_result=nil)
+    test_result ||= GrammarTest.new(winners, grammar)
     # The failed winners of the test are connected to a different
     # lexicon. Make duplicates of the failed winners, and synchronize
-    # them with _hyp_.
+    # them with +grammar+.
     f_winners = test_result.failed_winners.map do |winner|
-      winner.dup.sync_with_grammar!(hyp)
+      winner.dup.sync_with_grammar!(grammar)
     end
     # For each failed winner, look for qualifying contrast pairs
     f_winners.each do |failed_winner|
       OTLearn::match_input_to_uf!(failed_winner)
       failed_winner.morphword.each do |morph|
         # Find features of morph that are unset in the lexicon.
-        unset_features = OTLearn::find_unset_features([morph], hyp)
+        unset_features = OTLearn::find_unset_features([morph], grammar)
         next(nil) if unset_features.empty? # go to next morpheme
         # Find all words containing that morpheme, except the original failed winner
         containing_words = OTLearn::find_morphemes_in_words(winners)[morph]
