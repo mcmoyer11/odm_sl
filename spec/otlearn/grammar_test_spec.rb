@@ -7,8 +7,8 @@ RSpec.describe "A GrammarTest" do
   context "given an empty list of winners" do
     before(:each) do
       @winners = []
-      @hypothesis = nil
-#      @grammar_test = OTLearn::GrammarTest.new(@winners, @hypothesis)
+      @grammar = nil
+#      @grammar_test = OTLearn::GrammarTest.new(@winners, @grammar)
     end
     it "has no failed winners"
     it "has no success winners"
