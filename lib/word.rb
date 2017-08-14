@@ -176,7 +176,7 @@ class Word < Candidate
   # are elements of the lexicon in _hyp_. Useful when a hypothesis
   # has been duplicated (creating a lexicon with distinct underlying elements).
   def sync_with_hypothesis!(hyp)
-    input.sync_with_hypothesis!(hyp)
+    input.sync_with_grammar!(hyp)
     return self
   end
 
