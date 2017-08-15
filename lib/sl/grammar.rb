@@ -2,7 +2,6 @@
 #
 
 require_relative 'system'
-require 'forwardable'
 require_relative '../lexicon'
 
 module SL
@@ -10,12 +9,8 @@ module SL
   # A grammar for the SL linguistic system consists of a reference to
   # the SL::System linguistic system, a list of ERCs, and a lexicon.
   class Grammar
-    extend Forwardable
-
-    # TODO: make label an attribute of Grammar; make sure it is set properly
-    # via grammar everywhere (as opposed to the erc_list / ComparativeTableau
-    # having a crucial label being set directly).
-    def_delegators :@erc_list, :label, :label=
+    # The optional label assigned to the grammar.
+    attr_accessor :label
     
     # The list of ercs defining the ranking information of the grammar.
     attr_reader :erc_list
@@ -32,7 +27,9 @@ module SL
     def initialize(erc_list: nil, lexicon: Lexicon.new, system: System.instance)
       @system = system
       @erc_list = erc_list
-      @erc_list ||= Comparative_tableau.new("SL::Grammar", @system.constraints)
+      # TODO: make label an optional parameter, even when constraints are provided?
+      @erc_list ||= Comparative_tableau.new("", @system.constraints)
+      self.label = "SL::Grammar"
       @lexicon = lexicon
       @rcd_result = nil
     end

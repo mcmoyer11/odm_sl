@@ -21,18 +21,18 @@ require_relative 'hierarchy'
 class Rcd
 
   # Returns an object containing the results of running Recursive
-  # Constraint Demotion on the ERCs of comparative tableau _ct_.
-  # The label of _ct_ is adopted as the label of the RCD object.
+  # Constraint Demotion on the ERCs of comparative tableau +ct+.
+  # Accepts an optional label; the default label is "Rcd".
   #--
   # The constructor initialize() doesn't make a copy of the parameter ct.
   # However, once run_rcd() has finished, all relevant information is stored
   # in variables purely local to the Rcd object, and no further reference is
   # made to @ct. Thus, it shouldn't matter if the ct pointed to by the parameter
-  # subsequently changes state, so long as the contained label, constraint list,
+  # subsequently changes state, so long as the constraint list
   # and erc objects are not themselves directly altered.
-  def initialize(ct)
+  def initialize(ct, label: "Rcd")
     @ct = ct
-    @label = @ct.label
+    @label = label
     @constraints = @ct.constraint_list
     run_rcd
   end

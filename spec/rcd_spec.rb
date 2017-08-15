@@ -33,8 +33,8 @@ module Test
         @ct << @erc1
         @rcd = Rcd.new(@ct)
       end
-      it "has the same label as the CT" do
-        expect(@rcd.label).to eq(@ct.label)
+      it "has the default label, Rcd" do
+        expect(@rcd.label).to eq("Rcd")
       end
       it "returns consistent" do
         expect(@rcd.consistent?).to be true
@@ -54,6 +54,14 @@ module Test
       it "has no unexplained ercs" do
         expect(@rcd.unex_ercs.empty?).to be true
       end
+      context "and specified label 'The label'" do
+        before do
+         @rcd = Rcd.new(@ct, label: 'The Label')
+        end
+        it "returns the label 'The Label'" do
+          expect(@rcd.label).to eq('The Label')
+        end
+      end
     end
 
     context "Rcd with CT [[ML,FW,MW],[MW,FL,Me]]" do
@@ -63,9 +71,6 @@ module Test
         @ct = Comparative_tableau.new("CT consistent")
         @ct << @erc1 << @erc2
         @rcd = Rcd.new(@ct)
-      end
-      it "has the same label as the CT" do
-        expect(@rcd.label).to eq(@ct.label)
       end
       it "returns consistent" do
         expect(@rcd.consistent?).to be true

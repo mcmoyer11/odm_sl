@@ -3,12 +3,12 @@
 require 'sl/grammar'
 
 RSpec.describe SL::Grammar do
-  context "A new Grammar, with no parameters," do
+  context "A new SL::Grammar, with no parameters," do
     before(:each) do
       @grammar = SL::Grammar.new
       @morph = double("Morpheme")
     end
-    it "returns a reference to SYSTEM" do
+    it "returns a reference to SL::SYSTEM" do
       expect(@grammar.system).to eq(SL::SYSTEM)
     end
     it "returns an empty ERC list" do
@@ -16,6 +16,9 @@ RSpec.describe SL::Grammar do
     end
     it "returns an empty lexicon" do
       expect(@grammar.lexicon.size).to eq(0)
+    end
+    it "returns the label SL::Grammar" do
+      expect(@grammar.label).to eq "SL::Grammar"
     end
     it "returns nil when a lexical entry is requested" do
       expect(@grammar.get_uf(@morph)).to eq(nil)

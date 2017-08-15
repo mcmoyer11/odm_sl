@@ -7,9 +7,6 @@ require 'comparative_tableau'
 module Test
   RSpec.describe OTLearn::RcdFaithLow do
     RSpec.shared_examples "consistent scenarios" do
-      it "has the same label as the CT" do
-        expect(@rcd.label).to eq(@ct.label)
-      end      
       it "returns consistent" do
         expect(@rcd.consistent?).to be true
       end
@@ -32,6 +29,9 @@ module Test
         @rcd = OTLearn::RcdFaithLow.new(@ct)
       end
       include_examples "consistent scenarios"
+      it "returns the label 'RcdBiasLow'" do
+        expect(@rcd.label).to eq("RcdBiasLow")
+      end
       it "returns the forced total ranking [3:M3] [1:M1] [2:F2]" do
         expect(@rcd.hierarchy.to_s).to eq("[3:M3] [1:M1] [2:F2]")
       end
@@ -45,9 +45,12 @@ module Test
         @erc1 = Test.quick_erc([ML,FW,MW])
         @ct = Comparative_tableau.new("CT consistent")
         @ct << @erc1
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @rcd = OTLearn::RcdFaithLow.new(@ct, label: "FaithLow Label")
       end
       include_examples "consistent scenarios"
+      it "returns the label 'FaithLow Label'" do
+        expect(@rcd.label).to eq('FaithLow Label')
+      end
       it "ranks the markedness W constraint first, not the faithfulness W constraint" do
         expect(@rcd.hierarchy.to_s).to eq("[3:M3] [1:M1] [2:F2]")
       end

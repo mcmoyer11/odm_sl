@@ -1,5 +1,7 @@
 # Author: Bruce Tesar
 #
+# TODO: change RcdBiasLow so that the ranking bias is supplied as
+# an object to the constructor (dependency injection).
  
 require_relative '../rcd'
 
@@ -24,7 +26,12 @@ module OTLearn
   # constraints are ranked. This is to keep the computational complexity down.
   # Reference: Prince & Tesar.
   class RcdBiasLow < Rcd
-    def initialize(ct)
+    
+    # Accepts a comparative tableau +ct+ and an optional +label+.
+    # The default label value is "RcdBiasLow".
+    # Returns an Rcd object. The constraint bias must be provided by
+    # a concrete subclass by overriding the #low_constraint_type? method.
+    def initialize(ct, label: 'RcdBiasLow')
       super
     end
     
