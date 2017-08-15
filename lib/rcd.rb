@@ -24,16 +24,16 @@ class Rcd
   # Constraint Demotion on the ERCs of comparative tableau +ct+.
   # Accepts an optional label; the default label is "Rcd".
   #--
-  # The constructor initialize() doesn't make a copy of the parameter ct.
-  # However, once run_rcd() has finished, all relevant information is stored
-  # in variables purely local to the Rcd object, and no further reference is
-  # made to @ct. Thus, it shouldn't matter if the ct pointed to by the parameter
+  # The constructor copies the ERCs of the ct parameter to the internal
+  # array @erc_list.
+  # Thus, it shouldn't matter if the ct pointed to by the parameter
   # subsequently changes state, so long as the constraint list
   # and erc objects are not themselves directly altered.
   def initialize(ct, label: "Rcd")
-    @ct = ct
+    @erc_list = []
+    ct.each {|erc| @erc_list << erc}
     @label = label
-    @constraints = @ct.constraint_list
+    @constraints = ct.constraint_list
     run_rcd
   end
 
@@ -92,7 +92,7 @@ private  # The methods below are private.
     constraints.any? {|con| erc.w?(con)}
   end
 
-  # Executes Recursive Constraint Demotion (RCD) on the comparative tableau @ct.
+  # Executes Recursive Constraint Demotion (RCD) on the list of ercs.
   # If the tableau is consistent, @consistent will be true, @hierarchy will
   # contain the computed hierarchy, and @unranked and @unex_ercs will be empty.
   # At the end, @unranked will contain any unrankable constraints, and
@@ -105,7 +105,7 @@ private  # The methods below are private.
     # Initially, all ercs are unexplained and all constraints are unranked.
     @consistent = true # innocent until proven guilty
     @hierarchy = Hierarchy.new
-    @unex_ercs = @ct
+    @unex_ercs = @erc_list
     @ex_ercs = []
     @unranked = @constraints
     
