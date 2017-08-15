@@ -27,19 +27,15 @@ RSpec.describe SL::Grammar do
   
   context "A new grammar, when given a lexicon," do
     before(:each) do
-      @morph = "the_morph"
-      @lex_entry = double("Lexical_Entry")
-      allow(@lex_entry).to receive(:uf).and_return("the_uf")
-      allow(@lex_entry).to receive(:morpheme).and_return("the_morph")
-      # The lexicon has the basic interface of Array, so use an Array to mock it.
-      @lex = [@lex_entry]
+      @lex = instance_double(Lexicon)
+      allow(@lex).to receive(:get_uf).with("the_morph").and_return("the_uf")
       @grammar = SL::Grammar.new(lexicon: @lex)
     end
     it "returns the given lexicon" do
       expect(@grammar.lexicon).to eq(@lex)
     end
     it 'returns uf "the_uf" for the morpheme "the_morph"' do
-      expect(@grammar.get_uf(@morph)).to eq("the_uf")
+      expect(@grammar.get_uf("the_morph")).to eq("the_uf")
     end
   end
   

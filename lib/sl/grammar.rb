@@ -3,6 +3,7 @@
 
 require_relative 'system'
 require_relative '../lexicon'
+require_relative '../comparative_tableau'
 
 module SL
 
@@ -77,11 +78,8 @@ module SL
     # Returns the underlying form for the given morpheme, as stored in
     # the grammar's lexicon. Returns nil if the morpheme does not appear
     # in the lexicon.
-    # TODO: move this into the Lexicon class itself. Then have Grammar simply delegate.
     def get_uf(morph)
-      lex_entry = @lexicon.find{|entry| entry.morpheme==morph} # get the lexical entry
-      return nil if lex_entry.nil?
-      return lex_entry.uf  # return the underlying form
+      @lexicon.get_uf(morph)
     end
     
     def to_s
