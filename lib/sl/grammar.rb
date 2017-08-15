@@ -35,17 +35,19 @@ module SL
     end
 
     # Adds an erc, and checks the consistency of the updated list.
-    # Returns true if the ercs are consistent, false otherwise.
+    # Returns a reference to self (the grammar).
+    #--
     # TODO: move this method to your erc_list class, and then delegate it from here.
     def add_erc(erc)
       erc_list << erc
-      check_consistency
+      @rcd_result = nil # list changed, so old result is no longer valid
+      return self
     end
 
     # Returns true if the ERC list is currently consistent; false otherwise.
     def consistent?
-      return @rcd_result.consistent? unless @rcd_result.nil?
-      check_consistency
+      check_consistency if @rcd_result.nil?
+      return @rcd_result.consistent?
     end
   
     # Checks to see if the ERC list is consistent by running RCD.

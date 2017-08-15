@@ -1,9 +1,10 @@
 Todo List for odm_sl
 
-Create an Erc_list class. For purely surface-driven
-systems with no lexicon, create a system with a Grammar class that only
-takes an erc_list. Then the learning methods should be accepting and
-passing around Grammar objects of the sort they are expecting.
+Attend to the specs for GrammarTest.
+
+Create an Erc_list class. Don't inherit from Array; make the list class an
+internal field, so you can control the access. That way, you can internally
+compute consistency of the ERCs, with memoization and lazy evaluation.
 
 Implement a ranking information (erc list) only linguistic system and
 grammar class. Use it to set up basic bin scripts for experimenting with
