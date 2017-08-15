@@ -36,7 +36,7 @@ class FactorialTypology
   def check_harmonic_boundedness
     @original_comp_list.each do |comp|
       comp.each do |cand|
-        ct = Comparative_tableau.new("check_with_rcd", @constraint_list)
+        ct = Comparative_tableau.new(constraint_list: @constraint_list, label: "check_with_rcd")
         winner_comp = construct_competition_with_winner(cand, comp)
         # check to see if winner is possibly optimal
         ct.add_competition(winner_comp)
@@ -61,7 +61,7 @@ class FactorialTypology
     comp_list = non_hb_competition_list
     set_competitions_with_fixed_optima(comp_list)
     # Construct initial language list with a single empty language
-    lang_list = [Comparative_tableau.new("", @constraint_list)]
+    lang_list = [Comparative_tableau.new(constraint_list: @constraint_list, label: "")]
     # Iterate over the competitions
     comp_list.each do |comp|
       lang_list_new = [] # will receive languages with winners from comp added

@@ -24,7 +24,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
         @erc2 = Test.quick_erc([MW,FL,ME])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1 << @erc2
         @rcd = OTLearn::RcdFaithLow.new(@ct)
       end
@@ -43,7 +43,7 @@ module Test
     context "RcdFaithLow with CT [[ML,FW,MW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1
         @rcd = OTLearn::RcdFaithLow.new(@ct, label: "FaithLow Label")
       end
@@ -62,7 +62,7 @@ module Test
     context "RcdFaithLow with CT [[ME,FW,ML,FE]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ME,FW,ML,FE])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1
         @rcd = OTLearn::RcdFaithLow.new(@ct)
       end
@@ -79,7 +79,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([FE,FW,ML,FE])
         @erc2 = Test.quick_erc([FE,FE,ML,FW])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1 << @erc2
         @rcd = OTLearn::RcdFaithLow.new(@ct)
       end
@@ -95,7 +95,7 @@ module Test
     context "RcdFaithLow with CT [[FW,FW,ML,FE]]" do
       before(:each) do
         @erc1 = Test.quick_erc([FW,FW,ML,FE])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1
         @rcd = OTLearn::RcdFaithLow.new(@ct)
       end
@@ -112,7 +112,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([FW,FW,ML,FE])
         @erc2 = Test.quick_erc([FE,FE,ML,FW])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1 << @erc2
         @rcd = OTLearn::RcdFaithLow.new(@ct)
       end

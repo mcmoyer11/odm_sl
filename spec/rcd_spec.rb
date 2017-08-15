@@ -29,7 +29,7 @@ module Test
     context "Rcd with CT [[ML,MW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,MW])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1
         @rcd = Rcd.new(@ct)
       end
@@ -68,7 +68,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
         @erc2 = Test.quick_erc([MW,FL,ME])
-        @ct = Comparative_tableau.new("CT consistent")
+        @ct = Comparative_tableau.new(label: "CT consistent")
         @ct << @erc1 << @erc2
         @rcd = Rcd.new(@ct)
       end
@@ -97,7 +97,7 @@ module Test
         @erc1 = Test.quick_erc([MW,FE,ML])
         @erc2 = Test.quick_erc([ME,FL,MW])
         @erc3 = Test.quick_erc([ME,FW,ML])
-        @ct = Comparative_tableau.new("CT inconsistent")
+        @ct = Comparative_tableau.new(label: "CT inconsistent")
         @ct << @erc1 << @erc2 << @erc3
         @rcd = Rcd.new(@ct)
       end

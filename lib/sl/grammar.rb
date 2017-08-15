@@ -27,8 +27,7 @@ module SL
     def initialize(erc_list: nil, lexicon: Lexicon.new, system: System.instance)
       @system = system
       @erc_list = erc_list
-      # TODO: make label an optional parameter, even when constraints are provided?
-      @erc_list ||= Comparative_tableau.new("", @system.constraints)
+      @erc_list ||= Comparative_tableau.new(constraint_list: @system.constraints, label: "")
       self.label = "SL::Grammar"
       @lexicon = lexicon
       @rcd_result = nil

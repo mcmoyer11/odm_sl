@@ -268,7 +268,7 @@ class RCD_image < CT_image
     end
 
     # create a CT with the ercs in sorted order
-    sorted_ercs = Comparative_tableau.new(rcd_result.label)
+    sorted_ercs = Comparative_tableau.new(label: rcd_result.label)
     sorted_ercs.concat(explained_ercs)
     sorted_ercs.concat(unex_ercs)
 

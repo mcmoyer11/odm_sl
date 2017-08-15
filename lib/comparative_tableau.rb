@@ -19,7 +19,7 @@ class Comparative_tableau < Array
   # constraints can be passed to the constructor; otherwise, once a
   # winner-loser pair is added, the tableau will adopt that pair's
   # constraint list.
-  def initialize(label="NoLabel", constraint_list=nil)
+  def initialize(constraint_list: nil, label: "Comparative_tableau")
     @label = label
     @constraints = constraint_list
   end
@@ -56,7 +56,7 @@ class Comparative_tableau < Array
   #   reject{|obj| block} -> comparative_tableau
   # 
   def reject
-    Comparative_tableau.new("CT#reject()").concat(super)
+    Comparative_tableau.new(label: "CT#reject()").concat(super)
   end
 
   # Like Array#partition(), but returns two Comparative_tableau instances.
@@ -66,8 +66,8 @@ class Comparative_tableau < Array
   #
   def partition
     true_array, false_array = super
-    true_ct = Comparative_tableau.new("CT#partition() true").concat(true_array)
-    false_ct = Comparative_tableau.new("CT#partition() false").concat(false_array)
+    true_ct = Comparative_tableau.new(label: "CT#partition() true").concat(true_array)
+    false_ct = Comparative_tableau.new(label: "CT#partition() false").concat(false_array)
     return [true_ct, false_ct]
   end
   
