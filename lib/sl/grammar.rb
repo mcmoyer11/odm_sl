@@ -2,8 +2,8 @@
 #
 
 require_relative 'system'
-require_relative '../lexicon'
-require_relative '../comparative_tableau'
+require 'lexicon'
+require 'comparative_tableau'
 
 module SL
 
