@@ -3,8 +3,17 @@
 
 # An Erc_list is a list of ERC-like objects. All ercs in the list must respond
 # to #constraint_list with a list of the very same constraints.
+# ---
+# === Delegated Methods
+# [empty?] Returns true if the list is empty, false otherwise.
+# [size] Returns the integer number of ERCs in the list.
+# [any?] Returns true if any of the ERCs satisfies the block, false otherwise.
+# [each] Applies the block to each member of the list.
 class Erc_list
+  extend Forwardable
   
+  def_delegators :@list, :empty?, :size, :any?, :each
+    
   # Returns an empty Erc_list.
   def initialize
     @list = []
@@ -28,23 +37,30 @@ class Erc_list
     self
   end
   
-  # Returns true if the list is empty; returns false otherwise.
-  def empty?
-    @list.empty?
+  # Returns an Erc_list containing all ercs that <em>satisfy</em> the block.
+  def find_all(&block)
+    satisfies = @list.find_all(&block)
+    new_el = Erc_list.new
+    satisfies.each {|e| new_el.add(e)}
+    new_el
   end
   
-  # Returns the number of ERCs in the list.
-  def size
-    @list.size
+  # Returns an Erc_list containing all ercs that <em>do not satisfy</em> the block.
+  def reject(&block)
+    not_satisfies = @list.reject(&block)
+    new_el = Erc_list.new
+    not_satisfies.each{|e| new_el.add(e)}
+    new_el
   end
   
-  # Returns true if any of the elements of the list satisfy the block.
-  # Returns false otherwise.
-  def any? &block
-    @list.any?(&block)
+  # Returns an array containing the ercs of the erc list.
+  def to_a
+    ary = []
+    @list.each{|e| ary.push(e)}
+    ary
   end
   
-  # Returns an list of the constraints used in the ERCs.
+  # Returns a list of the constraints used in the ERCs.
   def constraint_list
     return [] if @list.empty?
     @list[0].constraint_list

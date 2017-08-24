@@ -18,6 +18,9 @@ RSpec.fdescribe Erc_list do
     it "returns an empty list of constraints" do
       expect(@erc_list.constraint_list).to be_empty
     end
+    it "converts to an empty array" do
+      expect(@erc_list.to_a).to be_empty
+    end
   end
   
   context "An Erc_list with one added erc" do
@@ -25,7 +28,7 @@ RSpec.fdescribe Erc_list do
       @erc_list = Erc_list.new
       @erc1 = double("erc1")
       allow(@erc1).to receive(:constraint_list).and_return(["C1","C2"])
-      allow(@erc1).to receive(:test_any).and_return(true)
+      allow(@erc1).to receive(:test_cond).and_return(true)
       @erc_list.add(@erc1)
     end
     
@@ -39,17 +42,33 @@ RSpec.fdescribe Erc_list do
       expect(@erc_list.constraint_list).to contain_exactly("C1","C2")
     end
     it "returns true when #any? is satisfied by the erc" do
-      expect(@erc_list.any?{|e| e.test_any}).to be true
+      expect(@erc_list.any?{|e| e.test_cond}).to be true
     end
     it "returns false when #any? isn't satisfied by the erc" do
       expect(@erc_list.any?{|e| e.nil?}).to be false
+    end
+    it "returns block-satisfying members for #find_all" do
+      found = @erc_list.find_all{|e| e.test_cond} 
+      expect(found.to_a).to contain_exactly(@erc1)
+    end
+    it "returns an Erc_list for #find_all" do
+      found = @erc_list.find_all{|e| e.test_cond}
+      expect(found).to be_an_instance_of(Erc_list)
+    end
+    it "returns block-violating members for #reject" do
+      found = @erc_list.reject{|e| e.test_cond} 
+      expect(found.to_a).to be_empty
+    end
+    it "returns an Erc_list for #reject" do
+      found = @erc_list.reject{|e| e.test_cond}
+      expect(found).to be_an_instance_of(Erc_list)
     end
     
     context "and a second erc with the same constraints is added" do
       before(:each) do
         @erc2 = double("erc2")
         allow(@erc2).to receive(:constraint_list).and_return(["C2","C1"])
-        allow(@erc2).to receive(:test_any).and_return(false)
+        allow(@erc2).to receive(:test_cond).and_return(false)
         @erc_list.add(@erc2)
       end
       it "has size 2" do
@@ -59,10 +78,14 @@ RSpec.fdescribe Erc_list do
         expect(@erc_list.constraint_list).to contain_exactly("C1","C2")
       end
       it "returns true when #any? is satisfied by one of the ercs" do
-        expect(@erc_list.any?{|e| e.test_any}).to be true
+        expect(@erc_list.any?{|e| e.test_cond}).to be true
       end
       it "returns false when #any? isn't satisfied by any of the ercs" do
         expect(@erc_list.any?{|e| e.nil?}).to be false
+      end
+      it "returns an array with block-satisfying members for #find_all" do
+        found = @erc_list.find_all{|e| e.test_cond} 
+        expect(found.to_a).to contain_exactly(@erc1)
       end
     end
     
@@ -87,4 +110,3 @@ RSpec.fdescribe Erc_list do
     end
   end
 end # describe Erc_list
-
