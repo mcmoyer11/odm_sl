@@ -14,15 +14,24 @@ class Erc_list
   
   def_delegators :@list, :empty?, :size, :any?, :each
     
-  # Returns an empty Erc_list.
+  # Returns an empty Erc_list. It can optionally be passed a list of
+  # constraints. If a constraint list is not provided at object construction,
+  # then the constraints of the first ERC added will determine
+  # the constraint list.
+  # 
+  # Providing a list of constraints at construction time:
+  # * Allows added ERCs to be check to make sure their constraints match.
+  # * Makes it easy to apply RCD to an empty Erc_list.
   # 
   # :call-seq:
   #   Erc_list.new() -> Erc_list
+  #   Erc_list.new(constraint_list: my_constraints) -> Erc_list
   #--
   # The default RCD class is Rcd. The +rcd_class+ parameter is
   # primarily for testing purposes (dependency injection).
-  def initialize(rcd_class: Rcd)
+  def initialize(constraint_list: nil, rcd_class: Rcd)
     @list = []
+    @constraint_list = constraint_list
     @rcd_class = rcd_class
     @consistency_test = nil # consistency is initially unknown (RCD has not been run).
   end
@@ -32,11 +41,10 @@ class Erc_list
   # Returns a reference to self.
   # 
   # Raises a RuntimeError if +erc+ does not have exactly the same constraints
-  # as the existing ERCs of the list.
+  # as used in the list.
   def add(erc)
-    # check that the new ERC uses exactly the same constraints as the
-    # existing ERCs in the list.
-    unless empty? then # if this is the first ERC, nothing to check
+    # check that the new ERC uses exactly the same constraints used in the list.
+    unless constraint_list.empty? then # if constraints haven't been provided, then nothing to check
       unless erc.constraint_list.size == constraint_list.size then
         raise "Erc_list#add: cannot add an ERC with a different number of constraints"
       end
@@ -55,10 +63,9 @@ class Erc_list
   # Returns a reference to self.
   # 
   # Raises a RuntimeError if any of the ERCS in +list+ does not have exactly
-  # the same constraints as the existing ERCs of the list (or each other).
+  # the same constraints as used in the list.
   def add_all(list)
     list.each {|e| add(e)}
-    @consistency_test = nil # program has not yet checked if the new erc is consistent
     self
   end
   
@@ -109,13 +116,17 @@ class Erc_list
   # adding or removing ERCs from the duplicate will not affect the original.
   # The ERC objects themselves are <em>not</em> duplicated.
   def dup
-    Erc_list.new.add_all(self)
+    Erc_list.new(constraint_list: constraint_list, rcd_class: @rcd_class).add_all(self)
   end
   
-  # Returns a list of the constraints used in the ERCs.
+  # Returns a list of the constraints used in the list. If no constraints were
+  # provided to the constructor, and no ERCs have been added, then an empty
+  # array is returned.
   def constraint_list
+    return @constraint_list unless @constraint_list.nil?
     return [] if @list.empty?
-    @list[0].constraint_list
+    @constraint_list = @list[0].constraint_list
+    return @constraint_list
   end
   
   # Returns true if the list of ERCs is consistent; false otherwise.

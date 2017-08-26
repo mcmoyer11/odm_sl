@@ -4,7 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'erc_list'
 
 RSpec.describe Erc_list do
-  context "An empty Erc_list" do
+  context "A newly created Erc_list" do
     before(:example) do
       @erc_list = Erc_list.new
     end
@@ -20,6 +20,20 @@ RSpec.describe Erc_list do
     end
     it "converts to an empty array" do
       expect(@erc_list.to_a).to be_empty
+    end    
+  end
+  
+  context "An Erc_list provided with a list of constraints" do
+    before(:example) do
+      @erc_list = Erc_list.new(constraint_list: ["C1","C2"])
+    end
+    it "returns a list of the same constraints" do
+      expect(@erc_list.constraint_list).to contain_exactly("C1","C2")
+    end
+    it "raises a RuntimeError when an ERC with different constraints is added" do
+      erc_diff = instance_double(Erc, "erc_diff")
+      allow(erc_diff).to receive(:constraint_list).and_return(["C3","C4"])
+      expect{@erc_list.add(erc_diff)}.to raise_exception(RuntimeError)
     end
   end
   
@@ -175,7 +189,7 @@ RSpec.describe Erc_list do
 
   # Testing #consistent?
   
-  fcontext "with no ERCs added" do
+  context "with no ERCs added" do
     before(:example) do
       @erc_list = Erc_list.new
     end
@@ -184,7 +198,7 @@ RSpec.describe Erc_list do
     end
   end
   
-  fcontext "with one consistent ERC added" do
+  context "with one consistent ERC added" do
     before(:example) do
       @erc_consistent = instance_double(Erc)
       allow(@erc_consistent).to receive(:constraint_list).and_return(["C1","C2"])
@@ -199,7 +213,7 @@ RSpec.describe Erc_list do
     end
   end
 
-  fcontext "with one inconsistent ERC added" do
+  context "with one inconsistent ERC added" do
     before(:example) do
       @erc_consistent = instance_double(Erc)
       allow(@erc_consistent).to receive(:constraint_list).and_return(["C1","C2"])
