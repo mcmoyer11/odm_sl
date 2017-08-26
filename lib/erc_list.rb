@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 #
 
-# An Erc_list is a list of ERC-like objects. All ercs in the list must respond
+# An Erc_list is a list of ERC-like objects. All ERCs in the list must respond
 # to #constraint_list with a list of the very same constraints.
 # ---
 # === Delegated Methods
@@ -26,17 +26,17 @@ class Erc_list
   # Raises a RuntimeError if +erc+ does not have exactly the same constraints
   # as the existing ERCs of the list.
   def add(erc)
-    # check that the new erc uses exactly the same constraints as the
-    # existing ercs in the list.
-    unless empty? then # if this is the first erc, nothing to check
+    # check that the new ERC uses exactly the same constraints as the
+    # existing ERCs in the list.
+    unless empty? then # if this is the first ERC, nothing to check
       unless erc.constraint_list.size == constraint_list.size then
-        raise "Erc_list#add: cannot add an erc with a different number of constraints"
+        raise "Erc_list#add: cannot add an ERC with a different number of constraints"
       end
       unless erc.constraint_list.all?{|con| constraint_list.include?(con)} then
-        raise "Erc_list#add: cannot add an erc with different constraints"
+        raise "Erc_list#add: cannot add an ERC with different constraints"
       end
     end
-    # append the new erc to the list, and return self (the Erc_list).
+    # append the new ERC to the list, and return self (the Erc_list).
     @list << erc
     self
   end
@@ -52,7 +52,11 @@ class Erc_list
     self
   end
   
-  # Returns an Erc_list containing all ercs that <em>satisfy</em> the block.
+  # Returns an Erc_list containing all ERCs for which the block
+  # returns <em>true</em>.
+  #
+  # :call-seq:
+  #   find_all{|obj| block} -> Erc_list
   def find_all(&block)
     satisfies = @list.find_all(&block)
     new_el = Erc_list.new
@@ -60,7 +64,11 @@ class Erc_list
     new_el
   end
   
-  # Returns an Erc_list containing all ercs that <em>do not satisfy</em> the block.
+  # Returns an Erc_list containing all ERCs for which the block
+  # returns <em>false</em>.
+  #
+  # :call-seq:
+  #   reject{|obj| block} -> Erc_list
   def reject(&block)
     not_satisfies = @list.reject(&block)
     new_el = Erc_list.new
@@ -70,14 +78,17 @@ class Erc_list
   
   # Partitions the members of the ERC list based on whether they satisfy
   # the provided block. Returns two Erc_list objects, the first containing
-  # the ERCs that satisfy the block, and the second those that do not
-  # satisfy the block.
+  # the ERCs for which the block returns true, and the second containing
+  # those for which the block returns false.
+  #
+  # :call-seq:
+  #   partition{|obj| block} -> [true-Erc_list, false-Erc_list]
   def partition(&block)
     true_list, false_list = @list.partition(&block)
     return Erc_list.new.add_all(true_list), Erc_list.new.add_all(false_list)
   end
   
-  # Returns an array containing the ercs of the erc list.
+  # Returns an array containing the ERCs of the ERC list.
   def to_a
     ary = []
     @list.each{|e| ary.push(e)}
