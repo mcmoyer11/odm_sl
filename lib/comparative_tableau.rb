@@ -103,11 +103,6 @@ class Comparative_tableau < Array
     losers.each{|loser| push(Win_lose_pair.new(winner,loser))}
   end
 
-  # For the competition list _clist_, add each competition to the comparative tableau.
-  def add_competition_list(clist)
-    clist.each{|comp| add_competition(comp)}
-  end
-  
   # Returns an array of the winners (no duplicates) in the comparative tableau.
   def winners
     winners = []
