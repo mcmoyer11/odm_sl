@@ -68,11 +68,27 @@ class Erc_list
     new_el
   end
   
+  # Partitions the members of the ERC list based on whether they satisfy
+  # the provided block. Returns two Erc_list objects, the first containing
+  # the ERCs that satisfy the block, and the second those that do not
+  # satisfy the block.
+  def partition(&block)
+    true_list, false_list = @list.partition(&block)
+    return Erc_list.new.add_all(true_list), Erc_list.new.add_all(false_list)
+  end
+  
   # Returns an array containing the ercs of the erc list.
   def to_a
     ary = []
     @list.each{|e| ary.push(e)}
     ary
+  end
+  
+  # Returns a duplicate Erc_list with an independent list, meaning that
+  # adding or removing ERCs from the duplicate will not affect the original.
+  # The ERC objects themselves are <em>not</em> duplicated.
+  def dup
+    Erc_list.new.add_all(self)
   end
   
   # Returns a list of the constraints used in the ERCs.

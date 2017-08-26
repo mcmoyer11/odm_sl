@@ -3,7 +3,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'erc_list'
 
-RSpec.fdescribe Erc_list do
+RSpec.describe Erc_list do
   context "An empty Erc_list" do
     before(:example) do
       @erc_list = Erc_list.new
@@ -63,6 +63,24 @@ RSpec.fdescribe Erc_list do
       found = @erc_list.reject{|e| e.test_cond}
       expect(found).to be_an_instance_of(Erc_list)
     end
+    it "partitions into one satisfying ERC and no other ERCs" do
+      true_list, false_list = @erc_list.partition{|e| e.test_cond}
+      expect(true_list.to_a).to contain_exactly(@erc1)
+      expect(false_list.to_a).to be_empty
+    end
+    it "partitions into two Erc_list objects" do
+      true_list, false_list = @erc_list.partition{|e| e.test_cond}
+      expect(true_list).to be_an_instance_of(Erc_list)
+      expect(false_list).to be_an_instance_of(Erc_list)
+    end
+    it "returns a duplicate with a list independent of the original" do
+      dup_list = @erc_list.dup
+      erc_new = instance_double(Erc, "new erc")
+      allow(erc_new).to receive(:constraint_list).and_return(["C1","C2"])
+      dup_list.add(erc_new)
+      expect(@erc_list.to_a).to contain_exactly(@erc1)
+      expect(dup_list.to_a).to contain_exactly(@erc1, erc_new)
+    end
     
     context "and a second erc with the same constraints is added" do
       before(:example) do
@@ -86,6 +104,11 @@ RSpec.fdescribe Erc_list do
       it "returns an array with block-satisfying members for #find_all" do
         found = @erc_list.find_all{|e| e.test_cond} 
         expect(found.to_a).to contain_exactly(@erc1)
+      end
+      it "partitions into one satisfying ERC and one other ERC" do
+        true_list, false_list = @erc_list.partition{|e| e.test_cond}
+        expect(true_list.to_a).to contain_exactly(@erc1)
+        expect(false_list.to_a).to contain_exactly(@erc2)
       end
     end
     
