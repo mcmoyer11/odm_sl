@@ -15,8 +15,16 @@ class Erc_list
   def_delegators :@list, :empty?, :size, :any?, :each
     
   # Returns an empty Erc_list.
-  def initialize
+  # 
+  # :call-seq:
+  #   Erc_list.new() -> Erc_list
+  #--
+  # The default RCD class is Rcd. The +rcd_class+ parameter is
+  # primarily for testing purposes (dependency injection).
+  def initialize(rcd_class: Rcd)
     @list = []
+    @rcd_class = rcd_class
+    @consistency_test = nil # consistency is initially unknown (RCD has not been run).
   end
   
   # Adds +erc+ to self.
@@ -38,6 +46,7 @@ class Erc_list
     end
     # append the new ERC to the list, and return self (the Erc_list).
     @list << erc
+    @consistency_test = nil # program has not yet checked if the new erc is consistent
     self
   end
   
@@ -49,6 +58,7 @@ class Erc_list
   # the same constraints as the existing ERCs of the list (or each other).
   def add_all(list)
     list.each {|e| add(e)}
+    @consistency_test = nil # program has not yet checked if the new erc is consistent
     self
   end
   
@@ -106,5 +116,14 @@ class Erc_list
   def constraint_list
     return [] if @list.empty?
     @list[0].constraint_list
+  end
+  
+  # Returns true if the list of ERCs is consistent; false otherwise.
+  #--
+  # If consistency status is currently unknown, calculates and stores it
+  # with a new Rcd_class object.
+  def consistent?
+    @consistency_test = @rcd_class.new(self) if @consistency_test.nil?
+    @consistency_test.consistent?
   end
 end # class Erc_list

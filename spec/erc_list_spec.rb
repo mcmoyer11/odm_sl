@@ -172,4 +172,46 @@ RSpec.describe Erc_list do
       end
     end
   end
+
+  # Testing #consistent?
+  
+  fcontext "with no ERCs added" do
+    before(:example) do
+      @erc_list = Erc_list.new
+    end
+    it "responds that it is consistent" do
+      expect(@erc_list.consistent?).to be true
+    end
+  end
+  
+  fcontext "with one consistent ERC added" do
+    before(:example) do
+      @erc_consistent = instance_double(Erc)
+      allow(@erc_consistent).to receive(:constraint_list).and_return(["C1","C2"])
+      @rcd_class = double("RCD class")
+      rcd_result = instance_double(Rcd)
+      allow(rcd_result).to receive(:consistent?).and_return(true)
+      @erc_list = Erc_list.new(rcd_class: @rcd_class).add(@erc_consistent)
+      allow(@rcd_class).to receive(:new).with(@erc_list).and_return(rcd_result)
+    end
+    it "responds that is is consistent" do
+      expect(@erc_list.consistent?).to be true
+    end
+  end
+
+  fcontext "with one inconsistent ERC added" do
+    before(:example) do
+      @erc_consistent = instance_double(Erc)
+      allow(@erc_consistent).to receive(:constraint_list).and_return(["C1","C2"])
+      @rcd_class = double("RCD class")
+      rcd_result = instance_double(Rcd)
+      allow(rcd_result).to receive(:consistent?).and_return(false)
+      @erc_list = Erc_list.new(rcd_class: @rcd_class).add(@erc_consistent)
+      allow(@rcd_class).to receive(:new).with(@erc_list).and_return(rcd_result)
+    end
+    it "responds that it is not consistent" do
+      expect(@erc_list.consistent?).to be false
+    end
+  end
+  
 end # describe Erc_list
