@@ -19,8 +19,12 @@ class Erc_list
     @list = []
   end
   
-  # Adds +erc+ to the list.
-  # Returns the Erc_list.
+  # Adds +erc+ to self.
+  # +erc+ must respond to #constraint_list.
+  # Returns a reference to self.
+  # 
+  # Raises a RuntimeError if +erc+ does not have exactly the same constraints
+  # as the existing ERCs of the list.
   def add(erc)
     # check that the new erc uses exactly the same constraints as the
     # existing ercs in the list.
@@ -34,6 +38,17 @@ class Erc_list
     end
     # append the new erc to the list, and return self (the Erc_list).
     @list << erc
+    self
+  end
+  
+  # Adds all ERCs of +list+ to self.
+  # +list+ must respond to #each.
+  # Returns a reference to self.
+  # 
+  # Raises a RuntimeError if any of the ERCS in +list+ does not have exactly
+  # the same constraints as the existing ERCs of the list (or each other).
+  def add_all(list)
+    list.each {|e| add(e)}
     self
   end
   

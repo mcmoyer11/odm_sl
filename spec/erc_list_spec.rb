@@ -5,7 +5,7 @@ require 'erc_list'
 
 RSpec.fdescribe Erc_list do
   context "An empty Erc_list" do
-    before(:each) do
+    before(:example) do
       @erc_list = Erc_list.new
     end
 
@@ -24,7 +24,7 @@ RSpec.fdescribe Erc_list do
   end
   
   context "An Erc_list with one added erc" do
-    before(:each) do
+    before(:example) do
       @erc_list = Erc_list.new
       @erc1 = double("erc1")
       allow(@erc1).to receive(:constraint_list).and_return(["C1","C2"])
@@ -65,7 +65,7 @@ RSpec.fdescribe Erc_list do
     end
     
     context "and a second erc with the same constraints is added" do
-      before(:each) do
+      before(:example) do
         @erc2 = double("erc2")
         allow(@erc2).to receive(:constraint_list).and_return(["C2","C1"])
         allow(@erc2).to receive(:test_cond).and_return(false)
@@ -106,6 +106,46 @@ RSpec.fdescribe Erc_list do
       end
       it "raises a RuntimeError" do
         expect{@erc_list.add(@erc_diff)}.to raise_exception(RuntimeError)
+      end
+    end
+  end
+  
+  context "An empty Erc_list, when ERCS are added from a list" do
+    before(:example) do
+      @erc_orig = instance_double(Erc)
+      @erc_same = instance_double(Erc)
+      @erc_diff = instance_double(Erc)
+      @erc_again = instance_double(Erc)
+      allow(@erc_orig).to receive(:constraint_list).and_return(["C1","C2"])
+      allow(@erc_same).to receive(:constraint_list).and_return(["C1","C2"])
+      allow(@erc_diff).to receive(:constraint_list).and_return(["C1","C4"])
+      allow(@erc_again).to receive(:constraint_list).and_return(["C1","C2"])
+      @generic_list = double("generic_list")
+    end
+    context "of homo-constraint ercs" do
+      before(:example) do
+        allow(@generic_list).to receive(:each).and_yield(@erc_orig)
+                                              .and_yield(@erc_same)
+        @new_erc_list = Erc_list.new.add_all(@generic_list)
+      end
+      it "contains the same number of ercs" do
+        expect(@new_erc_list.size).to eq(2)
+      end
+      it "can be further modified independent of the source list" do
+        # This test works because any attempt to add an erc to the source
+        # list will fail: test double @generic_list does not accept #add,
+        # nor any other method apart from #each.
+        @new_erc_list.add(@erc_again)
+        expect(@new_erc_list.to_a).to contain_exactly(@erc_again,@erc_orig,@erc_same)
+      end
+    end
+    context "of hetero-constraint ercs" do
+      before(:example) do
+        allow(@generic_list).to receive(:each).and_yield(@erc_orig)
+                                              .and_yield(@erc_diff)
+      end
+      it "raises a RuntimeError" do
+        expect{Erc_list.new.add_all(@generic_list)}.to raise_error(RuntimeError)
       end
     end
   end
