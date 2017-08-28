@@ -2,7 +2,9 @@
 #
 # This file contains a collection of methods for generating and
 # manipulating data.
- 
+
+require 'set'
+
 module OTLearn
   
   # For the given word, set each *unset* feature of the input to the value
@@ -113,12 +115,12 @@ module OTLearn
     return lang
   end
 
-  # Given a list of winner_loser pairs +wlp_list+, returns an array of
-  # the winners in the pairs of the list, with no duplicates.
+  # Given a list of winner_loser pairs +wlp_list+, returns a set of
+  # the winners in the pairs of the list (with no duplicates).
   def OTLearn::wlp_winners(wlp_list)
-    winners = []
+    winners = Set.new # Set automatically filters duplicate entries
     wlp_list.each do |wlp|
-      winners << wlp.winner unless winners.member?(wlp.winner)
+      winners.add(wlp.winner)
     end
     return winners
   end
