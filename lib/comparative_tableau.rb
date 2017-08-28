@@ -103,15 +103,6 @@ class Comparative_tableau < Array
     losers.each{|loser| push(Win_lose_pair.new(winner,loser))}
   end
 
-  # Returns an array of the winners (no duplicates) in the comparative tableau.
-  def winners
-    winners = []
-    self.each do |wlp|
-      winners << wlp.winner unless winners.member?(wlp.winner)
-    end
-    return winners
-  end
-
   # Returns a string of the tableau, consisting of the to_s() for each
   # winner-loser pair, separated by newlines.
   def to_s

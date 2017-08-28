@@ -113,12 +113,22 @@ module OTLearn
     return lang
   end
 
+  # Given a list of winner_loser pairs +wlp_list+, returns an array of
+  # the winners in the pairs of the list, with no duplicates.
+  def OTLearn::wlp_winners(wlp_list)
+    winners = []
+    wlp_list.each do |wlp|
+      winners << wlp.winner unless winners.member?(wlp.winner)
+    end
+    return winners
+  end
+  
   # Takes a language in the form of a comparative tableau of WL pairs (with
   # each represented form of the language appearing as a winner in at least
   # one pair), and returns a list of the winner outputs.
   def OTLearn::convert_ct_to_learning_data(lang_ct)
     # Extract the outputs of the grammatical candidates of the language.
-    outputs = lang_ct.winners.map{|winner| winner.output}
+    outputs = wlp_winners(lang_ct).map{|winner| winner.output}
     return outputs
   end
 
