@@ -19,7 +19,18 @@ RSpec.describe Erc_list do
     end
     it "converts to an empty array" do
       expect(@erc_list.to_a).to be_empty
-    end    
+    end
+    it "returns an empty label" do
+      expect(@erc_list.label).to eq("")
+    end
+    context "when the label is set to LABEL" do
+      before do
+        @erc_list.label = 'LABEL'
+      end
+      it "returns the label LABEL" do
+        expect(@erc_list.label).to eq("LABEL")
+      end
+    end
   end
   
   context "An Erc_list provided with a list of constraints" do

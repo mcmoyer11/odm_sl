@@ -13,7 +13,10 @@ class Erc_list
   extend Forwardable
   
   def_delegators :@list, :empty?, :size, :any?, :each
-    
+  
+  # An optional label. Defaults to the empty string "".
+  attr_accessor :label
+  
   # Returns an empty Erc_list. It can optionally be passed a list of
   # constraints. If a constraint list is not provided at object construction,
   # then the constraints of the first ERC added will determine
@@ -33,6 +36,7 @@ class Erc_list
     @list = []
     @constraint_list = constraint_list
     @rcd_class = rcd_class
+    @label = ""
     @consistency_test = nil # consistency is initially unknown (RCD has not been run).
   end
   

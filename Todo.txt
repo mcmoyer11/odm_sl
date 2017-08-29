@@ -1,9 +1,5 @@
 Todo List for odm_sl
 
-Create a method in Competition that returns a list of winner-loser pairs
-for the competition. Be sure to examine the existing methods in Competition.
-This is part of a replacement for the method Comparative_tableau#add_competition.
-
 Implement a ranking information (erc list) only linguistic system and
 grammar class. Use it to set up basic bin scripts for experimenting with
 different ranking biases.
