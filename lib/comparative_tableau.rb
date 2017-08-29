@@ -1,9 +1,6 @@
 # Author: Bruce Tesar
 # 
  
-require_relative 'competition'
-require_relative 'win_lose_pair'
-
 # A comparative tableau is a list of winner-loser pairs. A comparative tableau
 # can be queried for a list of the constraints and for a list of the winners
 # within the winner-loser pairs. It also has methods to automatically add
@@ -19,8 +16,8 @@ class Comparative_tableau < Array
   # constraints can be passed to the constructor; otherwise, once a
   # winner-loser pair is added, the tableau will adopt that pair's
   # constraint list.
-  def initialize(constraint_list: nil, label: "Comparative_tableau")
-    @label = label
+  def initialize(constraint_list: nil)
+    @label = ""
     @constraints = constraint_list
   end
 
@@ -48,33 +45,6 @@ class Comparative_tableau < Array
       return @constraints
     end
     return []
-  end
-
-  # Like Array#reject(), but returns a Comparative_tableau.
-  #
-  # :call-seq:
-  #   reject{|obj| block} -> comparative_tableau
-  # 
-  def reject
-    Comparative_tableau.new.concat(super)
-  end
-
-  # Like Array#partition(), but returns two Comparative_tableau instances.
-  #
-  # :call-seq:
-  #   partition{|obj| block} -> [true_comparative_tableau, false_comparative_tableau]
-  #
-  def partition
-    true_array, false_array = super
-    true_ct = Comparative_tableau.new.concat(true_array)
-    false_ct = Comparative_tableau.new.concat(false_array)
-    return [true_ct, false_ct]
-  end
-  
-  # Returns a string of the tableau, consisting of the to_s() for each
-  # winner-loser pair, separated by newlines.
-  def to_s
-    self.join("\n")
   end
 
 end # class Comparative_tableau
