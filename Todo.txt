@@ -1,5 +1,7 @@
 Todo List for odm_sl
 
+Standardize your .dup methods.
+
 Implement a ranking information (erc list) only linguistic system and
 grammar class. Use it to set up basic bin scripts for experimenting with
 different ranking biases.

@@ -2,8 +2,8 @@
 #
 
 require_relative 'system'
+require 'erc_list'
 require 'lexicon'
-require 'comparative_tableau'
 
 module SL
 
@@ -34,39 +34,23 @@ module SL
     def initialize(erc_list: nil, lexicon: Lexicon.new, system: System.instance)
       @system = system
       @erc_list = erc_list
-      @erc_list ||= Comparative_tableau.new(constraint_list: @system.constraints)
+      @erc_list ||= Erc_list.new(constraint_list: @system.constraints)
       self.label = "SL::Grammar"
       @lexicon = lexicon
-      @rcd_result = nil
     end
 
-    # Adds an erc, and checks the consistency of the updated list.
+    # Adds an erc to the list.
     # Returns a reference to self (the grammar).
-    #--
-    # TODO: move this method to your erc_list class, and then delegate it from here.
     def add_erc(erc)
-      erc_list << erc
-      @rcd_result = nil # list changed, so old result is no longer valid
+      erc_list.add(erc)
       return self
     end
 
     # Returns true if the ERC list is currently consistent; false otherwise.
-    #--
-    # TODO: delegate this to the erc_list class, once it has this functionality.
     def consistent?
-      check_consistency if @rcd_result.nil?
-      return @rcd_result.consistent?
+      erc_list.consistent?
     end
   
-    # Checks to see if the ERC list is consistent by running RCD.
-    # Returns true if the ERC list is consistent, false otherwise.
-    # TODO: move this to the erc_list class.
-    def check_consistency
-      @rcd_result = Rcd.new(@erc_list)
-      return @rcd_result.consistent?
-    end
-    private :check_consistency
-
     # Returns a deep copy of the grammar, with a duplicates of the lexicon.
     # The duplicate of the lexicon contains duplicates of the lexical entries,
     # and the duplicate lexical entries contain duplicates of the underlying
