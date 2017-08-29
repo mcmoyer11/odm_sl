@@ -36,13 +36,10 @@ class FactorialTypology
   def check_harmonic_boundedness
     @original_comp_list.each do |comp|
       comp.each do |cand|
-        ct = Comparative_tableau.new(constraint_list: @constraint_list, label: "check_with_rcd")
+        # if WL pairs with cand are inconsistent, then cand is harmonically bound
         winner_comp = construct_competition_with_winner(cand, comp)
-        # check to see if winner is possibly optimal
-        ct.add_competition(winner_comp)
-        rcd_result = Rcd.new(ct)
-        # If the CT is inconsistent, then the candidate is harmonically bound
-        @hb_flags[cand.label] = !rcd_result.consistent?
+        erc_list = winner_comp.winner_loser_pairs
+        @hb_flags[cand.label] = !erc_list.consistent?
       end
     end
   end
