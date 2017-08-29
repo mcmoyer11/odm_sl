@@ -1,12 +1,45 @@
 # Author: Bruce Tesar
-#
+
+require 'win_lose_pair'
+require 'erc_list'
 
 # Stores the candidates of a competition (i.e., candidates
 # that have the same input).
 class Competition < Array
 
   # Returns an empty competition.
-  def initialize
+  #
+  # :call-seq:
+  #   Competition.new() -> Competition
+  #--
+  # The default winner-loser pair class is Win_lose_pair. The +wl_pair_class+
+  # parameter is primarily for testing purposes (dependency injection).
+  def initialize(wl_pair_class: Win_lose_pair, erc_list_class: Erc_list)
+    @wl_pair_class = wl_pair_class
+    @erc_list_class = erc_list_class
+  end
+  
+  # Returns an Erc_list of winner-loser pairs for the competition.
+  # 
+  # Raises a RuntimeError if no candidate is indicated as an optimum.
+  # Raises a RuntimeError if multiple candidates are indicated as optima.
+  def winner_loser_pairs
+    # Make sure there is exactly one candidate marked optimum to use as the winner.
+    winner_list = winners
+    if (winner_list.size < 1)
+      raise "Competition: cannot cannot generate winner-loser pairs without an indicated optimum."
+    end
+    if (winner_list.size > 1)
+      raise "Competition: cannot have more than one candidate indicated as an optimum."
+    end
+    winner = winner_list.first
+    # Construct a list of winner-loser pairs, one per loser
+    wl_list = @erc_list_class.new
+    losers.each do |loser|
+      pair = @wl_pair_class.new(winner,loser)      
+      wl_list.add(pair)
+    end
+    return wl_list
   end
 
   # Returns true if at least one candidate is marked as optimal;
