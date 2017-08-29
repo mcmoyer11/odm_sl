@@ -3,8 +3,6 @@
 # This acceptance spec runs learning on all 24 SL languages,
 # and checks the generated learning outputs against the test fixtures.
 
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-
 project_dir = "C:/Users/Tesar/NetBeansProjects/odm_sl"
 sl_fixture_dir = File.join(project_dir,'test','fixtures','sl_learning')
 generated_dir = File.join(project_dir,'temp','sl_learning')

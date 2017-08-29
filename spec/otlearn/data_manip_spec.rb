@@ -3,8 +3,6 @@
 # Specs for the module methods in OTLearn for data manipulation.
 # They module methods are defined in the file otlearn/data_manip.rb.
 
-#require File.expand_path(File.dirname(__FILE__) + '/..' + '/spec_helper')
-require_relative '../spec_helper'
 require 'otlearn/data_manip.rb'
 require 'win_lose_pair'
 

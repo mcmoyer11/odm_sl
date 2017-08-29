@@ -1,6 +1,5 @@
 # Author: Bruce Tesar
 
-require_relative 'spec_helper'
 require 'factorial_typology'
 
 RSpec.describe FactorialTypology do

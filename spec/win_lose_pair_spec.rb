@@ -1,7 +1,5 @@
 # Author: Bruce Tesar
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-
 RSpec.describe Win_lose_pair do
   before(:each) do
     @constraint_list = ["C1","C2"]

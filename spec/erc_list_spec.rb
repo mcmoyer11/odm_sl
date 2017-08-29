@@ -1,6 +1,5 @@
 # Author: Bruce Tesar
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'erc_list'
 
 RSpec.describe Erc_list do

@@ -1,6 +1,5 @@
 # Author: Bruce Tesar
 
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'otlearn/grammar_test'
 
 RSpec.describe "A GrammarTest" do
