@@ -71,38 +71,6 @@ class Comparative_tableau < Array
     return [true_ct, false_ct]
   end
   
-  # For the competition _comp_, build a separate winner-loser
-  # pair for the winner paired with each of the losers, adding each w-l pair
-  # to the comparative tableau. If there are multiple optima, an exception
-  # is thrown unless all optima have identical violation profiles, in which
-  # case they are merged into a single merged candidate *before* winner-loser
-  # pairs are constructed.
-  def add_competition(comp)
-    unless comp.optima?
-      raise CTError, "CT Error\n" +
-        "Cannot have a comparative tableau with no optima for an input."
-    end
-    winner = comp.winners[0]
-    if comp.mult_optima?
-      # check for identical violation profiles
-      opt_list = comp.winners
-      unless opt_list.all?{|opt| opt.ident_viols?(opt_list.first)}
-        raise CTError, "CT Error\nCannot have a comparative tableau with" +
-          " non_equivalent multiple optima for an input."
-      end
-      # Remove the first optimum in the list and duplicate it; this way
-      # the original winner is unaltered.
-      winner = (opt_list.shift).dup
-      # Merge the rest of the optima into the dup of the first one.
-      # The resulting merged optima candidate is referenced by _winner_.
-      opt_list.inject(winner) do |merged_cand, next_win|
-        merged_cand.add_merge_candidate(next_win)
-      end
-    end
-    losers = comp.losers
-    losers.each{|loser| push(Win_lose_pair.new(winner,loser))}
-  end
-
   # Returns a string of the tableau, consisting of the to_s() for each
   # winner-loser pair, separated by newlines.
   def to_s
@@ -110,10 +78,3 @@ class Comparative_tableau < Array
   end
 
 end # class Comparative_tableau
-
-
-# Exception class to identify errors raised with respect to the structure
-# of comparative tableaux.
-class CTError < StandardError
-  
-end

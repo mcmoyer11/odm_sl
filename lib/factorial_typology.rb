@@ -69,7 +69,8 @@ class FactorialTypology
           next if winner.opt_denied?
           lang_new = lang.dup
           winner_comp = construct_competition_with_winner(winner, comp)
-          lang_new.add_competition(winner_comp)
+          new_pairs = winner_comp.winner_loser_pairs
+          lang_new.concat(new_pairs.to_a)
           rcd_result = Rcd.new(lang_new)
           # If the new language is consistent, add it to the new language list.
           lang_list_new << lang_new if rcd_result.consistent?
