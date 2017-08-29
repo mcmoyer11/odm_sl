@@ -58,7 +58,7 @@ class FactorialTypology
     comp_list = non_hb_competition_list
     set_competitions_with_fixed_optima(comp_list)
     # Construct initial language list with a single empty language
-    lang_list = [Comparative_tableau.new(constraint_list: @constraint_list, label: "")]
+    lang_list = [Comparative_tableau.new(constraint_list: @constraint_list)]
     # Iterate over the competitions
     comp_list.each do |comp|
       lang_list_new = [] # will receive languages with winners from comp added

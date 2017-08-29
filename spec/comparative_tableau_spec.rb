@@ -11,13 +11,5 @@ RSpec.describe Comparative_tableau do
       expect(@ct.label).to eq('Comparative_tableau')
     end
   end
-  context "with a label passed to the constructor" do
-    before(:each) do
-      @ct = Comparative_tableau.new(label: 'CTlabel')
-    end
-    it "returns that label" do
-      expect(@ct.label).to eq('CTlabel')
-    end
-  end
 end
 
