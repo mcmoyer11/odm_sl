@@ -59,13 +59,8 @@ module SL
       return self.class.new(erc_list: erc_list.dup, lexicon: lexicon.dup, system: system)
     end
 
-    # Returns a shallow copy of the grammar, with a reference to the very
-    # same lexicon object.
-    def dup_shallow
-      return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
-    end
-
-    # TODO: standardize your .dup* conventions, and implement only those.
+    # Returns a copy of the grammar, with a copy of the ERC list, and
+    # a reference to the very same lexicon object.
     def dup_same_lexicon
       return self.class.new(erc_list: erc_list.dup, lexicon: lexicon, system: system)
     end

@@ -54,9 +54,9 @@ RSpec.describe SL::Grammar do
         expect(@gram.lexicon).not_to equal(@dup.lexicon)
       end
     end
-    context "when duplicated with dup_shallow" do
+    context "when duplicated with dup_same_lexicon" do
       before(:each) do
-        @dup = @gram.dup_shallow
+        @dup = @gram.dup_same_lexicon
       end
       it "should have distinct objects for the ERC list" do
         expect(@gram.erc_list).not_to equal(@dup.erc_list)
