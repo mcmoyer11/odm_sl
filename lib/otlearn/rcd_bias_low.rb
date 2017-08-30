@@ -14,7 +14,7 @@ module OTLearn
   # implements the method low_constraint_type?(con), which returns true
   # for any constraint of the class to be biased low in the ranking.
   # 
-  # Given a comparative tableau, RcdBiasLow.new() tries to find the
+  # Given an ERC list, RcdBiasLow.new() tries to find the
   # constraint hierarchy consistent with the data (if one exists), that has
   # the low-bias constraints ranked as low as possible, and the other (high_bias)
   # constraints ranked as high as possible.
@@ -27,11 +27,11 @@ module OTLearn
   # Reference: Prince & Tesar.
   class RcdBiasLow < Rcd
     
-    # Accepts a comparative tableau +ct+ and an optional +label+.
+    # Accepts an ERC list +erc_list+ and an optional +label+.
     # The default label value is "RcdBiasLow".
     # Returns an Rcd object. The constraint bias must be provided by
     # a concrete subclass by overriding the #low_constraint_type? method.
-    def initialize(ct, label: 'RcdBiasLow')
+    def initialize(erc_list, label: 'RcdBiasLow')
       super
     end
     
@@ -98,7 +98,7 @@ module OTLearn
   end # class RcdBiasLow
 
   # RcdFaithLow is a subclass of Rcd that has a "markedness high, faithfulness
-  # low" ranking bias. Given a comparative tableau, it tries to find the
+  # low" ranking bias. Given an ERC list, it tries to find the
   # constraint hierarchy consistent with the data (if one exists), that has
   # the faithfulness constraints ranked as low as possible.
   # 
@@ -115,7 +115,7 @@ module OTLearn
   end # class RcdFaithLow
 
   # RcdMarkLow is a subclass of Rcd that has a "faithfulness high, markedness
-  # low" ranking bias. Given a comparative tableau, it tries to find the
+  # low" ranking bias. Given an ERC list, it tries to find the
   # constraint hierarchy consistent with the data (if one exists), that has
   # the markedness constraints ranked as low as possible.
   # 

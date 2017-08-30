@@ -125,12 +125,12 @@ module OTLearn
     return winners
   end
   
-  # Takes a language in the form of a comparative tableau of WL pairs (with
+  # Takes a language in the form of a list of WL pairs (with
   # each represented form of the language appearing as a winner in at least
   # one pair), and returns a list of the winner outputs.
-  def OTLearn::convert_ct_to_learning_data(lang_ct)
+  def OTLearn::convert_wl_pairs_to_learning_data(wl_pairs)
     # Extract the outputs of the grammatical candidates of the language.
-    outputs = wlp_winners(lang_ct).map{|winner| winner.output}
+    outputs = wlp_winners(wl_pairs).map{|winner| winner.output}
     return outputs
   end
 

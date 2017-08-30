@@ -27,7 +27,7 @@ end
 def write_language_list_to_file(lang_list, data_file)
   File.open(data_file, 'wb') do |f|
     lang_list.each do |lang|
-      outputs = OTLearn::convert_ct_to_learning_data(lang)
+      outputs = OTLearn::convert_wl_pairs_to_learning_data(lang)
       Marshal.dump(["Lg#{lang.label}",outputs], f)
     end
   end  

@@ -1,14 +1,13 @@
 # Author: Bruce Tesar
-# 
 
 require_relative 'hierarchy'
 
 # Implements Recursive Constraint Demotion (RCD).
-# An Rcd object takes a comparative tableau, runs RCD, and stores the
+# An Rcd object takes a list of ERCs, runs RCD, and stores the
 # constructed hierarchy along with a flag indicating consistency.
 #
 # In the case of inconsistency, unranked constraints and the remaining
-# inconsistent ercs are also stored. The stored hierarchy contains the
+# inconsistent ERCs are also stored. The stored hierarchy contains the
 # rankable constraints as ranked by RCD, but not the unrankable constraints.
 #
 # References:
@@ -21,23 +20,22 @@ require_relative 'hierarchy'
 class Rcd
 
   # Returns an object containing the results of running Recursive
-  # Constraint Demotion on the ERCs of comparative tableau +ct+.
-  # Accepts an optional label; the default label is "Rcd".
+  # Constraint Demotion on the ERC list +erc_list+.
+  # Accepts an optional label; the default label is "RCD".
   #--
-  # The constructor copies the ERCs of the ct parameter to the internal
-  # array @erc_list.
-  # Thus, it shouldn't matter if the ct pointed to by the parameter
+  # The constructor copies the ERCs of the +erc_list+ parameter to the internal
+  # array +@ercs+. Thus, it shouldn't matter if the parameter list
   # subsequently changes state, so long as the constraint list
-  # and erc objects are not themselves directly altered.
-  def initialize(ct, label: "Rcd")
-    @erc_list = []
-    ct.each {|erc| @erc_list << erc}
+  # and ERC objects are not themselves directly altered.
+  def initialize(erc_list, label: "RCD")
+    @ercs = []
+    erc_list.each {|erc| @ercs << erc}
     @label = label
-    @constraints = ct.constraint_list
+    @constraints = erc_list.constraint_list
     run_rcd
   end
 
-  # Returns the label of the comparative tableau that RCD was applied to.
+  # Returns the label
   def label
     @label
   end
@@ -64,15 +62,15 @@ class Rcd
     return @unranked
   end
 
-  # Returns a comparative tableau of unexplained ercs.
-  # When the original set of ercs is consistent, this tableau
-  # will either be empty or contain only trivial ercs (all e).
+  # Returns a list of unexplained ERCs, as an array.
+  # When the original list of ERCs is consistent, this array
+  # will either be empty or contain only trivial ERCs (all e).
   def unex_ercs
     @unex_ercs
   end
 
-  # Returns a "stratified" list of explained ercs, as an array of arrays.
-  # The first "stratum" contains the ercs explained by the constraints in
+  # Returns a "stratified" list of explained ERCs, as an array of arrays.
+  # The first "stratum" contains the ERCs explained by the constraints in
   # the first stratum of the constraint hierarchy, and so forth.
   def ex_ercs
     @ex_ercs
@@ -80,32 +78,32 @@ class Rcd
 
 private  # The methods below are private.
 
-  # A constraint is rankable with respect to a set of ercs if the constraint
-  # does not prefer the loser in any of the ercs.
+  # A constraint is rankable with respect to a set of ERCs if the constraint
+  # does not prefer the loser in any of the ERCs.
   def rankable?(con, ercs)
     not ercs.any? {|erc| erc.l?(con)}
   end
   
-  # An erc is explained with respect to a set of constraints if at least
+  # An ERC is explained with respect to a set of constraints if at least
   # one of the constraints prefers the winner.
   def explained?(erc, constraints)
     constraints.any? {|con| erc.w?(con)}
   end
 
-  # Executes Recursive Constraint Demotion (RCD) on the list of ercs.
-  # If the tableau is consistent, @consistent will be true, @hierarchy will
+  # Executes Recursive Constraint Demotion (RCD) on the list of ERCs.
+  # If the ERCs are consistent, @consistent will be true, @hierarchy will
   # contain the computed hierarchy, and @unranked and @unex_ercs will be empty.
   # At the end, @unranked will contain any unrankable constraints, and
-  # @unex_ercs will contain any unexplainable, collectively inconsistent ercs.
-  # @ex_ercs will contain a "stratified" representation of the explained ercs:
-  # The first stratum will contain the ercs explained by the constraints in
+  # @unex_ercs will contain any unexplainable, collectively inconsistent ERCs.
+  # @ex_ercs will contain a "stratified" representation of the explained ERCs:
+  # The first stratum will contain the ERCs explained by the constraints in
   # the first stratum, and so forth.
   def run_rcd
     # Initialize the instance variables that are computed/altered within run_rcd.
-    # Initially, all ercs are unexplained and all constraints are unranked.
+    # Initially, all ERCs are unexplained and all constraints are unranked.
     @consistent = true # innocent until proven guilty
     @hierarchy = Hierarchy.new
-    @unex_ercs = @erc_list
+    @unex_ercs = @ercs
     @ex_ercs = []
     @unranked = @constraints
     
@@ -115,13 +113,13 @@ private  # The methods below are private.
       stratum = choose_cons_to_rank(rankable)
       @unranked.concat(rankable - stratum)
       @hierarchy << stratum # put the current stratum in the hierarchy
-      # Move the ercs explained by the current stratum
+      # Move the ERCs explained by the current stratum
       explained, @unex_ercs = @unex_ercs.partition{|e| explained?(e, stratum)}
-      @ex_ercs << explained # store the explained ercs as the next "erc stratum"
+      @ex_ercs << explained # store the explained ERCs as the next "erc stratum"
       # Put the newly rankable constraints into the next constraint stratum
       rankable, @unranked = @unranked.partition{|con| rankable?(con, @unex_ercs)}    
     end
-    # If unranked constraints remain, then the ercs are inconsistent.
+    # If unranked constraints remain, then the ERCs are inconsistent.
     @consistent = false unless @unranked.empty?
   end
   
