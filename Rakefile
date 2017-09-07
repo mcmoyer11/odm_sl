@@ -9,6 +9,24 @@ require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 require 'launchy'
 
+# This monkeypatch overcomes a weird (jruby & netbeans & rake) bug:
+# the dreaded jruby.bat.exe bug.
+# If the constant FileUtils::RUBY contains "jruby.bat.exe", this patch
+# effectively changes that to "jruby", so that jruby will be properly invoked.
+# It allows rake to properly call ruby executables like rspec.
+if (FileUtils::RUBY =~ /jruby\.bat\.exe/) then
+  # Temporarily turn off warnings, to suppress a warning about
+  # reinitializing the constant RUBY.
+  verbose_val = $VERBOSE
+  $VERBOSE = nil  # the value false doesn't work
+  # It generates a warning because it re-initializes a constant that
+  # was set (problematically) in stdlib\rake\file_utils.rb lines 9-12.
+  FileUtils::RUBY = File.join(RbConfig::CONFIG['bindir'], "jruby")
+  # Reset the value of $VERBOSE to what is was.
+  # Normally, this should turn warnings back on.
+  $VERBOSE = verbose_val
+end
+
 # Top-level project directory.
 PROJECT_DIR = File.dirname(__FILE__)
 
