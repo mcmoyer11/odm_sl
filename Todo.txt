@@ -1,5 +1,7 @@
 Todo List for odm_sl
 
+Add some basic field value validation to OTGeneric::Erc_conversion.
+
 Refactor CSV_Output so that it is more symmetric with CSV_Input.
 Move the lang_sim --> array conversions to other classes.
 
