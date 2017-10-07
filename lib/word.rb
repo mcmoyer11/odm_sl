@@ -104,11 +104,6 @@ class Word < Candidate
     return out_feat_corr_of_in(in_feat_inst)
   end
 
-  # Returns a reference to the linguistic system.
-  def system
-    @system
-  end
-
   # Returns a deep copy of the word, with distinct input syllables and features,
   # distinct output elements and features, and appropriately revises UI and
   # IO correspondences.
@@ -178,10 +173,10 @@ class Word < Candidate
   end
 
   # Changes the UI correspondence of the input so that underlying correspondents
-  # are elements of the lexicon in _hyp_. Useful when a hypothesis
+  # are elements of the lexicon in +grammar+. Useful when a grammar
   # has been duplicated (creating a lexicon with distinct underlying elements).
-  def sync_with_hypothesis!(hyp)
-    input.sync_with_hypothesis!(hyp)
+  def sync_with_grammar!(grammar)
+    input.sync_with_grammar!(grammar)
     return self
   end
 
@@ -190,7 +185,7 @@ class Word < Candidate
   # accessing the constraint violation counts (but after the candidate is
   # complete).
   def eval
-    @system.constraints.each do |con|
+    constraint_list.each do |con|
       set_viols(con, con.eval_candidate(self))
     end
     return self

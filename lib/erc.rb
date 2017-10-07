@@ -3,13 +3,7 @@
 #--
 # Represent the erc with a set of constraints assigning W, and
 # a set of constraints assigning L. Constraints not in either
-# list assign e. This makes it possible
-# to efficiently determine things like the ERC arrow operator
-# and fusion via subset methods.
-
-# Uses an enhancement of the standard library's Set class, such that
-# equivalent sets receive identical hash values.
-require_relative 'set_hashable'
+# list assign e.
 
 # An Elementary Ranking Condition (ERC). Given a set of constraints,
 # each constraint is assigned one of three values:

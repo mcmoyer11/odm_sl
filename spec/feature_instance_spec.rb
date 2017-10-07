@@ -42,7 +42,8 @@ RSpec.describe FeatureInstance do
       allow(@element).to receive(:get_feature).with(type).and_return(@feature.dup)
     end
     it "raises an exception" do
-      expect{@feature_instance = FeatureInstance.new(@element, @feature)}.to raise_exception
+      expect{@feature_instance = FeatureInstance.new(@element, @feature)}.to \
+        raise_exception(RuntimeError, "The feature must belong to the element")
     end
   end
 end # describe FeatureInstance

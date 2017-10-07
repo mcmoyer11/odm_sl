@@ -7,31 +7,33 @@ require_relative 'data_manip'
 module OTLearn
 
   # A GrammarTest object holds the results of the evaluation of a set
-  # of winners with respect to a hypothesis. The tests are initiated by
+  # of winners with respect to a grammar. The tests are initiated by
   # creating a GrammarTest; the constructor takes a list of winners and
-  # a hypothesis as parameters.
+  # a grammar as parameters.
   #
   # Each winner is a Word, possibly with unset features in the input.
   class GrammarTest
 
-    # Returns a new GrammarTest, for the provided _winners_, and with
-    # respect to the provided _hypothesis_.
-    def initialize(winners, hypothesis, label="NoLabel")
+    # Returns a new GrammarTest, for the provided +winners+, and with
+    # respect to the provided +grammar+.
+    def initialize(winners, grammar, label="NoLabel")
       @label = label
-      # Dup the hypothesis, so it can be frozen.
-      @hypothesis = hypothesis.dup
-      # Dup the winners, and then adjust their UI correspondence relns
-      # to refer to the dup hypothesis.
+      @system = grammar.system
+      # Dup the grammar, so it can be frozen.
+      @grammar = grammar.dup
+      # Dup the winners, and then adjust their UI correspondence relations
+      # to refer to the dup grammar.
       @winners = winners.map{|win| win.dup}
-      @winners.each{|win| win.sync_with_hypothesis!(@hypothesis)}
-      # Reset the ranking, using "faithfulness low".
-      @hypothesis.update_grammar {|ercs| RcdFaithLow.new(ercs)}
+      @winners.each{|win| win.sync_with_grammar!(@grammar)}
+      # Generate the test ranking, using "faithfulness low".
+      # TODO: inject a hierarchy construction object via the constructor.
+      @hierarchy = RcdFaithLow.new(@grammar.erc_list).hierarchy
       # Initialize lists for failed and successful winners
       @failed_winner_info_list = []
       @success_winners = []
       check_all
       # Freeze the test results, so they cannot be accidentally altered later.
-      @hypothesis.freeze
+      @grammar.freeze
       @winners.each {|win| win.freeze}
       @winners.freeze
       @failed_winner_info_list.each {|info| info.freeze}
@@ -45,11 +47,22 @@ module OTLearn
       @label
     end
 
-    # Returns the grammar hypothesis used in this test.
+    # Returns a reference to the linguistic system in use.
+    def system
+      @system
+    end
+    protected :system
+    
+    # Returns the grammar used in this test.
     # NOTE: returned object is frozen, and cannot be altered.
     # Create a duplicate to alter it.
-    def hypothesis()
-      @hypothesis
+    def grammar()
+      @grammar
+    end
+    
+    # Returns the hierarchy used in the evaluation of winners.
+    def hierarchy()
+      @hierarchy
     end
 
     # Returns true if all winners in the winner list are the sole optima
@@ -114,13 +127,10 @@ module OTLearn
     # first element a list of optimal candidates with an output distinct
     # from _winner_, and the second element a boolean: true if _winner_
     # is an optimum, false otherwise.
-    #
-    # Optimality is assessed relative to the current hypothesis (the one
-    # provided when the GrammarTest was created).
     def check_winner(winner)
-      competition = @hypothesis.system.gen(winner.input)
+      competition = system.gen(winner.input)
       # find the most harmonic candidates
-      mh = MostHarmonic.new(competition, @hypothesis.grammar.hierarchy)
+      mh = MostHarmonic.new(competition, hierarchy)
       # find optima with output distinct from the winner
       alt_list = []
       winner_optimal = false
@@ -158,7 +168,7 @@ module OTLearn
   end # class GrammarTest
 
   # Objects of this class contain the results of evaluation of a set
-  # of winners with respect to a hypothesis. It is a subclass of GrammarTest;
+  # of winners with respect to a grammar. It is a subclass of GrammarTest;
   # unlike GrammarTest, this class evaluates winners while leaving input
   # features unset if they are unset in the lexicon.
   #
@@ -172,7 +182,7 @@ module OTLearn
       # making it unset if the underlying correspondent is unset.
       @winners.each{|word| OTLearn::match_input_to_uf!(word)}
       # Check each winner, adding it to the failed winner list if it is not
-      # the sole optimum with respect to the current hypthesis.
+      # the sole optimum with respect to the current hierarchy.
       @winners.each do |word|
         alt_optima, winner_optimal = check_winner(word)
         unless alt_optima.empty?
@@ -186,7 +196,7 @@ module OTLearn
 
   # Contains information on a failed winner for a grammar test. A failed
   # winner is a winner which is not a sole optimum with respect to
-  # the evaluation hypothesis. It is either non-optimal, or ties for
+  # the evaluation hierarchy. It is either non-optimal, or ties for
   # optimality with other candidates.
   # Three kinds of information are stored:
   # * the failed winner itself

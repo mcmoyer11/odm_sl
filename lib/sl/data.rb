@@ -11,7 +11,6 @@ require_relative '../morph_word'
 require_relative '../underlying'
 require_relative '../lexical_entry'
 require_relative '../most_harmonic'
-require_relative '../hypothesis'
 require_relative '../otlearn/data_manip'
 require_relative '../competition'
 require_relative '../competition_list'
@@ -87,16 +86,12 @@ module SL
   end
   
   # Generates the optimal candidates with respect to constraint
-  # hierarchy _hier_ for each input in _inputs_, using the lexicon
-  # in grammar _gram_. The hierarchy in _gram_ is set to _hier_.
-  # _gram_ needs to already contain a lexicon with entries for all
-  # of the morphemes appearing in the inputs.
+  # hierarchy _hier_ for each input in _inputs_.
   # Returns a list of the optimal candidates of the language.
-  def SL.generate_language(hier, inputs, gram)
+  def SL.generate_language(hier, inputs)
     competitions = inputs.map{|i| SYSTEM.gen(i)}
     comp_list = Competition_list.new.concat(competitions)
-    gram.hierarchy = hier
-    comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,gram.hierarchy)}
+    comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,hier)}
     # each competition returns a list of winners; collapse to one-level list.
     lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
     lang.each{|winner| winner.assert_opt}
@@ -107,8 +102,9 @@ module SL
   # the input for each morphword, generates the competition for each input,
   # and returns the list of competitions.
   def SL.competitions_from_morphwords(words, gram)
+    lexicon = gram.lexicon
     # Generate the corresponding input for each morphological word
-    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,gram)}
+    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,lexicon)}
     # Generate the corresponding competition for each input
     competitions = inputs.map{|i| SYSTEM.gen(i)}
     # Convert the array of competitions into a proper Competition_list.
@@ -117,8 +113,8 @@ module SL
     return comp_list
   end
 
-  # Generates a list of competitions and a grammar with a lexicon of
-  # corresponding morphemes. This can be used, for instance, to generate
+  # Generates a list of competitions, one for each possible input of
+  # a prescribed paradigm. This can be used, for instance, to generate
   # learning data via OTLearn.generate_learning_data_from_competitions().
   #
   # This method generates the paradigm 1r1s, with all of the possible
@@ -142,11 +138,11 @@ module SL
     end
     # Generate the competition for each morphword
     comp_list = competitions_from_morphwords(words, gram)
-    return comp_list, gram
+    return comp_list
   end
   
-  # Generates a list of competitions and a grammar with a lexicon of
-  # corresponding morphemes. This can be used, for instance, to generate
+  # Generates a list of competitions, one for each possible input of
+  # a prescribed paradigm. This can be used, for instance, to generate
   # learning data via OTLearn.generate_learning_data_from_competitions().
   #
   # This method generates the paradigm 2r1s, with all of the possible
@@ -168,11 +164,11 @@ module SL
     end
     # Generate the competition for each morphword
     comp_list = competitions_from_morphwords(words, gram)
-    return comp_list, gram
+    return comp_list
   end
 
-  # Generates a list of competitions and a grammar with a lexicon of
-  # corresponding morphemes. This can be used, for instance, to generate
+  # Generates a list of competitions, one for each possible input of
+  # a prescribed paradigm. This can be used, for instance, to generate
   # learning data via OTLearn.generate_learning_data_from_competitions().
   #
   # This method generates the paradigm 1p2r, with all of the possible
@@ -194,7 +190,7 @@ module SL
       end
       # Generate the competition for each morphword
       comp_list = competitions_from_morphwords(words, gram)
-      return comp_list, gram
+      return comp_list
   end
 
 #--

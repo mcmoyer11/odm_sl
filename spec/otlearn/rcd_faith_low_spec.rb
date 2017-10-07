@@ -2,14 +2,10 @@
 
 require 'otlearn/rcd_bias_low'
 require_relative '../../test/helpers/quick_erc'
-require 'comparative_tableau'
 
 module Test
   RSpec.describe OTLearn::RcdFaithLow do
     RSpec.shared_examples "consistent scenarios" do
-      it "has the same label as the CT" do
-        expect(@rcd.label).to eq(@ct.label)
-      end      
       it "returns consistent" do
         expect(@rcd.consistent?).to be true
       end
@@ -23,15 +19,19 @@ module Test
         expect(@rcd.unex_ercs.empty?).to be true
       end
     end
-    context "RcdFaithLow with CT [[ML,FW,MW],[MW,FL,Me]]" do
+    context "RcdFaithLow with ERC list [[ML,FW,MW],[MW,FL,Me]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
         @erc2 = Test.quick_erc([MW,FL,ME])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1 << @erc2
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
+      it "returns the label 'RcdBiasLow'" do
+        expect(@rcd.label).to eq("RcdBiasLow")
+      end
       it "returns the forced total ranking [3:M3] [1:M1] [2:F2]" do
         expect(@rcd.hierarchy.to_s).to eq("[3:M3] [1:M1] [2:F2]")
       end
@@ -40,14 +40,18 @@ module Test
       end
     end
 
-    context "RcdFaithLow with CT [[ML,FW,MW]]" do
+    context "RcdFaithLow with ERC list [[ML,FW,MW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1)
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list, label: "FaithLow Label")
       end
       include_examples "consistent scenarios"
+      it "returns the label 'FaithLow Label'" do
+        expect(@rcd.label).to eq('FaithLow Label')
+      end
       it "ranks the markedness W constraint first, not the faithfulness W constraint" do
         expect(@rcd.hierarchy.to_s).to eq("[3:M3] [1:M1] [2:F2]")
       end
@@ -56,12 +60,13 @@ module Test
       end
     end
     
-    context "RcdFaithLow with CT [[ME,FW,ML,FE]]" do
+    context "RcdFaithLow with ERC list [[ME,FW,ML,FE]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ME,FW,ML,FE])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1)
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
       it "ranks non-L markedness constraints at the top, inactive F constraints at the bottom" do
@@ -72,13 +77,14 @@ module Test
       end
     end
 
-    context "RcdFaithLow with CT [[FE,FW,ML,FE],[FE,FE,ML,FW]]" do
+    context "RcdFaithLow with ERC list [[FE,FW,ML,FE],[FE,FE,ML,FW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([FE,FW,ML,FE])
         @erc2 = Test.quick_erc([FE,FE,ML,FW])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1 << @erc2
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
       it "ranks only active F constraints to free a markedness constraint" do
@@ -89,12 +95,13 @@ module Test
       end
     end
 
-    context "RcdFaithLow with CT [[FW,FW,ML,FE]]" do
+    context "RcdFaithLow with ERC list [[FW,FW,ML,FE]]" do
       before(:each) do
         @erc1 = Test.quick_erc([FW,FW,ML,FE])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1)
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
       it "when a single F constraint can free a markedness constraint, chooses the first one listed" do
@@ -105,13 +112,14 @@ module Test
       end
     end
 
-    context "RcdFaithLow with CT [[FW,FW,ML,FE],[FE,FE,ML,FW]]" do
+    context "RcdFaithLow with ERC list [[FW,FW,ML,FE],[FE,FE,ML,FW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([FW,FW,ML,FE])
         @erc2 = Test.quick_erc([FE,FE,ML,FW])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1 << @erc2
-        @rcd = OTLearn::RcdFaithLow.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
       it "when multiple F constraints are needed, ranks all active F constraints (instead of minimal number)" do

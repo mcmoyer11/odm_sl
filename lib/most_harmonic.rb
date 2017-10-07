@@ -48,7 +48,7 @@ class MostHarmonic < Array
   # P1  stratum prefers cand1
   # P2  stratum prefers cand2
   # TIE  the candidates tie on every constraint in the stratum
-  # CONFLICT  each candidate is prefered by at least one constraint
+  # CONFLICT  each candidate is preferred by at least one constraint
   def compare_on_stratum(cand1, cand2, stratum)
     prefer_1 = false
     prefer_2 = false
@@ -74,7 +74,7 @@ class MostHarmonic < Array
   # is not most harmonic if it is harmonically bound by another candidate
   # on the stratum. If more than one candidate is most harmonic, it can
   # either be because they TIE (identical violations on the stratum)
-  # or because they CONFLICT on the stratum (each candidate is prefered
+  # or because they CONFLICT on the stratum (each candidate is preferred
   # by at least one constraint in the stratum).
   def most_harmonic_on_stratum(comp, stratum)
     mh_list = []
@@ -86,6 +86,7 @@ class MostHarmonic < Array
       mh_list.each do |curr|
         # If one of the candidates harmonically bounds the other, it is
         # more harmonic. Otherwise, compare the two on the stratum.
+        # TODO: is testing for simple harmonic bounding necessary here? Is it justified?
         if curr.harmonically_bounds?(cand) then
           eval = P2
         elsif cand.harmonically_bounds?(curr) then

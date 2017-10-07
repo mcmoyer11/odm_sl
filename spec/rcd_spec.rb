@@ -1,18 +1,7 @@
 # Author: Bruce Tesar
 #
-# Ordinarily, one should test classes in isolation as much as possible,
-# so that the contents of one class don't cause failure of any specs for
-# another class. However, some of the learning methods are sufficiently
-# interwoven with other classes that it seems unproductive on balance
-# to completely duplicate a complex collection of interrelated classes
-# with test dummies. That is the case here.
-# 
-# The specs for Rcd make direct use of these production classes:
-# * Comparative_tableau
-#
-# The specs for class Rcd also make use of some test helpers, Test.quick_erc
-# and some relate constants. These helpers, in turn, explicitly use
-# the following production classes:
+# The specs for class Rcd make use of a test helper, Test.quick_erc.
+# This helper, in turn, explicitly uses the following production classes:
 # * Erc
 # * Constraint
 #
@@ -22,19 +11,19 @@
 
 require 'rcd'
 require_relative '../test/helpers/quick_erc'
-require 'comparative_tableau'
 
 module Test
   RSpec.describe Rcd do
-    context "Rcd with CT [[ML,MW]]" do
+    context "Rcd with ERC list [[ML,MW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,MW])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1
-        @rcd = Rcd.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1)
+        @rcd = Rcd.new(@erc_list)
       end
-      it "has the same label as the CT" do
-        expect(@rcd.label).to eq(@ct.label)
+      it "has the default label, RCD" do
+        expect(@rcd.label).to eq("RCD")
       end
       it "returns consistent" do
         expect(@rcd.consistent?).to be true
@@ -54,18 +43,24 @@ module Test
       it "has no unexplained ercs" do
         expect(@rcd.unex_ercs.empty?).to be true
       end
+      context "and specified label 'The label'" do
+        before do
+         @rcd = Rcd.new(@erc_list, label: 'The Label')
+        end
+        it "returns the label 'The Label'" do
+          expect(@rcd.label).to eq('The Label')
+        end
+      end
     end
 
-    context "Rcd with CT [[ML,FW,MW],[MW,FL,Me]]" do
+    context "Rcd with ERC list [[ML,FW,MW],[MW,FL,Me]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
         @erc2 = Test.quick_erc([MW,FL,ME])
-        @ct = Comparative_tableau.new("CT consistent")
-        @ct << @erc1 << @erc2
-        @rcd = Rcd.new(@ct)
-      end
-      it "has the same label as the CT" do
-        expect(@rcd.label).to eq(@ct.label)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
+        @rcd = Rcd.new(@erc_list)
       end
       it "returns consistent" do
         expect(@rcd.consistent?).to be true
@@ -87,14 +82,16 @@ module Test
       end
     end
 
-    context "Rcd with CT [[MW,FE,ML],[ME,FL,MW],[ME,FW,ML]]" do
+    context "Rcd with ERC list [[MW,FE,ML],[ME,FL,MW],[ME,FW,ML]]" do
       before(:each) do
         @erc1 = Test.quick_erc([MW,FE,ML])
         @erc2 = Test.quick_erc([ME,FL,MW])
         @erc3 = Test.quick_erc([ME,FW,ML])
-        @ct = Comparative_tableau.new("CT inconsistent")
-        @ct << @erc1 << @erc2 << @erc3
-        @rcd = Rcd.new(@ct)
+        @erc_list = instance_double(Erc_list, "ERC list")
+        allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
+        allow(@erc_list).to receive(:each).and_yield(@erc1)
+          .and_yield(@erc2).and_yield(@erc3)
+        @rcd = Rcd.new(@erc_list)
       end
       it "returns inconsistent" do
         expect(@rcd.consistent?).to be false

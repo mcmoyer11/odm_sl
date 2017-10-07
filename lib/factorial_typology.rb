@@ -1,9 +1,8 @@
 # Author: Bruce Tesar
-#
  
 require_relative 'competition'
 require_relative 'competition_list'
-require_relative 'comparative_tableau'
+require_relative 'erc_list'
 require_relative 'rcd'
 
 # FactorialTypology objects summarize typologies of competition lists
@@ -36,32 +35,29 @@ class FactorialTypology
   def check_harmonic_boundedness
     @original_comp_list.each do |comp|
       comp.each do |cand|
-        ct = Comparative_tableau.new("check_with_rcd", @constraint_list)
+        # if WL pairs with cand are inconsistent, then cand is harmonically bound
         winner_comp = construct_competition_with_winner(cand, comp)
-        # check to see if winner is possibly optimal
-        ct.add_competition(winner_comp)
-        rcd_result = Rcd.new(ct)
-        # If the CT is inconsistent, then the candidate is harmonically bound
-        @hb_flags[cand.label] = !rcd_result.consistent?
+        erc_list = winner_comp.winner_loser_pairs
+        @hb_flags[cand.label] = !erc_list.consistent?
       end
     end
   end
   private :check_harmonic_boundedness
   
   # Computes the factorial typology of the list of competitions stored in this
-  # object. Each language is represented as a comparative tableau, with a
-  # winner-loser pair for each combination of a winner and a possibly optimal
+  # object. Each language is represented as a list of winner-loser pairs,
+  # one for each combination of a winner and a possibly optimal
   # competitor. The languages are assigned numeric labels, in the order in
-  # which they are generated. An array of the comparative tableaux is returned.
+  # which they are generated. An array of the languages is returned.
   # 
   # To get a list of the optimal candidates for a particular language,
-  # call Comparative_tableau#winners.
+  # call OTLearn::wlp_winners(+language+).
   def factorial_typology
     # start with competitions containing only possible optima (non-HB)
     comp_list = non_hb_competition_list
     set_competitions_with_fixed_optima(comp_list)
     # Construct initial language list with a single empty language
-    lang_list = [Comparative_tableau.new("", @constraint_list)]
+    lang_list = [Erc_list.new(constraint_list: @constraint_list)]
     # Iterate over the competitions
     comp_list.each do |comp|
       lang_list_new = [] # will receive languages with winners from comp added
@@ -72,7 +68,8 @@ class FactorialTypology
           next if winner.opt_denied?
           lang_new = lang.dup
           winner_comp = construct_competition_with_winner(winner, comp)
-          lang_new.add_competition(winner_comp)
+          new_pairs = winner_comp.winner_loser_pairs
+          lang_new.add_all(new_pairs)
           rcd_result = Rcd.new(lang_new)
           # If the new language is consistent, add it to the new language list.
           lang_list_new << lang_new if rcd_result.consistent?

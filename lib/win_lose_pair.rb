@@ -3,12 +3,23 @@
  
 require_relative 'erc'
 require_relative 'candidate'
-require 'english'
+require 'forwardable'
 
 # A winner-loser pair has a winner, a loser, and the resulting erc.
-# Once created, Win_lose_pair objects are frozen, so that the set_w, etc.
-# methods of Erc cannot be used to change the constraint preferences.
-class Win_lose_pair < Erc
+# Once created, the winner, loser, and constraint preferences cannot
+# be modified.
+# 
+# ==== Instance Methods delegated to class Erc
+# 
+# w?, l?, e?, constraint_list, hash,
+# triv_invalid?, triv_valid?, prefs_to_s  
+
+class Win_lose_pair
+  extend Forwardable
+
+  def_delegators :@erc, :w?, :l?, :e?, :constraint_list, :hash
+  def_delegators :@erc, :triv_invalid?, :triv_valid?
+  def_delegators :@erc, :prefs_to_s
 
   # The winner of the winner-loser pair.
   attr_reader :winner
@@ -16,29 +27,24 @@ class Win_lose_pair < Erc
   # The loser of the winner-loser pair.
   attr_reader :loser
 
-  # Stores +winner+ and +loser+, and constructs an +Erc+ based on the
-  # constraint violations of each. The returned object is frozen.
-  #
+  # The label of the winner-loser pair.
+  attr_accessor :label
+
+  # Stores +winner+ and +loser+, and computes the preference between the two
+  # for each constraint.
+  # 
   # ==== Exceptions
   #
   # RuntimeError - if +winner+ and +loser+ do not have the same input.
-  def initialize(winner, loser)
+  def initialize(winner, loser, label="")
     if (winner.input != loser.input) then
       raise("The winner and loser do not have the same input.")
     end
     @winner = winner
     @loser = loser
-    # Use a regular expression match to find the input number part of
-    # the loser label. Treat what follows as the candidate number part.
-    # Global variable $POSTMATCH is set to the part of the string following the match.
-    if (@loser.label =~ /^\d+\./) then
-      label = @winner.label + ">" + $POSTMATCH
-    else
-      label = "NoLabel"
-    end
-    super(winner.constraint_list, label) # call constructor for Erc
+    @label = label
+    @erc = Erc.new(winner.constraint_list)
     set_constraint_preferences
-    freeze
   end
 
   # Returns a string of the form:
@@ -51,6 +57,14 @@ class Win_lose_pair < Erc
 private # the following methods are private, and can only be called from 
         # within the object itself; in this case, called by initialize().
 
+  def set_w(con)
+    @erc.set_w(con)
+  end
+  
+  def set_l(con)
+    @erc.set_l(con)
+  end
+  
   # For each constraint, determine if it prefers the winner, the loser,
   # or neither, and set the erc appropriately.
   # Called by the constructor +Win_lose_pair.new+.

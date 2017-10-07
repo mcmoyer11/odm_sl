@@ -35,7 +35,7 @@ class CSV_Output
   
   def format_results
     # Put the language label in row 2, leaving row 1 as a header row.
-    @page_image[2,1] = @lang_sim.hypothesis.label
+    @page_image[2,1] = @lang_sim.grammar.label
     # Indicate if learning succeeded, by checking the last result in the
     # language simulation.
     @page_image[3,1] = "Learned: #{@lang_sim.results_list[-1].all_correct?}"
@@ -44,10 +44,8 @@ class CSV_Output
       # Leave a blank line, and put the entry label in column 1.
       next_row = @page_image.row_count+2
       @page_image[next_row,1] = entry.label
-      # Test result components are frozen, so dup before updating.
-      hyp = entry.hypothesis.dup
-      # Update grammar to contain the faith-low bias ranking.
-      rcd_result = hyp.update_grammar{|ercs| OTLearn::RcdFaithLow.new(ercs)}
+      # Compute the faith-low bias ranking.
+      rcd_result = OTLearn::RcdFaithLow.new(entry.grammar.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = RCD_image.new({:rcd=>rcd_result})
@@ -55,7 +53,7 @@ class CSV_Output
       @page_image.put_range(next_cell, result_image.sheet)
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
-      lex_image = Lexicon_image.new(hyp.grammar.lexicon)
+      lex_image = Lexicon_image.new(entry.grammar.lexicon)
       next_cell = Cell.new(@page_image.row_count+2, 2)
       @page_image.put_range(next_cell, lex_image.sheet)
     end

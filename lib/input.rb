@@ -43,11 +43,11 @@ class Input < Array
   end
 
   # Changes the UI correspondence so that underlying correspondents
-  # are elements of the lexicon in _hyp_. Useful when a hypothesis
+  # are elements of the lexicon in +grammar+. Useful when a grammar
   # has been duplicated (creating a lexicon with distinct underlying elements).
-  def sync_with_hypothesis!(hyp)
-    # Get the input for the morph_word with respect to the new hypothesis.
-    new_input = hyp.system.input_from_morphword(@morphword,hyp.grammar)
+  def sync_with_grammar!(grammar)
+    # Get the input for the morph_word with respect to the new grammar.
+    new_input = grammar.system.input_from_morphword(@morphword, grammar.lexicon)
     # Create a synchronized iterator for old (self) and new input forms
     gen = REXML::SyncEnumerator.new(self,new_input)
     # For each element of the inputs

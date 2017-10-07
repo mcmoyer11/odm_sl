@@ -70,17 +70,20 @@ module SL
     # Returns the faithfulness constraint IDLength.
     def idlength() return @idlength end
 
-    # Accepts parameters of a morph_word and a grammar. It builds an input form
+    # Accepts parameters of a morph_word and a lexicon. It builds an input form
     # by concatenating the syllables of the underlying forms of each of the
-    # morphemes in the morph_word, in order. It also constructs the correspondence
-    # relation for the input, with an entry for each corresponding pair of
+    # morphemes in the morph_word, in order. It also constructs the
+    # correspondence relation between the underlying forms of the lexicon and
+    # the input, with an entry for each corresponding pair of
     # underlying/input syllables.
-    def input_from_morphword(mw, gram)
+    def input_from_morphword(mw, lexicon)
       input = Input.new
       input.morphword = mw
       mw.each do |m| # for each morpheme in the morph_word, in order
-        uf = gram.get_uf(m)
-        raise "Morpheme #{m.label} has no entry in the lexicon." if uf.nil?
+        lex_entry = lexicon.find{|entry| entry.morpheme==m} # get the lexical entry
+        raise "Morpheme #{m.label} has no lexical entry." if lex_entry.nil?
+        uf = lex_entry.uf  # get the underlying form
+        raise "The lexical entry for morpheme #{m.label} has no underlying form." if uf.nil?
         uf.each do |syl| # for each syllable of the underlying form
           in_syl = syl.dup
           input.push(in_syl) # add a duplicate of the underlying syllable to input.
@@ -134,25 +137,25 @@ module SL
     end
 
     # Constructs a full structural description for the given output using the
-    # lexicon of the given grammar. The constructed input will stand in
+    # given lexicon. The constructed input will stand in
     # 1-to-1 IO correspondence with the output; an exception is thrown if
     # the number of syllables in the lexical entry of each morpheme doesn't
     # match the number of syllables for that morpheme in the output.
-    def parse_output(output, gram)
+    def parse_output(output, lexicon)
       mw = output.morphword
       # If any morphemes aren't currently in the lexicon, create new entries, with
       # the same number of syllables as in the output, and all features unset.
       mw.each do |m|
-        unless gram.lexicon.any?{|entry| entry.morpheme==m} then
+        unless lexicon.any?{|entry| entry.morpheme==m} then
           under = Underlying.new
           # create a new UF syllable for each syllable of m in the output
           syls_of_m = output.find_all{|syl| syl.morpheme==m}
           syls_of_m.each { |x| under << Syllable.new.set_morpheme(m) }
-          gram.lexicon << Lexical_Entry.new(m,under)
+          lexicon << Lexical_Entry.new(m,under)
         end
       end
       # Construct the input form
-      input = input_from_morphword(mw, gram)
+      input = input_from_morphword(mw, lexicon)
       word = Word.new(self,input,output)
       # create 1-to-1 IO correspondence
       if input.size != output.size then

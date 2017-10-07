@@ -5,7 +5,7 @@ require_relative "ct_image"
 require_relative "hierarchy"
 
 # An RCD_image object represents the results of applying RCD to
-# a comparative tableau. It is intended to serve as an interface
+# a list of ERCs. It is intended to serve as an interface
 # between the internal representation of RCD results and
 # the external representation as a sheet.
 #
@@ -267,10 +267,10 @@ class RCD_image < CT_image
       ercs_by_stratum << unex_ercs
     end
 
-    # create a CT with the ercs in sorted order
-    sorted_ercs = Comparative_tableau.new(rcd_result.label)
-    sorted_ercs.concat(explained_ercs)
-    sorted_ercs.concat(unex_ercs)
+    # create a list of the ercs in sorted order
+    sorted_ercs = Erc_list.new
+    sorted_ercs.add_all(explained_ercs)
+    sorted_ercs.add_all(unex_ercs)
 
     return sorted_ercs, ercs_by_stratum, explained_ercs
   end

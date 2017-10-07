@@ -25,6 +25,14 @@ class Lexicon < Array
     return self
   end
 
+    # Returns the underlying form for the given morpheme.
+    # Returns nil if the morpheme has no entry.
+    def get_uf(morph)
+      lex_entry = find{|entry| entry.morpheme==morph} # get the lexical entry
+      return nil if lex_entry.nil?
+      return lex_entry.uf  # return the underlying form
+    end
+    
   # Returns an array of all the lexical entries containing morphemes
   # of type prefix.
   def get_prefixes
