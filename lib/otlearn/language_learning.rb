@@ -9,6 +9,7 @@ require_relative 'uf_learning'
 require_relative 'mrcd'
 require_relative 'data_manip'
 require_relative '../feature_value_pair'
+require_relative 'learning_exceptions'
 
 module OTLearn
 
@@ -285,12 +286,15 @@ module OTLearn
         ufeat.value = nil
       end
       # Return the consistent tested feature if there is exactly one.
-      return nil if consistent_feature_val_list.empty?
-      if consistent_feature_val_list.size > 1 then
-        raise "More than one single matching feature passes error testing."
-        # TODO: handle this more gracefully.
-      end
-      return consistent_feature_val_list[0] # the single element of the list.
+        return nil if consistent_feature_val_list.empty?
+        if consistent_feature_val_list.size > 1 then
+          # If a feature-value=pair causes this error, we initialize a LearnEx object
+          # which will hold the langauge_learning object and the feature_val_list 
+          # to be fed later up the chain so we can look at the stage of learning
+          # that goes awry.
+          raise LearnEx.new(self, consistent_feature_val_list), "More than one single matching feature passes error testing."
+        end
+        return consistent_feature_val_list[0] # the single element of the list.
     end
 
     # Given a list of words and a grammar, check the word list for

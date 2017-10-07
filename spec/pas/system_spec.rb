@@ -1,14 +1,12 @@
 # Author: Bruce Tesar
 
-require 'sl/system'
-require 'lexicon'
+require 'pas/system'
 require 'lexical_entry'
-require 'morph_word'
-require 'sl/syllable'
+require 'output'
 
-RSpec.describe SL::System do
+RSpec.describe PAS::System do
   before(:each) do
-    @system = SL::System.instance
+    @system = PAS::System.instance
   end
 
   #*********************************
@@ -18,8 +16,8 @@ RSpec.describe SL::System do
     before(:each) do
       @con_list = @system.constraints
     end
-    it "with 6 constraints" do
-      expect(@con_list.size).to eq(6)
+    it "with 7 constraints" do
+      expect(@con_list.size).to eq(7)
     end
     it "containing WSP" do
       expect(@con_list).to include(@system.wsp)
@@ -39,12 +37,16 @@ RSpec.describe SL::System do
     it "containing Ident[length]" do
       expect(@con_list).to include(@system.idlength)
     end
+    it "containing Culm" do
+      expect(@con_list).to include(@system.culm)
+    end
   end
   context "System, given candidate" do
     before(:each) do
       @cand = double("candidate")
       @input = Array.new()
-      @output = Array.new()
+      # Output not mocked with Array, b/c of method Output#main_stress?
+      @output = Output.new()
       @io_corr = Array.new()
       allow(@cand).to receive(:input).and_return(@input)
       allow(@cand).to receive(:output).and_return(@output)
@@ -53,7 +55,7 @@ RSpec.describe SL::System do
     context "/S:/[S:]" do
       before(:each) do
         # input syllable
-        @syli1 = instance_double(SL::Syllable, "Syli1")
+        @syli1 = instance_double(PAS::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(true)
         allow(@syli1).to receive(:unstressed?).and_return(false)
@@ -61,7 +63,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # output syllable
-        @sylo1 = instance_double(SL::Syllable, "Sylo1")
+        @sylo1 = instance_double(PAS::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(true)
         allow(@sylo1).to receive(:unstressed?).and_return(false)
@@ -87,11 +89,14 @@ RSpec.describe SL::System do
       it "assigns 0 violations of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(0)
       end
+      it "assigns 0 violation of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(0)
+      end
     end
     context "/s:/[S]" do
       before(:each) do
         # input syllable
-        @syli1 = instance_double(SL::Syllable, "Syli1")
+        @syli1 = instance_double(PAS::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(true)
         allow(@syli1).to receive(:unstressed?).and_return(true)
@@ -99,7 +104,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # output syllable
-        @sylo1 = instance_double(SL::Syllable, "Sylo1")
+        @sylo1 = instance_double(PAS::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(false)
         allow(@sylo1).to receive(:unstressed?).and_return(false)
@@ -124,12 +129,58 @@ RSpec.describe SL::System do
       end
       it "assigns 1 violation of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(1)
-      end        
+      end    
+      it "assigns 0 violations of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(0)
+      end
     end
-    context "/ss:/[Ss:]" do
+    context "/s:/[s.]" do
+      before(:each) do
+        # input syllable
+        @syli1 = instance_double(PAS::Syllable, "Syli1")
+        @input << @syli1
+        allow(@syli1).to receive(:long?).and_return(true)
+        allow(@syli1).to receive(:unstressed?).and_return(true)
+        allow(@syli1).to receive(:main_stress?).and_return(false)
+        allow(@syli1).to receive(:stress_unset?).and_return(false)
+        allow(@syli1).to receive(:length_unset?).and_return(false)
+        # output syllable
+        @sylo1 = instance_double(PAS::Syllable, "Sylo1")
+        @output << @sylo1
+        allow(@output).to receive(:main_stress?).and_return(false)
+        allow(@sylo1).to receive(:long?).and_return(false)
+        allow(@sylo1).to receive(:unstressed?).and_return(true)
+        allow(@sylo1).to receive(:main_stress?).and_return(false)
+        # IO correspondence
+        @io_corr << [@syli1, @sylo1]
+      end
+      it "assigns 0 violations of NoLong" do
+        expect(@system.nolong.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violations of WSP" do
+        expect(@system.wsp.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violations of ML" do
+        expect(@system.ml.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violations of MR" do
+        expect(@system.mr.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violation of IDStress" do
+        expect(@system.idstress.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 1 violation of IDLength" do
+        expect(@system.idlength.eval_candidate(@cand)).to eq(1)
+      end    
+      it "assigns 1 violations of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(1)
+      end
+    end    
+    
+    context "/s.s:/[S.s:]" do
       before(:each) do
         # input syllable 1
-        @syli1 = instance_double(SL::Syllable, "Syli1")
+        @syli1 = instance_double(PAS::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(false)
         allow(@syli1).to receive(:unstressed?).and_return(true)
@@ -137,7 +188,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # input syllable 2
-        @syli2 = instance_double(SL::Syllable, "Syli2")
+        @syli2 = instance_double(PAS::Syllable, "Syli2")
         @input << @syli2
         allow(@syli2).to receive(:long?).and_return(true)
         allow(@syli2).to receive(:unstressed?).and_return(true)
@@ -145,13 +196,13 @@ RSpec.describe SL::System do
         allow(@syli2).to receive(:stress_unset?).and_return(false)
         allow(@syli2).to receive(:length_unset?).and_return(false)
         # output syllable 1
-        @sylo1 = instance_double(SL::Syllable, "Sylo1")
+        @sylo1 = instance_double(PAS::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(false)
         allow(@sylo1).to receive(:unstressed?).and_return(false)
         allow(@sylo1).to receive(:main_stress?).and_return(true)
         # output syllable 2
-        @sylo2 = instance_double(SL::Syllable, "Sylo2")
+        @sylo2 = instance_double(PAS::Syllable, "Sylo2")
         @output << @sylo2
         allow(@sylo2).to receive(:long?).and_return(true)
         allow(@sylo2).to receive(:unstressed?).and_return(true)
@@ -176,12 +227,16 @@ RSpec.describe SL::System do
       end
       it "assigns 0 violations of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(0)
-      end        
+      end
+      it "assigns 0 violation of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(0)
+      end
     end
+    #to test that ML will assign violation for rightmost stress
     context "/s.s:/[s.S:]" do
       before(:each) do
         # input syllable 1
-        @syli1 = instance_double(SL::Syllable, "Syli1")
+        @syli1 = instance_double(PAS::Syllable, "Syli1")
         @input << @syli1
         allow(@syli1).to receive(:long?).and_return(false)
         allow(@syli1).to receive(:unstressed?).and_return(true)
@@ -189,7 +244,7 @@ RSpec.describe SL::System do
         allow(@syli1).to receive(:stress_unset?).and_return(false)
         allow(@syli1).to receive(:length_unset?).and_return(false)
         # input syllable 2
-        @syli2 = instance_double(SL::Syllable, "Syli2")
+        @syli2 = instance_double(PAS::Syllable, "Syli2")
         @input << @syli2
         allow(@syli2).to receive(:long?).and_return(true)
         allow(@syli2).to receive(:unstressed?).and_return(true)
@@ -197,13 +252,13 @@ RSpec.describe SL::System do
         allow(@syli2).to receive(:stress_unset?).and_return(false)
         allow(@syli2).to receive(:length_unset?).and_return(false)
         # output syllable 1
-        @sylo1 = instance_double(SL::Syllable, "Sylo1")
+        @sylo1 = instance_double(PAS::Syllable, "Sylo1")
         @output << @sylo1
         allow(@sylo1).to receive(:long?).and_return(false)
         allow(@sylo1).to receive(:unstressed?).and_return(true)
         allow(@sylo1).to receive(:main_stress?).and_return(false)
         # output syllable 2
-        @sylo2 = instance_double(SL::Syllable, "Sylo2")
+        @sylo2 = instance_double(PAS::Syllable, "Sylo2")
         @output << @sylo2
         allow(@sylo2).to receive(:long?).and_return(true)
         allow(@sylo2).to receive(:unstressed?).and_return(false)
@@ -228,6 +283,67 @@ RSpec.describe SL::System do
       end
       it "assigns 0 violations of IDLength" do
         expect(@system.idlength.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violation of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(0)
+      end
+    end
+    # to test Culm on a word without any main stress assigned, also to assure 
+    # that ML and MR do not assign violations.
+    context "/s.s:/[s.s:]" do
+      before(:each) do
+        # input syllable 1
+        @syli1 = instance_double(PAS::Syllable, "Syli1")
+        @input << @syli1
+        allow(@syli1).to receive(:long?).and_return(false)
+        allow(@syli1).to receive(:unstressed?).and_return(true)
+        allow(@syli1).to receive(:main_stress?).and_return(false)
+        allow(@syli1).to receive(:stress_unset?).and_return(false)
+        allow(@syli1).to receive(:length_unset?).and_return(false)
+        # input syllable 2
+        @syli2 = instance_double(PAS::Syllable, "Syli2")
+        @input << @syli2
+        allow(@syli2).to receive(:long?).and_return(true)
+        allow(@syli2).to receive(:unstressed?).and_return(true)
+        allow(@syli2).to receive(:main_stress?).and_return(false)
+        allow(@syli2).to receive(:stress_unset?).and_return(false)
+        allow(@syli2).to receive(:length_unset?).and_return(false)
+        # output syllable 1
+        @sylo1 = instance_double(PAS::Syllable, "Sylo1")
+        @output << @sylo1
+        allow(@output).to receive(:main_stress?).and_return(false)
+        allow(@sylo1).to receive(:long?).and_return(false)
+        allow(@sylo1).to receive(:unstressed?).and_return(true)
+        allow(@sylo1).to receive(:main_stress?).and_return(false)
+        # output syllable 2
+        @sylo2 = instance_double(PAS::Syllable, "Sylo2")
+        @output << @sylo2
+        allow(@sylo2).to receive(:long?).and_return(true)
+        allow(@sylo2).to receive(:unstressed?).and_return(true)
+        allow(@sylo2).to receive(:main_stress?).and_return(false)
+        # IO correspondence
+        @io_corr << [@syli1, @sylo1] << [@syli2, @sylo2]
+      end
+      it "assigns 1 violation of NoLong" do
+        expect(@system.nolong.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 1 violation of WSP" do
+        expect(@system.wsp.eval_candidate(@cand)).to eq(1)
+      end
+      it "assigns 0 violations of ML" do
+        expect(@system.ml.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violation of MR" do
+        expect(@system.mr.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violation of IDStress" do
+        expect(@system.idstress.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 0 violations of IDLength" do
+        expect(@system.idlength.eval_candidate(@cand)).to eq(0)
+      end
+      it "assigns 1 violations of Culm" do
+        expect(@system.culm.eval_candidate(@cand)).to eq(1)
       end
     end
   end
@@ -310,7 +426,7 @@ RSpec.describe SL::System do
 
   # *** 1-Syllable Examples ***
   
-  RSpec.shared_examples "1-syllable Word" do
+  RSpec.shared_examples "PAS 1-syllable Word" do
     it "has input == to the original input" do
       expect(@word.input).to eq(@input)
     end
@@ -330,32 +446,32 @@ RSpec.describe SL::System do
 
   context "Given input /s:/" do
     before(:each) do
-      @syl = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
+      @syl = PAS::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
       @input = Input.new
       @input.morphword = "r1"
       @input << @syl
       @competition = @system.gen(@input)
     end
-    it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
+    it "gen generates a competition with 7 constraints" do
+      expect(@competition.constraint_list.size).to eq(7)
     end
-    it "generates 2 candidates" do
-      expect(@competition.size).to eq(2)
+    it "generates 4 candidates" do
+      expect(@competition.size).to eq(4)
     end
-    ["S.","S:"].each do |out_str|
+    ["s.","s:","S.","S:"].each do |out_str|
       context "candidate with output #{out_str}" do
         before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
         it "generates candidate with output #{out_str}" do
           expect(@word).not_to be nil
         end
-        include_examples "1-syllable Word"
+        include_examples "PAS 1-syllable Word"
       end
     end
   end
 
   # *** 2-Syllable Examples ***
   
-  RSpec.shared_examples "2-syllable Word" do
+  RSpec.shared_examples "PAS 2-syllable Word" do
     it "has input == to the original input" do
       expect(@word.input).to eq(@input)
     end
@@ -382,41 +498,41 @@ RSpec.describe SL::System do
     end
   end
 
-  RSpec.shared_examples "2-syllable outputs" do
-    it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
+  RSpec.shared_examples "PAS 2-syllable outputs" do
+    it "gen generates a competition with 7 constraints" do
+      expect(@competition.constraint_list.size).to eq(7)
     end
-    it "generates 8 candidates" do
-      expect(@competition.size).to eq(8)
+    it "generates 12 candidates" do
+      expect(@competition.size).to eq(12)
     end
-    ["S.s.","S.s:","S:s.","S:s:","s.S.","s.S:","s:S.","s:S:"].each do |out_str|
+    ["S.s.","S.s:","S:s.","S:s:","s.S.","s.S:","s:S.","s:S:","s.s.","s.s:","s:s:","s:s."].each do |out_str|
       context "candidate with output #{out_str}" do
         before(:each) {@word = @competition.find{|w| w.output.to_s == out_str}}
         it "generates candidate with output #{out_str}" do
           expect(@word).not_to be nil
         end
-        include_examples "2-syllable Word"
+        include_examples "PAS 2-syllable Word"
       end
     end
   end
   
   context "Given input /s:S./" do
     before(:each) do
-      @syl1 = SL::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
-      @syl2 = SL::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
+      @syl1 = PAS::Syllable.new.set_unstressed.set_long.set_morpheme("r1")
+      @syl2 = PAS::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
       @input = Input.new
       @input.morphword = "r1s1"
       @input << @syl1 << @syl2
       @competition = @system.gen(@input)
     end
-    include_examples "2-syllable outputs"
+    include_examples "PAS 2-syllable outputs"
   end
   
   #**************************
   # Specs for #parse_output()
   #**************************
 
-  RSpec.shared_examples "parsed output" do
+  RSpec.shared_examples "PAS parsed output" do
     it "with output == to the starting output" do
       expect(@word.output).to eq(@output)
     end
@@ -442,12 +558,12 @@ RSpec.describe SL::System do
   
   context "with lexicon including r1 /s./ and s1 /S:/" do
     before(:each) do
-      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+      @in_sylr1 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
       @lex_entry_r1 = double("lex_entry_r1")
       allow(@lex_entry_r1).to receive(:nil?).and_return(false)
       allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
       allow(@lex_entry_r1).to receive(:uf).and_return([@in_sylr1])
-      @in_syls1 = SL::Syllable.new.set_main_stress.set_long.set_morpheme("s1")
+      @in_syls1 = PAS::Syllable.new.set_main_stress.set_long.set_morpheme("s1")
       @lex_entry_s1 = double("lex_entry_s1")
       allow(@lex_entry_s1).to receive(:nil?).and_return(false)
       allow(@lex_entry_s1).to receive(:morpheme).and_return("s1")
@@ -457,20 +573,33 @@ RSpec.describe SL::System do
     end
     context "and output s.S. it parses to a candidate" do
       before(:each) do
-        @out_syl1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
-        @out_syl2 = SL::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
+        @out_syl1 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+        @out_syl2 = PAS::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
         @morphword = instance_double("Morphword")
         allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
         @output = Output.new << @out_syl1 << @out_syl2
         @output.morphword = @morphword
         @word = @system.parse_output(@output,@lex)
       end
-      include_examples "parsed output"
+      include_examples "PAS parsed output"
+    end
+    context "and output s.s. it parses to a candidate" do
+       before(:each) do
+        @out_syl1 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+        @out_syl2 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("s1")
+        @morphword = instance_double("Morphword")
+        allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
+        @output = Output.new << @out_syl1 << @out_syl2
+        @output.morphword = @morphword
+        @word = @system.parse_output(@output,@lex)
+      end
+      include_examples "PAS parsed output"
     end
   end
 
   context "with a lexicon containing only r1 /s./" do
     before(:each) do
+      # the input *after* the new lexical entry for s1 is created
       @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
       @lex_entry_r1 = instance_double(Lexical_Entry, "lex_entry_r1")
       allow(@lex_entry_r1).to receive(:nil?).and_return(false)
@@ -493,8 +622,8 @@ RSpec.describe SL::System do
     end
     context "and output s.S." do
       before(:each) do
-        @out_syl1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
-        @out_syl2 = SL::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
+        @out_syl1 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+        @out_syl2 = PAS::Syllable.new.set_main_stress.set_short.set_morpheme("s1")
         @morphword = instance_double("Morphword")
         allow(@morphword).to receive(:each).and_yield("r1").and_yield("s1")
         @output = Output.new << @out_syl1 << @out_syl2
@@ -512,7 +641,7 @@ RSpec.describe SL::System do
           allow(@lex).to receive(:<<).once
           @word = @system.parse_output(@output,@lex)
         end
-        include_examples "parsed output"
+        include_examples "PAS parsed output"
         it "the word's 2nd input syllable is unset for stress" do
           expect(@word.input[1].stress_unset?).to be true
         end
@@ -523,4 +652,4 @@ RSpec.describe SL::System do
     end
   end
   
-end # describe SL::System
+end # describe PAS::System

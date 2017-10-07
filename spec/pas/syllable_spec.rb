@@ -1,12 +1,12 @@
 # Author: Bruce Tesar
 
-require 'sl/syllable'
+require 'pas/syllable'
 require 'feature'
 
-RSpec.describe SL::Syllable do
+RSpec.describe PAS::Syllable do
   context "A new Syllable" do
     before(:each) do
-      @syllable = SL::Syllable.new
+      @syllable = PAS::Syllable.new
     end
     it "should have an unset stress feature" do
       expect(@syllable.stress_unset?).to be true
@@ -41,10 +41,10 @@ RSpec.describe SL::Syllable do
         expect(@features.size).to eq(2)
       end
       it "should yield a length feature" do
-        expect(@features[0].type).to eq(SL::Length_feat::LENGTH)
+        expect(@features[0].type).to eq(PAS::Length_feat::LENGTH)
       end
       it "should yield a stress feature" do
-        expect(@features[1].type).to eq(SL::Stress_feat::STRESS)
+        expect(@features[1].type).to eq(PAS::Stress_feat::STRESS)
       end
     end
     context "when set to unstressed and short" do
@@ -53,10 +53,10 @@ RSpec.describe SL::Syllable do
       end
       context "#get_feature returns a stress feature" do
         before(:each) do
-          @s_feat = @syllable.get_feature(SL::Stress_feat::STRESS)
+          @s_feat = @syllable.get_feature(PAS::Stress_feat::STRESS)
         end
         it "returns a stress feature that is of type STRESS" do
-          expect(@s_feat.type).to eq(SL::Stress_feat::STRESS)
+          expect(@s_feat.type).to eq(PAS::Stress_feat::STRESS)
         end
         it "returns a stress feature that is unstressed" do
           expect(@s_feat.unstressed?).to be true
@@ -64,24 +64,22 @@ RSpec.describe SL::Syllable do
       end
       context "#get_feature returns a length feature" do
         before(:each) do
-          @s_feat = @syllable.get_feature(SL::Length_feat::LENGTH)
+          @s_feat = @syllable.get_feature(PAS::Length_feat::LENGTH)
         end
         it "returns a length feature that is of type LENGTH" do
-          expect(@s_feat.type).to eq(SL::Length_feat::LENGTH)
+          expect(@s_feat.type).to eq(PAS::Length_feat::LENGTH)
         end
         it "returns a length feature that is short" do
           expect(@s_feat.short?).to be true
         end
       end
       it "get_feature raises an exception when given an invalid type" do
-        expect{@syllable.get_feature("not_a_type")}.to \
-          raise_exception(RuntimeError, \
-          "SL::Syllable#get_feature(): parameter not_a_type is not a valid feature type.")
+        expect{@syllable.get_feature("not_a_type")}.to raise_exception(RuntimeError)
       end
     end
     context "when #set_feature sets stress with value main stress" do
       before(:each) do
-        s_feat = SL::Stress_feat.new
+        s_feat = PAS::Stress_feat.new
         s_feat.set_main_stress
         @syllable.set_feature(s_feat.type, s_feat.value)
       end
@@ -93,12 +91,10 @@ RSpec.describe SL::Syllable do
       end
     end
     it "#set_feature raises an exception when given an invalid feature type" do
-      expect{@syllable.set_feature("invalid", "value")}.to \
-        raise_exception(RuntimeError, \
-        "SL::Syllable#get_feature(): parameter invalid is not a valid feature type.")
+      expect{@syllable.set_feature("invalid", "value")}.to raise_exception(RuntimeError)
     end
     it "#set_feature does not raise an invalid feature exception when given an unset feature value" do
-      expect{@syllable.set_feature(SL::Length_feat::LENGTH, Feature::UNSET)}.not_to raise_exception
+      expect{@syllable.set_feature(PAS::Length_feat::LENGTH, Feature::UNSET)}.not_to raise_exception
     end
     
     context "when set to main stress" do
@@ -139,9 +135,9 @@ RSpec.describe SL::Syllable do
   
   context "s1 stressed and short, s2 stressed and long" do
     before(:each) do
-      @s1 = SL::Syllable.new
+      @s1 = PAS::Syllable.new
       @s1.set_main_stress; @s1.set_short
-      @s2 = SL::Syllable.new
+      @s2 = PAS::Syllable.new
       @s2.set_main_stress; @s2.set_long
     end
     it "should not be ==" do
@@ -167,9 +163,9 @@ RSpec.describe SL::Syllable do
   end
   context "s1 stressed and short, s2 stressed and short" do
     before(:each) do
-      @s1 = SL::Syllable.new
+      @s1 = PAS::Syllable.new
       @s1.set_main_stress; @s1.set_short
-      @s2 = SL::Syllable.new
+      @s2 = PAS::Syllable.new
       @s2.set_main_stress; @s2.set_short
     end
     it "should be ==" do
@@ -180,4 +176,4 @@ RSpec.describe SL::Syllable do
     end
   end
   
-end # describe SL::Syllable
+end # describe PAS::Syllable

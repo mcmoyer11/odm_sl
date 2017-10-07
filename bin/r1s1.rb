@@ -10,7 +10,7 @@ require_relative '../lib/csv_output'
 
 # Set up the language label and the output file_pathname.
 lang_label = "LgA"
-out_file_path = File.join(File.dirname(__FILE__),'..','temp')
+out_file_path = File.join(File.dirname(__FILE__),'..','temp') #'..' is parent directory
 out_file = File.join(out_file_path,"#{lang_label}.csv")
 
 # Delete the output file, so it will be clear if a new one isn't generated.

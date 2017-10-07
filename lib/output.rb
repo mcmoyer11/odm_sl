@@ -48,4 +48,11 @@ class Output < Array
     self.join
   end
   
+  # Determines whether there is main stress in the output.
+  def main_stress?
+    any? do |syl|
+      syl.main_stress?
+    end
+  end
+  
 end # class Output

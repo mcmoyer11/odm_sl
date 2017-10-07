@@ -201,10 +201,10 @@ module PAS
 # Hierarchies
 #++
 
-  # The hierarchy for Language A, also known as L20 (in the typology).
+  # The hierarchy for Language A
   def PAS.hier_a
     hier = Hierarchy.new
-    hier << [SYSTEM.wsp] << [SYSTEM.idstress] << [SYSTEM.ml] <<
+    hier << [SYSTEM.wsp] << [SYSTEM.idstress] << [SYSTEM.culm] << [SYSTEM.ml] <<
       [SYSTEM.mr] << [SYSTEM.idlength] << [SYSTEM.nolong]
     return hier
   end
