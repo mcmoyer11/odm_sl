@@ -12,6 +12,10 @@ require_relative '../competition'
 require_relative '../underlying'
 require_relative '../lexical_entry'
 
+# Module SL contains the linguistic system elements defining the
+# Stress-Length (SL) linguistic system. SL builds words from syllables,
+# where each syllable has two vocalic features: stress and (vowel) length.
+# Each output must have exactly one stress-bearing syllable.
 module SL
 
   # Contains the core elements of the SL (stress-length) linguistic system.

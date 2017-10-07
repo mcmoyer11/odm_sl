@@ -129,14 +129,14 @@ module SL
     # characters.
     #
     # The first character denotes the stress feature:
-    # unstressed:: [s]
-    # main stress:: [S]
-    # unset:: [?]
+    # * unstressed [s]
+    # * main stress [S]
+    # * unset [?]
     #
     # The second character denotes the length feature:
-    # short:: [.]
-    # long:: [:]
-    # unset:: [?]
+    # * short [.]
+    # * long [:]
+    # * unset [?]
     #
     # Thus, an unstressed long syllable would be represented "s:", while
     # a short syllable with an unset stress feature would be represented "?.".
@@ -154,6 +154,15 @@ module SL
       return stress_s + length_s
     end
 
+    # Constructs a string representation of the syllable suitable for use
+    # with GraphViz (for constructing lattice diagrams). Differs from #to_s()
+    # in three ways:
+    # * It uses a prefix consonant to indicate the morpheme type:
+    #   "p" for root, "k" for suffix, "t" for prefix, in keeping with the
+    #   paka world.
+    # * It uses an accented a [á] instead of S for a stressed vowel, and
+    #   an unaccented a instead of s for an unstressed vowel.
+    # * It uses no symbol to represent short vowel length instead of ".".
     def to_gv
       base = "morpheme_type_not_defined"
       if morpheme.root? then

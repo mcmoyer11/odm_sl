@@ -1,4 +1,4 @@
-# Author: Bruce Tesar
+# Author: Morgan Moyer
 #
  
 require 'singleton'
@@ -12,9 +12,14 @@ require_relative '../competition'
 require_relative '../underlying'
 require_relative '../lexical_entry'
 
+# Module PAS contains the linguistic system elements defining the
+# Pitch Accent Stress (PAS) linguistic system. PAS builds words from syllables,
+# where each syllable has two vocalic features: stress and (vowel) length.
+# Each output has at most one stress-bearing syllable (stressless outputs
+# are possible).
 module PAS
 
-  # Contains the core elements of the PAS (stress-length) linguistic system.
+  # Contains the core elements of the PAS (pitch accent stress) linguistic system.
   # It defines the constraints of the system, provides the #gen(_input_) method
   # generating the candidates for _input_, provides a method for
   # constructing the phonological input corresponding to a morphological

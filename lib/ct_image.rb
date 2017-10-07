@@ -1,5 +1,4 @@
 # Author: Bruce Tesar
-# 
 
 require_relative 'ercs_image'
 require_relative "ct_wl_pair"
@@ -121,6 +120,9 @@ class CT_image < ERCs_image
   end
   protected :construct_sorted_ercs_and_cons
 
+  # Read the pre-constraint-column candidate info, and create a CT-specific
+  # winner-loser pair, for each WL row in the CT. Store the winner-loser pairs
+  # using #ercs() (a method inherited from class ERCs_image).
   def get_wl_pair_candidate_info
     # Get candidate info for winner/loser pairs
     erc_range.each do |row|
@@ -145,6 +147,8 @@ class CT_image < ERCs_image
   end
   protected :construct_image
 
+  # Construct the sheet image for the pre-constraint columns, i.e.,
+  # the columns for ERC#, Input, Winner, Loser.
   def construct_pre_constraint_columns_image
     # first row contains the column headers
     sheet[heading_row,NUMBER_COL] = "ERC\#"
@@ -169,6 +173,7 @@ class CT_image < ERCs_image
   end
   protected :construct_pre_constraint_columns_image
 
+  # Construct all of the necessary formatting for the tableau.
   def construct_formatting
     construct_tableau_formatting
   end
