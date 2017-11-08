@@ -92,6 +92,11 @@ read_languages_from_file(data_file) do |label, outputs|
       # Assign the Exception object to +lang_sim+ so a language_learning object
       # can be fed to +learning_sucessful?+
       lang_sim = detail.lang_learn
+      # take a look at the failing winner
+      STDERR.puts detail.failed_winner_orig.to_s + "\n"
+      # Also, output to the STDERR window the hypothesis that the learning
+      # is currently working with
+      STDERR.puts detail.main_hypothesis
       # Output to the STDERR window the feature-value-pairs which are causing the 
       # learning to crash in the first place
       STDERR.puts detail.consistent_feature_value_list

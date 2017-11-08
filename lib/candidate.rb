@@ -46,7 +46,7 @@ class Candidate
     @merged = false
     @merge_candidates = []
   end
-
+  
   # Returns a copy of the candidate, containing duplicates of the
   # input, the output, label, remark, and the list of merged candidates
   # (the merged candidates themselves are not duplicated).

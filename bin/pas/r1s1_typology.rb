@@ -12,7 +12,7 @@ require_relative '../../lib/otlearn/language_learning'
 require_relative '../../lib/csv_output'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/rcd_bias_low'
-require_relative '../../lib/otlearn/mock_lang'
+require_relative '../../lib/otlearn/ranking_learning'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix
@@ -79,17 +79,17 @@ puts "The typology has #{lang_count} languages."
 
 # Instead of making a +to_s+ on the factorial typology, I wrote the outputs
 # and the hierarchy for each language into a file (this works very well)
-out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
-out_file = File.join(out_file_path,"pas_typology.csv")
-File.open("pas_typology.csv","w+") do |file|
-    lang_list.each do |lang|
-      file.write(lang.label.to_s + "\t")
-      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
-      lang.winners.each do |w|
-        file.write(w.to_s + "\n")
-      end
-    end
-end
+#out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
+#out_file = File.join(out_file_path,"pas_typology.csv")
+#File.open("pas_typology.csv","w+") do |file|
+#    lang_list.each do |lang|
+#      file.write(lang.label.to_s + "\t")
+#      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+#      lang.winners.each do |w|
+#        file.write(w.to_s + "\n")
+#      end
+#    end
+#end
 
 # Create a file with the hierarchy for each language.
 out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
@@ -101,7 +101,7 @@ File.open("pas_hierarchies.csv", "w+") do |file|
   end
 end
 
-
+#
 # Look at the languages with winners that are non-culminative.
 out_file_path = File.join(File.dirname(__FILE__),'..','..','data') #'..' is parent directory
 out_file = File.join(out_file_path,"pas_non-culm_winners.csv")
@@ -117,7 +117,7 @@ end
 
 
 # Pull the four languages that are failing learning: 32, 45, 46, 59
-fails = lang_list.keep_if { |lang|
+fails = lang_list.find_all { |lang|
   lang.label.to_s == "L32" ||
   lang.label.to_s == "L45" ||
   lang.label.to_s == "L46" ||
@@ -134,4 +134,82 @@ File.open("pas_learning_fails.csv","w+") do |file|
     end
 end
 
+STDERR.puts lang_list.size
+#Pull l58 to compare with L32
+selected = lang_list.find_all { |lang| lang.label.to_s == "L58" }
 
+# Write to a file
+File.open("L58.csv","w+") do |file|
+    selected.each do |lang|
+      file.write(lang.label.to_s + "\t")
+      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+      lang.winners.each do |w|
+        file.write(w.to_s + "\n")
+      end
+    end
+end
+
+
+
+# generate the support for a language
+# this does NOT give all the ercs that provides essential ranking information
+#lang_list.each do |lang|
+#  if lang.label.to_s == "L32"
+#    hypothesis = Hypothesis.new(PAS::Grammar.new)
+#    mrcd_result = OTLearn::MrcdFaithLow.new(lang.winners, hypothesis)
+#    STDOUT.puts hypothesis
+#  end
+#end
+
+#lang_list.each do |lang|
+#  if lang.label.to_s == "L45"
+#    hypothesis = Hypothesis.new(PAS::Grammar.new)
+#    mrcd_result = OTLearn::MrcdFaithLow.new(lang.winners, hypothesis)
+#    STDOUT.puts hypothesis
+#  end
+#end
+
+# Get L25
+
+## Pull l25 to compare with L45
+#selected = lang_list.find_all { |lang| lang.label.to_s == "L25" }
+## Write to a file
+#File.open("L25.csv","w+") do |file|
+#    selected.each do |lang|
+#      file.write(lang.label.to_s + "\t")
+#      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+#      lang.winners.each do |w|
+#        file.write(w.to_s + "\n")
+#      end
+#    end
+#end
+
+
+# Pull the languages with ML and MR ranked high, 53 and 62
+# 53
+selected = lang_list.find_all { |lang| lang.label.to_s == "L53" }
+
+# Write to a file
+File.open("L53.csv","w+") do |file|
+    selected.each do |lang|
+      file.write(lang.label.to_s + "\t")
+      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+      lang.winners.each do |w|
+        file.write(w.to_s + "\n")
+      end
+    end
+end
+
+#then 62
+selected = lang_list.find_all { |lang| lang.label.to_s == "L62" }
+
+# Write to a file
+File.open("L62.csv","w+") do |file|
+    selected.each do |lang|
+      file.write(lang.label.to_s + "\t")
+      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+      lang.winners.each do |w|
+        file.write(w.to_s + "\n")
+      end
+    end
+end
