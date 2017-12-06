@@ -11,7 +11,6 @@ require_relative '../morph_word'
 require_relative '../underlying'
 require_relative '../lexical_entry'
 require_relative '../most_harmonic'
-require_relative '../hypothesis'
 require_relative '../otlearn/data_manip'
 require_relative '../competition'
 require_relative '../competition_list'
@@ -107,8 +106,9 @@ module PAS
   # the input for each morphword, generates the competition for each input,
   # and returns the list of competitions.
   def PAS.competitions_from_morphwords(words, gram)
+    lexicon = gram.lexicon
     # Generate the corresponding input for each morphological word
-    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,gram)}
+    inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,lexicon)}
     # Generate the corresponding competition for each input
     competitions = inputs.map{|i| SYSTEM.gen(i)}
     # Convert the array of competitions into a proper Competition_list.
@@ -142,7 +142,7 @@ module PAS
     end
     # Generate the competition for each morphword
     comp_list = competitions_from_morphwords(words, gram)
-    return comp_list, gram
+    return comp_list
   end
   
   # Generates a list of competitions and a grammar with a lexicon of

@@ -91,11 +91,11 @@ module OTLearn
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of minimal UF learning
-          set_feature = run_minimal_uf_for_failed_winner(@winner_list, @grammar, @results_list.last)
-          unless set_feature.nil?
-            @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
-            learning_change = true
-          end
+            set_feature = run_minimal_uf_for_failed_winner(@winner_list, @grammar, @results_list.last)
+              unless set_feature.nil?
+                @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
+                learning_change = true
+              end
         end
         # If no change resulted from a contrast pair or from minimal uf learning,
         # no further learning is currently possible, so break out of the loop.

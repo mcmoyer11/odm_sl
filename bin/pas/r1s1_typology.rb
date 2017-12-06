@@ -6,19 +6,17 @@
 # All output is written to CSV files, one file for each language.
 
 require_relative '../../lib/pas/data'
-require_relative '../../lib/hypothesis'
 require_relative '../../lib/otlearn/data_manip'
 require_relative '../../lib/otlearn/language_learning'
 require_relative '../../lib/csv_output'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/rcd_bias_low'
-require_relative '../../lib/otlearn/mock_lang'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix
 # consisting of a single syllable.
 def generate_languages
-  competition_list, gram = PAS.generate_competitions_1r1s
+  competition_list = PAS.generate_competitions_1r1s
   competition_list.auto_number_candidates
   ft_result = FactorialTypology.new(competition_list)
   lang_list = ft_result.factorial_typology
@@ -30,7 +28,7 @@ end
 def write_language_list_to_file(lang_list, data_file)
   File.open(data_file, 'wb') do |f|
     lang_list.each do |lang|
-      outputs, hyp = OTLearn::convert_ct_to_learning_data(lang, PAS::Grammar)
+      outputs = OTLearn::convert_wl_pairs_to_learning_data(lang)
       Marshal.dump(["Lg#{lang.label}",outputs], f)
     end
   end  
@@ -85,7 +83,11 @@ File.open("pas_typology.csv","w+") do |file|
     lang_list.each do |lang|
       file.write(lang.label.to_s + "\t")
       file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
-      lang.winners.each do |w|
+      winner_set = Set.new
+      lang.each do |pair|
+        winner_set.add(pair.winner)
+      end
+      winner_set.each do |w|
         file.write(w.to_s + "\n")
       end
     end
@@ -128,7 +130,11 @@ File.open("pas_learning_fails.csv","w+") do |file|
     fails.each do |lang|
       file.write(lang.label.to_s + "\t")
       file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
-      lang.winners.each do |w|
+      winner_set = Set.new
+      lang.each do |pair|
+        winner_set.add(pair.winner)
+      end
+      winner_set.each do |w|
         file.write(w.to_s + "\n")
       end
     end
