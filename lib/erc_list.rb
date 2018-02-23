@@ -23,7 +23,7 @@ class Erc_list
   # the constraint list.
   # 
   # Providing a list of constraints at construction time:
-  # * Allows added ERCs to be check to make sure their constraints match.
+  # * Allows added ERCs to be checked to make sure their constraints match.
   # * Makes it easy to apply RCD to an empty Erc_list.
   # 
   # :call-seq:
