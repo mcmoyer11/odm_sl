@@ -11,15 +11,14 @@ require_relative 'data_manip'
 require_relative '../feature_value_pair'
 
 module OTLearn
-  
   class InductionLearning
 
       def initialize(word_list, grammar, prior_result, language_learner)
-       @word_list = word_list
-       @grammar = grammar
-       @prior_result = prior_result
-       @language_learner = language_learner
-       @change = false
+         @word_list = word_list
+         @grammar = grammar
+         @prior_result = prior_result
+         @language_learner = language_learner
+         @change = false
       end
 
    # Returns true if anything changed about the grammar

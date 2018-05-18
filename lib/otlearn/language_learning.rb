@@ -90,14 +90,14 @@ module OTLearn
         unless contrast_pair.nil?
           @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
           learning_change = true
-        else
-          # No suitable contrast pair, so pursue a step of minimal UF learning
-          guy = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
-          guy.run_induction_learning
-          if guy.change? then
-            learning_change = true
-            @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
-          end
+#        else
+#          # No suitable contrast pair, so pursue a step of minimal UF learning
+#          guy = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
+#          guy.run_induction_learning
+#          if guy.change? then
+#            learning_change = true
+#            @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
+#          end
         end
         # If no change resulted from a contrast pair or from minimal uf learning,
         # no further learning is currently possible, so break out of the loop.
@@ -202,6 +202,8 @@ module OTLearn
       #       below it.
       return nil
     end
+
+
 
     # Given a list of words and a grammar, check the word list for
     # consistency with the grammar using MRCD. Any features unset
