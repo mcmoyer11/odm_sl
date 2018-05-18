@@ -79,8 +79,16 @@ RSpec::Core::RakeTask.new(:spec_acceptance_tests) do |t|
   t.rspec_opts = "--tag acceptance"
 end
 
+desc "" # undocumented, so won't appear in default raketask list
+RSpec::Core::RakeTask.new(:spec_wp_tests) do |t|
+  t.rspec_opts = "--tag wp"
+end
+
 desc "run RSpec acceptance specs"
 task :spec_acceptance => [:clear_temp, :spec_acceptance_tests]
+
+desc "run RSpec wp specs"
+task :spec_wp => [:clear_temp, :spec_wp_tests]
 
 desc "diff the learning of all 24 SL languages (acceptance specs)"
 task :spec_diff_sl do
