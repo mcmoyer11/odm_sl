@@ -15,6 +15,7 @@ RSpec.describe OTLearn::InductionLearning do
   end
 
   it "fails with empty doubles" do
+    pending
     expect(@induction_learning.run_induction_learning).to be true
   end
 end

@@ -6,6 +6,7 @@
 # +r1s1_typology_learning+ files.
 #
 
+#TODO: this should be contained in the module OTLearn.
 
 class LearnEx < RuntimeError
   
