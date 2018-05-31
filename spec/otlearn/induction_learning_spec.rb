@@ -1,6 +1,5 @@
 # Author: Morgan Moyer / Bruce Tesar
 
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require_relative '../../lib/otlearn/induction_learning'
 
 RSpec.describe OTLearn::InductionLearning do
