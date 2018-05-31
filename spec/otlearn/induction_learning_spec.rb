@@ -1,6 +1,4 @@
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
+# Author: Morgan Moyer / Bruce Tesar
 
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require_relative '../../lib/otlearn/induction_learning'
@@ -8,15 +6,16 @@ require_relative '../../lib/otlearn/induction_learning'
 RSpec.describe OTLearn::InductionLearning do
   before(:each) do
     word_list = []
-    grammar = double
-    prior_result = double
-    language_learner = double
+    grammar = double("grammar")
+    prior_result = double("prior_result")
+    language_learner = double("language_learner")
+    allow(prior_result).to receive(:failed_winners).and_return([])
     @induction_learning = OTLearn::InductionLearning.new(word_list, grammar, prior_result, language_learner)
   end
 
-  it "fails with empty doubles" do
-    pending
-    expect(@induction_learning.run_induction_learning).to be true
+  it "raises an exception if no winners fail" do
+    expect{@induction_learning.run_induction_learning}.to raise_error(RuntimeError)
   end
+  
 end
 

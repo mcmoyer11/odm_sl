@@ -1,6 +1,4 @@
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
+# Author: Morgan Moyer / Bruce Tesar
 
 require_relative 'ranking_learning'
 require_relative 'grammar_test'
@@ -26,7 +24,7 @@ module OTLearn
     
     # Assigns a new object to be used as the source of the fewest set
     # features algorithm. Used for testing (dependency injection).
-    # To be effective, this must be called before #run() is called.
+    # To be effective, this must be called before #run_induction_learning() is called.
     def fewest_set_features_class=(fsf_class)
       @fewest_set_features_class = fsf_class
     end
@@ -39,13 +37,15 @@ module OTLearn
 
    # Returns true if anything changed about the grammar
     def run_induction_learning
-#      # Collect all the failed winners in a list
-#      failed_winners = @word_list.select do |word|
-#        OTLearn::GrammarTest.new([word], @grammar).all_correct?
-#      end
-      failed_winners = @prior_result.failed_winners
-      # Check those errors for consistency, and collect them
-      consistent_list = failed_winners.select do |word|
+      # If there are no failed winners, raise an exception, because
+      # induction learning shouldn't be called unless there are failed
+      # winners to work on.
+      if @prior_result.failed_winners.empty? then
+        raise RuntimeError.new("InductionLearning invoked with no failed winners.")
+      end
+      
+      # Check failed winners for consistency, and collect the consistent ones
+      consistent_list = @prior_result.failed_winners.select do |word|
         @language_learner.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
       # If there are consistent errors, run MMR on one
@@ -63,7 +63,7 @@ module OTLearn
           break if new_ranking_info
         end
       end
-      return true
+      return @change
     end
 
     # Returns True if any new ranking information was added, false otherwise
