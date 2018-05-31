@@ -65,6 +65,8 @@ module OTLearn
           guy = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
           guy.run_induction_learning
           learning_change = true if guy.change?
+          # TODO: the label to GrammarTest should have some indication of
+          # the *kind* of induction learning that was performed (FSF vs. MMR).
           @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Induction Learning")
         end
         # If no change resulted from a contrast pair or from minimal uf learning,

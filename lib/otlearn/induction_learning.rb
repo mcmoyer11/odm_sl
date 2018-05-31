@@ -20,14 +20,30 @@ module OTLearn
      @prior_result = prior_result
      @language_learner = language_learner
      @change = false
+     # dependency injection defaults
+     @fewest_set_features_class = OTLearn::FewestSetFeatures
+    end
+    
+    # Assigns a new object to be used as the source of the fewest set
+    # features algorithm. Used for testing (dependency injection).
+    # To be effective, this must be called before #run() is called.
+    def fewest_set_features_class=(fsf_class)
+      @fewest_set_features_class = fsf_class
+    end
+
+    # Returns true if induction learning made a change to the grammar,
+    # returns false otherwise.
+    def change?
+      return @change
     end
 
    # Returns true if anything changed about the grammar
     def run_induction_learning
-      # Collect all the failed winners in a list
-      failed_winners = @word_list.select do |word|
-        OTLearn::GrammarTest.new([word], @grammar).all_correct?
-      end
+#      # Collect all the failed winners in a list
+#      failed_winners = @word_list.select do |word|
+#        OTLearn::GrammarTest.new([word], @grammar).all_correct?
+#      end
+      failed_winners = @prior_result.failed_winners
       # Check those errors for consistency, and collect them
       consistent_list = failed_winners.select do |word|
         @language_learner.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
@@ -36,7 +52,7 @@ module OTLearn
       #if consistent_list.empty?
       if true
          # Should call FSF
-         fsf = OTLearn::FewestSetFeatures.new(@word_list, @grammar, @prior_result, @language_learner)
+         fsf = @fewest_set_features_class.new(@word_list, @grammar, @prior_result, @language_learner)
          fsf.run
          @change = fsf.change?
       else
@@ -57,10 +73,6 @@ module OTLearn
       winner = max_disparity_list.first 
       #STDERR.puts winner
       OTLearn::ranking_learning_faith_low([winner], grammar)
-    end
-      
-    def change?
-      return @change
     end
 
     protected :run_max_mismatch_ranking
