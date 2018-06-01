@@ -46,11 +46,17 @@ module OTLearn
       return (not newly_set_features.empty?)
     end
 
-    # Executes the fewest set features algorithm. If a minimal set if features
-    # is identified, they are set in the grammar. Returns true if at least
-    # one feature was set, false otherwise.
+    # Executes the fewest set features algorithm. If a minimal set of features
+    # is identified, they are set in the grammar. The learner pursues
+    # non-phonotactic ranking information for each newly set feature.
+    # Returns true if at least one feature was set, false otherwise.
     def run
-      run_minimal_uf_for_failed_winner(@word_list, @grammar, @prior_result)
+      # find the minimal set of features that can rescue a failed winner.
+      run_minimal_uf_for_failed_winner
+      # Check for any new ranking information based on the newly set features.
+      newly_set_features.each do |feat|
+        OTLearn::new_rank_info_from_feature(@grammar, @word_list, feat)
+      end
       return change?
     end
 
@@ -80,17 +86,14 @@ module OTLearn
     # of a failed winner. Future work will be needed to determine if
     # the learner should evaluate each failed winner, and then select
     # the failed winner requiring the minimal number of set features.
-    def run_minimal_uf_for_failed_winner(winner_list, grammar, prior_result)
-      fw_list = prior_result.failed_winners
-      fw_list.each do |failed_winner|
+    def run_minimal_uf_for_failed_winner
+      @prior_result.failed_winners.each do |failed_winner|
         # Get the FeatureValuePair of the feature and its succeeding value.
-        fv_pair = select_most_restrictive_uf(failed_winner, grammar, prior_result.success_winners)
+        fv_pair = select_most_restrictive_uf(failed_winner, @grammar, @prior_result.success_winners)
         unless fv_pair.nil?
           fv_pair.set_to_alt_value  # Set the feature permanently in the lexicon.
           set_feature = fv_pair.feature_instance
           newly_set_features << set_feature
-          # Check for any new ranking information based on the newly set feature.
-          OTLearn::new_rank_info_from_feature(grammar, winner_list, set_feature)
           break # Stop looking once the first successful feature is found.
         end
       end
