@@ -29,31 +29,29 @@ module OTLearn
       @grammar = grammar
       @prior_result = prior_result
       @language_learner = language_learner
-      @set_feature = nil
-      @change = false
+      @newly_set_features = []
     end
 
-    # Returns the feature that was set by fewest set features. If no
-    # feature was set, returns nil. Will necessarily return nil if
+    # Returns an array of the feature that were set by fewest set features.
+    # If no feature was set, returns nil. Will necessarily return nil if
     # FewestSetFeatures#run has not yet been called on this object.
-    def set_feature
-      return @set_feature
+    def newly_set_features
+      return @newly_set_features
     end
     
     # Returns true if FewestSetFeatures set at least one feature.
     # Will necessarily return false if FewestSetFeatures#run has not yet
     # been called on this object.
     def change?
-      return @change
+      return (not newly_set_features.empty?)
     end
 
     # Executes the fewest set features algorithm. If a minimal set if features
     # is identified, they are set in the grammar. Returns true if at least
     # one feature was set, false otherwise.
     def run
-      @set_feature = run_minimal_uf_for_failed_winner(@word_list, @grammar, @prior_result)
-      @change = true unless set_feature.nil?
-      return @change
+      run_minimal_uf_for_failed_winner(@word_list, @grammar, @prior_result)
+      return change?
     end
 
     # Given the result of error-testing, find a previously unset feature
@@ -70,8 +68,7 @@ module OTLearn
     # succeed on the basis of one newly set feature, returning that instance
     # without checking to see if there are other possibilities.
     #
-    # Returns the feature instance of the newly set feature, or nil if
-    # no feature was set.
+    # Returns true if the grammar set a feature, false otherwise.
     #
     # At present, #select_most_restrictive_uf checks each unset feature of
     # a failed winner in isolation, and returns a feature value allowing
@@ -85,19 +82,19 @@ module OTLearn
     # the failed winner requiring the minimal number of set features.
     def run_minimal_uf_for_failed_winner(winner_list, grammar, prior_result)
       fw_list = prior_result.failed_winners
-      set_feature = nil
       fw_list.each do |failed_winner|
         # Get the FeatureValuePair of the feature and its succeeding value.
         fv_pair = select_most_restrictive_uf(failed_winner, grammar, prior_result.success_winners)
         unless fv_pair.nil?
           fv_pair.set_to_alt_value  # Set the feature permanently in the lexicon.
           set_feature = fv_pair.feature_instance
+          newly_set_features << set_feature
           # Check for any new ranking information based on the newly set feature.
           OTLearn::new_rank_info_from_feature(grammar, winner_list, set_feature)
           break # Stop looking once the first successful feature is found.
         end
       end
-      return set_feature
+      return change?
     end
     
     # Finds the unset underlying form feature of +failed_winner+ that,
