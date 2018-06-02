@@ -30,9 +30,11 @@ module OTLearn
       @prior_result = prior_result
       @language_learner = language_learner
       @newly_set_features = []
+      # dependency injection defaults
+      @uf_learning_module = OTLearn
     end
 
-    # Returns an array of the feature that were set by fewest set features.
+    # Returns an array of the features that were set by fewest set features.
     # If no feature was set, returns nil. Will necessarily return nil if
     # FewestSetFeatures#run has not yet been called on this object.
     def newly_set_features
@@ -45,6 +47,16 @@ module OTLearn
     def change?
       return (not newly_set_features.empty?)
     end
+    
+    # Assigns a new module to be used as the source of the underlying
+    # form learning methods. Used for testing (dependency injection).
+    # To be effective, this must be called before #run() is called.
+    # The uf_learning module is the source of the methods:
+    # * .new_rank_info_from_feature(grammar, word_list, feature)
+    # * .find_unset_features_in_words(failed_winner_list, grammar)
+    def uf_learning_module=(mod)
+      @uf_learning_module = mod
+    end
 
     # Executes the fewest set features algorithm. If a minimal set of features
     # is identified, they are set in the grammar. The learner pursues
@@ -55,7 +67,7 @@ module OTLearn
       run_minimal_uf_for_failed_winner
       # Check for any new ranking information based on the newly set features.
       newly_set_features.each do |feat|
-        OTLearn::new_rank_info_from_feature(@grammar, @word_list, feat)
+        @uf_learning_module.new_rank_info_from_feature(@grammar, @word_list, feat)
       end
       return change?
     end
@@ -116,7 +128,7 @@ module OTLearn
     def select_most_restrictive_uf(failed_winner_orig, main_grammar, success_winners)
       failed_winner = failed_winner_orig.dup.sync_with_grammar!(main_grammar)
       # Find the unset underlying feature instances
-      unset_uf_features = OTLearn::find_unset_features_in_words([failed_winner],main_grammar)
+      unset_uf_features = @uf_learning_module.find_unset_features_in_words([failed_winner],main_grammar)
       # Set, in turn, each unset feature to match its output correspondent.
       # For each case, test the success winners and the current failed winner
       # for collective consistency with the grammar.
