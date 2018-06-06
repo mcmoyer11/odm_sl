@@ -106,7 +106,7 @@ module OTLearn
       # of failed winners provided by @prior_result.
       @failed_winner = @prior_result.failed_winners[0]
       # find a feature that can rescue the failed winner.
-      find_and_set_a_succeeding_feature(@failed_winner)
+      find_and_set_a_succeeding_feature
       # Check for any new ranking information based on the newly set features.
       # NOTE: currently, only one feature can be newly set, but it is stored
       # in the list newly_set_features.
@@ -116,17 +116,16 @@ module OTLearn
       return change?
     end
 
-    # Given +failed_winner+, find a previously unset feature of +failed_winner+
-    # such that setting it to match its surface correspondent results in
-    # the winner succeeding (consistent with all of the winners that passed
-    # error-testing).
+    # Find a previously unset feature of failed_winner such that setting
+    # the feature to match its surface correspondent results in the winner
+    # succeeding (consistent with all of the winners that passed error-testing).
     #
     # Returns true if the grammar set a feature, false otherwise.
-    def find_and_set_a_succeeding_feature(failed_winner)
-      # Look for a feature that can make +failed_winner+ succeed.
+    def find_and_set_a_succeeding_feature
+      # Look for a feature that can make failed_winner succeed.
       # If one is found, store the successful FeatureValuePair.
-      fv_pair = select_most_restrictive_uf(failed_winner)
-      # if a feature was found, set in the lexicon, and
+      fv_pair = select_most_restrictive_uf
+      # If a feature was found, set it in the lexicon, and
       # add it to the list of newly set features.
       unless fv_pair.nil?
         fv_pair.set_to_alt_value  # Set the feature permanently in the lexicon.
@@ -135,12 +134,12 @@ module OTLearn
       return change?
     end
     
-    # Finds the unset underlying form feature of +failed_winner+ that,
+    # Finds the unset underlying form feature of failed_winner that,
     # when assigned a value matching its output correspondent,
-    # makes +failed_winner+ consistent with the success winners. Consistency
+    # makes failed_winner consistent with the success winners. Consistency
     # is evaluated with respect to the grammar with its
-    # lexicon augmented to include the tested underlying feature value, and with
-    # the other unset features given input values opposite of their output values).
+    # lexicon augmented to include the tested underlying feature value, and
+    # with the other unset features given input values opposite of their
     # 
     # Returns the successful underlying feature (and value) if exactly
     # one of them succeeds. The return value is a +FeatureValuePair+:
@@ -150,16 +149,20 @@ module OTLearn
     # Returns nil if none of the features succeeds.
     # 
     # Raises a LearnEx exception if more than one feature succeeds.
-    def select_most_restrictive_uf(failed_winner_orig)
-      failed_winner = failed_winner_orig.dup.sync_with_grammar!(@grammar)
+    def select_most_restrictive_uf
+      # Make a duplicate of the failed winner, and synchronize its input
+      # with the grammar.
+      failed_winner_dup = failed_winner.dup
+      failed_winner_dup.sync_with_grammar!(@grammar)
       # Find the unset underlying feature instances
-      unset_uf_features = @uf_learning_module.find_unset_features_in_words([failed_winner],@grammar)
+      unset_uf_features =
+        @uf_learning_module.find_unset_features_in_words([failed_winner_dup],@grammar)
       # Assign, in turn, each unset feature to match its output correspondent.
       # Then test the modified failed winner along with
       # the success winners for collective consistency with the grammar.
       consistent_feature_val_list = []
       unset_uf_features.each do |ufeat|
-        ufeat_val_pair = test_unset_feature(failed_winner, ufeat)
+        ufeat_val_pair = test_unset_feature(failed_winner_dup, ufeat)
         unless ufeat_val_pair.nil? then
           consistent_feature_val_list << ufeat_val_pair
         end
@@ -177,27 +180,29 @@ module OTLearn
       end
     end
 
-    # Tests the unset feature +ufeat+ of +failed_winner+ by assigning,
-    # in the lexicon, the unset feature to the value matching its surface
-    # realization in +failed_winner+, and then running a mismatch consistency
-    # check on +failed_winner+ jointly with all of the previously successful
-    # winners. If the check comes back consistent, then the feature is
-    # successful. In any event, the tested feature is unset at the end
-    # of the test.
+    # Tests the unset feature +ufeat+ of +tested_winner+ (a testing copy of
+    # failed_winner) by assigning, in the lexicon, the unset feature to the
+    # value matching its surface realization in +tested_winner+, and then
+    # running a mismatch consistency check on +tested_winner+ jointly with
+    # all of the previously successful winners.
+    # If the check comes back consistent, then the feature is successful.
+    # In any event, the tested feature is unset at the end of the test.
     # 
     # Returns a feature-value pair (the feature, along with the value matching
-    # the surface realization in +failed_winner+) if the feature is successful.
+    # the surface realization in +tested_winner+) if the feature is successful.
     # Returns nil if the feature is not successful.
-    def test_unset_feature(failed_winner, ufeat)
-      # set the tested underlying feature to the output value
-      out_feat_inst = failed_winner.out_feat_corr_of_uf(ufeat)
+    def test_unset_feature(tested_winner, ufeat)
+      # set (temporarily) the tested feature to the value of its output
+      # correspondent.
+      out_feat_inst = tested_winner.out_feat_corr_of_uf(ufeat)
       ufeat.value = out_feat_inst.value
-      # Add the failed winner to (a dup of) the list of success winners.
+      # Add the tested winner to (a dup of) the list of success winners.
       word_list = @prior_result.success_winners.dup
-      word_list << failed_winner
+      word_list << tested_winner
       # Check the list of words for consistency, using the main grammar,
       # with each word's unset features mismatching their output correspondents.
-      mrcd_result = @language_learner.mismatch_consistency_check(@grammar, word_list)
+      mrcd_result =
+        @language_learner.mismatch_consistency_check(@grammar, word_list)
       # If result is consistent, add the UF value to the list.
       val_pair = nil
       if mrcd_result.grammar.consistent? then
