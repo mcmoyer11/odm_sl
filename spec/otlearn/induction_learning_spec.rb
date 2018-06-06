@@ -43,8 +43,8 @@ RSpec.describe OTLearn::InductionLearning do
       allow(@fsf).to receive(:change?)
     end
     
-    it "does not raise a RuntimeError" do
-      expect{@induction_learning.run_induction_learning}.not_to raise_error(RuntimeError)      
+    it "does not raise an exception" do
+      expect{@induction_learning.run_induction_learning}.not_to raise_error
     end
     
     it "calls fewest set features" do
