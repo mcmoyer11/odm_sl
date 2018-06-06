@@ -218,6 +218,7 @@ module OTLearn
         val_pair = @feature_value_pair_class.new(ufeat, ufeat.value)
       end
       # Unset the tested feature in any event.
+      # TODO: need a proper "unset" method for features
       ufeat.value = nil
       # return the val_pair if it worked, or nil if it didn't
       return val_pair
