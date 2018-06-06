@@ -49,6 +49,7 @@ module OTLearn
       @newly_set_features = []
       # dependency injection defaults
       @uf_learning_module = OTLearn
+      @feature_value_pair_class = FeatureValuePair
     end
 
     # Returns an array of the features that were set by fewest set features.
@@ -84,6 +85,14 @@ module OTLearn
     # * .find_unset_features_in_words(failed_winner_list, grammar)
     def uf_learning_module=(mod)
       @uf_learning_module = mod
+    end
+    
+    # Assigns a new class to be used for feature value pair objects.
+    # Feature value pair objects are returned by #test_unset_feature().
+    # Used for testing (dependency injection).
+    # To be effective, this must be called before #run() is called.
+    def feature_value_pair_class=(fvpc)
+      @feature_value_pair_class = fvpc
     end
 
     # Executes the fewest set features algorithm.
@@ -206,7 +215,7 @@ module OTLearn
       # If result is consistent, add the UF value to the list.
       val_pair = nil
       if mrcd_result.grammar.consistent? then
-        val_pair = FeatureValuePair.new(ufeat, ufeat.value)
+        val_pair = @feature_value_pair_class.new(ufeat, ufeat.value)
       end
       # Unset the tested feature in any event.
       ufeat.value = nil
