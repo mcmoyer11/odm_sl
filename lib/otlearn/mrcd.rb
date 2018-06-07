@@ -64,11 +64,10 @@ module OTLearn
     # Returns true if any change at all is made to
     # the grammar (any new winner-loser pairs are added).    
     def run_mrcd
-      # pass_change if grammar changed during a particular pass through outputs.
       # any_change if grammar changed at all during method execution.
-      pass_change, any_change = true, false
-      while pass_change do
-        pass_change = false
+      any_change = false
+      begin
+        pass_change = false  # any change on this pass through the loop
         @word_list.each do |winner|
           local_added_pairs = run_mrcd_on_single(winner)
           if (local_added_pairs.size > 0) then
@@ -78,7 +77,7 @@ module OTLearn
           break unless @grammar.consistent?
         end
         break unless @grammar.consistent?
-      end
+      end while pass_change
       return any_change
     end
     protected :run_mrcd
