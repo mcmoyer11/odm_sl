@@ -120,8 +120,7 @@ module OTLearn
     # during the execution of this method.
     def run_single_forms_until_no_change(winners, grammar)
       grammar_ever_changed = false
-      grammar_changed_on_pass = true
-      while grammar_changed_on_pass do
+      begin
         grammar_changed_on_pass = false
         winners.each do |winner|
           # Error test the winner by checking to see if it is the sole
@@ -149,7 +148,7 @@ module OTLearn
           end
         end
         grammar_ever_changed = true if grammar_changed_on_pass
-      end
+      end while grammar_changed_on_pass
       return grammar_ever_changed
     end
 
