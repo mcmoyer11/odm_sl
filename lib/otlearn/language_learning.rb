@@ -76,46 +76,32 @@ module OTLearn
       OTLearn::ranking_learning_faith_low(@winner_list, @grammar)
       @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Phonotactic Learning")
       return true if @results_list.last.all_correct?
-      # Single form UF learning
-      run_single_forms_until_no_change(@winner_list, @grammar)
-      @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
-      return true if @results_list.last.all_correct?
-      # Pursue further learning until the language is learned, or no
-      # further improvement is made.
-      learning_change = true
-      while learning_change
+      # Loop until there is no change.
+      # If learning succeeds, the method will return from inside the loop.
+      begin
         learning_change = false
+        # Single form learning
+        run_single_forms_until_no_change(@winner_list, @grammar)
+        @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
+        return true if @results_list.last.all_correct?
         # First, try to learn from a contrast pair
         contrast_pair = run_contrast_pair(@winner_list, @grammar, @results_list.last)
         unless contrast_pair.nil?
           @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
+          return true if @results_list.last.all_correct?
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of minimal UF learning
           guy = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
           guy.run_induction_learning
           if guy.change? then
-            learning_change = true
             @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
+            return true if @results_list.last.all_correct?
+            learning_change = true
           end
         end
-        # If no change resulted from a contrast pair or from minimal uf learning,
-        # no further learning is currently possible, so break out of the loop.
-        # Otherwise, check to see if the change completed learning.
-        break unless learning_change
-        return true if @results_list.last.all_correct?
-        # Follow up with another round of single form learning
-        change_on_single_forms = run_single_forms_until_no_change(@winner_list, @grammar)
-        if change_on_single_forms then
-          @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
-          return true if @results_list.last.all_correct?
-        end
-      end
-      # Return boolean indicating if learning was successful.
-      # This should be false, because a "true" would have triggered an earlier
-      # return from this method.
-      fail if @results_list.last.all_correct?
-      return @results_list.last.all_correct?
+      end while learning_change
+      return false # learning failed
     end
 
     # This method processes all of the words in +winners+, one at a time in
