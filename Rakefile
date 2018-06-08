@@ -82,6 +82,11 @@ end
 desc "run RSpec acceptance specs"
 task :spec_acceptance => [:clear_temp, :spec_acceptance_tests]
 
+desc "run RSpec wip specs"
+RSpec::Core::RakeTask.new(:spec_wip_tests) do |t|
+  t.rspec_opts = "--tag wip"
+end
+
 desc "diff the learning of all 24 SL languages (acceptance specs)"
 task :spec_diff_sl do
   kdiff3 = "C:/Programs/kdiff3/kdiff3.exe"
