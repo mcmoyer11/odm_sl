@@ -3,6 +3,7 @@
 
 require_relative 'contrast_pair'
 require_relative 'single_form_learning'
+require_relative 'contrast_pair_learning'
 require_relative 'ranking_learning'
 require_relative 'grammar_test'
 require_relative '../loserselector_by_ranking'
@@ -87,7 +88,9 @@ module OTLearn
         @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
         return true if @results_list.last.all_correct?
         # First, try to learn from a contrast pair
-        contrast_pair = run_contrast_pair(@winner_list, @grammar, @results_list.last)
+#        contrast_pair = run_contrast_pair(@winner_list, @grammar, @results_list.last)
+        cpl = OTLearn::ContrastPairLearning.new(@winner_list, @grammar, @results_list.last)
+        contrast_pair = cpl.run
         unless contrast_pair.nil?
           @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
           return true if @results_list.last.all_correct?
@@ -106,43 +109,7 @@ module OTLearn
       return false # learning failed
     end
 
-    # Select a contrast pair, and process it, attempting to set underlying
-    # features. If any features are set, check for any newly available
-    # ranking information.
-    # 
-    # This method returns the first contrast pair that was able to set
-    # at least one underlying feature. If none of the constructed
-    # contrast pairs is able to set any features, nil is returned.
-    def run_contrast_pair(winner_list, grammar, prior_result)
-      # Create an external iterator which calls generate_contrast_pair()
-      # to generate contrast pairs.
-      cp_gen = Enumerator.new do |result|
-        OTLearn::generate_contrast_pair(result, winner_list, grammar, prior_result)
-      end
-      # Process contrast pairs until one is found that sets an underlying
-      # feature, or until all contrast pairs have been processed.
-      loop do
-        contrast_pair = cp_gen.next
-        # Process the contrast pair, and return a list of any features
-        # that were newly set during the processing.
-        set_feature_list = OTLearn::set_uf_values(contrast_pair, grammar)
-        # For each newly set feature, see if any new ranking information
-        # is now available.
-        set_feature_list.each do |set_f|
-          OTLearn::new_rank_info_from_feature(grammar, winner_list, set_f)
-        end
-        # If an underlying feature was set, return the contrast pair.
-        # Otherwise, keep processing contrast pairs.
-        return contrast_pair unless set_feature_list.empty?
-      end
-      # No contrast pairs were able to set any features; return nil.
-      # NOTE: loop silently rescues StopIteration, so if cp_gen runs out
-      #       of contrast pairs, loop simply terminates, and execution continues
-      #       below it.
-      return nil
-    end
-
-    protected :execute_learning, :run_contrast_pair
+    protected :execute_learning
 
   end # class LanguageLearning
   
