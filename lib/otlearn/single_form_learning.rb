@@ -4,7 +4,16 @@
 require_relative "./grammar_test"
 
 module OTLearn
+  
+  # When run, this processes all of the words in +winners+, one at a time in
+  # order, with respect to +grammar+. Any results of learning are realized
+  # as side effect changes to +grammar+.
   class SingleFormLearning
+    
+    # Creates the object. The learning procedure is not executed until
+    # #run is called.
+    # +winners+ is the list of all grammatical words.
+    # +grammar+ is the grammar that learning will modify.
     def initialize(winners, grammar)
       @winners = winners
       @grammar = grammar
@@ -15,6 +24,9 @@ module OTLearn
       @otlearn_module = OTLearn
     end
     
+    # Resets the tester class used to determine which words require
+    # more learning/information.
+    # Used in testing (dependency injection).
     def tester_class=(test_obj)
       @tester_class = test_obj
     end
@@ -23,18 +35,39 @@ module OTLearn
       @language_learning = lang_learn
     end
     
+    # Resets the module providing the namespace for various learning methods.
+    # Used in testing (dependency injection).
     def otlearn_module=(mod)
       @otlearn_module = mod
     end
-    
+
+    # The list of winner words used for learning.
     def winners
       @winners
     end
     
+    # The grammar resulting from this run of single form learning.
     def grammar
       @grammar
     end
+
+    # Returns true if single form learning changed the grammar; false otherwise.
+    def changed?
+      return @changed
+    end
     
+    # Each winner is processed as follows:
+    # * Error test the winner: see if it is the sole optimum for the
+    #   mismatched input (all unset features assigned opposite their
+    #   surface values) using the Faith-Low hierarchy.
+    # * Check if the winner is optimal when unset input features are matched
+    #   to the output, and if not, find more ranking info.
+    # * Attempt to set any unset underlying features of the winner.
+    # * For each newly set feature, check for new ranking information.
+    # It passes repeatedly through the list of winners until a pass is made
+    # with no changes to the grammar.
+    # A boolean is returned indicating if the grammar was changed at all
+    # during the execution of this method.
     def run
       begin
         grammar_changed_on_pass = false
@@ -67,12 +100,8 @@ module OTLearn
         end
         @changed = true if grammar_changed_on_pass
       end while grammar_changed_on_pass
-    end
-    
-    def changed?
-      return @changed
+      return changed?
     end
     
   end # class SingleFormLearning
-
 end # module OTLearn
