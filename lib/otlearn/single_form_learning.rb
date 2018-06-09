@@ -2,6 +2,7 @@
 #
 
 require_relative "./grammar_test"
+require_relative "./data_manip"
 
 module OTLearn
   
@@ -20,7 +21,6 @@ module OTLearn
       @changed = false
       # injection dependency defaults
       @tester_class = OTLearn::GrammarTest
-      @language_learning = nil
       @otlearn_module = OTLearn
     end
     
@@ -29,10 +29,6 @@ module OTLearn
     # Used in testing (dependency injection).
     def tester_class=(test_obj)
       @tester_class = test_obj
-    end
-    
-    def language_learning=(lang_learn)
-      @language_learning = lang_learn
     end
     
     # Resets the module providing the namespace for various learning methods.
@@ -86,7 +82,7 @@ module OTLearn
             # Check the mismatched input for consistency.
             # Unless the mismatched winner is consistent, attempt to set
             # each unset feature of the winner.
-            consistency_result = @language_learning.mismatch_consistency_check(grammar, [winner])
+            consistency_result = @otlearn_module.mismatch_consistency_check(grammar, [winner])
             unless consistency_result.grammar.consistent?
               set_feature_list = @otlearn_module.set_uf_values([winner], grammar)
               grammar_changed_on_pass = true unless set_feature_list.empty?

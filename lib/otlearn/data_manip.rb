@@ -25,6 +25,35 @@ module OTLearn
     word.eval # re-evaluate constraint violations b/c changed input
   end
   
+  # Given a list of words and a grammar, check the word list for
+  # consistency with the grammar using MRCD. Any features unset
+  # in the lexicon of the grammar are set in the input of a word
+  # to the value opposite its output correspondent in the word.
+  # The mismatching is done separately for each word (the same unset feature
+  # for a morpheme might be assigned different values in the inputs of
+  # different words containing that morpheme, depending on what the outputs
+  # of those words are).
+  # Returns the Mrcd object containing the results.
+  # To find out if the word list is consistent with the grammar, call
+  # result.grammar.consistent? (where result is the Mrcd object returned
+  # by #mismatch_consistency_check).
+  def OTLearn.mismatch_consistency_check(grammar, word_list)
+    w_list = word_list.map { |winner| winner.dup }
+    # Set each word's input so that features unset in the lexicon
+    # mismatch their output correspondents. A given output could appear
+    # more than once in the mismatch list ONLY if there are suprabinary
+    # features (a suprabinary feature can mismatch in more than one way).
+    mismatch_list = []
+    w_list.map do |word|
+      OTLearn::mismatches_input_to_output(word) { |mismatched_word| mismatch_list << mismatched_word }
+    end
+    # Run MRCD to see if the mismatched candidates are consistent.
+    # TODO: make sure the file containing LoserSelector_by_ranking is properly required.
+    selector = LoserSelector_by_ranking.new(grammar.system)
+    mrcd = Mrcd.new(mismatch_list, grammar, selector)
+    return mrcd
+  end
+
   # For the given word, test the *unset* features by examining each combination
   # of values such that each unset feature does *not* match its output
   # correspondent. For each combination, the code block is run.

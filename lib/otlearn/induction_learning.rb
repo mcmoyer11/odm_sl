@@ -20,6 +20,7 @@ module OTLearn
      @change = false
      # dependency injection defaults
      @fewest_set_features_class = OTLearn::FewestSetFeatures
+     @otlearn_module = OTLearn
     end
     
     # Assigns a new object to be used as the source of the fewest set
@@ -27,6 +28,12 @@ module OTLearn
     # To be effective, this must be called before #run_induction_learning() is called.
     def fewest_set_features_class=(fsf_class)
       @fewest_set_features_class = fsf_class
+    end
+
+    # Resets the module providing the namespace for various learning methods.
+    # Used in testing (dependency injection).
+    def otlearn_module=(mod)
+      @otlearn_module = mod
     end
 
     # Returns true if induction learning made a change to the grammar,
@@ -46,7 +53,7 @@ module OTLearn
       
       # Check failed winners for consistency, and collect the consistent ones
       consistent_list = @prior_result.failed_winners.select do |word|
-        @language_learner.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
+        @otlearn_module.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
       # If there are consistent errors, run MMR on one
       #if consistent_list.empty?

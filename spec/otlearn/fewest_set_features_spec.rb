@@ -61,7 +61,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       @failed_winner_dup = double('failed_winner_dup')
       allow(@failed_winner).to receive(:dup).and_return(@failed_winner_dup)
       allow(@failed_winner_dup).to receive(:sync_with_grammar!)
-      allow(@language_learner).to \
+      allow(@uf_learning_module).to \
         receive(:mismatch_consistency_check).with(@grammar,[@failed_winner_dup]).and_return(@mrcd_result)
       allow(@failed_winner_dup).to \
         receive(:out_feat_corr_of_uf).with(@unset_feat1).and_return(@out_feat_instance1)

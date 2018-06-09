@@ -8,7 +8,6 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
   let(:tester_class){double('tester class')}
   let(:tester_obj){instance_double(OTLearn::GrammarTest)}
   let(:otlearn_module){double('OTLearn module')}
-  let(:language_learning){double('LanguageLearning')}
   let(:consistency_result){double('consistency_result')}
   let(:cr_grammar){double('cr_grammar')}
   
@@ -17,11 +16,11 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       @winners = [win1]
       allow(tester_class).to receive(:new).with([win1], grammar).and_return(tester_obj)
       allow(tester_obj).to receive(:all_correct?).and_return(true)
-      allow(language_learning).to receive(:mismatch_consistency_check)
+      allow(otlearn_module).to receive(:mismatch_consistency_check)
       #
       @single_form_learning = OTLearn::SingleFormLearning.new(@winners, grammar)
       @single_form_learning.tester_class = tester_class
-      @single_form_learning.language_learning = language_learning
+      @single_form_learning.otlearn_module = otlearn_module
       @run_return_value = @single_form_learning.run
     end
     it "does not change the grammar" do
@@ -40,7 +39,7 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       expect(tester_class).to have_received(:new).with([win1], grammar)
     end    
     it "does not perform a mismatch consistency check" do
-      expect(language_learning).not_to have_received(:mismatch_consistency_check)
+      expect(otlearn_module).not_to have_received(:mismatch_consistency_check)
     end  
   end
   
@@ -49,8 +48,8 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       @winners = [win1]
       allow(tester_class).to receive(:new).with([win1], grammar).and_return(tester_obj)
       allow(tester_obj).to receive(:all_correct?).and_return(false)
-      allow(language_learning).to receive(:mismatch_consistency_check).and_return(consistency_result)
       allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
+      allow(otlearn_module).to receive(:mismatch_consistency_check).and_return(consistency_result)
       allow(otlearn_module).to receive(:set_uf_values).with([win1], grammar).and_return(["feature1"],[])
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,@winners,"feature1")
       allow(otlearn_module).to receive(:ranking_learning_faith_low).and_return(false)
@@ -58,7 +57,6 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       #
       @single_form_learning = OTLearn::SingleFormLearning.new(@winners, grammar)
       @single_form_learning.tester_class = tester_class
-      @single_form_learning.language_learning = language_learning
       @single_form_learning.otlearn_module = otlearn_module
       @run_return_value = @single_form_learning.run
     end
@@ -78,7 +76,7 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       expect(tester_class).to have_received(:new).with([win1], grammar).exactly(2).times
     end    
     it "performs two mismatch consistency checks" do
-      expect(language_learning).to have_received(:mismatch_consistency_check).with(grammar,[win1]).exactly(2).times
+      expect(otlearn_module).to have_received(:mismatch_consistency_check).with(grammar,[win1]).exactly(2).times
     end
     it "calls set_uf_features twice" do
       expect(otlearn_module).to have_received(:set_uf_values).with([win1],grammar).exactly(2).times

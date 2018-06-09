@@ -33,12 +33,15 @@ RSpec.describe OTLearn::InductionLearning do
       allow(mrcd_gram).to receive(:consistent?).and_return(false)
       mrcd = double("mrcd")
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
-      allow(language_learner).to receive(:mismatch_consistency_check).with(grammar,[@failed_winner_1]).and_return(mrcd)
+#      allow(language_learner).to receive(:mismatch_consistency_check).with(grammar,[@failed_winner_1]).and_return(mrcd)
       # the test double for the FSF class, and the test fsf object to be returned
       @fsf = double("fsf")
       fsf_class = double("FSF_class")
       allow(fsf_class).to receive(:new).and_return(@fsf)
       @induction_learning.fewest_set_features_class = fsf_class
+      otlearn_module = double("otlearn_module")
+      allow(otlearn_module).to receive(:mismatch_consistency_check).with(grammar,[@failed_winner_1]).and_return(mrcd)
+      @induction_learning.otlearn_module = otlearn_module
       allow(@fsf).to receive(:run)
       allow(@fsf).to receive(:change?)
     end

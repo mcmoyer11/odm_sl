@@ -211,7 +211,7 @@ module OTLearn
       # Check the list of words for consistency, using the main grammar,
       # with each word's unset features mismatching their output correspondents.
       mrcd_result =
-        @language_learner.mismatch_consistency_check(@grammar, word_list)
+        @uf_learning_module.mismatch_consistency_check(@grammar, word_list)
       # If result is consistent, add the UF value to the list.
       val_pair = nil
       if mrcd_result.grammar.consistent? then
