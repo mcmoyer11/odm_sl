@@ -44,20 +44,19 @@ module OTLearn
           error_test = @tester_class.new([winner], grammar)
           # Unless no error is detected, try learning with the winner.
           unless error_test.all_correct? then
-#            # Check the winner to see if it is the sole optimum for
-#            # the matched input; if not, more ranking info is gained.
-#            new_ranking_info = OTLearn::ranking_learning_faith_low([winner], grammar)
-#            grammar_changed_on_pass = true if new_ranking_info
+            # Check the winner to see if it is the sole optimum for
+            # the matched input; if not, more ranking info is gained.
+            # NOTE: several languages aren' learned if this step isn't taken.
+            # TODO: investigate residual ranking info learning further
+            new_ranking_info = @otlearn_module.ranking_learning_faith_low([winner], grammar)
+            grammar_changed_on_pass = true if new_ranking_info
             # Check the mismatched input for consistency.
             # Unless the mismatched winner is consistent, attempt to set
             # each unset feature of the winner.
             consistency_result = @language_learning.mismatch_consistency_check(grammar, [winner])
             unless consistency_result.grammar.consistent?
               set_feature_list = @otlearn_module.set_uf_values([winner], grammar)
-              unless set_feature_list.empty? then
-                grammar_changed_on_pass = true
-                @changed = true
-              end
+              grammar_changed_on_pass = true unless set_feature_list.empty?
               # For each newly set feature, check words unfaithfully mapping that
               # feature for new ranking information.
               set_feature_list.each do |set_f|
@@ -66,6 +65,7 @@ module OTLearn
             end
           end
         end
+        @changed = true if grammar_changed_on_pass
       end while grammar_changed_on_pass
     end
     

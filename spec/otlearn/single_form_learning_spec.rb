@@ -50,6 +50,7 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
       allow(otlearn_module).to receive(:set_uf_values).with([win1], grammar).and_return(["feature1"],[])
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,@winners,"feature1")
+      allow(otlearn_module).to receive(:ranking_learning_faith_low).and_return(false)
       allow(cr_grammar).to receive(:consistent?).and_return(false, false)
       #
       @single_form_learning = OTLearn::SingleFormLearning.new(@winners, grammar)

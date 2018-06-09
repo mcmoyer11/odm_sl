@@ -2,6 +2,7 @@
 #
 
 require_relative 'contrast_pair'
+require_relative 'single_form_learning'
 require_relative 'ranking_learning'
 require_relative 'grammar_test'
 require_relative '../loserselector_by_ranking'
@@ -81,7 +82,9 @@ module OTLearn
       begin
         learning_change = false
         # Single form learning
-        run_single_forms_until_no_change(@winner_list, @grammar)
+        sfl = OTLearn::SingleFormLearning.new(@winner_list, @grammar)
+        sfl.language_learning = self
+        sfl.run
         @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
         return true if @results_list.last.all_correct?
         # First, try to learn from a contrast pair
