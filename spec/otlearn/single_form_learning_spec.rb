@@ -30,7 +30,7 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       expect(@run_return_value).to be false
     end
     it "returns a winner list with one winner" do
-      expect(@single_form_learning.winners).to eq @winners
+      expect(@single_form_learning.winner_list).to eq @winners
     end
     it "returns the grammar unchanged" do
       expect(@single_form_learning.grammar).to eq grammar
@@ -67,7 +67,7 @@ RSpec.describe OTLearn::SingleFormLearning, :wip do
       expect(@run_return_value).to be true
     end
     it "returns a winner list with one winner" do
-      expect(@single_form_learning.winners).to eq @winners
+      expect(@single_form_learning.winner_list).to eq @winners
     end
     it "returns the grammar" do
       expect(@single_form_learning.grammar).to eq grammar

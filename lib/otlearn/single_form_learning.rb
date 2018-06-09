@@ -6,17 +6,17 @@ require_relative "./data_manip"
 
 module OTLearn
   
-  # When run, this processes all of the words in +winners+, one at a time in
-  # order, with respect to +grammar+. Any results of learning are realized
+  # When run, this processes all of the words in +winner_list+, one at a time
+  # in order, with respect to +grammar+. Any results of learning are realized
   # as side effect changes to +grammar+.
   class SingleFormLearning
     
     # Creates the object. The learning procedure is not executed until
     # #run is called.
-    # +winners+ is the list of all grammatical words.
+    # +winner_list+ is the list of all grammatical words.
     # +grammar+ is the grammar that learning will modify.
-    def initialize(winners, grammar)
-      @winners = winners
+    def initialize(winner_list, grammar)
+      @winner_list = winner_list
       @grammar = grammar
       @changed = false
       # injection dependency defaults
@@ -38,8 +38,8 @@ module OTLearn
     end
 
     # The list of winner words used for learning.
-    def winners
-      @winners
+    def winner_list
+      @winner_list
     end
     
     # The grammar resulting from this run of single form learning.
@@ -67,7 +67,7 @@ module OTLearn
     def run
       begin
         grammar_changed_on_pass = false
-        winners.each do |winner|
+        winner_list.each do |winner|
           # Error test the winner by checking to see if it is the sole
           # optimum for the mismatched input using the Faith-Low hierarchy.
           error_test = @tester_class.new([winner], grammar)
@@ -116,12 +116,13 @@ module OTLearn
         # For each newly set feature, check words unfaithfully mapping that
         # feature for new ranking information.
         set_feature_list.each do |set_f|
-          @otlearn_module.new_rank_info_from_feature(grammar, winners, set_f)
+          @otlearn_module.new_rank_info_from_feature(grammar, winner_list, set_f)
         end
         change_on_winner = true unless set_feature_list.empty?
       end
       return change_on_winner
     end
+    protected :process_winner
     
   end # class SingleFormLearning
 end # module OTLearn
