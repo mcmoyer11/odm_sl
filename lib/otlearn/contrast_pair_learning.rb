@@ -1,5 +1,7 @@
 # Author: Bruce Tesar
-#
+
+require_relative 'contrast_pair'
+require_relative 'uf_learning'
 
 module OTLearn
   class ContrastPairLearning
@@ -29,7 +31,8 @@ module OTLearn
       # Create an external iterator which calls generate_contrast_pair()
       # to generate contrast pairs.
       cp_gen = Enumerator.new do |result|
-        @otlearn_module.generate_contrast_pair(result, @winner_list, @grammar, @prior_result)
+        @otlearn_module.generate_contrast_pair(result, @winner_list,
+          @grammar, @prior_result)
       end
       # Process contrast pairs until one is found that sets an underlying
       # feature, or until all contrast pairs have been processed.
@@ -37,11 +40,13 @@ module OTLearn
         contrast_pair = cp_gen.next
         # Process the contrast pair, and return a list of any features
         # that were newly set during the processing.
-        set_feature_list = @otlearn_module.set_uf_values(contrast_pair, @grammar)
+        set_feature_list = @otlearn_module.set_uf_values(contrast_pair,
+          @grammar)
         # For each newly set feature, see if any new ranking information
         # is now available.
         set_feature_list.each do |set_f|
-          @otlearn_module.new_rank_info_from_feature(@grammar, @winner_list, set_f)
+          @otlearn_module.new_rank_info_from_feature(@grammar, @winner_list,
+            set_f)
         end
         # If an underlying feature was set, return the contrast pair.
         # Otherwise, keep processing contrast pairs.
@@ -49,8 +54,8 @@ module OTLearn
       end
       # No contrast pairs were able to set any features; return nil.
       # NOTE: loop silently rescues StopIteration, so if cp_gen runs out
-      #       of contrast pairs, loop simply terminates, and execution continues
-      #       below it.
+      #       of contrast pairs, loop simply terminates, and execution
+      #       continues below it.
       return nil
     end
 
