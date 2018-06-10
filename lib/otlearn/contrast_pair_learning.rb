@@ -4,8 +4,18 @@ require_relative 'contrast_pair'
 require_relative 'uf_learning'
 
 module OTLearn
+
+  # Instantiates contrast pair learning; the procedure is not executed
+  # until #run is called.
+  # Any new grammatical information resulting from contrast pair learning
+  # is reflected in the grammar passed into the constructor as a side effect.
   class ContrastPairLearning
-    
+
+    # Constructs a contrast pair learning object, storing the parameters.
+    # [_winner_list_] the winners considered to form contrast pairs
+    # [_grammar_] the current grammar (learning may alter it).
+    # [_prior_result_] the result of grammar testing immediately prior to
+    #                  construction of the contrast pair learning object.
     def initialize(winner_list, grammar, prior_result)
       @winner_list = winner_list
       @grammar = grammar
