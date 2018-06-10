@@ -16,11 +16,11 @@ module OTLearn
     # the three objects passed as parameters.
     # [_failed_winner_] the failed winner candidate
     # [_alt_optima_] a list of the optimal candidates (not including _failed_winner_)
-    # [winner_optimal_flag] a boolean indicating if _failed_winner_ is optimal (true) or not (false).
-    def initialize(failed_winner, alt_optima, winner_optimal_flag)
+    # [_winner_optimal_] a boolean indicating if _failed_winner_ is optimal (true) or not (false).
+    def initialize(failed_winner, alt_optima, winner_optimal)
       @failed_winner = failed_winner
       @alt_optima = alt_optima
-      @winner_optimal_flag = winner_optimal_flag
+      @winner_optimal = winner_optimal
     end
     
     # Returns the failed winner candidate.
@@ -36,8 +36,8 @@ module OTLearn
     
     # Returns true if the failed winner is optimal (ties for optimality),
     # false otherwise.
-    def winner_optimal_flag
-      @winner_optimal_flag
+    def winner_optimal?
+      @winner_optimal
     end
     
   end # class FailedWinnerInfo

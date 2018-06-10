@@ -147,24 +147,5 @@ module OTLearn
       return alt_list, winner_optimal
     end
     
-    def to_s
-      out_str = ''
-      @failed_winner_info_list.each do |fw_info|
-        desired_opt = fw_info.failed_winner
-        alt_opts = fw_info.alt_optima
-        if fw_info.winner_optimal? then win_s = 'not sole optimum:'
-        else win_s = 'not optimal:'
-        end
-        out_str += "#{desired_opt.input.to_s} --> #{desired_opt.output.to_s}" +
-          " #{win_s}  (#{desired_opt.morphword}: "
-        continue_space = ' '*((desired_opt.input.to_s.size)+5)
-        lex_match = desired_opt.dup
-        OTLearn::match_input_to_uf!(lex_match)
-        out_str += "#{lex_match.input.to_s})\n"
-        alt_opts.each{|opt| out_str += "#{continue_space}#{opt.output.to_s}\n"}
-      end
-      return out_str
-    end
-    
   end # class GrammarTest
 end # module OTLearn

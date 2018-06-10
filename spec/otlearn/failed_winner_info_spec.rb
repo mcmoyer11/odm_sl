@@ -18,7 +18,7 @@ RSpec.describe OTLearn::FailedWinnerInfo, :wip do
       expect(@failed_winner_info.alt_optima).to eq [competitor1]
     end
     it "is not optimal" do
-      expect(@failed_winner_info.winner_optimal_flag).to be false
+      expect(@failed_winner_info.winner_optimal?).to be false
     end
   end
 
