@@ -1,9 +1,10 @@
 # Author: Bruce Tesar
 #
 
-require_relative 'uf_learning'
+require_relative '../most_harmonic'
 require_relative 'data_manip'
 require_relative 'failed_winner_info'
+require_relative 'rcd_bias_low'
 
 module OTLearn
 
