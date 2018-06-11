@@ -1,91 +1,77 @@
-# To change this license header, choose License Headers in Project Properties.
-# To change this template file, choose Tools | Templates
-# and open the template in the editor.
+# Author: Morgan Moyer / Bruce Tesar
 
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require_relative '../../lib/otlearn/induction_learning'
 
 RSpec.describe OTLearn::InductionLearning do
-#  before(:each) do
-#    @word_list = double("word_list")
-#    @grammar = double("grammar")
-#    @prior_result = double("prior_result")
-#    @language_learner = double("language_learner")
-#    
-##    @word_list = []
-##    @grammar = PAS::Grammar.new
-##    @prior_result = []
-##    @language_learner = OTLearn::LanguageLearningMMR.new(word_list, grammar)
-#    @induction_learning = OTLearn::InductionLearning.new(@word_list, @grammar, @prior_result, @language_learner)
-#  end
-##
-#  it "fails with empty doubles" do
-#    expect {@induction_learning.run_induction_learning}.to raise_error(RSpec::Mocks::MockExpectationError)
-#  end
-  
- #first bring in the right language that will be the test case.
-  before(:context) do
-    data_file = File.join(File.dirname(__FILE__),'..','..','data','outputs_1r1s_Typology.mar')
-    @language_list = read_languages_from_file(data_file) do |label, outputs|
-      if label == "LgL7" then
-        @l7_outputs = outputs
-      end
-      if label == "LgL8" then
-        @l8_outputs = outputs
-      end
-    end
-  end
-  
-# Recreate L7/L8 where it should be succeeding with FSF
-  context "A new OTLearn::InductionLearning for Language L8" do
+  context "with no failed winners" do
     before(:each) do
-      @word_list = @l8_outputs
-      @grammar = PAS::Grammar.new
-      @prior_result = double("prior result")
-      allow(@prior_result).to receive(:failed_winners).and_return(@failed_winners)
-      
-      @winners = @word_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
-      #@language_learner = OTLearn::LanguageLearningMMR.new(@word_list, @grammar)      
-      #get the learning up to the point of induction
-      OTLearn::ranking_learning_faith_low(@winners, @grammar)
-      @prior_result << OTLearn::GrammarTest.new(@winners, @grammar, "Phonotactic Learning")
-#      return true if @prior_results.last.all_correct?
-#      # Single form UF learning
-      run_single_forms_until_no_change(@winners, @grammar)
-#      @prior_result << OTLearn::GrammarTest.new(@winners, @grammar, "Single Form Learning")
-#      #return true if @prior_result.last.all_correct?
-#      # Pursue further learning until the language is learned, or no
-#      # further improvement is made.
-#      learning_change = true
-#      #then contrast pairs
-#      contrast_pair = run_contrast_pair(@winners, @grammar, @prior_result.last)
-#      unless contrast_pair.nil?
-#        @prior_result << OTLearn::GrammarTest.new(@winners, @grammar, "Contrast Pair Learning")
-#        learning_change = true
-#      end
-      @language_learner = double("language_learner")
-      allow(@language_learner).to receive(:outputs).and_return(@word_list)
-      allow(@language_learner).to receive(:grammar).and_return(@grammar)
-      @induction_learning = OTLearn::InductionLearning.new(@winners, @grammar, @prior_result, @language_learner)
-      end
-    
-    it "should pass induction learning" do
-      expect(@induction_learning.run_induction_learning).to be true
+      word_list = []
+      grammar = double("grammar")
+      prior_result = double("prior_result")
+      language_learner = double("language_learner")
+      allow(prior_result).to receive(:failed_winners).and_return([])
+      @induction_learning = OTLearn::InductionLearning.new(word_list, grammar, prior_result, language_learner)
     end
-       
 
+    it "raises a RuntimeError" do
+      expect{@induction_learning.run_induction_learning}.to raise_error(RuntimeError)
+    end
+  end
   
+  context "with one inconsistent failed winner" do
+    before(:each) do
+      # set up the parameter doubles and create the test object
+      word_list = []
+      grammar = double("grammar")
+      prior_result = double("prior_result")
+      language_learner = double("language_learner")
+      @failed_winner_1 = double("failed winner 1")
+      allow(prior_result).to receive(:failed_winners).and_return([@failed_winner_1])
+      @induction_learning = OTLearn::InductionLearning.new(word_list, grammar, prior_result, language_learner)
+      # doubles relevant to checking failed winners for consistency
+      mrcd_gram = double("mrcd grammar")
+      allow(mrcd_gram).to receive(:consistent?).and_return(false)
+      mrcd = double("mrcd")
+      allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
+      allow(language_learner).to receive(:mismatch_consistency_check).with(grammar,[@failed_winner_1]).and_return(mrcd)
+      # the test double for the FSF class, and the test fsf object to be returned
+      @fsf = double("fsf")
+      fsf_class = double("FSF_class")
+      allow(fsf_class).to receive(:new).and_return(@fsf)
+      @induction_learning.fewest_set_features_class = fsf_class
+      allow(@fsf).to receive(:run)
+      allow(@fsf).to receive(:change?)
+    end
+    
+    it "does not raise an exception" do
+      expect{@induction_learning.run_induction_learning}.not_to raise_error
+    end
+    
+    it "calls fewest set features" do
+      @induction_learning.run_induction_learning
+      expect(@fsf).to have_received(:run)
+    end
+    
+    context " that allows a feature to be set" do
+      before(:each) do
+        allow(@fsf).to receive(:change?).and_return(true)
+      end
+      it "reports that the grammar has changed" do
+        @induction_learning.run_induction_learning
+        expect(@induction_learning.change?).to be true
+      end
+    end
+
+    context " that does not allow a feature to be set" do
+      before(:each) do
+        allow(@fsf).to receive(:change?).and_return(false)
+      end
+      it "reports that the grammar has not changed" do
+        @induction_learning.run_induction_learning
+        expect(@induction_learning.change?).to be false
+      end
+    end
+
   end
 
-  
-  
-  
-  #build L8
-#  before(:each) do
-#    allow
-#  end
-  
-  
-  
-end #describe
-
+end # RSpec.describe OTLearn::InductionLearning

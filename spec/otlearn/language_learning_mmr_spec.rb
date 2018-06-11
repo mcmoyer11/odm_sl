@@ -84,24 +84,29 @@ end
   end
 
   #Testing cases where the two methods come apart in success/failure, L32
-  context "when testing L32 with LanguageLearningMMR" do
-    it "succeeds in learning" do
-      pending "still working on this" 
-      @language_learning_mmr = OTLearn::LanguageLearningMMR.new(@l32_outputs,@grammar)
-      expect(@language_learning_mmr.learning_successful?).to be true
-    end
-  end
+#  context "when testing L32 with LanguageLearningMMR" do
+#    it "succeeds in learning" do
+#      pending "still working on this" 
+#      @language_learning_mmr = OTLearn::LanguageLearningMMR.new(@l32_outputs,@grammar)
+#      expect(@language_learning_mmr.learning_successful?).to be true
+#    end
+#  end
   
   context "when testing L32 with LanguageLearning" do
     it "raises an exception" do
-      expect {OTLearn::LanguageLearning.new(@l32_outputs,@grammar)}.to raise_error(LearnEx)
+      expect {OTLearn::LanguageLearningMMR.new(@l32_outputs,@grammar)}.to raise_error(LearnEx)
     end
   end
   
   #Testing the case where all methods are failing, L45
   context "when testing L45 with LanguageLearning" do
     it "raises an exception" do
-      expect {OTLearn::LanguageLearning.new(@l45_outputs,@grammar)}.to raise_error(LearnEx)
+      expect {OTLearn::LanguageLearningMMR.new(@l45_outputs,@grammar)}.not_to raise_error(LearnEx)
+    end
+    
+    it "fails to learn L45" do
+      ll = OTLearn::LanguageLearningMMR.new(@l45_outputs,@grammar)
+      expect(ll).not_to be_learning_successful
     end
   end
 
