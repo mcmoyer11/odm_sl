@@ -1,9 +1,8 @@
 # Author: Bruce Tesar
 #
 
-require_relative '../most_harmonic'
+require_relative '../loserselector_by_ranking'
 require_relative 'data_manip'
-require_relative 'failed_winner_info'
 require_relative 'rcd_bias_low'
 
 module OTLearn
@@ -18,28 +17,35 @@ module OTLearn
 
     # Returns a new GrammarTest, for the provided +winners+, and with
     # respect to the provided +grammar+.
-    def initialize(winners, grammar, label="NoLabel")
+    def initialize(winners, grammar, label="NoLabel",
+      loser_selector: nil, otlearn_module: OTLearn)
       @label = label
       @system = grammar.system
+      # loser_selector default cannot be put into the parameter list, because
+      # the parameter +system+ needs to be computed.
+      if loser_selector.nil? then
+        @loser_selector = LoserSelector_by_ranking.new(system,
+          rcd_class: OTLearn::RcdFaithLow)
+      else
+        @loser_selector = loser_selector
+      end
+      @otlearn_module = otlearn_module
       # Dup the grammar, so it can be frozen.
       @grammar = grammar.dup
       # Dup the winners, and then adjust their UI correspondence relations
       # to refer to the dup grammar.
       @winners = winners.map{|win| win.dup}
       @winners.each{|win| win.sync_with_grammar!(@grammar)}
-      # Generate the test ranking, using "faithfulness low".
-      # TODO: inject a hierarchy construction object via the constructor.
-      @hierarchy = RcdFaithLow.new(@grammar.erc_list).hierarchy
       # Initialize lists for failed and successful winners
-      @failed_winner_info_list = []
+      @failed_winners = []
       @success_winners = []
       check_all
       # Freeze the test results, so they cannot be accidentally altered later.
       @grammar.freeze
       @winners.each {|win| win.freeze}
       @winners.freeze
-      @failed_winner_info_list.each {|info| info.freeze}
-      @failed_winner_info_list.freeze
+      @failed_winners.each {|fw| fw.freeze}
+      @failed_winners.freeze
       @success_winners.each {|sw| sw.freeze}
       @success_winners.freeze
     end
@@ -62,29 +68,18 @@ module OTLearn
       @grammar
     end
     
-    # Returns the hierarchy used in the evaluation of winners.
-    def hierarchy()
-      @hierarchy
-    end
-
     # Returns true if all winners in the winner list are the sole optima
     # for inputs with all unset features set to mismatch the surface of
     # the winner.
     def all_correct?
-      @failed_winner_info_list.empty?
+      @failed_winners.empty?
     end
 
     # Returns a list of the winners that are *not* the sole optima
     # for inputs with all unset features set to mismatch the surface of
     # the winner.
     def failed_winners()
-      @failed_winner_info_list.map{|fw_info| fw_info.failed_winner}
-    end
-
-    # Returns a list of failed winner information objects
-    # (class FailedWinnerInfo), one for each failed winner.
-    def failed_winner_info_list()
-      @failed_winner_info_list
+      @failed_winners
     end
 
     # Returns a list of the winners that succeeded (are sole optima for
@@ -112,41 +107,17 @@ module OTLearn
     # accessible by #failed_winners.
     def check_all
       @winners.each do |word|
-        OTLearn::mismatches_input_to_output(word) do |mismatched_word|
-          alt_optima, winner_optimal = check_winner(mismatched_word)
-          unless winner_optimal && alt_optima.empty? then
-            @failed_winner_info_list <<
-              FailedWinnerInfo.new(mismatched_word,alt_optima,winner_optimal)
-          else
+        @otlearn_module.mismatches_input_to_output(word) do |mismatched_word|
+          loser = @loser_selector.select_loser(mismatched_word,
+            grammar.erc_list)
+          if loser.nil? then
             @success_winners << mismatched_word
+          else
+            @failed_winners << mismatched_word
           end
         end
       end
     end
 
-    # Checks _winner_ to see if it is an optimal candidate, and if it is
-    # the only optimal candidate. Returns a two-element array, with the
-    # first element a list of optimal candidates with an output distinct
-    # from _winner_, and the second element a boolean: true if _winner_
-    # is an optimum, false otherwise.
-    def check_winner(winner)
-      competition = system.gen(winner.input)
-      # find the most harmonic candidates
-      mh = MostHarmonic.new(competition, hierarchy)
-      # find optima with output distinct from the winner
-      alt_list = []
-      winner_optimal = false
-      mh.each do |cand|
-        if cand.output!=winner.output then
-          # TODO: screen out alternatives with violation profiles identical
-          #       to the winner's.
-          alt_list << cand # a candidate other than the winner is an optimum
-        else
-          winner_optimal = true # the winner is an optimum
-        end
-      end
-      return alt_list, winner_optimal
-    end
-    
   end # class GrammarTest
 end # module OTLearn
