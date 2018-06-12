@@ -1,5 +1,4 @@
 # Author: Bruce Tesar
-#
 
 require_relative '../loserselector_by_ranking'
 require_relative 'data_manip'
