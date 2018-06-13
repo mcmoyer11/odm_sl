@@ -9,7 +9,7 @@ require_relative '../../lib/pas/data'
 require_relative '../../lib/csv_output'
 
 # Set up the language label and the output file_pathname.
-lang_label = "LgA"
+lang_label = "LgA_PAS"
 out_file_path = File.join(File.dirname(__FILE__),'..','..','temp') #'..' is parent directory
 out_file = File.join(out_file_path,"#{lang_label}.csv")
 
@@ -18,8 +18,9 @@ File.delete(out_file) if File.exist?(out_file)
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-winners =
-  OTLearn.generate_learning_data_from_competitions(comp_list, PAS.hier_a, PAS::Grammar)
+#winners =
+#  OTLearn.generate_learning_data_from_competitions(comp_list, PAS.hier_a, PAS::Grammar)
+winners = OTLearn.generate_language_from_competitions(comp_list, PAS.hier_a)
 outputs = winners.map{|win| win.output}
 
 # Create a new, blank grammar, and assign it the label of the language.
