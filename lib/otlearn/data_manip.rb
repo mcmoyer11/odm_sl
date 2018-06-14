@@ -162,22 +162,5 @@ module OTLearn
     outputs = wlp_winners(wl_pairs).map{|winner| winner.output}
     return outputs
   end
-
-  # Takes a competition list, a constraint hierarchy, and a grammar class
-  # object for a linguistic system, and returns a list of the winners with
-  # respect to the hierarchy.
-  # The winners have inputs with no set features (matching the lexicon).
-  # TODO: is this method needed?
-  def OTLearn::generate_learning_data_from_competitions(comp_list, hier, grammar_class)
-    # Obtain the optimal candidates for the given hierarchy.
-    lang = generate_language_from_competitions(comp_list, hier)
-    # Obtain the output forms of the language
-    outputs = lang.map{|winner| winner.output}
-    # Obtain a fresh, empty grammar.
-    grammar = grammar_class.new
-    # Convert the outputs to full words.
-    winner_list = outputs.map{|out| grammar.system.parse_output(out, grammar.lexicon)}
-    return winner_list
-  end
   
 end # module OTLearn

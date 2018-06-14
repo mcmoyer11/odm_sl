@@ -115,7 +115,7 @@ module SL
 
   # Generates a list of competitions, one for each possible input of
   # a prescribed paradigm. This can be used, for instance, to generate
-  # learning data via OTLearn.generate_learning_data_from_competitions().
+  # winners via OTLearn.generate_language_from_competitions().
   #
   # This method generates the paradigm 1r1s, with all of the possible
   # 1-syllable roots and all of the possible 1-syllable suffixes, and
@@ -143,7 +143,7 @@ module SL
   
   # Generates a list of competitions, one for each possible input of
   # a prescribed paradigm. This can be used, for instance, to generate
-  # learning data via OTLearn.generate_learning_data_from_competitions().
+  # winners via OTLearn.generate_language_from_competitions().
   #
   # This method generates the paradigm 2r1s, with all of the possible
   # 2-syllable roots and all of the possible 1-syllable suffixes, and
@@ -169,7 +169,7 @@ module SL
 
   # Generates a list of competitions, one for each possible input of
   # a prescribed paradigm. This can be used, for instance, to generate
-  # learning data via OTLearn.generate_learning_data_from_competitions().
+  # winners via OTLearn.generate_language_from_competitions().
   #
   # This method generates the paradigm 1p2r, with all of the possible
   # 1-syllable prefixes and all of the possible 2-syllable roots, and

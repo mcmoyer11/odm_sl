@@ -18,8 +18,6 @@ File.delete(out_file) if File.exist?(out_file)
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-#winners =
-#  OTLearn.generate_learning_data_from_competitions(comp_list, PAS.hier_a, PAS::Grammar)
 winners = OTLearn.generate_language_from_competitions(comp_list, PAS.hier_a)
 outputs = winners.map{|win| win.output}
 
