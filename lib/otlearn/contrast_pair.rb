@@ -36,10 +36,11 @@ module OTLearn
   def OTLearn::generate_contrast_pair(cp_return, winners, grammar, test_result=nil)
     test_result ||= GrammarTest.new(winners, grammar)
     # The failed winners of the test are connected to a different
-    # lexicon. Make duplicates of the failed winners, and synchronize
-    # them with +grammar+.
+    # lexicon. Parse the outputs with +grammar+ to generate distinct
+    # candidates in correspondence with the lexicon of +grammar+.
     f_winners = test_result.failed_winners.map do |winner|
-      winner.dup.sync_with_grammar!(grammar)
+      output = winner.output
+      grammar.system.parse_output(output, grammar.lexicon)
     end
     # For each failed winner, look for qualifying contrast pairs
     f_winners.each do |failed_winner|

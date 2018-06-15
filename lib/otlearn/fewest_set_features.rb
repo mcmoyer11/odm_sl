@@ -159,10 +159,10 @@ module OTLearn
     # 
     # Raises a LearnEx exception if more than one feature succeeds.
     def select_most_restrictive_uf
-      # Make a duplicate of the failed winner, and synchronize its input
-      # with the grammar.
-      failed_winner_dup = failed_winner.dup
-      failed_winner_dup.sync_with_grammar!(@grammar)
+      # Parse the failed winner's outputs with the grammar to generate
+      # distinct candidates in correspondence with the lexicon of the grammar.
+      output = failed_winner.output
+      failed_winner_dup = @grammar.system.parse_output(output, @grammar.lexicon)
       # Find the unset underlying feature instances
       unset_uf_features =
         @uf_learning_module.find_unset_features_in_words([failed_winner_dup],@grammar)

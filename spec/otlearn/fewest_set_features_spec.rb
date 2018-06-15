@@ -57,10 +57,15 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(@unset_feat2).to receive(:value=).with(@out_feat_value2)
       allow(@unset_feat2).to receive(:value).and_return(@out_feat_value2)
       allow(@unset_feat2).to receive(:value=).with(nil)
-      # mock the dup of failed_winner used to test a feature
+      # mock the parse of failed_winner's output used to test a feature
       @failed_winner_dup = double('failed_winner_dup')
-      allow(@failed_winner).to receive(:dup).and_return(@failed_winner_dup)
-      allow(@failed_winner_dup).to receive(:sync_with_grammar!)
+      fw_output = double('fw_output')
+      allow(@failed_winner).to receive(:output).and_return(fw_output)
+      @system = double('system')
+      lexicon = double('lexicon')
+      allow(@grammar).to receive(:system).and_return(@system)
+      allow(@grammar).to receive(:lexicon).and_return(lexicon)
+      allow(@system).to receive(:parse_output).with(fw_output, lexicon).and_return(@failed_winner_dup)
       allow(@uf_learning_module).to \
         receive(:mismatch_consistency_check).with(@grammar,[@failed_winner_dup]).and_return(@mrcd_result)
       allow(@failed_winner_dup).to \
