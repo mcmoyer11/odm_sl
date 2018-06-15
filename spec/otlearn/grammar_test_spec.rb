@@ -5,21 +5,26 @@ require_relative '../../lib/otlearn/grammar_test'
 RSpec.describe OTLearn::GrammarTest, :wip do
   let(:winner_list){double('winner_list')}
   let(:grammar){double{'grammar'}}
+  let(:lexicon){double('lexicon')}
+  let(:system){double('system')}
   let(:selector){double{'loser_selector'}}
   let(:ot_mod){double{'ot_mod'}}
+  let(:output_opt){double('output_opt')}
   let(:winner_opt){double('winner_opt')}
+  let(:output_nopt){double('output_nopt')}
   let(:winner_nopt){double('winner_nopt')}
   let(:loser){double('loser')}
   context "" do
     before(:each) do
-      allow(grammar).to receive(:system).and_return("system")
+      allow(grammar).to receive(:system).and_return(system)
+      allow(grammar).to receive(:lexicon).and_return(lexicon)
       allow(grammar).to receive(:dup).and_return(grammar)
       allow(grammar).to receive(:freeze)
       allow(grammar).to receive(:erc_list).and_return('ERCs')
+      allow(system).to receive(:parse_output).with(output_opt, lexicon).and_return(winner_opt)
+      allow(system).to receive(:parse_output).with(output_nopt, lexicon).and_return(winner_nopt)
       allow(winner_opt).to receive(:freeze)
       allow(winner_nopt).to receive(:freeze)
-      allow(winner_opt).to receive(:sync_with_grammar!)
-      allow(winner_nopt).to receive(:sync_with_grammar!)
       allow(ot_mod).to receive(:mismatches_input_to_output).with(winner_opt).and_yield(winner_opt)
       allow(ot_mod).to receive(:mismatches_input_to_output).with(winner_nopt).and_yield(winner_nopt)
       allow(selector).to receive(:select_loser).with(winner_opt,"ERCs").and_return(nil)
@@ -27,7 +32,7 @@ RSpec.describe OTLearn::GrammarTest, :wip do
     end
     context "given one optimal winner" do
       before(:each) do
-        allow(winner_list).to receive(:map).and_return([winner_opt])
+        allow(winner_list).to receive(:map).and_return([output_opt])
         @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar, "SPECS",
           loser_selector: selector, otlearn_module: ot_mod)
       end
@@ -44,7 +49,7 @@ RSpec.describe OTLearn::GrammarTest, :wip do
 
     context "given one non-optimal winner" do
       before(:each) do
-        allow(winner_list).to receive(:map).and_return([winner_nopt])
+        allow(winner_list).to receive(:map).and_return([output_nopt])
         @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar, "SPECS",
           loser_selector: selector, otlearn_module: ot_mod)
       end
@@ -61,7 +66,7 @@ RSpec.describe OTLearn::GrammarTest, :wip do
 
     context "given one optimal and one non-optimal winner" do
       before(:each) do
-        allow(winner_list).to receive(:map).and_return([winner_opt, winner_nopt])
+        allow(winner_list).to receive(:map).and_return([output_opt, output_nopt])
         @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar, "SPECS",
           loser_selector: selector, otlearn_module: ot_mod)
       end

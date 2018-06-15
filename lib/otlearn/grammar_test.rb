@@ -31,10 +31,10 @@ module OTLearn
       @otlearn_module = otlearn_module
       # Dup the grammar, so it can be frozen.
       @grammar = grammar.dup
-      # Dup the winners, and then adjust their UI correspondence relations
-      # to refer to the dup grammar.
-      @winners = winners.map{|win| win.dup}
-      @winners.each{|win| win.sync_with_grammar!(@grammar)}
+      # Parse the winner outputs, creating candidates fully reflecting
+      # the lexicon of the current grammar.
+      @outputs = winners.map{|win| win.output}
+      @winners = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       # Initialize lists for failed and successful winners
       @failed_winners = []
       @success_winners = []
