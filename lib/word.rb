@@ -172,14 +172,6 @@ class Word < Candidate
     @io_corr.freeze
   end
 
-  # Changes the UI correspondence of the input so that underlying correspondents
-  # are elements of the lexicon in +grammar+. Useful when a grammar
-  # has been duplicated (creating a lexicon with distinct underlying elements).
-  def sync_with_grammar!(grammar)
-    input.sync_with_grammar!(grammar)
-    return self
-  end
-
   # Evaluates and stores the number of violations of each constraint by
   # the candidate. This method should be called before externally
   # accessing the constraint violation counts (but after the candidate is

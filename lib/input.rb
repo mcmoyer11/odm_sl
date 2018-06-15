@@ -42,24 +42,6 @@ class Input < Array
     return copy
   end
 
-  # Changes the UI correspondence so that underlying correspondents
-  # are elements of the lexicon in +grammar+. Useful when a grammar
-  # has been duplicated (creating a lexicon with distinct underlying elements).
-  def sync_with_grammar!(grammar)
-    # Get the input for the morph_word with respect to the new grammar.
-    new_input = grammar.system.input_from_morphword(@morphword, grammar.lexicon)
-    # Create a synchronized iterator for old (self) and new input forms
-    gen = REXML::SyncEnumerator.new(self,new_input)
-    # For each element of the inputs
-    gen.each do |old_el,new_el|
-      # Get the correspondence pair for the old input element
-      corr_pair = @ui_corr.find {|pair| pair[1].equal?(old_el)} # IMPORTANT: .equal(), NOT ==()
-      # Set the pair to reference the new underlying element.
-      corr_pair[0] = new_input.ui_corr.under_corr(new_el)
-    end
-    return self
-  end
-
   # Two inputs are the same if they contain equivalent syllables.
   def ==(other)
     return false unless super
