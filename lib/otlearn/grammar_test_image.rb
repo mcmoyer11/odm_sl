@@ -7,7 +7,7 @@ require_relative '../rcd_image'
 require_relative '../lexicon_image'
 
 module OTLearn
-  class GrammarTestImageFormatter
+  class GrammarTestImage
     def initialize(grammar_test, rcd_class: OTLearn::RcdFaithLow,
       rcd_image_class: RCD_image, lexicon_image_class: Lexicon_image)
       @grammar_test = grammar_test
@@ -42,5 +42,5 @@ module OTLearn
     end
     protected :make_image
     
-  end # class GrammarTestImageFormatter
+  end # class GrammarTestImage
 end # module OTLearn

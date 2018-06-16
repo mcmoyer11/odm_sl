@@ -1,8 +1,8 @@
 # Author: Bruce Tesar
 
-require_relative "../../lib/otlearn/grammar_test_image_formatter"
+require_relative "../../lib/otlearn/grammar_test_image"
 
-RSpec.describe OTLearn::GrammarTestImageFormatter, :wip do
+RSpec.describe OTLearn::GrammarTestImage, :wip do
   let(:grammar_test){double('grammar_test')}
   let(:grammar){double('grammar')}
   let(:rcd_class){double('rcd_class')}
@@ -27,8 +27,8 @@ RSpec.describe OTLearn::GrammarTestImageFormatter, :wip do
       result_sheet[1,1] = "Result Image"
       lex_sheet[1,1] = "Lexicon Image"
       @grammar_test_image_formatter =
-        OTLearn::GrammarTestImageFormatter.new(grammar_test,
-        rcd_class: rcd_class, rcd_image_class: rcd_image_class,
+        OTLearn::GrammarTestImage.new(grammar_test, rcd_class: rcd_class,
+        rcd_image_class: rcd_image_class,
         lexicon_image_class: lexicon_image_class)
       @image = @grammar_test_image_formatter.sheet
     end
@@ -46,5 +46,5 @@ RSpec.describe OTLearn::GrammarTestImageFormatter, :wip do
       expect(@image[4,2]).to eq "Lexicon Image"
     end
   end
-end
+end # RSpec.describe OTLearn::GrammarTestImage
 
