@@ -16,7 +16,3 @@ Create some more substantive specs for Mrcd.
 
 Either find some reasonable way to unit-test LoserSelector_by_ranking,
 or delete the specs for it.
-
-The GrammarTest class probably needs some refactoring at some point.
-For one thing, the file grammar_test.rb contains three classes; they should
-be in three separate files.

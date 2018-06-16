@@ -2,7 +2,7 @@
 
 require_relative '../../lib/otlearn/contrast_pair_learning'
 
-RSpec.describe OTLearn::ContrastPairLearning, :wip do
+RSpec.describe OTLearn::ContrastPairLearning do
   let(:winner_list){double('winner_list')}
   let(:grammar){double('grammar')}
   let(:prior_result){double('prior_result')}

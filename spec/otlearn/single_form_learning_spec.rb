@@ -2,7 +2,7 @@
 
 require_relative '../../lib/otlearn/single_form_learning'
 
-RSpec.describe OTLearn::SingleFormLearning, :wip do
+RSpec.describe OTLearn::SingleFormLearning do
   let(:win1){double('winner 1')}
   let(:grammar){double('grammar')}
   let(:tester_class){double('tester class')}
