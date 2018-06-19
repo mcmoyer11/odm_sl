@@ -192,6 +192,31 @@ RSpec.describe Sheet do
         expect(@sheet[3,2]).to eq(14)
       end
     end
+
+    context "with sheet.put_range_to_index[2,1] = new_sheet, new_sheet=[[11,12],[13,14]]", :wip do
+      before(:each) do
+        @source_sheet = Sheet.new_from_a([[11,12],[13,14]])
+        @sheet.put_range_to_index[2,1] = @source_sheet
+      end
+      it "has 3 rows" do
+        expect(@sheet.row_count).to eq 3
+      end
+      it "has 2 columns" do
+        expect(@sheet.col_count).to eq 2
+      end
+      it "has value 11 at [2,1]" do
+        expect(@sheet[2,1]).to eq(11)
+      end
+      it "has value 12 at [2,2]" do
+        expect(@sheet[2,2]).to eq(12)
+      end
+      it "has value 13 at [3,1]" do
+        expect(@sheet[3,1]).to eq(13)
+      end
+      it "has value 14 at [3,2]" do
+        expect(@sheet[3,2]).to eq(14)
+      end
+    end
   end
   
   #**********************************************************************
