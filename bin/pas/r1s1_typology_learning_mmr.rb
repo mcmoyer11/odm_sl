@@ -12,6 +12,7 @@ require_relative '../../lib/csv_output'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/rcd_bias_low'
 
+
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix
 # consisting of a single syllable.
@@ -95,6 +96,12 @@ read_languages_from_file(data_file) do |label, outputs|
       # learning to crash in the first place
       STDERR.puts detail.consistent_feature_value_list
     end
+  # if there is a problem with InductionLearning, it will spit out an 
+  # error message here
+  rescue MMREx => detail
+    STDERR.puts "#{label} has the error: #{detail.message}"
+    lang_sim = detail.lang_learn
+    STDERR.puts detail.failed_winner
   end
   # Write the results to a CSV file, with the language label as the filename.
   out_file = File.join(out_filepath,"#{label}.csv")

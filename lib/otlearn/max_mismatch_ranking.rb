@@ -3,6 +3,7 @@
 
 require_relative 'data_manip'
 require_relative 'learning_exceptions'
+require_relative 'mmr_exceptions'
 require_relative 'ranking_learning'
 
 module OTLearn
@@ -26,9 +27,10 @@ module OTLearn
     # * +failed_winner+ is the current winner pulled from the consistent list
     # in the InductionLearning algorithm.
     # * +grammar+ is the current grammar of the learner.
-    def initialize(failed_winner, grammar)
+    def initialize(failed_winner, grammar, language_learner)
       @grammar = grammar
       @failed_winner = failed_winner
+      @language_learner = language_learner
       @newly_added_wl_pairs = []
       @change = false
       # dependency injection defaults
@@ -76,19 +78,19 @@ module OTLearn
     # If it is inconsistent, then the learner pursues the Fewest Set Features
     # algorithm.
     # 
-    # Returns True if a consistent max mismatch candidate is found.
-    
-    # Morgan: Are there any cases here where a LearnEx would be raised?
-    # Should this algorithm be run for all failed winners?
+    # Returns True if the consistent max mismatch candidate provides
+    # new ranking information. Raises an exception if it does not provide new 
+    # ranking information.
     def run
-      winner = nil
-      max_disparity_list = []
-      @ranking_learning_module.mismatches_input_to_output(@failed_winner.dup) {|cand| winner = cand }
-      @change = @ranking_learning_module.ranking_learning_mark_low([winner], @grammar)
+      mrcd_result = nil
+      @ranking_learning_module.mismatches_input_to_output(@failed_winner) do |cand|
+        mrcd_result = @ranking_learning_module.ranking_learning_mark_low_mrcd([cand], @grammar)
+      end
+      @newly_added_wl_pairs = mrcd_result.added_pairs
+      @change = mrcd_result.any_change?
+      raise MMREx.new(@failed_winner, @language_learner), "A failed consistent winner did not provide new ranking information." unless @change
+      return @change
     end
-
-    
-    #
     
   end # class MaxMismatchRanking
-end #module OTLearn
+end # module OTLearn

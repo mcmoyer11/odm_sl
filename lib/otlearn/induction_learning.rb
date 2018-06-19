@@ -7,6 +7,7 @@ require_relative 'uf_learning'
 require_relative 'mrcd'
 require_relative 'data_manip'
 require_relative 'fewest_set_features'
+require_relative 'max_mismatch_ranking'
 
 module OTLearn
   class InductionLearning
@@ -19,6 +20,7 @@ module OTLearn
      @change = false
      # dependency injection defaults
      @fewest_set_features_class = OTLearn::FewestSetFeatures
+     @max_mismatch_ranking_class = OTLearn::MaxMismatchRanking
     end
     
     # Assigns a new object to be used as the source of the fewest set
@@ -26,6 +28,13 @@ module OTLearn
     # To be effective, this must be called before #run_induction_learning() is called.
     def fewest_set_features_class=(fsf_class)
       @fewest_set_features_class = fsf_class
+    end
+    
+    # Assigns a new object to be used as the source of the max mismatch
+    # ranking algorithm. Used for testing (dependency injection).
+    # To be effective, this must be called before #run_induction_learning() is called.
+    def max_mismatch_ranking_class=(mmr_class)
+      @max_mismatch_ranking_class = mmr_class
     end
 
     # Returns true if induction learning made a change to the grammar,
@@ -48,22 +57,19 @@ module OTLearn
         @language_learner.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
       # If there are consistent errors, run MMR on one
-      #if consistent_list.empty?
-      if true
+      if consistent_list.empty?
          # Should call FSF
          fsf = @fewest_set_features_class.new(@word_list, @grammar, @prior_result, @language_learner)
          fsf.run
          @change = fsf.change?
       else
         # Should call MMR on the first member of the list
-        consistent_list.each do |c|
-          new_ranking_info = run_max_mismatch_ranking(c, @grammar)
-          @change = true if new_ranking_info
-          break if new_ranking_info
-        end
+        mmr = @max_mismatch_ranking_class.new(consistent_list.first, @grammar, @language_learner)
+        mmr.run
+        @change = mmr.change?
       end
       return @change
     end
     
-   end #class Induction_learning
-end #module OTLearn
+   end # class Induction_learning
+end # module OTLearn

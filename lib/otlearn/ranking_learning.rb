@@ -47,6 +47,15 @@ module OTLearn
     return mrcd_result.any_change?    
   end
   
+    def OTLearn::ranking_learning_mark_low_mrcd(word_list, grammar)
+    winner_list = data_dup_and_match_output(word_list)
+    # Use the mark-low ranking bias for ranking learning
+    selector = LoserSelector_by_ranking.new(grammar.system, rcd_class: OTLearn::RcdMarkLow)
+    mrcd_result = Mrcd.new(winner_list, grammar, selector)
+    mrcd_result.added_pairs.each { |pair| grammar.add_erc(pair) }
+    return mrcd_result    
+  end
+  
   def OTLearn::data_dup_and_match_output(word_list)
     # Duplicate the words
     winner_list = word_list.map{|word| word.dup}

@@ -56,7 +56,7 @@ end
 context "when given an empty list of outputs to LanguageLearningMMR" do
   before(:each) do
     @outputs = []
-    @language_learning = OTLearn::LanguageLearning.new(@outputs,@grammar)
+    @language_learning = OTLearn::LanguageLearningMMR.new(@outputs,@grammar)
   end
    
   it "returns true when given empty list of outputs" do
@@ -74,40 +74,22 @@ end
     end
   end
   
-  context "when testing L20 with LanguageLearning" do
-    before(:each) do
-      @language_learning = OTLearn::LanguageLearning.new(@l20_outputs,@grammar)
-    end
-    it "succeeds in learning" do
-      expect(@language_learning.learning_successful?).to be true
-    end
-  end
-
-  #Testing cases where the two methods come apart in success/failure, L32
-#  context "when testing L32 with LanguageLearningMMR" do
-#    it "succeeds in learning" do
-#      pending "still working on this" 
-#      @language_learning_mmr = OTLearn::LanguageLearningMMR.new(@l32_outputs,@grammar)
-#      expect(@language_learning_mmr.learning_successful?).to be true
-#    end
-#  end
-  
-  context "when testing L32 with LanguageLearning" do
-    it "raises an exception" do
-      expect {OTLearn::LanguageLearningMMR.new(@l32_outputs,@grammar)}.to raise_error(LearnEx)
+    context "when testing L32 with LanguageLearningMMR" do
+    it "should not raise an exception" do
+      expect {OTLearn::LanguageLearningMMR.new(@l32_outputs,@grammar)}.not_to raise_error
     end
   end
   
   #Testing the case where all methods are failing, L45
-  context "when testing L45 with LanguageLearning" do
+  context "when testing L45 with LanguageLearningMMR" do
     it "raises an exception" do
-      expect {OTLearn::LanguageLearningMMR.new(@l45_outputs,@grammar)}.not_to raise_error(LearnEx)
+      expect {OTLearn::LanguageLearningMMR.new(@l45_outputs,@grammar)}.to raise_error
     end
     
-    it "fails to learn L45" do
-      ll = OTLearn::LanguageLearningMMR.new(@l45_outputs,@grammar)
-      expect(ll).not_to be_learning_successful
-    end
+#    it "fails to learn L45" do
+#      ll = OTLearn::LanguageLearningMMR.new(@l45_outputs,@grammar)
+#      expect(ll).not_to be_learning_successful
+#    end
   end
 
 
