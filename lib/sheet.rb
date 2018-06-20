@@ -151,6 +151,17 @@ class Sheet
     sheet_range = CellRange.new(1,1,row_count,col_count)
     sheet_range.all? {|cell| get_cell(cell).nil?}
   end
+  
+  # Converts each cell containing nil to a cell containing a string with
+  # a single blank character, " ".
+  def nil_to_blank!
+    sheet_range = CellRange.new(1,1,row_count,col_count)
+    sheet_range.each do |cell|
+      if get_cell(cell).nil? then
+        put_cell(cell, " ")
+      end
+    end
+  end
 
   #*********************
   #*** Class Methods ***

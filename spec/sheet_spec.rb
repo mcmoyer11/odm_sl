@@ -139,6 +139,37 @@ RSpec.describe Sheet do
     end
   end
   
+  #*************************************************
+  # Specs for conversion between nil and blank cells
+  #*************************************************
+  
+  context "with [[1,nil],[nil,4]], when nil converted to blank", :wip do
+    before(:each) do
+      @sheet = Sheet.new
+      @sheet[1,1] = 1
+      @sheet[2,2] = 4
+      @sheet.nil_to_blank!
+    end
+    it "has 2 rows" do
+      expect(@sheet.row_count).to eq 2
+    end
+    it "has 2 columns" do
+      expect(@sheet.col_count).to eq 2
+    end
+    it "has sheet[1,1] = 1" do
+      expect(@sheet[1,1]).to eq 1
+    end
+    it "has sheet[1,2] = ' '" do
+      expect(@sheet[1,2]).to eq ' '
+    end
+    it "has sheet[2,1] = ' '" do
+      expect(@sheet[2,1]).to eq ' '
+    end
+    it "has sheet[2,2] = 4" do
+      expect(@sheet[2,2]).to eq 4
+    end
+  end
+  
   #*********************************************************
   # Specs for cell translation into a new frame of reference
   #*********************************************************
