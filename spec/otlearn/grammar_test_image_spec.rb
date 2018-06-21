@@ -26,11 +26,12 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
       # Use an actual Sheet object to mock the component sheets
       result_sheet[1,1] = "Result Image"
       lex_sheet[1,1] = "Lexicon Image"
-      @grammar_test_image_formatter =
+      @grammar_test_image =
         OTLearn::GrammarTestImage.new(grammar_test, rcd_class: rcd_class,
         rcd_image_class: rcd_image_class,
         lexicon_image_class: lexicon_image_class)
-      @image = @grammar_test_image_formatter.sheet
+      @image = @grammar_test_image.sheet
+      @image.nil_to_blank!
     end
     it "has the label in the first row" do
       expect(@image[1,1]).to eq "TestGT"
@@ -39,7 +40,6 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
       expect(@image[2,2]).to eq "Result Image"
     end
     it "has a blank line after the ERCs" do
-      pending "Adding to Sheet a method for nils to blanks."
       expect(@image[3,2]).to eq " "
     end
     it "has the lexicon next, starting in the second column" do
