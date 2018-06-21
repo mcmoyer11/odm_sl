@@ -204,7 +204,7 @@ RSpec.describe Sheet do
       before(:each) do
         @ref_cell = instance_double("Cell", :row => 2, :col => 1)
         @source_sheet = Sheet.new_from_a([[11,12],[13,14]])
-        @sheet.put_range(@ref_cell, @source_sheet)
+        @sheet.put_range_to_cell(@ref_cell, @source_sheet)
       end
       
       it "has value 11 at [2,1]" do
@@ -224,10 +224,10 @@ RSpec.describe Sheet do
       end
     end
 
-    context "with sheet.put_range_to_index[2,1] = new_sheet, new_sheet=[[11,12],[13,14]]", :wip do
+    context "with sheet.put_range[2,1] = new_sheet, new_sheet=[[11,12],[13,14]]", :wip do
       before(:each) do
         @source_sheet = Sheet.new_from_a([[11,12],[13,14]])
-        @sheet.put_range_to_index[2,1] = @source_sheet
+        @sheet.put_range[2,1] = @source_sheet
       end
       it "has 3 rows" do
         expect(@sheet.row_count).to eq 3

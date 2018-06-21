@@ -31,7 +31,6 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
         rcd_image_class: rcd_image_class,
         lexicon_image_class: lexicon_image_class)
       @image = @grammar_test_image.sheet
-      @image.nil_to_blank!
     end
     it "has the label in the first row" do
       expect(@image[1,1]).to eq "TestGT"

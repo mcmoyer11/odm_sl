@@ -98,7 +98,7 @@ class Sheet
   # and/or columns to accommodate (new cells are initialized to nil).
   # 
   # Returns +source+.
-  def put_range(cell_first, source)
+  def put_range_to_cell(cell_first, source)
     extend_bounds(cell_first, source)
     # Iterate over the source, putting the values into the range in the target (self).
     source_range = CellRange.new(1,1,source.row_count,source.col_count)
@@ -112,7 +112,7 @@ class Sheet
   
   # This method should be invoked as follows:
   # 
-  #   put_range_to_index[+row+, +col+] = +source+
+  #   put_range[+row+,+col+] = +source+
   # 
   # It replaces the values in +self+ of the range starting in the cell at
   # position [+row+,+col+], replacing them with the corresponding values
@@ -120,28 +120,28 @@ class Sheet
   #---
   # This bit of "syntactic sugar", appearing to use []= on a named method,
   # is accomplished by using an inner class, BlockAssign. The method
-  # #put_range_to_index returns a new instance of BlockAssign, initialized
+  # #put_range returns a new instance of BlockAssign, initialized
   # with a reference to the parent object. That instance of BlockAssign
   # defines a method []=, taking two inner parameters (inside the square
   # brackets) specifying row and column, and one outer parameter (after the
   # '=') specifying the source sheet to be put. The []= method then
   # implements the method, making calls to the parent object via the
   # contained reference.
-  def put_range_to_index
+  def put_range
     return BlockAssign.new(self)
   end
   
   # This is an "inner class", and should not be called or used externally.
   #---
   # This class is used to achieve the "syntactic sugar" provided by the
-  # #put_range_to_index method.
+  # #put_range method.
   class BlockAssign
     def initialize(parent)
       @parent = parent
     end
     def []=(row,col,source)
       cell_first = Cell.new(row, col)
-      @parent.put_range(cell_first, source)
+      @parent.put_range_to_cell(cell_first, source)
     end
   end
   

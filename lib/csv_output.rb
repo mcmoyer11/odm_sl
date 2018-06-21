@@ -49,13 +49,11 @@ class CSV_Output
       # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = RCD_image.new({:rcd=>rcd_result})
-      next_cell = Cell.new(@page_image.row_count+1, 2)
-      @page_image.put_range(next_cell, result_image.sheet)
+      @page_image.put_range[@page_image.row_count+1,2] = result_image.sheet
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = Lexicon_image.new(entry.grammar.lexicon)
-      next_cell = Cell.new(@page_image.row_count+2, 2)
-      @page_image.put_range(next_cell, lex_image.sheet)
+      @page_image.put_range[@page_image.row_count+2,2] = lex_image.sheet
     end
     # Pad the first row so that any empty cells contain a blank (not nil).
     # The first row is treated as a header row by the NetBeans CSV editor,

@@ -46,8 +46,8 @@ class Lexicon_image
       morph_image[1,last_col+2] = m.uf
       last_col += 3 # the next entry will skip a cell, if it is created.
     end
-    next_cell = Cell.new(@last_row+1, 1) # add to the bottom of the lex image.
-    @sheet.put_range(next_cell, morph_image)
-    @last_row += 1 # the sheet now has one more row
+    # add to the bottom of the lex image.
+    @last_row += 1
+    @sheet.put_range[@last_row,1] = morph_image
   end
 end # class Lexicon_image

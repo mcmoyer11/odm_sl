@@ -1,7 +1,6 @@
 # Author: Bruce Tesar
 
 require_relative '../sheet'
-require_relative '../cell'
 require_relative 'rcd_bias_low'
 require_relative '../rcd_image'
 require_relative '../lexicon_image'
@@ -31,14 +30,13 @@ module OTLearn
       # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = @rcd_image_class.new({:rcd=>rcd_result})
-      next_cell = Cell.new(@image.row_count+1, 2)
-      @image.put_range(next_cell, result_image.sheet)
+      @image.put_range[@image.row_count+1,2] = result_image.sheet
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_class.new(@grammar_test.grammar.lexicon)
-      next_cell = Cell.new(@image.row_count+2, 2)
-      @image.put_range(next_cell, lex_image.sheet)
-      # TODO: convert other nil cells to blanks.
+      @image.put_range[@image.row_count+2,2] = lex_image.sheet
+      # Convert cells to blanks.
+      @image.nil_to_blank!
     end
     protected :make_image
     
