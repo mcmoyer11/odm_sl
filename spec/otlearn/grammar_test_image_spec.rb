@@ -39,9 +39,10 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
       expect(@image[2,2]).to eq "Result Image"
     end
     it "has a blank line after the ERCs" do
-      expect(@image[3,2]).to eq " "
+      expect(@image[3,1]).to be_nil
+      expect(@image[3,2]).to be_nil
     end
-    it "has the lexicon next, starting in the second column" do
+    it "has the lexicon after post-ERC blank line, starting in the second column" do
       expect(@image[4,2]).to eq "Lexicon Image"
     end
   end

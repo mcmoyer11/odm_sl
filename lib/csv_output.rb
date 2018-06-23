@@ -1,9 +1,7 @@
 # Author: Bruce Tesar
 
 require_relative 'sheet'
-require_relative 'otlearn/rcd_bias_low'
-require_relative 'rcd_image'
-require_relative 'lexicon_image'
+require_relative 'otlearn/grammar_test_image'
 require 'csv'
 
 # Constructs a CSV (comma-separated value) representation of the data from
@@ -41,28 +39,25 @@ class CSV_Output
     @page_image[3,1] = "Learned: #{@lang_sim.results_list[-1].all_correct?}"
     # Write each simulation result to the output.
     @lang_sim.results_list.each do |entry|
-      # Leave a blank line, and put the entry label in column 1.
+      # Leave a blank line, and put the grammar test image of the entry.
+      # TODO: each entry should contain its own appropriate image.
       next_row = @page_image.row_count+2
-      @page_image[next_row,1] = entry.label
-      # Compute the faith-low bias ranking.
-      rcd_result = OTLearn::RcdFaithLow.new(entry.grammar.erc_list)
-      # Build the image of the support, and write it
-      # to the page starting in column 2.
-      result_image = RCD_image.new({:rcd=>rcd_result})
-      @page_image.put_range[@page_image.row_count+1,2] = result_image.sheet
-      # Build the image of the lexicon, and write it
-      # to the page starting in column 2, 2 rows after the support.
-      lex_image = Lexicon_image.new(entry.grammar.lexicon)
-      @page_image.put_range[@page_image.row_count+2,2] = lex_image.sheet
+      grammar_test_image = OTLearn::GrammarTestImage.new(entry)
+      @page_image.put_range[next_row,1] = grammar_test_image.sheet
     end
-    # Pad the first row so that any empty cells contain a blank (not nil).
-    # The first row is treated as a header row by the NetBeans CSV editor,
-    # and if an entry is nil, the CSV editor ignores the entire column,
-    # truncating the display in the editor.
+    headers_nil_to_blank
+  end
+  protected :format_results
+  
+  # Pad the first row so that any empty cells contain a blank (not nil).
+  # The first row is treated as a header row by the NetBeans CSV editor,
+  # and if an entry is nil, the CSV editor ignores the entire column,
+  # truncating the display in the editor.
+  def headers_nil_to_blank
     (1..@page_image.col_count).each do |col|
-      @page_image.put_cell(Cell.new(1,col)," ") unless @page_image.get_cell(Cell.new(1,col))
+      @page_image[1,col]=" " unless @page_image[1,col]
     end
   end
-  private :format_results
+  protected :headers_nil_to_blank
   
 end # class CSV_Output

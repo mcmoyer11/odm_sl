@@ -143,7 +143,7 @@ RSpec.describe Sheet do
   # Specs for conversion between nil and blank cells
   #*************************************************
   
-  context "with [[1,nil],[nil,4]], when nil converted to blank", :wip do
+  context "with [[1,nil],[nil,4]], when nil converted to blank" do
     before(:each) do
       @sheet = Sheet.new
       @sheet[1,1] = 1
@@ -224,7 +224,7 @@ RSpec.describe Sheet do
       end
     end
 
-    context "with sheet.put_range[2,1] = new_sheet, new_sheet=[[11,12],[13,14]]", :wip do
+    context "with sheet.put_range[2,1] = new_sheet, new_sheet=[[11,12],[13,14]]" do
       before(:each) do
         @source_sheet = Sheet.new_from_a([[11,12],[13,14]])
         @sheet.put_range[2,1] = @source_sheet
