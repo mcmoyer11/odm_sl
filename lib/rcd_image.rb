@@ -5,9 +5,7 @@ require_relative "ct_image"
 require_relative "hierarchy"
 
 # An RCD_image object represents the results of applying RCD to
-# a list of ERCs. It is intended to serve as an interface
-# between the internal representation of RCD results and
-# the external representation as a sheet.
+# a list of ERCs.
 #
 # It is derived from CT_image, which represents a basic CT, and adds
 # elements relevant to representing RCD results in CT form.
@@ -20,26 +18,13 @@ class RCD_image < CT_image
   #
   # ==== Parameters
   #
-  # The parameter +arg_hash+ must be a hash with key/value pairs.
-  # The hash key +:rcd+ must be defined.
-  # * +:rcd+ - a +Rcd+ object (results of RCD execution).
-  #
-  # ==== Exceptions
-  #
-  # * ArgumentError if adequate keys are not present.
+  # * +rcd_result+ - the result of an RCD execution (e.g., class Rcd).
   #
   # ==== Examples
   #
-  #   RCD_image.new({:rcd=>rcd_result})
-  #
-  def initialize(arg_hash)
-    # process the method parameter
-    if arg_hash.has_key?(:rcd) then
-      @rcd_result = arg_hash[:rcd]
-    else
-      msg = "RCD_image.new must receive a hash with the :rcd key defined."
-      raise ArgumentError, msg
-    end
+  # RCD_image.new(rcd_result)
+  def initialize(rcd_result)
+    @rcd_result = rcd_result
     ercs, constraints = construct_ercs_and_constraints
     super({:ercs=>ercs,:constraints=>constraints})
   end
