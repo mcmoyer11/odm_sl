@@ -21,8 +21,8 @@ require_relative 'sheet'
 #
 # Concrete subclasses must initialize the following instance variables:
 # * #first_con_col
-# * #last_con_col (set by: #validate_constraint_headings)
-# * #constraints (set by: #extract_constraints)
+# * #last_con_col
+# * #constraints
 #--
 # These are not initialized in a constructor here because the concrete
 # subclasses may need to do a non-trivial amount of computation prior
@@ -111,42 +111,6 @@ class Tableau_image
   # Returns the index range for the constraint columns.
   def con_range
     (first_con_col..last_con_col)
-  end
-
-  # Checks to make sure that there is at least one constraint in the
-  # tableau, and sets the index of the last constraint column (when reading
-  # the image from a sheet).
-  def validate_constraint_headings
-    # Constraint columns go from first_con up to the first following empty cell
-    # in row 1.
-    self.last_con_col = first_con_col-1
-    self.last_con_col += 1 until sheet[heading_row,last_con_col+1].nil?
-    if (last_con_col < first_con_col) then  # no constraint column heading
-      msg = "The CT has no constraints."
-      raise SheetError.new([]), msg
-    end
-  end
-
-  # Extract the constraint information from the column headings of a tableau.
-  # If the constraints aren't already
-  # numbered, automatic numbering is applied to them. Each label used
-  # to construct a Constraint object.
-  # Returns true.
-  def extract_constraints
-    self.constraints = []
-    # Read the constraint labels from the column heading cells
-    con_range.each{|col| constraints << sheet.get_cell(Cell.new(heading_row,col))}
-    # Construct constraint objects
-    constraints.each_index do |i|
-      # If constraints are already numbered, keep that numbering.
-      con_str = constraints[i].to_s
-      if (con_str =~ /^(\d+):/) then
-        constraints[i] = Constraint.new($POSTMATCH,$1)
-      else # otherwise, number them from 1 in the order they appear.
-        constraints[i] = Constraint.new(con_str,i+1)
-      end
-    end
-    return true
   end
 
 end # class Tableau_image

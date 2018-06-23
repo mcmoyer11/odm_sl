@@ -10,12 +10,10 @@ require_relative 'tableau_image'
 # 
 # Concrete subclasses must initialize the following instance variables:
 # * #last_erc_row
-#   (set by: #count_erc_rows, #construct_constraint_columns_image)
+#   (set by: #construct_constraint_columns_image)
 # * Tableau_image#first_con_col
 # * Tableau_image#last_con_col
-#   (set by: Tableau_image#validate_constraint_headings)
 # * Tableau_image#constraints
-#   (set by: Tableau_image#extract_constraints)
 class ERCs_image < Tableau_image
 
   # Initializes the list of ERCs (to an empty array) and the first ERC row.
@@ -51,77 +49,6 @@ class ERCs_image < Tableau_image
   def erc_range
     (first_erc_row..last_erc_row)
   end
-
-  # Determines the number of erc rows and the index of the final erc row.
-  #
-  # ==== Exceptions
-  #
-  # +SheetError+ - no erc rows, or an internal all-blank row.
-  def count_erc_rows
-    @last_erc_row = row_count
-    if (last_erc_row < first_erc_row) then
-      msg = "The comparative tableau has no ERC rows."
-      raise SheetError.new([]), msg
-    end
-    # Check for blank rows
-    invalid_cell_list = []
-    erc_range.each do |row|
-      if (COL1..last_con_col).all?{|col| sheet[row,col].nil?} then
-        (COL1..last_con_col).each{|col| invalid_cell_list << Cell.new(row,col)}
-        msg = "A Comparative Tableau may not have any all-blank ERC rows."
-        raise SheetError.new(invalid_cell_list), msg
-      end
-    end
-    return true
-  end
-  protected :count_erc_rows
-
-  # Validates the image values representing the evaluations of the the
-  # ercs by the constraints. Each cell value must be one of the following:
-  # * "L" - the constraint prefers the loser.
-  # * "W" - the constraint prefers the winner.
-  # * "e" - the constraint has no preference.
-  # * nil - the constraint has no preference (interpreted as an empty cell)
-  #
-  # ==== Exceptions
-  #
-  # +SheetError+ - one or more cells contain invalid values.
-  def validate_constraint_evaluations
-    invalid_cell_list = []
-    erc_range.each do |row|
-      con_range.each do |col|
-        val = sheet[row,col]
-        invalid_cell_list << Cell.new(row,col) unless val.nil? or ["W","L","e"].include?(val)
-      end
-    end
-    unless invalid_cell_list.empty? then
-      msg = "There are invalid ERC evaluation values in the worksheet.\n" +
-        "The cells with invalid values have been colored red.\n" +
-        "Valid values are W, L, and empty cells (no spaces)."
-      raise SheetError.new(invalid_cell_list), msg
-    end
-    return true
-  end
-  protected :validate_constraint_evaluations
-
-  # Gets the constraint preferences for each ERC in the list.
-  # 
-  # *NOTE*: the ercs themselves must be stored in the list returned
-  # by #ercs before this method is called.
-  def get_constraint_preferences
-    erc_range.each do |row|
-      wl_pair = ercs[row-erc_range.first]
-      con_range.each do |col|
-        val = sheet[row,col]
-        if val=="W" then
-          wl_pair.set_w(constraints[col-first_con_col])
-        elsif val=="L" then
-          wl_pair.set_l(constraints[col-first_con_col])
-        end
-      end
-    end
-  end
-  protected :get_constraint_preferences
 
   # Returns the image representation of the preference by constraint +con+
   # for the erc represented in the image row +ct_row+.
