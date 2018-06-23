@@ -3,7 +3,6 @@
 
 require_relative 'cell'
 require_relative 'cellrange'
-require_relative 'formatting'
 require_relative 'constraint'
 require_relative 'sheet'
 
@@ -30,8 +29,6 @@ require_relative 'sheet'
 # to initializing the variables, computation that may require construction
 # of other base class resources.
 class Tableau_image
-
-  include Formatting
 
   # The index of the first row.
   ROW1 = 1
@@ -149,37 +146,6 @@ class Tableau_image
         constraints[i] = Constraint.new(con_str,i+1)
       end
     end
-    return true
-  end
-
-  # Constructs the basic formatting for a tableau (table borders,
-  # bolded column headings, etc.), and adds the formatting commands
-  # to the image object (self).
-  def construct_tableau_formatting
-    # convenient labels for row and column indices
-    row_last = row_count
-    col_last = last_con_col
-    # Autosize the columns
-    tableau_range = CellRange.new(ROW1, COL1, row_last, col_last)
-    add_formatting(ColumnWidth.new(tableau_range, :autofit))
-    # Bold the column headings
-    heading_range = CellRange.new(ROW1, COL1, ROW1, col_last)
-    add_formatting(TextBold.new(heading_range, true))
-    # Center_align evaluation cells
-    eval_range = CellRange.new(ROW1+1, first_con_col, row_last, col_last)
-    add_formatting(HorizontalAlignment.new(eval_range, :center))
-    # Basic grid borders
-    add_formatting(BorderWeight.new(tableau_range, :thin))
-    # Top of table borders
-    add_formatting(BorderWeight.new(heading_range, :medium, :top))
-    # Bottom of table borders
-    bottom_row_range = CellRange.new(row_last, COL1, row_last, col_last)
-    add_formatting(BorderWeight.new(bottom_row_range, :medium, :bottom))
-    # Top double line
-    add_formatting(BorderStyle.new(heading_range, :double, :bottom))
-    # Vertical double line
-    first_con_range = CellRange.new(ROW1, first_con_col, row_last, first_con_col)
-    add_formatting(BorderStyle.new(first_con_range, :double, :left))
     return true
   end
 

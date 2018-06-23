@@ -55,7 +55,6 @@ class CT_image < ERCs_image
       self.ercs = arg_hash[:ercs]
       self.constraints = arg_hash[:constraints]
       construct_image
-      construct_formatting
     else
       msg = "CT_image.new must receive a hash with either :sheet or both (:ercs and :constraints)."
       raise ArgumentError, msg
@@ -172,11 +171,5 @@ class CT_image < ERCs_image
     end
   end
   protected :construct_pre_constraint_columns_image
-
-  # Construct all of the necessary formatting for the tableau.
-  def construct_formatting
-    construct_tableau_formatting
-  end
-  protected :construct_formatting
 
 end # class CT_image
