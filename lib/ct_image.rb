@@ -2,10 +2,8 @@
 
 require_relative 'ercs_image'
 
-# A CT_image object represents a comparative tableau and its canonical
-# table representation. It is intended to serve as an interface
-# between the internal representation of lists of ERCs and constraints, and
-# the external representation in a spreadsheet-like table format.
+# A CT_image object represents a comparative tableau in a spreadsheet-like
+# table format.
 class CT_image < ERCs_image
 
   NUMBER_COL = COL1 #:nodoc:
@@ -14,38 +12,19 @@ class CT_image < ERCs_image
   LOSER_COL = WINNER_COL + 1 #:nodoc:
   PRE_CON_COLUMNS = 4 #:nodoc:
 
-  # Constructs a new CT_image from 
-  # an erc list / constraint list pair.
+  # Constructs a new CT_image from an erc list / constraint list pair.
   #
-  # ==== Parameters
-  #
-  # The parameter +arg_hash+ must be a hash with key/value pairs.
-  # The hash keys +:ercs+ and
-  # +:constraints+ must be defined.
-  # * +:ercs+ - a list of the ercs/winner-loser pairs of the CT
-  # * +:constraints+ - a list of constraints, in the order in which
+  # * +ercs+ - a list of the ercs/winner-loser pairs of the CT,
+  #   in the order in which the erc rows should appear.
+  # * +constraints+ - a list of constraints, in the order in which
   #   the constraint columns should appear.
-  #
-  # ==== Exceptions
-  #
-  # * ArgumentError if adequate keys are not present.
-  #
-  # ==== Examples
-  #
-  #   CT_image.new({:ercs=>list_of_ercs, :constraints=>sorted_constraint_list})
-  #
-  def initialize(arg_hash)
+  def initialize(ercs, constraints)
     self.first_con_col = PRE_CON_COLUMNS + 1
     super()
     # process the method parameter
-    if arg_hash.has_key?(:ercs) and arg_hash.has_key?(:constraints) then
-      self.ercs = arg_hash[:ercs]
-      self.constraints = arg_hash[:constraints]
-      construct_image
-    else
-      msg = "CT_image.new must receive a hash with both (:ercs and :constraints)."
-      raise ArgumentError, msg
-    end
+    self.ercs = ercs
+    self.constraints = constraints
+    construct_image
   end
 
   # Uses the given lists of ercs and constraints,

@@ -21,7 +21,7 @@ class RCD_image < CT_image
   def initialize(rcd_result)
     @rcd_result = rcd_result
     ercs, constraints = construct_ercs_and_constraints
-    super({:ercs=>ercs,:constraints=>constraints})
+    super(ercs, constraints)
   end
 
   # Constructs, from the RCD result, flat lists of the constraints and the ERCs,
