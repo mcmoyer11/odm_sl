@@ -8,7 +8,7 @@ require_relative "hierarchy"
 # A 2-dimensional sheet representation of an Rcd object, i.e.,
 # a comparative tableau of the ercs, typically winner-loser pairs, to which
 # RCD was applied, with the constraints sorted according to the RCD-generated
-# hiearchy, and the ercs sorted according to the highest-ranked W constraint.
+# hierarchy, and the ercs sorted according to the highest-ranked W constraint.
 # 
 # The constructor receives +rcd_result+, the object resulting from running
 # RCD.
@@ -21,7 +21,11 @@ class RcdImage
 
   # Constructs a new RcdImage from an rcd_results object.
   # 
-  # +rcd_result+ - the result of an RCD execution (e.g., class Rcd).
+  # * +rcd_result+ - the result of an RCD execution (e.g., class Rcd).
+  # * +comp_tableau_image_class+ - the class of object that will represent the
+  #   comparative tableau image. This parameter has a default
+  #   value of ComparativeTableauImage, and is used for testing
+  #   (dependency injection).
   def initialize(rcd_result,
     comp_tableau_image_class: ComparativeTableauImage)
     @rcd_result = rcd_result
@@ -51,8 +55,7 @@ class RcdImage
   #   construct_ercs_and_constraints() -> [sorted_ercs, sorted_constraints]
   def construct_ercs_and_constraints
     # Add the unranked constraints as a "final stratum" to the hierarchy.
-    hier_with_unranked = Hierarchy.new
-    hier_with_unranked.concat(rcd_result.hierarchy)
+    hier_with_unranked = rcd_result.hierarchy.dup
     hier_with_unranked << rcd_result.unranked unless rcd_result.unranked.empty?
     # Create a flat list of the constraints in sorted order
     sorted_cons = hier_with_unranked.flatten
