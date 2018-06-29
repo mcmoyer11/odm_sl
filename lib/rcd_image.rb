@@ -92,7 +92,6 @@ class RcdImage
       ercs_by_stratum << sort_by_constraint_order(ercs,flat_hier)
     end
     explained_ercs = ercs_by_stratum.flatten # in sorted order
-
     # add any unexplained ercs as the last level of the stratified erc list.
     unex_ercs = []
     unless rcd_result.unex_ercs.empty? then
@@ -100,37 +99,41 @@ class RcdImage
         sort_by_constraint_order(rcd_result.unex_ercs, flat_hier)
       ercs_by_stratum << unex_ercs
     end
-
     # create a list of the ercs in sorted order
     sorted_ercs = Erc_list.new
     sorted_ercs.add_all(explained_ercs)
     sorted_ercs.add_all(unex_ercs)
-
     return sorted_ercs, ercs_by_stratum, explained_ercs
   end
   protected :sort_rcd_results
 
   # Takes a list of ercs and sorts them with respect to a list of constraints,
   # such that all ercs assigned a W by the first constraint occur first in
-  # the sorted erc list, followed by all the ercs assigned a W by the second
-  # constraint (but not the first), and so forth. Ercs that are not assigned
-  # a W by any of the constraints in the list occur last.
+  # the sorted erc list, followed by all the ercs assigned an e by the first
+  # constraint, followed by all the ercs assigned an L by the first constraint.
+  # Each of those blocks of ercs is recursively sorted by the other constraints
+  # in order.
   #
-  # This is used for display purposes, to create a clean "W boundary" in
+  # This is used for display purposes, to create a monotonic "W boundary" in
   # formatted comparative tableaux.
   #
   # :call-seq:
-  #   sort_by_constraint_order(erc_list, constraint_list) -> array
-  def sort_by_constraint_order(ercs,cons)
-    return ercs if ercs.empty? or cons.empty?
-    con_list = cons.dup
-    con = con_list.shift
-    w_ercs, no_w_ercs = ercs.partition{|e| e.w?(con)}
+  #   sort_by_constraint_order(erc_list, con_list) -> array
+  def sort_by_constraint_order(erc_list, con_list)
+    # Base case for the recursion
+    return erc_list if erc_list.empty? or con_list.empty?
+    # Separate the first constraint from the rest
+    con = con_list[0]
+    con_rest = con_list.slice(1..-1)
+    # partition the ercs by the first constraint: W, e, or L
+    w_ercs, no_w_ercs = erc_list.partition{|e| e.w?(con)}
     l_ercs, e_ercs = no_w_ercs.partition{|e| e.l?(con)}
+    # Order the blocks of ercs by W, then e, then L, recursively
+    # sorting each block by the remaining (ordered) constraints
     sorted_ercs = []
-    sorted_ercs.concat(sort_by_constraint_order(w_ercs, con_list))
-    sorted_ercs.concat(sort_by_constraint_order(e_ercs, con_list))
-    sorted_ercs.concat(sort_by_constraint_order(l_ercs, con_list))
+    sorted_ercs.concat(sort_by_constraint_order(w_ercs, con_rest))
+    sorted_ercs.concat(sort_by_constraint_order(e_ercs, con_rest))
+    sorted_ercs.concat(sort_by_constraint_order(l_ercs, con_rest))
     return sorted_ercs
   end
   protected :sort_by_constraint_order
