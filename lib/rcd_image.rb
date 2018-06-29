@@ -5,14 +5,14 @@ require_relative "comparative_tableau_image"
 require_relative "sheet"
 require_relative "hierarchy"
 
-# An RCD_image object represents the results of applying RCD to
+# An RcdImage object represents the results of applying RCD to
 # a list of ERCs.
-class RCD_image
+class RcdImage
 
   # The RCD results object
   attr_reader :rcd_result
 
-  # Constructs a new RCD_image from an rcd_results object.
+  # Constructs a new RcdImage from an rcd_results object.
   # 
   # +rcd_result+ - the result of an RCD execution (e.g., class Rcd).
   def initialize(rcd_result,
@@ -131,4 +131,4 @@ class RCD_image
   end
   protected :sort_by_constraint_order
 
-end # class RCD_image
+end # class RcdImage
