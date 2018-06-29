@@ -27,8 +27,7 @@ class RcdImage
     @rcd_result = rcd_result
     @comp_tableau_image_class = comp_tableau_image_class
     ercs, constraints = construct_ercs_and_constraints
-    # TODO: add Erc_list#each_with_index, instead of calling ercs.to_a
-    @comp_tableau_image = @comp_tableau_image_class.new(ercs.to_a, constraints)
+    @comp_tableau_image = @comp_tableau_image_class.new(ercs, constraints)
     @sheet = Sheet.new
     construct_image
   end

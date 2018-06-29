@@ -1,18 +1,15 @@
 # Author: Bruce Tesar
-#
 
 # An Erc_list is a list of ERC-like objects. All ERCs in the list must respond
 # to #constraint_list with a list of the very same constraints.
 # ---
-# === Delegated Methods
-# [empty?] Returns true if the list is empty, false otherwise.
-# [size] Returns the integer number of ERCs in the list.
-# [any?] Returns true if any of the ERCs satisfies the block, false otherwise.
-# [each] Applies the block to each member of the list.
+# === Methods delegated to object of class Array
+# #empty?, #size, #any?, #each, #each_with_list
 class Erc_list
   extend Forwardable
   
-  def_delegators :@list, :empty?, :size, :any?, :each
+  # Methods delegated to object (@list) of class Array.
+  def_delegators :@list, :empty?, :size, :any?, :each, :each_with_index
   
   # An optional label. Defaults to the empty string "".
   attr_accessor :label
