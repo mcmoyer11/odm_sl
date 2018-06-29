@@ -1,5 +1,20 @@
 Todo List for odm_sl
 
+OTLearn::match_input_to_uf!(Word) (defined in data_manip.rb) should be
+eliminated. Taking an output and parsing it with the grammar will give a
+*new* word with the input matched to the lexicon.
+
+OTLearn::match_input_to_output!(Word) (defined in data_manip.rb) should be
+moved to be an instance method for class Word.
+
+OTLearn::mismatches_input_to_output(word_param, &block) (defined in
+data_manip.rb) currently is structured to allow for suprabinary features.
+BUT: we don't currently have any examples using suprabinary features.
+Make this method an instance method for class Word, and streamline it
+to construct the single mismatched input. You can come up with something
+more sophisticated if/when you work with examples that have suprabinary
+features.
+
 Add some basic field value validation to OTGeneric::Erc_conversion.
 
 Refactor CSV_Output so that it is more symmetric with CSV_Input.
