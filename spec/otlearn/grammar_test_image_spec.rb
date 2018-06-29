@@ -7,8 +7,7 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
   let(:grammar){double('grammar')}
   let(:rcd_class){double('rcd_class')}
   let(:rcd_image_class){double('rcd_image_class')}
-  let(:result_image){double('result_image')}
-  let(:result_sheet){Sheet.new}
+  let(:result_image){Sheet.new}
   let(:lexicon_image_class){double('lexicon_image_class')}
   let(:lex_image){double('lex_image')}
   let(:lex_sheet){Sheet.new}
@@ -20,11 +19,10 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
       allow(grammar).to receive(:lexicon).and_return("lexicon")
       allow(rcd_class).to receive(:new).and_return("rcd_result")
       allow(rcd_image_class).to receive(:new).and_return(result_image)
-      allow(result_image).to receive(:sheet).and_return(result_sheet)
       allow(lexicon_image_class).to receive(:new).and_return(lex_image)
       allow(lex_image).to receive(:sheet).and_return(lex_sheet)
       # Use an actual Sheet object to mock the component sheets
-      result_sheet[1,1] = "Result Image"
+      result_image[1,1] = "Result Image"
       lex_sheet[1,1] = "Lexicon Image"
       @grammar_test_image =
         OTLearn::GrammarTestImage.new(grammar_test, rcd_class: rcd_class,

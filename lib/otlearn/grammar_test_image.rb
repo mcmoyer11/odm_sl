@@ -42,7 +42,7 @@ module OTLearn
       # Build the image of the support, and write it
       # to the page starting in column 2.
       result_image = @rcd_image_class.new(rcd_result)
-      @image.put_range[@image.row_count+1,2] = result_image.sheet
+      @image.put_range[@image.row_count+1,2] = result_image
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_class.new(@grammar_test.grammar.lexicon)

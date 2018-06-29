@@ -5,8 +5,15 @@ require_relative "comparative_tableau_image"
 require_relative "sheet"
 require_relative "hierarchy"
 
-# An RcdImage object represents the results of applying RCD to
-# a list of ERCs.
+# A 2-dimensional sheet representation of an Rcd object, i.e.,
+# a comparative tableau of the ercs, typically winner-loser pairs, to which
+# RCD was applied, with the constraints sorted according to the RCD-generated
+# hiearchy, and the ercs sorted according to the highest-ranked W constraint.
+# 
+# The constructor receives +rcd_result+, the object resulting from running
+# RCD.
+#
+# This class delegates many methods to a Sheet object.
 class RcdImage
 
   # The RCD results object
@@ -26,16 +33,17 @@ class RcdImage
     construct_image
   end
 
-  # Returns the sheet object underlying the RCD image.
-  def sheet
-    @sheet
-  end
-  
   # Delegate all method calls not explicitly defined here to the sheet object.
   def method_missing(name, *args)
     @sheet.send(name, *args)
   end
   protected :method_missing
+  
+  # Build the image from its main part, the comparative tableau image.
+  def construct_image
+    @sheet.put_range[1,1] = @comp_tableau_image
+  end
+  protected :construct_image
   
   # Constructs, from the RCD result, flat lists of the constraints and the ERCs,
   # sorted in the order in which they will appear in the tableau.
@@ -55,12 +63,6 @@ class RcdImage
   end
   protected :construct_ercs_and_constraints
 
-  # Build the image from its main part, the comparative tableau image.
-  def construct_image
-    @sheet.put_range[1,1] = @comp_tableau_image
-  end
-  protected :construct_image
-  
   # Sort the ercs of an RCD result in several ways.
   #
   # :call-seq:
