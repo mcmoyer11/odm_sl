@@ -12,6 +12,8 @@ RSpec.describe RcdImage, :wip do
     let(:erc1){double('erc1')}
     let(:rcd_hierarchy){[[con1]]}
     let(:ercs){[[erc1]]}
+    let(:sorted_ercs){[erc1]}
+    let(:sorted_constraints){[con1]}
     before(:each) do
       allow(rcd_result).to receive(:hierarchy).and_return(rcd_hierarchy)
       allow(rcd_result).to receive(:unranked).and_return([])
@@ -19,10 +21,17 @@ RSpec.describe RcdImage, :wip do
       allow(rcd_result).to receive(:unex_ercs).and_return([])
       allow(erc1).to receive(:w?).with(con1).and_return(true)
       allow(ct_image_class).to receive(:new).and_return(ct_image)
+      ct_image[1,1] = "CT IMAGE"
       @rcd_image = RcdImage.new(rcd_result, comp_tableau_image_class: ct_image_class)
     end
     it "contains the given RCD result" do
       expect(@rcd_image.rcd_result).to eq rcd_result
+    end
+    it "has the comp tableau image starting at [1,1]" do
+      expect(@rcd_image[1,1]).to eq 'CT IMAGE'
+    end
+    it "constructs a CT image with one constraint and one erc" do
+      expect(ct_image_class).to have_received(:new).with(sorted_ercs, sorted_constraints)
     end
   end
 end

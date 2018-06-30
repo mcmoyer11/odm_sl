@@ -53,27 +53,17 @@ class RcdImage
   # :call-seq:
   #   construct_ercs_and_constraints() -> [sorted_ercs, sorted_constraints]
   def construct_ercs_and_constraints
-    # Add the unranked constraints as a "final stratum" to the hierarchy.
-    hier_with_unranked = rcd_result.hierarchy.dup
-    hier_with_unranked << rcd_result.unranked unless rcd_result.unranked.empty?
-    # Create a flat list of the constraints in sorted order
-    sorted_cons = hier_with_unranked.flatten
+    # Create a flat list of all the constraints in ranked order
+    sorted_cons = rcd_result.hierarchy.flatten
+    sorted_cons.concat(rcd_result.unranked) unless rcd_result.unranked.empty?
+    # Create a flat list of all of the ercs
+    erc_list = rcd_result.ex_ercs.flatten
+    erc_list.concat(rcd_result.unex_ercs) unless rcd_result.unex_ercs.empty?
     # sort the ercs with respect to the RCD constraint hierarchy
-    sorted_ercs = sort_rcd_results(rcd_result)
+    sorted_ercs = sort_by_constraint_order(erc_list,sorted_cons)
     return sorted_ercs, sorted_cons
   end
   protected :construct_ercs_and_constraints
-
-  # Sort the ercs of an RCD result.
-  def sort_rcd_results(rcd_result)
-    flat_hier = rcd_result.hierarchy.flatten
-    flat_hier.concat(rcd_result.unranked) unless rcd_result.unranked.empty?
-    erc_list = rcd_result.ex_ercs.flatten
-    erc_list << rcd_result.unex_ercs unless rcd_result.unex_ercs.empty?
-    sorted_ercs = sort_by_constraint_order(erc_list,flat_hier)
-    return sorted_ercs
-  end
-  protected :sort_rcd_results
 
   # Takes a list of ercs and sorts them with respect to a list of constraints,
   # such that all ercs assigned a W by the first constraint occur first in
