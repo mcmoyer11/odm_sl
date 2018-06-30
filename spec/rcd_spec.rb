@@ -41,7 +41,7 @@ RSpec.describe Rcd, :wip do
     it "returns the hierarchy [[con2],[con1]]" do
       expect(@rcd.hierarchy.to_a).to eq [[con2],[con1]]
     end
-    it "has ranked constraints [[2:M2],[1:M1]]" do
+    it "has ranked constraints [[con2],[con1]]" do
       expect(@rcd.ranked.to_a).to eq [[con2],[con1]]
     end
     it "has no unranked constraints" do
@@ -81,10 +81,10 @@ RSpec.describe Rcd, :wip do
     it "returns a list of all the constraints" do
       expect(@rcd.constraint_list).to eq constraint_list
     end
-    it "returns the hierarchy [3:M3] [1:M1] [2:F2]" do
+    it "returns the hierarchy [[con3],[con1],[con2]]" do
       expect(@rcd.hierarchy.to_a).to eq [[con3],[con1],[con2]]
     end
-    it "has ranked constraints [[3:M3],[1:M1],[2:F2]]" do
+    it "has ranked constraints [[con3],[con1],[con2]]" do
       expect(@rcd.ranked.to_a).to eq [[con3],[con1],[con2]]
     end
     it "has no unranked constraints" do
@@ -118,14 +118,18 @@ RSpec.describe Rcd, :wip do
     it "returns a list of all the constraints" do
       expect(@rcd.constraint_list).to eq constraint_list
     end
-    it "returns the hierarchy [1:M1]" do
-      expect(@rcd.hierarchy.to_a).to eq [[con1]]
+    it "returns the hierarchy [[con1],[con2,con3]]" do
+      expect(@rcd.hierarchy.to_a).to eq [[con1],[con2,con3]]
     end
-    it "has ranked constraints [[1:M1]]" do
+    it "has ranked constraints [[con1]]" do
       expect(@rcd.ranked.to_a).to eq [[con1]]
     end
-    it "has unranked constraints F2 and M3" do
+    it "has unranked constraints [con2,con3]" do
       expect(@rcd.unranked).to eq [con2,con3]
+    end
+    it "does not change the ranked constraints when calling hierarchy" do
+      @rcd.hierarchy
+      expect(@rcd.ranked).to eq [[con1]]
     end
     it "has explained ERCs [[erc1]]" do
       expect(@rcd.ex_ercs).to eq [[erc1]]

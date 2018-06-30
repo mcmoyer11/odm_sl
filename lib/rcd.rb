@@ -50,16 +50,21 @@ class Rcd
     return @consistent
   end
 
-  # Returns the constraint hierarchy constructed by RCD.
+  # Returns a full constraint hierarchy. If the ercs are inconsistent,
+  # Then the hierarchy has the ranked constraints constructed by RCD, with
+  # the unranked constraints added as a bottom stratum.
   def hierarchy
-    return @hierarchy
+    hierarchy = @ranked.dup
+    # Add any unranked constraints as a bottom stratum
+    (hierarchy << unranked) unless unranked.empty?
+    return hierarchy
   end
   
   # Returns the hierarchy of constraints ranked by RCD. If the set of
   # ERCs is inconsistent, this will not include all of the constraints;
   # the rest of the constraints will be returned by #unranked().
   def ranked
-    return @hierarchy
+    return @ranked
   end
 
   # Returns an array of constraints that remain unranked after the
@@ -98,7 +103,7 @@ private  # The methods below are private.
   end
 
   # Executes Recursive Constraint Demotion (RCD) on the list of ERCs.
-  # If the ERCs are consistent, @consistent will be true, @hierarchy will
+  # If the ERCs are consistent, @consistent will be true, @ranked will
   # contain the computed hierarchy, and @unranked and @unex_ercs will be empty.
   # At the end, @unranked will contain any unrankable constraints, and
   # @unex_ercs will contain any unexplainable, collectively inconsistent ERCs.
@@ -109,7 +114,7 @@ private  # The methods below are private.
     # Initialize the instance variables that are computed/altered within run_rcd.
     # Initially, all ERCs are unexplained and all constraints are unranked.
     @consistent = true # innocent until proven guilty
-    @hierarchy = Hierarchy.new
+    @ranked = Hierarchy.new
     @unex_ercs = @ercs
     @ex_ercs = []
     @unranked = @constraints
@@ -119,7 +124,7 @@ private  # The methods below are private.
     while !rankable.empty? # repeat until no more constraints are rankable
       stratum = choose_cons_to_rank(rankable)
       @unranked.concat(rankable - stratum)
-      @hierarchy << stratum # put the current stratum in the hierarchy
+      @ranked << stratum # put the current stratum in the hierarchy
       # Move the ERCs explained by the current stratum
       explained, @unex_ercs = @unex_ercs.partition{|e| explained?(e, stratum)}
       @ex_ercs << explained # store the explained ERCs as the next "erc stratum"

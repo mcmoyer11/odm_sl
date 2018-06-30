@@ -59,10 +59,9 @@ class RcdImage
   # :call-seq:
   #   construct_ercs_and_constraints() -> [sorted_ercs, sorted_constraints]
   def construct_ercs_and_constraints
-    # TODO: Rcd should provide methods returning a hierarchy with all constraints and a flat list of all ercs.
     # Create a flat list of all the constraints in ranked order
-    sorted_cons = rcd_result.ranked.flatten
-    sorted_cons.concat(rcd_result.unranked) unless rcd_result.unranked.empty?
+    sorted_cons = rcd_result.hierarchy.flatten
+    # TODO: Rcd should provide a method returning a flat list of all ercs.
     # Create a flat list of all of the ercs
     erc_list = rcd_result.ex_ercs.flatten
     erc_list.concat(rcd_result.unex_ercs) unless rcd_result.unex_ercs.empty?
