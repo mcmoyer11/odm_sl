@@ -45,14 +45,21 @@ class Rcd
     @constraints
   end
 
+  # Returns true if the set of ERCs is consistent; returns false otherwise.
+  def consistent?
+    return @consistent
+  end
+
   # Returns the constraint hierarchy constructed by RCD.
   def hierarchy
     return @hierarchy
   end
-
-  # Returns true if the set of ERCs is consistent; returns false otherwise.
-  def consistent?
-    return @consistent
+  
+  # Returns the hierarchy of constraints ranked by RCD. If the set of
+  # ERCs is inconsistent, this will not include all of the constraints;
+  # the rest of the constraints will be returned by #unranked().
+  def ranked
+    return @hierarchy
   end
 
   # Returns an array of constraints that remain unranked after the
@@ -62,18 +69,18 @@ class Rcd
     return @unranked
   end
 
-  # Returns a list of unexplained ERCs, as an array.
-  # When the original list of ERCs is consistent, this array
-  # will either be empty or contain only trivial ERCs (all e).
-  def unex_ercs
-    @unex_ercs
-  end
-
   # Returns a "stratified" list of explained ERCs, as an array of arrays.
   # The first "stratum" contains the ERCs explained by the constraints in
   # the first stratum of the constraint hierarchy, and so forth.
   def ex_ercs
     @ex_ercs
+  end
+
+  # Returns a list of unexplained ERCs, as an array.
+  # When the original list of ERCs is consistent, this array
+  # will either be empty or contain only trivial ERCs (all e).
+  def unex_ercs
+    @unex_ercs
   end
 
 private  # The methods below are private.
