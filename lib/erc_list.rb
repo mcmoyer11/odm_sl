@@ -4,7 +4,7 @@
 # to #constraint_list with a list of the very same constraints.
 # ---
 # === Methods delegated to object of class Array
-# #empty?, #size, #any?, #each, #each_with_list
+# #empty?, #size, #any?, #each, #each_with_index
 class Erc_list
   extend Forwardable
   
