@@ -4,19 +4,14 @@ require 'rcd_image'
 require 'sheet'
 require_relative '../test/helpers/quick_erc'
 
-RSpec.describe RcdImage, :wip do
-  # import quick_erc constants for easy use
-  ML = Test::ML
-  ME = Test::ME
-  MW = Test::MW
-  FL = Test::FL
-  FE = Test::FE
-  FW = Test::FW
-  
+RSpec.describe RcdImage, :wip do  
   let(:rcd_result){double('rcd_result')}
   let(:ct_image_class){double('ct_image_class')}
   let(:ct_image){Sheet.new}
   before(:each) do
+    stub_const 'ML', Test::ML
+    stub_const 'ME', Test::ME
+    stub_const 'MW', Test::MW
     allow(ct_image_class).to receive(:new).and_return(ct_image)
     ct_image[1,1] = "CT IMAGE"
   end
