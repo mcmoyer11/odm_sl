@@ -18,19 +18,21 @@ class RcdImage
   # The RCD results object
   attr_reader :rcd_result
 
-  # Constructs a new RcdImage from an rcd_results object.
+  # Constructs a new RcdImage from an rcd_result object.
   # 
   # * +rcd_result+ - the result of an RCD execution (e.g., class Rcd).
   # * +comp_tableau_image_class+ - the class of object that will represent the
   #   comparative tableau image. This parameter has a default
   #   value of ComparativeTableauImage, and is used for testing
   #   (dependency injection).
+  #
+  # :call-seq:
+  #   RcdImage.new(rcd_result) -> img
+  #   RcdImage.new(rcd_result, comp_tableau_image_class: my_image_class) -> img
   def initialize(rcd_result,
     comp_tableau_image_class: ComparativeTableauImage)
     @rcd_result = rcd_result
     @comp_tableau_image_class = comp_tableau_image_class
-    ercs, constraints = construct_ercs_and_constraints
-    @comp_tableau_image = @comp_tableau_image_class.new(ercs, constraints)
     @sheet = Sheet.new
     construct_image
   end
@@ -41,8 +43,12 @@ class RcdImage
   end
   protected :method_missing
   
-  # Build the image from its main part, the comparative tableau image.
+  # Construct sorted lists of ercs and constraints, and use them to
+  # create a comparative tableau image. Built the RCD image from its
+  # main part, the comparative tableau image.
   def construct_image
+    ercs, constraints = construct_ercs_and_constraints
+    @comp_tableau_image = @comp_tableau_image_class.new(ercs, constraints)
     @sheet.put_range[1,1] = @comp_tableau_image
   end
   protected :construct_image
