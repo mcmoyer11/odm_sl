@@ -3,7 +3,7 @@
 require 'comparative_tableau_image'
 require 'sheet'
 
-RSpec.describe ComparativeTableauImage, :wip do
+RSpec.describe ComparativeTableauImage do
   context "with one constraint" do
     let(:clist){double('clist')}
     let(:pref_image_class){double('pref_image_class')}

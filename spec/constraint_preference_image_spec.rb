@@ -2,7 +2,7 @@
 
 require 'constraint_preference_image'
 
-RSpec.describe ConstraintPreferenceImage, :wip do
+RSpec.describe ConstraintPreferenceImage do
   context "with 2 constraints" do
     let(:con1){double('con1')}
     let(:con2){double('con2')}
