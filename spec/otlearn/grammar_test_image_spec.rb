@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
 require_relative "../../lib/otlearn/grammar_test_image"
+require "sheet"
 
 RSpec.describe OTLearn::GrammarTestImage, :wip do
   let(:grammar_test){double('grammar_test')}
@@ -9,8 +10,7 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
   let(:rcd_image_class){double('rcd_image_class')}
   let(:result_image){Sheet.new}
   let(:lexicon_image_class){double('lexicon_image_class')}
-  let(:lex_image){double('lex_image')}
-  let(:lex_sheet){Sheet.new}
+  let(:lex_image){Sheet.new}
   context "given a GrammarTest with 1 ERC, 4 constraints, 2 morphemes and the label TestGT" do
     before(:each) do
       allow(grammar_test).to receive(:label).and_return('TestGT')
@@ -20,10 +20,9 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
       allow(rcd_class).to receive(:new).and_return("rcd_result")
       allow(rcd_image_class).to receive(:new).and_return(result_image)
       allow(lexicon_image_class).to receive(:new).and_return(lex_image)
-      allow(lex_image).to receive(:sheet).and_return(lex_sheet)
-      # Use an actual Sheet object to mock the component sheets
+      # mock each component image with a single cell
       result_image[1,1] = "Result Image"
-      lex_sheet[1,1] = "Lexicon Image"
+      lex_image[1,1] = "Lexicon Image"
       @grammar_test_image =
         OTLearn::GrammarTestImage.new(grammar_test, rcd_class: rcd_class,
         rcd_image_class: rcd_image_class,
@@ -45,4 +44,3 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
     end
   end
 end # RSpec.describe OTLearn::GrammarTestImage
-

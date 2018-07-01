@@ -1,11 +1,11 @@
 # Author: Bruce Tesar
 
 require_relative 'sheet'
-require_relative 'cell'
 
 # Formats the contents of a lexicon into text in a 2-dimensional sheet.
-# The sheet can be retrieved via #sheet.
 #
+# This class delegates many methods to a Sheet object.
+# 
 # Given a lexicon of one prefix (a), three roots (p,q,r) and
 # two suffixes (y.z):
 #
@@ -14,7 +14,12 @@ require_relative 'cell'
 # | s1 | y |  | s2 | z |  |    |   |
 class LexiconImage
   
-  # Constructs an image from _lexicon_.
+  # Constructs a new lexicon image from a +lexicon+.
+  # 
+  # * +lexicon+ - a lexicon of roots, prefixes, and suffixes.
+  #
+  # :call-seq:
+  #   LexiconImage.new(lexicon) -> img
   def initialize(lexicon)
     @sheet = Sheet.new
     @last_row = 0
@@ -23,14 +28,13 @@ class LexiconImage
     add_morphs(lexicon.get_suffixes) unless lexicon.get_suffixes.empty?
   end
   
-  # Returns a sheet with the values content of the image.
-  def sheet
-    @sheet
+  # Delegate all method calls not explicitly defined here to the sheet object.
+  def method_missing(name, *args)
+    @sheet.send(name, *args)
   end
+  protected :method_missing
   
-  protected
-  
-  # Takes a list of morphemes _mlist_, and creates an image of a row listing out
+  # Takes a list of morphemes and creates an image of a row listing out
   # the entries for the morphemes. Each entry takes two consecutive cells:
   # first the label of the morpheme, then the underlying form.
   # For rows with more than one entry, a blank cell occurs between adjacent
@@ -50,4 +54,6 @@ class LexiconImage
     @last_row += 1
     @sheet.put_range[@last_row,1] = morph_image
   end
+  protected :add_morphs
+
 end # class LexiconImage

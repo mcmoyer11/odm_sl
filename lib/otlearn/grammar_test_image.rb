@@ -46,7 +46,7 @@ module OTLearn
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_class.new(@grammar_test.grammar.lexicon)
-      @image.put_range[@image.row_count+2,2] = lex_image.sheet
+      @image.put_range[@image.row_count+2,2] = lex_image
     end
     protected :make_image
     
