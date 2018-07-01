@@ -2,14 +2,14 @@
 
 require 'lexicon_image'
 
-RSpec.describe Lexicon_image do
+RSpec.describe LexiconImage do
   context "An empty lexicon should produce an image" do
     before(:each) do
       @lexicon = instance_double("Lexicon")
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([])
       allow(@lexicon).to receive(:get_suffixes).and_return([])
-      @lexicon_image = Lexicon_image.new(@lexicon)
+      @lexicon_image = LexiconImage.new(@lexicon)
       @li_sheet = @lexicon_image.sheet
     end
 
@@ -33,7 +33,7 @@ RSpec.describe Lexicon_image do
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([@root1])
       allow(@lexicon).to receive(:get_suffixes).and_return([])
-      @lexicon_image = Lexicon_image.new(@lexicon)
+      @lexicon_image = LexiconImage.new(@lexicon)
       @li_sheet = @lexicon_image.sheet
     end
     
@@ -62,7 +62,7 @@ RSpec.describe Lexicon_image do
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([@root1, @root2])
       allow(@lexicon).to receive(:get_suffixes).and_return([])
-      @lexicon_image = Lexicon_image.new(@lexicon)
+      @lexicon_image = LexiconImage.new(@lexicon)
       @li_sheet = @lexicon_image.sheet
     end
     
@@ -103,7 +103,7 @@ RSpec.describe Lexicon_image do
       allow(@lexicon).to receive(:get_prefixes).and_return([])
       allow(@lexicon).to receive(:get_roots).and_return([@root1])
       allow(@lexicon).to receive(:get_suffixes).and_return([@suff1])
-      @lexicon_image = Lexicon_image.new(@lexicon)
+      @lexicon_image = LexiconImage.new(@lexicon)
       @li_sheet = @lexicon_image.sheet
     end
     
@@ -141,7 +141,7 @@ RSpec.describe Lexicon_image do
       allow(@lexicon).to receive(:get_prefixes).and_return([@pref1])
       allow(@lexicon).to receive(:get_roots).and_return([@root1])
       allow(@lexicon).to receive(:get_suffixes).and_return([@suff1])
-      @lexicon_image = Lexicon_image.new(@lexicon)
+      @lexicon_image = LexiconImage.new(@lexicon)
       @li_sheet = @lexicon_image.sheet
     end
     
@@ -178,4 +178,4 @@ RSpec.describe Lexicon_image do
     end
   end
 
-end # describe Lexicon_image
+end # describe LexiconImage

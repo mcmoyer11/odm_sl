@@ -18,7 +18,7 @@ module OTLearn
     # The other parameters are dependency injections, for testing.
     def initialize(grammar_test,
       rcd_class: OTLearn::RcdFaithLow, rcd_image_class: RcdImage,
-      lexicon_image_class: Lexicon_image)
+      lexicon_image_class: LexiconImage)
       @grammar_test = grammar_test
       @rcd_class = rcd_class
       @rcd_image_class = rcd_image_class

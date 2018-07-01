@@ -12,7 +12,7 @@ require_relative 'cell'
 # | p1 | a |  |    |   |  |    |   |
 # | r1 | p |  | r2 | q |  | r3 | r |
 # | s1 | y |  | s2 | z |  |    |   |
-class Lexicon_image
+class LexiconImage
   
   # Constructs an image from _lexicon_.
   def initialize(lexicon)
@@ -50,4 +50,4 @@ class Lexicon_image
     @last_row += 1
     @sheet.put_range[@last_row,1] = morph_image
   end
-end # class Lexicon_image
+end # class LexiconImage
