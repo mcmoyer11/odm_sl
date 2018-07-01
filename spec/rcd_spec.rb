@@ -8,7 +8,7 @@
 require 'rcd'
 require_relative '../test/helpers/quick_erc'
 
-RSpec.describe Rcd, :wip do
+RSpec.describe Rcd do
   let(:erc_list){instance_double(Erc_list, "ERC list")}
   before(:each) do
     stub_const 'ML', Test::ML
@@ -19,26 +19,64 @@ RSpec.describe Rcd, :wip do
     stub_const 'FW', Test::FW
   end
 
+  context "with an empty ERC list and 2 constraints" do
+    let(:con1){"C1"}
+    let(:con2){"C2"}
+    let(:constraint_list){[con1,con2]}
+    before(:each) do
+      allow(erc_list).to receive(:constraint_list).and_return(constraint_list)
+      allow(erc_list).to receive(:each)
+      @rcd = Rcd.new(erc_list)
+    end
+    it "has the default label, RCD" do
+      expect(@rcd.label).to eq "RCD"
+    end
+    it "is consistent" do
+      expect(@rcd).to be_consistent
+    end
+    it "has a list of all the constraints" do
+      expect(@rcd.constraint_list).to eq constraint_list
+    end
+    it "has a hierarchy with all constraints in the top stratum" do
+      expect(@rcd.hierarchy).to eq [[con1,con2]]
+    end
+    it "has ranked constraints with all constraints in the top stratum" do
+      expect(@rcd.ranked.to_a).to eq [[con1,con2]]
+    end
+    it "has no unranked constraints" do
+      expect(@rcd.unranked).to be_empty
+    end
+    it "has a list of the ERCs passed in" do
+      expect(@rcd.erc_list).to eq []
+    end
+    it "has no explained ERCs" do
+      expect(@rcd.ex_ercs).to eq [[]]
+    end
+    it "has no unexplained ercs" do
+      expect(@rcd.unex_ercs).to be_empty
+    end
+  end
+
   context "Rcd with ERC list [[ML,MW]]" do
     let(:erc1){Test.quick_erc([ML,MW])}
     let(:constraint_list){erc1.constraint_list}
     let(:con1){constraint_list[0]}
     let(:con2){constraint_list[1]}
     before(:each) do
-      allow(erc_list).to receive(:constraint_list).and_return(erc1.constraint_list)
+      allow(erc_list).to receive(:constraint_list).and_return(constraint_list)
       allow(erc_list).to receive(:each).and_yield(erc1)
       @rcd = Rcd.new(erc_list)
     end
     it "has the default label, RCD" do
       expect(@rcd.label).to eq "RCD"
     end
-    it "returns consistent" do
+    it "is consistent" do
       expect(@rcd).to be_consistent
     end
-    it "returns a list of all the constraints" do
+    it "has a list of all the constraints" do
       expect(@rcd.constraint_list).to eq constraint_list
     end
-    it "returns the hierarchy [[con2],[con1]]" do
+    it "has the hierarchy [[con2],[con1]]" do
       expect(@rcd.hierarchy.to_a).to eq [[con2],[con1]]
     end
     it "has ranked constraints [[con2],[con1]]" do
@@ -46,6 +84,9 @@ RSpec.describe Rcd, :wip do
     end
     it "has no unranked constraints" do
       expect(@rcd.unranked).to be_empty
+    end
+    it "has a list of the ERCs passed in" do
+      expect(@rcd.erc_list).to eq [erc1]
     end
     it "has explained ERCs [[erc1],[]]" do
       expect(@rcd.ex_ercs).to eq [[erc1],[]]
@@ -71,17 +112,17 @@ RSpec.describe Rcd, :wip do
     let(:con2){constraint_list[1]}
     let(:con3){constraint_list[2]}
     before(:each) do
-      allow(erc_list).to receive(:constraint_list).and_return(erc1.constraint_list)
+      allow(erc_list).to receive(:constraint_list).and_return(constraint_list)
       allow(erc_list).to receive(:each).and_yield(erc1).and_yield(erc2)
       @rcd = Rcd.new(erc_list)
     end
-    it "returns consistent" do
+    it "is consistent" do
       expect(@rcd.consistent?).to be true
     end
-    it "returns a list of all the constraints" do
+    it "has a list of all the constraints" do
       expect(@rcd.constraint_list).to eq constraint_list
     end
-    it "returns the hierarchy [[con3],[con1],[con2]]" do
+    it "has the hierarchy [[con3],[con1],[con2]]" do
       expect(@rcd.hierarchy.to_a).to eq [[con3],[con1],[con2]]
     end
     it "has ranked constraints [[con3],[con1],[con2]]" do
@@ -89,6 +130,9 @@ RSpec.describe Rcd, :wip do
     end
     it "has no unranked constraints" do
       expect(@rcd.unranked).to be_empty
+    end
+    it "has a list of the ERCs passed in" do
+      expect(@rcd.erc_list).to eq [erc1, erc2]
     end
     it "has explained ERCs [[erc1],[erc2],[]]" do
       expect(@rcd.ex_ercs).to eq [[erc1],[erc2],[]]
@@ -107,18 +151,18 @@ RSpec.describe Rcd, :wip do
     let(:con2){constraint_list[1]}
     let(:con3){constraint_list[2]}
     before(:each) do
-      allow(erc_list).to receive(:constraint_list).and_return(erc1.constraint_list)
+      allow(erc_list).to receive(:constraint_list).and_return(constraint_list)
       allow(erc_list).to receive(:each).and_yield(erc1).and_yield(erc2).
         and_yield(erc3)
       @rcd = Rcd.new(erc_list)
     end
-    it "returns inconsistent" do
+    it "is inconsistent" do
       expect(@rcd.consistent?).to be false
     end
-    it "returns a list of all the constraints" do
+    it "has a list of all the constraints" do
       expect(@rcd.constraint_list).to eq constraint_list
     end
-    it "returns the hierarchy [[con1],[con2,con3]]" do
+    it "has the hierarchy [[con1],[con2,con3]]" do
       expect(@rcd.hierarchy.to_a).to eq [[con1],[con2,con3]]
     end
     it "has ranked constraints [[con1]]" do
@@ -127,9 +171,12 @@ RSpec.describe Rcd, :wip do
     it "has unranked constraints [con2,con3]" do
       expect(@rcd.unranked).to eq [con2,con3]
     end
-    it "does not change the ranked constraints when calling hierarchy" do
+    it "does not change the ranked constraints when calling #hierarchy()" do
       @rcd.hierarchy
       expect(@rcd.ranked).to eq [[con1]]
+    end
+    it "has a list of the ERCs passed in" do
+      expect(@rcd.erc_list).to eq [erc1,erc2,erc3]
     end
     it "has explained ERCs [[erc1]]" do
       expect(@rcd.ex_ercs).to eq [[erc1]]

@@ -24,8 +24,7 @@ RSpec.describe RcdImage, :wip do
     let(:sorted_constraints){[con1]}
     before(:each) do
       allow(rcd_result).to receive(:hierarchy).and_return([[con1]])
-      allow(rcd_result).to receive(:ex_ercs).and_return([[erc1]])
-      allow(rcd_result).to receive(:unex_ercs).and_return([])
+      allow(rcd_result).to receive(:erc_list).and_return([erc1])
       @rcd_image =
         RcdImage.new(rcd_result, comp_tableau_image_class: ct_image_class)
     end
@@ -53,8 +52,7 @@ RSpec.describe RcdImage, :wip do
     let(:sorted_constraints){[con2,con3,con1]}
     before(:each) do
       allow(rcd_result).to receive(:hierarchy).and_return([[con2],[con3],[con1]])
-      allow(rcd_result).to receive(:ex_ercs).and_return([[erc1,erc2]])
-      allow(rcd_result).to receive(:unex_ercs).and_return([])
+      allow(rcd_result).to receive(:erc_list).and_return([erc1,erc2])
       @rcd_image =
         RcdImage.new(rcd_result, comp_tableau_image_class: ct_image_class)
     end

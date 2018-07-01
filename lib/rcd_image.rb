@@ -61,24 +61,22 @@ class RcdImage
   def construct_ercs_and_constraints
     # Create a flat list of all the constraints in ranked order
     sorted_cons = rcd_result.hierarchy.flatten
-    # TODO: Rcd should provide a method returning a flat list of all ercs.
-    # Create a flat list of all of the ercs
-    erc_list = rcd_result.ex_ercs.flatten
-    erc_list.concat(rcd_result.unex_ercs) unless rcd_result.unex_ercs.empty?
-    # sort the ercs with respect to the RCD constraint hierarchy
+    # Retrieve the list of all of the ERCs.
+    erc_list = rcd_result.erc_list
+    # sort the ERCs with respect to the RCD constraint hierarchy
     sorted_ercs = sort_by_constraint_order(erc_list,sorted_cons)
     return sorted_ercs, sorted_cons
   end
   protected :construct_ercs_and_constraints
 
-  # Takes a list of ercs and sorts them with respect to a list of constraints,
-  # such that all ercs assigned a W by the first constraint occur first in
-  # the sorted erc list, followed by all the ercs assigned an e by the first
-  # constraint, followed by all the ercs assigned an L by the first constraint.
-  # Each of those blocks of ercs is recursively sorted by the other constraints
+  # Takes a list of ERCs and sorts them with respect to a list of constraints,
+  # such that all ERCs assigned a W by the first constraint occur first in
+  # the sorted ERC list, followed by all the ERCs assigned an e by the first
+  # constraint, followed by all the ERCs assigned an L by the first constraint.
+  # Each of those blocks of ERCs is recursively sorted by the other constraints
   # in order.
   # 
-  # Returns a sorted array of ercs.
+  # Returns a sorted array of ERCs.
   #
   # This is used for display purposes, to create a monotonic "W boundary" in
   # formatted comparative tableaux.
