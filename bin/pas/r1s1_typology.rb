@@ -120,10 +120,10 @@ end
 
 # Pull the four languages that are failing learning: 32, 45, 46, 59
 fails = lang_list.keep_if { |lang|
-  lang.label.to_s == "L32" ||
-  lang.label.to_s == "L45" ||
-  lang.label.to_s == "L46" ||
-  lang.label.to_s == "L59" }
+  lang.label.to_s == "L26" ||
+  lang.label.to_s == "L33" }
+#  lang.label.to_s == "L46" ||
+#  lang.label.to_s == "L59" }
 
 # Write those four to a file
 File.open("pas_learning_fails.csv","w+") do |file|

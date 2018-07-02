@@ -18,6 +18,7 @@ module OTLearn
      @prior_result = prior_result
      @language_learner = language_learner
      @change = false
+     @list = []
      # dependency injection defaults
      @fewest_set_features_class = OTLearn::FewestSetFeatures
      @max_mismatch_ranking_class = OTLearn::MaxMismatchRanking
@@ -42,6 +43,10 @@ module OTLearn
     def change?
       return @change
     end
+    
+    def list
+      return @list
+    end
 
    # Returns true if anything changed about the grammar
     def run_induction_learning
@@ -63,7 +68,7 @@ module OTLearn
          fsf.run
          @change = fsf.change?
       else
-        # Should call MMR on the first member of the list
+        # Should call MMR on first member of the list
         mmr = @max_mismatch_ranking_class.new(consistent_list.first, @grammar, @language_learner)
         mmr.run
         @change = mmr.change?
