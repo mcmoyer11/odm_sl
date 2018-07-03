@@ -36,8 +36,8 @@ module OTLearn
     def make_image
       # insert the GrammarTest label
       @image[1,1] = @grammar_test.label
-      # Compute the faith-low bias ranking.
-      # TODO: GrammarTest should compute and provide the rcd_result.
+      # Compute the faith-low bias ranking, to provide the display
+      # order of the constraints.
       rcd_result = @rcd_class.new(@grammar_test.grammar.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
