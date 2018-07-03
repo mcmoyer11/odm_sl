@@ -3,7 +3,7 @@
 require_relative "../../lib/otlearn/grammar_test_image"
 require "sheet"
 
-RSpec.describe OTLearn::GrammarTestImage, :wip do
+RSpec.describe OTLearn::GrammarTestImage do
   let(:grammar_test){double('grammar_test')}
   let(:grammar){double('grammar')}
   let(:rcd_class){double('rcd_class')}

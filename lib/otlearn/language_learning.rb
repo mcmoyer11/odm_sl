@@ -86,10 +86,10 @@ module OTLearn
         learning_change = false
         # Single form learning
         sfl = OTLearn::SingleFormLearning.new(@winner_list, @grammar)
-        sfl.run
-        @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
-        return true if @results_list.last.all_correct?
-        # First, try to learn from a contrast pair
+        test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
+        @results_list << test_result
+        return true if test_result.all_correct?
+        # Contrast pair learning
         cpl = OTLearn::ContrastPairLearning.new(@winner_list, @grammar, @results_list.last)
         contrast_pair = cpl.run
         unless contrast_pair.nil?

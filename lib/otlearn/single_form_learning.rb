@@ -6,37 +6,30 @@ require_relative "./data_manip"
 
 module OTLearn
   
-  # When run, this processes all of the words in +winner_list+, one at a time
-  # in order, with respect to +grammar+. Any results of learning are realized
-  # as side effect changes to +grammar+.
+  # This processes all of the words in the winner list, one at a time
+  # in order, with respect to a grammar. Any results of learning are realized
+  # as side effect changes to the grammar.
   class SingleFormLearning
     
-    # Creates the object. The learning procedure is not executed until
-    # #run is called.
-    # +winner_list+ is the list of all grammatical words.
-    # +grammar+ is the grammar that learning will modify.
-    def initialize(winner_list, grammar)
+    # Creates the object, and automatically runs single form learning.
+    # * +winner_list+ - the list of all grammatical words.
+    # * +grammar+ - the grammar that learning will modify.
+    # * +learning_module+ - the module containing several methods used
+    #   for learning: #ranking_learning_faith_low, #mismatch_consistency_check,
+    #   #set_uf_values, and #new_rank_info_from_feature.
+    # * +grammar_test_class+ - the class of object used for testing
+    #   words for learning errors.
+    def initialize(winner_list, grammar, learning_module: OTLearn,
+      grammar_test_class: OTLearn::GrammarTest)
       @winner_list = winner_list
       @grammar = grammar
       @changed = false
       # injection dependency defaults
-      @tester_class = OTLearn::GrammarTest
-      @otlearn_module = OTLearn
+      @error_test_class = grammar_test_class
+      @otlearn_module = learning_module
+      run_single_form_learning
     end
     
-    # Resets the tester class used to determine which words require
-    # more learning/information.
-    # Used in testing (dependency injection).
-    def tester_class=(test_obj)
-      @tester_class = test_obj
-    end
-    
-    # Resets the module providing the namespace for various learning methods.
-    # Used in testing (dependency injection).
-    def otlearn_module=(mod)
-      @otlearn_module = mod
-    end
-
     # The list of winner words used for learning.
     def winner_list
       @winner_list
@@ -64,13 +57,13 @@ module OTLearn
     # 
     # A boolean is returned indicating if the grammar was changed at all
     # during the execution of this method.
-    def run
+    def run_single_form_learning
       begin
         grammar_changed_on_pass = false
         winner_list.each do |winner|
           # Error test the winner by checking to see if it is the sole
           # optimum for the mismatched input using the Faith-Low hierarchy.
-          error_test = @tester_class.new([winner], grammar)
+          error_test = @error_test_class.new([winner], grammar)
           # Unless no error is detected, try learning with the winner.
           unless error_test.all_correct? then
             grammar_changed_on_winner = process_winner(winner)
@@ -81,6 +74,7 @@ module OTLearn
       end while grammar_changed_on_pass
       return changed?
     end
+    protected :run_single_form_learning
 
     # Processes +winner+ for new information about the grammar.
     # * First, it checks the winner for ranking information with a matched

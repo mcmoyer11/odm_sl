@@ -2,7 +2,7 @@
 
 require_relative '../../lib/otlearn/phonotactic_learning'
 
-RSpec.describe OTLearn::PhonotacticLearning, :wip do
+RSpec.describe OTLearn::PhonotacticLearning do
   context "with a winner list and a grammar" do
     let(:winner_list){double('winner_list')}
     let(:grammar){double('grammar')}

@@ -4,7 +4,7 @@ require 'rcd_image'
 require 'sheet'
 require_relative '../test/helpers/quick_erc'
 
-RSpec.describe RcdImage, :wip do  
+RSpec.describe RcdImage do  
   let(:rcd_result){double('rcd_result')}
   let(:ct_image_class){double('ct_image_class')}
   let(:ct_image){Sheet.new}

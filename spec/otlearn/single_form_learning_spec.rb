@@ -18,16 +18,12 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(tester_obj).to receive(:all_correct?).and_return(true)
       allow(otlearn_module).to receive(:mismatch_consistency_check)
       #
-      @single_form_learning = OTLearn::SingleFormLearning.new(@winners, grammar)
-      @single_form_learning.tester_class = tester_class
-      @single_form_learning.otlearn_module = otlearn_module
-      @run_return_value = @single_form_learning.run
+      @single_form_learning = OTLearn::SingleFormLearning.new(@winners,
+        grammar, learning_module: otlearn_module,
+        grammar_test_class: tester_class)
     end
     it "does not change the grammar" do
       expect(@single_form_learning).not_to be_changed
-    end
-    it "#run returns a value of false" do
-      expect(@run_return_value).to be false
     end
     it "returns a winner list with one winner" do
       expect(@single_form_learning.winner_list).to eq @winners
@@ -55,16 +51,12 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(otlearn_module).to receive(:ranking_learning_faith_low).and_return(false)
       allow(cr_grammar).to receive(:consistent?).and_return(false, false)
       #
-      @single_form_learning = OTLearn::SingleFormLearning.new(@winners, grammar)
-      @single_form_learning.tester_class = tester_class
-      @single_form_learning.otlearn_module = otlearn_module
-      @run_return_value = @single_form_learning.run
+      @single_form_learning = OTLearn::SingleFormLearning.new(@winners,
+        grammar, learning_module: otlearn_module,
+        grammar_test_class: tester_class)
     end
     it "changes the grammar" do
       expect(@single_form_learning).to be_changed
-    end
-    it "#run returns a value of true" do
-      expect(@run_return_value).to be true
     end
     it "returns a winner list with one winner" do
       expect(@single_form_learning.winner_list).to eq @winners

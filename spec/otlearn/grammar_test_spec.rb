@@ -2,7 +2,7 @@
 
 require_relative '../../lib/otlearn/grammar_test'
 
-RSpec.describe OTLearn::GrammarTest, :wip do
+RSpec.describe OTLearn::GrammarTest do
   let(:winner_list){double('winner_list')}
   let(:grammar){double{'grammar'}}
   let(:lexicon){double('lexicon')}

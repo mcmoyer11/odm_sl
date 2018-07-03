@@ -2,7 +2,7 @@
 
 require 'lexicon_image'
 
-RSpec.describe LexiconImage, :wip do
+RSpec.describe LexiconImage do
   let(:lexicon){instance_double("Lexicon")}
   let(:pref1){instance_double("Lexical_Entry", :label => "p1", :uf => "a")}
   let(:root1){instance_double("Lexical_Entry", :label => "r1", :uf => "x")}
