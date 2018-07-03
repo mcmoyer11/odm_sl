@@ -23,24 +23,23 @@ RSpec.describe OTLearn::GrammarTestImage, :wip do
       # mock each component image with a single cell
       result_image[1,1] = "Result Image"
       lex_image[1,1] = "Lexicon Image"
-      @grammar_test_image =
+      @gt_image =
         OTLearn::GrammarTestImage.new(grammar_test, rcd_class: rcd_class,
         rcd_image_class: rcd_image_class,
         lexicon_image_class: lexicon_image_class)
-      @image = @grammar_test_image.sheet
     end
     it "has the label in the first row" do
-      expect(@image[1,1]).to eq "TestGT"
+      expect(@gt_image[1,1]).to eq "TestGT"
     end
     it "has the ERCs starting in the second row, second column" do
-      expect(@image[2,2]).to eq "Result Image"
+      expect(@gt_image[2,2]).to eq "Result Image"
     end
     it "has a blank line after the ERCs" do
-      expect(@image[3,1]).to be_nil
-      expect(@image[3,2]).to be_nil
+      expect(@gt_image[3,1]).to be_nil
+      expect(@gt_image[3,2]).to be_nil
     end
     it "has the lexicon after post-ERC blank line, starting in the second column" do
-      expect(@image[4,2]).to eq "Lexicon Image"
+      expect(@gt_image[4,2]).to eq "Lexicon Image"
     end
   end
 end # RSpec.describe OTLearn::GrammarTestImage

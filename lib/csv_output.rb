@@ -43,7 +43,7 @@ class CSV_Output
       # TODO: each entry should contain its own appropriate image.
       next_row = @page_image.row_count+2
       grammar_test_image = OTLearn::GrammarTestImage.new(entry)
-      @page_image.put_range[next_row,1] = grammar_test_image.sheet
+      @page_image.put_range[next_row,1] = grammar_test_image
     end
     headers_nil_to_blank
   end
