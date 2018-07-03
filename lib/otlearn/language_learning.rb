@@ -90,11 +90,12 @@ module OTLearn
         @results_list << test_result
         return true if test_result.all_correct?
         # Contrast pair learning
-        cpl = OTLearn::ContrastPairLearning.new(@winner_list, @grammar, @results_list.last)
-        contrast_pair = cpl.run
-        unless contrast_pair.nil?
-          @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
-          return true if @results_list.last.all_correct?
+        cpl = OTLearn::ContrastPairLearning.new(@winner_list, @grammar,
+          @results_list.last)
+        if cpl.changed?
+          test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
+          @results_list << test_result
+          return true if test_result.all_correct?
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of minimal UF learning
