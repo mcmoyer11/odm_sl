@@ -2,6 +2,7 @@
 #
 
 require_relative 'contrast_pair'
+require_relative 'phonotactic_learning'
 require_relative 'single_form_learning'
 require_relative 'contrast_pair_learning'
 require_relative 'ranking_learning'
@@ -75,9 +76,10 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning
       # Phonotactic learning
-      OTLearn::ranking_learning_faith_low(@winner_list, @grammar)
-      @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Phonotactic Learning")
-      return true if @results_list.last.all_correct?
+      pl = OTLearn::PhonotacticLearning.new(@winner_list, @grammar)
+      test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Phonotactic Learning")
+      @results_list << test_result
+      return true if test_result.all_correct?
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
       begin
