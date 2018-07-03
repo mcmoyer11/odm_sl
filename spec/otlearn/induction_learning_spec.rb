@@ -12,7 +12,6 @@ RSpec.describe OTLearn::InductionLearning do
       allow(prior_result).to receive(:failed_winners).and_return([])
       @induction_learning = OTLearn::InductionLearning.new(word_list, grammar, prior_result, language_learner)
     end
-
     it "raises a RuntimeError" do
       expect{@induction_learning.run_induction_learning}.to raise_error(RuntimeError)
     end
@@ -45,11 +44,9 @@ RSpec.describe OTLearn::InductionLearning do
       allow(@fsf).to receive(:run)
       allow(@fsf).to receive(:change?)
     end
-    
     it "does not raise an exception" do
       expect{@induction_learning.run_induction_learning}.not_to raise_error
     end
-    
     it "calls fewest set features" do
       @induction_learning.run_induction_learning
       expect(@fsf).to have_received(:run)

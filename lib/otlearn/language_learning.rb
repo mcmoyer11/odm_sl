@@ -99,11 +99,12 @@ module OTLearn
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of minimal UF learning
-          guy = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
-          guy.run_induction_learning
-          if guy.change? then
-            @results_list << OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
-            return true if @results_list.last.all_correct?
+          il = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
+          il.run_induction_learning
+          if il.change? then
+            test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
+            @results_list << test_result
+            return true if test_result.all_correct?
             learning_change = true
           end
         end
