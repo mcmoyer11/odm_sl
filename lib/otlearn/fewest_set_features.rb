@@ -35,8 +35,7 @@ module OTLearn
     # * +prior_result+ is the most recent result of grammar testing, and
     #   provides a list of the winners failing word evaluation.
     # * +grammar+ is the current grammar of the learner.
-    # * +language_learner+ provides access to the method
-    #   #mismatch_consistency_check().
+    # * +language_learner+ included in an exception that is raised.
     # * +word_list+ is a list of all the winners (words) currently stored by
     #   the learner. It is used when searching for non-phonotactic ranking
     #   information when a feature has been set.
@@ -50,6 +49,8 @@ module OTLearn
       @word_list = word_list
       @grammar = grammar
       @prior_result = prior_result
+      # TODO: catch the exception in LanguageLearner, so that this arg doesn't
+      # need to be passed in just so it can be passed back in rare cases.
       @language_learner = language_learner
       @failed_winner = nil
       @newly_set_features = []
