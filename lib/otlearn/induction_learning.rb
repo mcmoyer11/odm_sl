@@ -17,14 +17,14 @@ module OTLearn
 
     # Creates the induction learning object, and automatically runs
     # induction learning.
-    # * +word_list+ - the list of grammatical words
+    # * +word_list+ - the list of grammatical words.
     # * +grammar+ - the grammar that learning will use/modify.
-    # * +prior_result+ - provides access to the failed winners of the last test
+    # * +prior_result+ - provides access to the failed winners of the last test.
     # * +language_learner+ - passed on to +fewest_set_features_class+.new
     # * +learning_module+ - the module containing the method
-    #   #mismatch_consistency_check
+    #   #mismatch_consistency_check.  Used for testing (dependency injection).
     # * +fewest_set_features_class+ - the class of object used for fewest set
-    #   features
+    #   features.  Used for testing (dependency injection).
     def initialize(word_list, grammar, prior_result, language_learner,
         learning_module: OTLearn,
         fewest_set_features_class: OTLearn::FewestSetFeatures)
@@ -62,8 +62,7 @@ module OTLearn
          # Should call FSF
          fsf = @fewest_set_features_class.new(@word_list, @grammar,
            @prior_result, @language_learner)
-         fsf.run
-         @changed = fsf.change?
+         @changed = fsf.changed?
       else
         # Should call MMR on the first member of the list
         consistent_list.each do |c|

@@ -30,8 +30,8 @@ module OTLearn
   # the failed winner requiring the minimal number of set features.
   class FewestSetFeatures
     
-    # Initializes a new object, but does _not_ automatically execute
-    # the fewest set features algorithm; #run() must be called to do that.
+    # Initializes a new object, and automatically executes
+    # the fewest set features algorithm.
     # * +prior_result+ is the most recent result of grammar testing, and
     #   provides a list of the winners failing word evaluation.
     # * +grammar+ is the current grammar of the learner.
@@ -40,7 +40,13 @@ module OTLearn
     # * +word_list+ is a list of all the winners (words) currently stored by
     #   the learner. It is used when searching for non-phonotactic ranking
     #   information when a feature has been set.
-    def initialize(word_list, grammar, prior_result, language_learner)
+    # * +learning_module+ - the module containing the methods
+    #   #new_rank_info_from_feature, #find_unset_features_in_words,
+    #   #mismatch_consistency_check. Used for testing (dependency injection).
+    # * +feature_value_pair_class+ - the class of object used to represent
+    #   feature-value pairs. Used for testing (dependency injection).
+    def initialize(word_list, grammar, prior_result, language_learner,
+      learning_module: OTLearn, feature_value_pair_class: FeatureValuePair)
       @word_list = word_list
       @grammar = grammar
       @prior_result = prior_result
@@ -48,13 +54,13 @@ module OTLearn
       @failed_winner = nil
       @newly_set_features = []
       # dependency injection defaults
-      @uf_learning_module = OTLearn
-      @feature_value_pair_class = FeatureValuePair
+      @uf_learning_module = learning_module
+      @feature_value_pair_class = feature_value_pair_class
+      run_fewest_set_features
     end
 
     # Returns an array of the features that were set by fewest set features.
-    # If no feature was set, returns nil. Will necessarily return nil if
-    # FewestSetFeatures#run has not yet been called on this object.
+    # If no feature was set, returns nil.
     #
     # NOTE: at present, OTLearn::FewestSetFeatures will set at most one
     # feature, but may be extended to return a minimal set of features
@@ -64,37 +70,15 @@ module OTLearn
     end
     
     # Returns the failed winner that was used with fewest set features.
-    # Will necessarily return nil if
-    # FewestSetFeatures#run has not yet been called on this object.
     def failed_winner
       return @failed_winner
     end
     
     # Returns true if FewestSetFeatures set at least one feature.
-    # Will necessarily return false if FewestSetFeatures#run has not yet
-    # been called on this object.
-    def change?
+    def changed?
       return (not newly_set_features.empty?)
     end
     
-    # Assigns a new module to be used as the source of the underlying
-    # form learning methods. Used for testing (dependency injection).
-    # To be effective, this must be called before #run() is called.
-    # The uf_learning module is the source of the methods:
-    # * .new_rank_info_from_feature(grammar, word_list, feature)
-    # * .find_unset_features_in_words(failed_winner_list, grammar)
-    def uf_learning_module=(mod)
-      @uf_learning_module = mod
-    end
-    
-    # Assigns a new class to be used for feature value pair objects.
-    # Feature value pair objects are returned by #test_unset_feature().
-    # Used for testing (dependency injection).
-    # To be effective, this must be called before #run() is called.
-    def feature_value_pair_class=(fvpc)
-      @feature_value_pair_class = fvpc
-    end
-
     # Executes the fewest set features algorithm.
     # 
     # The learner considers only the first failed winner on the list
@@ -109,7 +93,7 @@ module OTLearn
     # for the selected failed winner, then a LearnEx exception is raised,
     # containing references to the language_learner object and the list
     # of (more than one) successful features.
-    def run
+    def run_fewest_set_features
       # Select a failed winner.
       # At present, the learner simply takes the first one on the list
       # of failed winners provided by @prior_result.
@@ -122,8 +106,9 @@ module OTLearn
       newly_set_features.each do |feat|
         @uf_learning_module.new_rank_info_from_feature(@grammar, @word_list, feat)
       end
-      return change?
+      return changed?
     end
+    protected :run_fewest_set_features
 
     # Find a previously unset feature of failed_winner such that setting
     # the feature to match its surface correspondent results in the winner
@@ -140,8 +125,9 @@ module OTLearn
         fv_pair.set_to_alt_value  # Set the feature permanently in the lexicon.
         newly_set_features << fv_pair.feature_instance
       end
-      return change?
+      return changed?
     end
+    protected :find_and_set_a_succeeding_feature
     
     # Finds the unset underlying form feature of failed_winner that,
     # when assigned a value matching its output correspondent,
@@ -188,6 +174,7 @@ module OTLearn
           "More than one single matching feature passes error testing."        
       end
     end
+    protected :select_most_restrictive_uf
 
     # Tests the unset feature +ufeat+ of +tested_winner+ (a testing copy of
     # failed_winner) by assigning, in the lexicon, the unset feature to the
@@ -223,9 +210,7 @@ module OTLearn
       # return the val_pair if it worked, or nil if it didn't
       return val_pair
     end
-
-    protected :select_most_restrictive_uf, :find_and_set_a_succeeding_feature,
-      :test_unset_feature
+    protected :test_unset_feature
 
   end # class FewestSetFeatures
 end # module OTLearn
