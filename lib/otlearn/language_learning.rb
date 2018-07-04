@@ -98,10 +98,9 @@ module OTLearn
           return true if test_result.all_correct?
           learning_change = true
         else
-          # No suitable contrast pair, so pursue a step of minimal UF learning
+          # No suitable contrast pair, so pursue a step of FSF learning
           il = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
-          il.run_induction_learning
-          if il.change? then
+          if il.changed? then
             test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
             @results_list << test_result
             return true if test_result.all_correct?
@@ -111,7 +110,6 @@ module OTLearn
       end while learning_change
       return false # learning failed
     end
-
     protected :execute_learning
 
   end # class LanguageLearning
