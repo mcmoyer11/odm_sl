@@ -36,12 +36,12 @@ RSpec.describe OTLearn::InductionLearning do
       allow(otlearn_module).to receive(:mismatch_consistency_check).
           with(grammar,[failed_winner_1]).and_return(mrcd)
       allow(fsf).to receive(:run)
-      allow(fsf).to receive(:change?)
+      allow(fsf).to receive(:changed?)
     end
     
     context "that allows a feature to be set" do
       before(:each) do
-        allow(fsf).to receive(:change?).and_return(true)
+        allow(fsf).to receive(:changed?).and_return(true)
         @induction_learning = OTLearn::InductionLearning.new(word_list, grammar,
           prior_result, language_learner,
           learning_module: otlearn_module, fewest_set_features_class: fsf_class)
@@ -56,7 +56,7 @@ RSpec.describe OTLearn::InductionLearning do
 
     context " that does not allow a feature to be set" do
       before(:each) do
-        allow(fsf).to receive(:change?).and_return(false)
+        allow(fsf).to receive(:changed?).and_return(false)
         @induction_learning = OTLearn::InductionLearning.new(word_list, grammar,
           prior_result, language_learner,
           learning_module: otlearn_module, fewest_set_features_class: fsf_class)
