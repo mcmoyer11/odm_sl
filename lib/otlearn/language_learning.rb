@@ -1,18 +1,8 @@
 # Author: Bruce Tesar
-#
 
-require_relative 'contrast_pair'
 require_relative 'phonotactic_learning'
 require_relative 'single_form_learning'
 require_relative 'contrast_pair_learning'
-require_relative 'ranking_learning'
-require_relative 'grammar_test'
-require_relative '../loserselector_by_ranking'
-require_relative 'uf_learning'
-require_relative 'mrcd'
-require_relative 'data_manip'
-require_relative '../feature_value_pair'
-require_relative 'learning_exceptions'
 require_relative 'induction_learning'
 
 module OTLearn
@@ -101,7 +91,7 @@ module OTLearn
           # No suitable contrast pair, so pursue a step of FSF learning
           il = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
           if il.changed? then
-            test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Minimal UF Learning")
+            test_result = il.test_result
             @results_list << test_result
             return true if test_result.all_correct?
             learning_change = true

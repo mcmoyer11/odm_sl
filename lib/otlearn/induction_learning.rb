@@ -1,11 +1,8 @@
 # Author: Morgan Moyer / Bruce Tesar
 
 require_relative 'ranking_learning'
-require_relative 'grammar_test'
-require_relative '../loserselector_by_ranking'
-require_relative 'uf_learning'
-require_relative 'mrcd'
 require_relative 'data_manip'
+require_relative 'grammar_test'
 require_relative 'fewest_set_features'
 
 module OTLearn
@@ -23,19 +20,27 @@ module OTLearn
     # * +language_learner+ - passed on to +fewest_set_features_class+.new
     # * +learning_module+ - the module containing the method
     #   #mismatch_consistency_check.  Used for testing (dependency injection).
+    # * +grammar_test_class+ - the class of the object used to test
+    #   the grammar. Used for testing (dependency injection).
     # * +fewest_set_features_class+ - the class of object used for fewest set
     #   features.  Used for testing (dependency injection).
+    #
+    # :call-seq:
+    #   InductionLearning.new(word_list, grammar, prior_result, language_learner) -> obj
     def initialize(word_list, grammar, prior_result, language_learner,
-        learning_module: OTLearn,
+        learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
         fewest_set_features_class: OTLearn::FewestSetFeatures)
      @word_list = word_list
      @grammar = grammar
      @prior_result = prior_result
      @language_learner = language_learner
-     @changed = false
-     @otlearn_module = learning_module
+     @learning_module = learning_module
+     @grammar_test_class = grammar_test_class
      @fewest_set_features_class = fewest_set_features_class
+     @changed = false
      run_induction_learning
+     # TODO: change the label below (or eliminate it)
+     @test_result = @grammar_test_class.new(@word_list, @grammar, "Minimal UF Learning")
     end
     
     # Returns true if induction learning made a change to the grammar,
@@ -44,6 +49,18 @@ module OTLearn
       return @changed
     end
 
+    # Returns the results of a grammar test after the completion of
+    # phonotactic learning.
+    def test_result
+      @test_result
+    end
+    
+    # Returns true if all words are correctly processed by the grammar;
+    # returns false otherwise.
+    def all_correct?
+      @test_result.all_correct?
+    end
+    
    # Returns true if anything changed about the grammar
     def run_induction_learning
       # If there are no failed winners, raise an exception, because
@@ -54,7 +71,7 @@ module OTLearn
       end
       # Check failed winners for consistency, and collect the consistent ones
       consistent_list = @prior_result.failed_winners.select do |word|
-        @otlearn_module.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
+        @learning_module.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
       # If there are consistent errors, run MMR on one
       #if consistent_list.empty?
@@ -78,10 +95,10 @@ module OTLearn
     # Returns True if any new ranking information was added, false otherwise
     def run_max_mismatch_ranking(word, grammar)
       max_disparity_list = []
-      OTLearn::mismatches_input_to_output(word) {|cand| max_disparity_list << cand }
+      @learning_module.mismatches_input_to_output(word) {|cand| max_disparity_list << cand }
       winner = max_disparity_list.first 
       #STDERR.puts winner
-      OTLearn::ranking_learning_faith_low([winner], grammar)
+      @learning_module.ranking_learning_faith_low([winner], grammar)
     end
     protected :run_max_mismatch_ranking
 
