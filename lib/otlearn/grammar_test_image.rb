@@ -60,7 +60,8 @@ module OTLearn
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_class.new(@grammar_test.grammar.lexicon)
-      @sheet.put_range[@sheet.row_count+2,2] = lex_image
+      @sheet.add_empty_row
+      @sheet.put_range[@sheet.row_count+1,2] = lex_image
     end
     protected :construct_image
     

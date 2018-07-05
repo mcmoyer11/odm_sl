@@ -111,7 +111,7 @@ RSpec.describe Sheet do
       end
     end
   end
-  
+
   context "A sheet created from a 3x3 array with entry values 1..9" do
     before(:each) do
       @ar = [[1,2,3],[4,5,6],[7,8,9]]
@@ -136,6 +136,33 @@ RSpec.describe Sheet do
     
     it "returns an array equivalent to the original" do
       expect(@sheet.to_a).to eq @ar
+    end
+  end
+  
+  #**************************************************
+  # Specs for convenience methods adding to the sheet
+  #**************************************************
+    
+  context "A sheet with 3 rows" do
+    let(:sheet){Sheet.new_from_a([[1],[2],[3]])}
+    it "has 3 rows" do
+      expect(sheet.row_count).to eq 3
+    end
+    context "when an empty row is added" do
+      before(:each) do
+        sheet.add_empty_row
+      end
+      it "has 4 rows" do
+        expect(sheet.row_count).to eq 4
+      end
+      it "has an empty 4th row" do
+        all_nil = (1..sheet.col_count).all?{|col| sheet[4,col].nil?}
+        expect(all_nil).to be true
+      end
+      it "does not have an empty 3rd row" do
+        all_nil = (1..sheet.col_count).all?{|col| sheet[3,col].nil?}
+        expect(all_nil).to be false
+      end
     end
   end
   

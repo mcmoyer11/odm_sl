@@ -43,9 +43,9 @@ module OTLearn
       @sheet[2,1] = "Learned: #{@language_learning.learning_successful?}"
       # Add each step result to the sheet
       @language_learning.results_list.each do |result|
-        next_row = @sheet.row_count+2
         grammar_test_image = @grammar_test_image_class.new(result)
-        @sheet.put_range[next_row,1] = grammar_test_image
+        @sheet.add_empty_row
+        @sheet.put_range[@sheet.row_count+1,1] = grammar_test_image
       end
     end
   end # class LanguageLearningImage

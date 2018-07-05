@@ -145,6 +145,11 @@ class Sheet
     end
   end
   
+  # Adds an empty row to the end of the sheet; empty meaning each entry is nil.
+  def add_empty_row
+    self[row_count+1,1] = nil
+  end
+  
   # Returns true if every cell in the sheet contains nil. Returns false
   # otherwise.
   def all_nil?
