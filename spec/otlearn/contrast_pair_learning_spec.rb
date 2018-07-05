@@ -9,6 +9,8 @@ RSpec.describe OTLearn::ContrastPairLearning do
   let(:otlearn_module){double('OTLearn module')}
   let(:first_cp){double('first_cp')}
   let(:second_cp){double('second_cp')}
+  let(:grammar_test_class){double('grammar_test_class')}
+  let(:grammar_test){double('grammar_test')}
 
   context "with first pair informative" do
     before(:each) do
@@ -20,9 +22,11 @@ RSpec.describe OTLearn::ContrastPairLearning do
       end
       allow(otlearn_module).to receive(:set_uf_values).with(first_cp,grammar).and_return(["feat1"])
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feat1")
+      allow(grammar_test_class).to receive(:new).and_return(grammar_test)
+      allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning.new(winner_list, grammar, prior_result,
-        learning_module: otlearn_module)
+        learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "returns the first pair" do
       expect(@contrast_pair_learning.contrast_pair).to eq first_cp
@@ -33,7 +37,16 @@ RSpec.describe OTLearn::ContrastPairLearning do
     it "changes the grammar" do
       expect(@contrast_pair_learning).to be_changed
     end
-  end
+    it "runs a grammar test after learning" do
+      expect(grammar_test_class).to have_received(:new)
+    end
+    it "gives the grammar test result" do
+      expect(@contrast_pair_learning.test_result).to eq grammar_test
+    end
+    it "indicates that not all words are handled correctly" do
+      expect(@contrast_pair_learning).not_to be_all_correct
+    end
+end
 
   context "with one uniformative pair" do
     before(:each) do
@@ -45,9 +58,11 @@ RSpec.describe OTLearn::ContrastPairLearning do
       end
       allow(otlearn_module).to receive(:set_uf_values).with(first_cp,grammar).and_return([])
       allow(otlearn_module).to receive(:new_rank_info_from_feature)
+      allow(grammar_test_class).to receive(:new).and_return(grammar_test)
+      allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning.new(winner_list, grammar, prior_result,
-        learning_module: otlearn_module)
+        learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "returns no contrast pair" do
       expect(@contrast_pair_learning.contrast_pair).to be_nil
@@ -57,6 +72,15 @@ RSpec.describe OTLearn::ContrastPairLearning do
     end
     it "does not change the grammar" do
       expect(@contrast_pair_learning).not_to be_changed
+    end
+    it "runs a grammar test after learning" do
+      expect(grammar_test_class).to have_received(:new)
+    end
+    it "gives the grammar test result" do
+      expect(@contrast_pair_learning.test_result).to eq grammar_test
+    end
+    it "indicates that not all words are handled correctly" do
+      expect(@contrast_pair_learning).not_to be_all_correct
     end
   end
 
@@ -74,9 +98,11 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(otlearn_module).to receive(:set_uf_values).with(first_cp,grammar).and_return([])
       allow(otlearn_module).to receive(:set_uf_values).with(second_cp,grammar).and_return(["feat1"])
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feat1")
+      allow(grammar_test_class).to receive(:new).and_return(grammar_test)
+      allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning.new(winner_list, grammar, prior_result,
-        learning_module: otlearn_module)
+        learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "returns the second pair" do
       expect(@contrast_pair_learning.contrast_pair).to eq second_cp
@@ -86,6 +112,15 @@ RSpec.describe OTLearn::ContrastPairLearning do
     end
     it "changes the grammar" do
       expect(@contrast_pair_learning).to be_changed
+    end
+    it "runs a grammar test after learning" do
+      expect(grammar_test_class).to have_received(:new)
+    end
+    it "gives the grammar test result" do
+      expect(@contrast_pair_learning.test_result).to eq grammar_test
+    end
+    it "indicates that not all words are handled correctly" do
+      expect(@contrast_pair_learning).not_to be_all_correct
     end
   end
 

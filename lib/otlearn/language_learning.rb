@@ -93,7 +93,7 @@ module OTLearn
         cpl = OTLearn::ContrastPairLearning.new(@winner_list, @grammar,
           @results_list.last)
         if cpl.changed?
-          test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Contrast Pair Learning")
+          test_result = cpl.test_result
           @results_list << test_result
           return true if test_result.all_correct?
           learning_change = true

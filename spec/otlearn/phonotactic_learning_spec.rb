@@ -22,7 +22,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
       expect(otlearn_module).to have_received(:ranking_learning_faith_low)
     end
     it "indicates if learning made any changes to the grammar" do
-      expect(@phonotactic_learning.changed?).to be true
+      expect(@phonotactic_learning).to be_changed
     end
     it "runs a grammar test after learning" do
       expect(grammar_test_class).to have_received(:new)
@@ -31,7 +31,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
       expect(@phonotactic_learning.test_result).to eq grammar_test
     end
     it "indicates that all words are handled correctly" do
-      expect(@phonotactic_learning.all_correct?).to be true
+      expect(@phonotactic_learning).to be_all_correct
     end
   end
 end # RSpec.describe OTLearn::PhonotacticLearning

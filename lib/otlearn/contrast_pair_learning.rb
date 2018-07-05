@@ -2,6 +2,7 @@
 
 require_relative 'contrast_pair'
 require_relative 'uf_learning'
+require_relative 'grammar_test'
 
 module OTLearn
 
@@ -18,14 +19,22 @@ module OTLearn
     # * +learning_module+ - the module containing several methods used for
     #   learning: #generate_contrast_pair, #set_uf_values, and
     #   #new_rank_info_from_feature.
+    # * +grammar_test_class+ - the class of the object used to test
+    #   the grammar. Used for testing (dependency injection).
+    #
+    # :call-seq:
+    #   ContrastPairLearning.new(winner_list, grammar, prior_result) -> obj
+    #   ContrastPairLearning.new(winner_list, grammar, prior_result, learning_module: module, grammar_test_class: class) -> obj
     def initialize(winner_list, grammar, prior_result,
-      learning_module: OTLearn)
+      learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest)
       @winner_list = winner_list
       @grammar = grammar
       @prior_result = prior_result
       @learning_module = learning_module
+      @grammar_test_class = grammar_test_class
       @contrast_pair = nil
       run_contrast_pair_learning
+      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Contrast Pair Learning")
     end
     
     # Returns the contrast pair found by contrast pair learning. If no
@@ -38,6 +47,18 @@ module OTLearn
     # (i.e., it learned anything). Returns false otherwise.
     def changed?
       return (not @contrast_pair.nil?)
+    end
+    
+    # Returns the results of a grammar test after the completion of
+    # contrast pair learning.
+    def test_result
+      @test_result
+    end
+    
+    # Returns true if all words are correctly processed by the grammar;
+    # returns false otherwise.
+    def all_correct?
+      @test_result.all_correct?
     end
     
     # Select a contrast pair, and process it, attempting to set underlying

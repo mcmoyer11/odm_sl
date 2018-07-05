@@ -17,8 +17,13 @@ module OTLearn
     # * +learning_module+ - the module containing several methods used
     #   for learning: #ranking_learning_faith_low, #mismatch_consistency_check,
     #   #set_uf_values, and #new_rank_info_from_feature.
+    #   Used for testing (dependency injection).
     # * +grammar_test_class+ - the class of object used for testing
-    #   words for learning errors.
+    #   words for learning errors. Used for testing (dependency injection).
+    #
+    # :call-seq:
+    #   SingleFormLearning.new(winner_list, grammar) -> obj
+    #   SingleFormLearning.new(winner_list, grammar, learning_module: module, grammar_test_class: class) -> obj
     def initialize(winner_list, grammar, learning_module: OTLearn,
       grammar_test_class: OTLearn::GrammarTest)
       @winner_list = winner_list
