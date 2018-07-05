@@ -77,9 +77,8 @@ module OTLearn
     def execute_learning
       # Phonotactic learning
       pl = OTLearn::PhonotacticLearning.new(@winner_list, @grammar)
-      test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Phonotactic Learning")
-      @results_list << test_result
-      return true if test_result.all_correct?
+      @results_list << pl.test_result
+      return true if pl.all_correct?
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
       begin
