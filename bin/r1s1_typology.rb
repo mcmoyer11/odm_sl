@@ -8,6 +8,7 @@
 require_relative '../lib/sl/data'
 require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
+require_relative '../lib/otlearn/language_learning_image'
 require_relative '../lib/csv_output'
 require_relative '../lib/factorial_typology'
 
@@ -71,6 +72,7 @@ read_languages_from_file(data_file) do |label, outputs|
   grammar.label = label
   # Run learning on the language
   lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
+  sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
   # Write the results to a CSV file, with the language label as the filename.
   out_file = File.join(out_filepath,"#{label}.csv")
   write_learning_results_to_csv(lang_sim, out_file)
