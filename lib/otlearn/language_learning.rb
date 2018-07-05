@@ -77,7 +77,8 @@ module OTLearn
     def execute_learning
       # Phonotactic learning
       pl = OTLearn::PhonotacticLearning.new(@winner_list, @grammar)
-      @results_list << pl.test_result
+      test_result = pl.test_result
+      @results_list << test_result
       return true if pl.all_correct?
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
@@ -85,7 +86,7 @@ module OTLearn
         learning_change = false
         # Single form learning
         sfl = OTLearn::SingleFormLearning.new(@winner_list, @grammar)
-        test_result = OTLearn::GrammarTest.new(@winner_list, @grammar, "Single Form Learning")
+        test_result = sfl.test_result
         @results_list << test_result
         return true if test_result.all_correct?
         # Contrast pair learning

@@ -29,8 +29,8 @@ module OTLearn
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @changed = false # default value
-      @test_result = nil # should be reset at the end of learning
       run_phonotactic_learning
+      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
     end
 
     # Returns true if phonotactic learning modified the grammar;
@@ -55,7 +55,6 @@ module OTLearn
     def run_phonotactic_learning
       @changed = @learning_module.
         ranking_learning_faith_low(@winner_list, @grammar)
-      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
     end
     protected :run_phonotactic_learning
     

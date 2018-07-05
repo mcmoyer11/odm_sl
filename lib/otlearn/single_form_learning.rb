@@ -23,11 +23,11 @@ module OTLearn
       grammar_test_class: OTLearn::GrammarTest)
       @winner_list = winner_list
       @grammar = grammar
-      @changed = false
-      # injection dependency defaults
-      @error_test_class = grammar_test_class
       @otlearn_module = learning_module
+      @error_test_class = grammar_test_class
+      @changed = false
       run_single_form_learning
+      @test_result = @error_test_class.new(@winner_list, @grammar, "Single Form Learning")
     end
     
     # The list of winner words used for learning.
@@ -45,7 +45,19 @@ module OTLearn
       return @changed
     end
     
-    # Processes the winners of #winners for new grammatical information.
+    # Returns the results of a grammar test after the completion of
+    # single form learning.
+    def test_result
+      @test_result
+    end
+
+    # Returns true if all words are correctly processed by the grammar;
+    # returns false otherwise.
+    def all_correct?
+      @test_result.all_correct?
+    end
+    
+# Processes the winners of #winners for new grammatical information.
     # 
     # Passes repeatedly through the list of winners until a pass is made
     # with no changes to the grammar. For each winner:
@@ -92,11 +104,13 @@ module OTLearn
     #
     # Returns true if the grammar was changed by processing the winner,
     # false otherwise.
+    #--
+    # TODO: spin #process_winner off into a separate class.
     def process_winner(winner)
       change_on_winner = false
       # Check the winner to see if it is the sole optimum for
       # the matched input; if not, more ranking info is gained.
-      # NOTE: several languages aren' learned if this step isn't taken.
+      # NOTE: several languages aren't learned if this step isn't taken.
       # TODO: investigate residual ranking info learning further
       new_ranking_info = @otlearn_module.ranking_learning_faith_low([winner], grammar)
       change_on_winner = true if new_ranking_info
