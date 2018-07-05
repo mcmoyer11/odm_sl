@@ -45,7 +45,7 @@ module OTLearn
       @language_learning.results_list.each do |result|
         grammar_test_image = @grammar_test_image_class.new(result)
         @sheet.add_empty_row
-        @sheet.put_range[@sheet.row_count+1,1] = grammar_test_image
+        @sheet.append(grammar_test_image)
       end
     end
   end # class LanguageLearningImage

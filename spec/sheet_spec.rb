@@ -148,6 +148,7 @@ RSpec.describe Sheet do
     it "has 3 rows" do
       expect(sheet.row_count).to eq 3
     end
+
     context "when an empty row is added" do
       before(:each) do
         sheet.add_empty_row
@@ -162,6 +163,40 @@ RSpec.describe Sheet do
       it "does not have an empty 3rd row" do
         all_nil = (1..sheet.col_count).all?{|col| sheet[3,col].nil?}
         expect(all_nil).to be false
+      end
+    end
+    
+    context "when a 2-row inner sheet is appended" do
+      let(:inner_sheet){Sheet.new_from_a([[10],[11]])}
+      before(:each) do
+        sheet.append(inner_sheet)
+      end
+      it "has 5 rows" do
+        expect(sheet.row_count).to eq 5
+      end
+      it "has the inner sheet in rows 4 and 5" do
+        expect(sheet[4,1]).to eq 10
+        expect(sheet[5,1]).to eq 11
+      end
+    end
+
+    context "when a 2-row inner sheet is appended starting column 3" do
+      let(:inner_sheet){Sheet.new_from_a([[10],[11]])}
+      before(:each) do
+        sheet.append(inner_sheet, start_col: 3)
+      end
+      it "has 5 rows" do
+        expect(sheet.row_count).to eq 5
+      end
+      it "has the inner sheet in rows 4 and 5, column 3" do
+        expect(sheet[4,3]).to eq 10
+        expect(sheet[5,3]).to eq 11
+      end
+      it "has empty cells prior to column 3 in rows 4 and 5" do
+        empty_r4 = (1..2).all?{|col| sheet[4,col].nil?}
+        empty_r5 = (1..2).all?{|col| sheet[5,col].nil?}
+        all_empty = (empty_r4 and empty_r5)
+        expect(all_empty).to be true
       end
     end
   end

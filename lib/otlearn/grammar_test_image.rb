@@ -56,12 +56,12 @@ module OTLearn
       # Build the image of the support, and write it
       # to the page starting in column 2.
       rcd_image = @rcd_image_class.new(rcd_result)
-      @sheet.put_range[@sheet.row_count+1,2] = rcd_image
+      @sheet.append(rcd_image, start_col: 2)
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_class.new(@grammar_test.grammar.lexicon)
       @sheet.add_empty_row
-      @sheet.put_range[@sheet.row_count+1,2] = lex_image
+      @sheet.append(lex_image, start_col: 2)
     end
     protected :construct_image
     

@@ -149,6 +149,13 @@ class Sheet
   def add_empty_row
     self[row_count+1,1] = nil
   end
+
+  # Adds the values in +source+ to the end of the sheet.
+  # If +start_col+ is specified, it adds the values starting in that column;
+  # by default, it starts in column 1.
+  def append(source, start_col: 1)
+    put_range[row_count+1,start_col] = source
+  end
   
   # Returns true if every cell in the sheet contains nil. Returns false
   # otherwise.
