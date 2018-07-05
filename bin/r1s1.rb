@@ -5,6 +5,7 @@
  
 require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
+require_relative '../lib/otlearn/language_learning_image'
 require_relative '../lib/sl/data'
 require_relative '../lib/csv_output'
 
@@ -28,9 +29,10 @@ grammar.label = lang_label
 
 # Run learning on the language outputs, starting with the blank grammar.
 lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
+sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
 
 # Write the learning results to the CSV file.
-csv = CSV_Output.new(lang_sim)
+csv = CSV_Output.new(sim_image)
 csv.write_to_file(out_file)
 
 # Report to STDOUT if language was not successfully learned

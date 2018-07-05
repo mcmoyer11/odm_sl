@@ -17,9 +17,6 @@ features.
 
 Add some basic field value validation to OTGeneric::Erc_conversion.
 
-Refactor CSV_Output so that it is more symmetric with CSV_Input.
-Move the lang_sim --> array conversions to other classes.
-
 Implement a ranking information (erc list) only linguistic system and
 grammar class. Use it to set up basic bin scripts for experimenting with
 different ranking biases.
