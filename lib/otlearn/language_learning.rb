@@ -19,19 +19,28 @@ module OTLearn
   #   * Try a contrast pair; if none are successful, try minimum uf setting.
   #   * If either of these is successful, and the language is not yet learned,
   #     run another round of single form learning.
-  # After each stage in which grammar change occurs, the state of
-  # the learner is stored and evaluated in a GrammarTest object. These
-  # objects are stored in a list, obtainable via #results_list().
+  # After each major learning step in which grammar change occurs, an object
+  # representing the step is stored. The list of major learning steps
+  # is obtainable via #step_list().
   #
   # Learning is initiated upon construction of the object.
   class LanguageLearning
 
     # Executes learning on +outputs+ with respect to +grammar+, and
     # stores the results in the returned LanguageLearning object.
-    def initialize(outputs, grammar)
+    def initialize(outputs, grammar,
+      phonotactic_learning_class: OTLearn::PhonotacticLearning,
+      single_form_learning_class: OTLearn::SingleFormLearning,
+      contrast_pair_learning_class: OTLearn::ContrastPairLearning,
+      induction_learning_class: OTLearn::InductionLearning)
       @outputs = outputs
       @grammar = grammar
+      @phonotactic_learning_class = phonotactic_learning_class
+      @single_form_learning_class = single_form_learning_class
+      @contrast_pair_learning_class = contrast_pair_learning_class
+      @induction_learning_class = induction_learning_class
       @results_list = []
+      @step_list = []
       # Convert the outputs to full words, using the grammar,
       # populating the lexicon with the morphemes of the outputs in the process.
       # parse_output() adds the morphemes of the output forms to the lexicon,
@@ -49,6 +58,9 @@ module OTLearn
 
     # Returns the final grammar that was the result of learning.
     def grammar() return @grammar end
+    
+    # Returns the list of major learning steps taken during learning.
+    def step_list() return @step_list end
 
     # Returns a boolean indicating if learning was successful.
     def learning_successful?() return @learning_successful end
@@ -66,34 +78,34 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning
       # Phonotactic learning
-      pl = OTLearn::PhonotacticLearning.new(@winner_list, @grammar)
-      test_result = pl.test_result
-      @results_list << test_result
+      pl = @phonotactic_learning_class.new(@winner_list, @grammar)
+      @step_list << pl
+      @results_list << pl.test_result
       return true if pl.all_correct?
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
       begin
         learning_change = false
         # Single form learning
-        sfl = OTLearn::SingleFormLearning.new(@winner_list, @grammar)
-        test_result = sfl.test_result
-        @results_list << test_result
-        return true if test_result.all_correct?
+        sfl = @single_form_learning_class.new(@winner_list, @grammar)
+        @step_list << sfl
+        @results_list << sfl.test_result
+        return true if sfl.all_correct?
         # Contrast pair learning
-        cpl = OTLearn::ContrastPairLearning.new(@winner_list, @grammar,
+        cpl = @contrast_pair_learning_class.new(@winner_list, @grammar,
           @results_list.last)
         if cpl.changed?
-          test_result = cpl.test_result
-          @results_list << test_result
-          return true if test_result.all_correct?
+          @step_list << cpl
+          @results_list << cpl.test_result
+          return true if cpl.all_correct?
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of FSF learning
-          il = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
+          il = @induction_learning_class.new(@winner_list, @grammar, @results_list.last, self)
           if il.changed? then
-            test_result = il.test_result
-            @results_list << test_result
-            return true if test_result.all_correct?
+            @step_list << il
+            @results_list << il.test_result
+            return true if il.all_correct?
             learning_change = true
           end
         end
