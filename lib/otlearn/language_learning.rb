@@ -16,7 +16,7 @@ module OTLearn
   # * Phonotactic learning.
   # * Single form learning (one word at a time until no more can be learned).
   # * Repeat until the language is learned or no more progress is made.
-  #   * Try a contrast pair; if none are successful, try minimum uf setting.
+  #   * Try a contrast pair; if none are successful, try induction learning.
   #   * If either of these is successful, and the language is not yet learned,
   #     run another round of single form learning.
   # After each major learning step in which grammar change occurs, an object
@@ -24,15 +24,33 @@ module OTLearn
   # is obtainable via #step_list().
   #
   # Learning is initiated upon construction of the object.
+  #
+  # ===References
+  #
+  # Tesar 2014. <em>Output-Driven Phonology</em>.
   class LanguageLearning
 
-    # Executes learning on +output_list+ with respect to +grammar+, and
-    # stores the results in the returned LanguageLearning object.
+    # Constructs a language learning simulation object, and automatically runs
+    # the simulation upon objection construction.
+    # * +output_list+ - the winners considered to form contrast pairs
+    # * +grammar+ - the current grammar (learning may alter it).
+    # The four labeled parameters are the classes of the major learning steps,
+    # and are used for testing (dependency injection).
+    # * +phonotactic_learning_class+
+    # * +single_form_learning_class+
+    # * +contrast_pair_learning_class+
+    # * +induction_learning_class+
+    #
+    # :call-seq:
+    #   LanguageLearning.new(output_list, grammar) -> obj
+    #   LanguageLearning.new(output_list, grammar, phonotactic_learning_class: class,
+    #   single_form_learning_class: class, contrast_pair_learning_class: class,
+    #   induction_learning_class: class) -> obj
     def initialize(output_list, grammar,
-      phonotactic_learning_class: OTLearn::PhonotacticLearning,
-      single_form_learning_class: OTLearn::SingleFormLearning,
-      contrast_pair_learning_class: OTLearn::ContrastPairLearning,
-      induction_learning_class: OTLearn::InductionLearning)
+        phonotactic_learning_class: OTLearn::PhonotacticLearning,
+        single_form_learning_class: OTLearn::SingleFormLearning,
+        contrast_pair_learning_class: OTLearn::ContrastPairLearning,
+        induction_learning_class: OTLearn::InductionLearning)
       @output_list = output_list
       @grammar = grammar
       @phonotactic_learning_class = phonotactic_learning_class
