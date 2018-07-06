@@ -16,7 +16,6 @@ module OTLearn
     # induction learning.
     # * +word_list+ - the list of grammatical words.
     # * +grammar+ - the grammar that learning will use/modify.
-    # * +prior_result+ - provides access to the failed winners of the last test.
     # * +language_learner+ - passed on to +fewest_set_features_class+.new
     # * +learning_module+ - the module containing the method
     #   #mismatch_consistency_check.  Used for testing (dependency injection).
@@ -26,21 +25,23 @@ module OTLearn
     #   features.  Used for testing (dependency injection).
     #
     # :call-seq:
-    #   InductionLearning.new(word_list, grammar, prior_result, language_learner) -> obj
-    def initialize(word_list, grammar, prior_result, language_learner,
+    #   InductionLearning.new(word_list, grammar, language_learner) -> obj
+    def initialize(word_list, grammar, language_learner,
         learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
         fewest_set_features_class: OTLearn::FewestSetFeatures)
-     @word_list = word_list
-     @grammar = grammar
-     @prior_result = prior_result
-     @language_learner = language_learner
-     @learning_module = learning_module
-     @grammar_test_class = grammar_test_class
-     @fewest_set_features_class = fewest_set_features_class
-     @changed = false
-     run_induction_learning
-     # TODO: change the label below (or eliminate it)
-     @test_result = @grammar_test_class.new(@word_list, @grammar, "Minimal UF Learning")
+      @outputs = word_list.map{|win| win.output}
+      @grammar = grammar
+      @language_learner = language_learner
+      @learning_module = learning_module
+      @grammar_test_class = grammar_test_class
+      @fewest_set_features_class = fewest_set_features_class
+      @changed = false
+      # Test the words to see which ones currently fail
+      @word_list = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+      @prior_result = @grammar_test_class.new(@word_list, @grammar)
+      run_induction_learning
+      # TODO: change the label below (or eliminate it)
+      @test_result = @grammar_test_class.new(@word_list, @grammar, "Minimal UF Learning")
     end
     
     # Returns true if induction learning made a change to the grammar,

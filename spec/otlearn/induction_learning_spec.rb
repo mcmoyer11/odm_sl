@@ -3,7 +3,8 @@
 require_relative '../../lib/otlearn/induction_learning'
 
 RSpec.describe OTLearn::InductionLearning do
-  let(:word_list){[]}
+  let(:word_list){double('word_list')}
+  let(:output_list){double('output_list')}
   let(:grammar){double('grammar')}
   let(:prior_result){double('prior_result')}
   let(:language_learner){double('language_learner')}
@@ -12,15 +13,21 @@ RSpec.describe OTLearn::InductionLearning do
   let(:otlearn_module){double('otlearn_module')}
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){double('grammar_test')}
+  before(:each) do
+    allow(word_list).to receive(:map).and_return(output_list)
+    allow(output_list).to receive(:map).and_return(word_list)
+  end
   
   context "with no failed winners" do
     before(:each) do
+      allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(prior_result).to receive(:failed_winners).and_return([])
     end
     it "raises a RuntimeError" do
       expect do
-        OTLearn::InductionLearning.new(word_list, grammar, prior_result,
-          language_learner)
+        OTLearn::InductionLearning.new(word_list, grammar,
+          language_learner,
+          grammar_test_class: grammar_test_class)
       end.to raise_error(RuntimeError)
     end
   end
@@ -39,7 +46,7 @@ RSpec.describe OTLearn::InductionLearning do
       allow(fsf).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
           with(grammar,[failed_winner_1]).and_return(mrcd)
-      allow(grammar_test_class).to receive(:new).and_return(grammar_test)
+      allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
     end
     
@@ -47,7 +54,7 @@ RSpec.describe OTLearn::InductionLearning do
       before(:each) do
         allow(fsf).to receive(:changed?).and_return(true)
         @induction_learning = OTLearn::InductionLearning.new(word_list, grammar,
-          prior_result, language_learner,
+          language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class)
@@ -59,7 +66,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(fsf_class).to have_received(:new)
       end
       it "runs a grammar test after learning" do
-        expect(grammar_test_class).to have_received(:new)
+        expect(grammar_test_class).to have_received(:new).exactly(2).times
       end
       it "gives the grammar test result" do
         expect(@induction_learning.test_result).to eq grammar_test
@@ -73,7 +80,7 @@ RSpec.describe OTLearn::InductionLearning do
       before(:each) do
         allow(fsf).to receive(:changed?).and_return(false)
         @induction_learning = OTLearn::InductionLearning.new(word_list, grammar,
-          prior_result, language_learner,
+          language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class)
@@ -85,7 +92,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(fsf_class).to have_received(:new)
       end
       it "runs a grammar test after learning" do
-        expect(grammar_test_class).to have_received(:new)
+        expect(grammar_test_class).to have_received(:new).exactly(2).times
       end
       it "gives the grammar test result" do
         expect(@induction_learning.test_result).to eq grammar_test

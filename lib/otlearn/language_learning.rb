@@ -92,8 +92,7 @@ module OTLearn
         @results_list << sfl.test_result
         return true if sfl.all_correct?
         # Contrast pair learning
-        cpl = @contrast_pair_learning_class.new(@winner_list, @grammar,
-          @results_list.last)
+        cpl = @contrast_pair_learning_class.new(@winner_list, @grammar)
         if cpl.changed?
           @step_list << cpl
           @results_list << cpl.test_result
@@ -101,7 +100,7 @@ module OTLearn
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of FSF learning
-          il = @induction_learning_class.new(@winner_list, @grammar, @results_list.last, self)
+          il = @induction_learning_class.new(@winner_list, @grammar, self)
           if il.changed? then
             @step_list << il
             @results_list << il.test_result
