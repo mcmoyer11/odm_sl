@@ -39,7 +39,6 @@ module OTLearn
       @single_form_learning_class = single_form_learning_class
       @contrast_pair_learning_class = contrast_pair_learning_class
       @induction_learning_class = induction_learning_class
-      @results_list = []
       @step_list = []
       # Convert the outputs to full words, using the grammar,
       # populating the lexicon with the morphemes of the outputs in the process.
@@ -65,12 +64,6 @@ module OTLearn
     # Returns a boolean indicating if learning was successful.
     def learning_successful?() return @learning_successful end
 
-    # Returns the list of grammar_test objects generated at various stages
-    # of learning.
-    def results_list()
-      @results_list
-    end
-
     # The main, top-level method for executing learning. This method is
     # protected, and called by the constructor #initialize, so learning
     # is automatically executed whenever a LanguageLearning object is
@@ -80,7 +73,6 @@ module OTLearn
       # Phonotactic learning
       pl = @phonotactic_learning_class.new(@winner_list, @grammar)
       @step_list << pl
-      @results_list << pl.test_result
       return true if pl.all_correct?
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
@@ -89,13 +81,11 @@ module OTLearn
         # Single form learning
         sfl = @single_form_learning_class.new(@winner_list, @grammar)
         @step_list << sfl
-        @results_list << sfl.test_result
         return true if sfl.all_correct?
         # Contrast pair learning
         cpl = @contrast_pair_learning_class.new(@winner_list, @grammar)
         if cpl.changed?
           @step_list << cpl
-          @results_list << cpl.test_result
           return true if cpl.all_correct?
           learning_change = true
         else
@@ -103,7 +93,6 @@ module OTLearn
           il = @induction_learning_class.new(@winner_list, @grammar, self)
           if il.changed? then
             @step_list << il
-            @results_list << il.test_result
             return true if il.all_correct?
             learning_change = true
           end
@@ -113,6 +102,5 @@ module OTLearn
     end
     protected :execute_learning
 
-  end # class LanguageLearning
-  
+  end # class LanguageLearning  
 end # module OTLearn

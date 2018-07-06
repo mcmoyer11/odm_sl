@@ -26,7 +26,6 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).with(winner_list,grammar).and_return(pl_obj)
-      allow(pl_obj).to receive(:test_result)
       allow(pl_obj).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new(outputs, grammar,
         phonotactic_learning_class: phonotactic_learning_class,
@@ -56,11 +55,9 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).with(winner_list,grammar).and_return(pl_obj)
-      allow(pl_obj).to receive(:test_result)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).with(winner_list,grammar).and_return(sfl_obj)
-      allow(sfl_obj).to receive(:test_result)
       allow(sfl_obj).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new(outputs, grammar,
         phonotactic_learning_class: phonotactic_learning_class,
@@ -91,17 +88,14 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:test_result)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).and_return(sfl_obj, sfl_obj2)
-      allow(sfl_obj).to receive(:test_result)
       allow(sfl_obj).to receive(:all_correct?).and_return(false)
       allow(sfl_obj2).to receive(:test_result)
       allow(sfl_obj2).to receive(:all_correct?).and_return(true)
       allow(contrast_pair_learning_class).to \
         receive(:new).and_return(cpl_obj)
-      allow(cpl_obj).to receive(:test_result)
       allow(cpl_obj).to receive(:all_correct?).and_return(false)
       allow(cpl_obj).to receive(:changed?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new(outputs, grammar,
@@ -133,22 +127,17 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:test_result)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).and_return(sfl_obj, sfl_obj2)
-      allow(sfl_obj).to receive(:test_result)
       allow(sfl_obj).to receive(:all_correct?).and_return(false)
-      allow(sfl_obj2).to receive(:test_result)
       allow(sfl_obj2).to receive(:all_correct?).and_return(true)
       allow(contrast_pair_learning_class).to \
         receive(:new).and_return(cpl_obj)
-      allow(cpl_obj).to receive(:test_result)
       allow(cpl_obj).to receive(:all_correct?).and_return(false)
       allow(cpl_obj).to receive(:changed?).and_return(false)
       allow(induction_learning_class).to \
         receive(:new).and_return(il_obj)
-      allow(il_obj).to receive(:test_result)
       allow(il_obj).to receive(:all_correct?).and_return(false)
       allow(il_obj).to receive(:changed?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new(outputs, grammar,
