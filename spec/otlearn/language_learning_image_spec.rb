@@ -9,13 +9,15 @@ RSpec.describe OTLearn::LanguageLearningImage, :wip do
   let(:grammar_test_image_class){double('grammar_test_image_class')}
   context "with one result" do
     let(:result1){double('result1')}
-    let(:results_list){[result1]}
+    let(:step1){double('step1')}
+    let(:step_list){[step1]}
     let(:result_image1){s=Sheet.new; s[1,1]="result1"; s}
     before(:each) do
       allow(language_learning).to receive(:grammar).and_return(grammar)
       allow(grammar).to receive(:label).and_return(grammar_label)
       allow(language_learning).to receive(:learning_successful?).and_return(true)
-      allow(language_learning).to receive(:results_list).and_return(results_list)
+      allow(language_learning).to receive(:step_list).and_return(step_list)
+      allow(step1).to receive(:test_result).and_return(result1)
       allow(grammar_test_image_class).to \
         receive(:new).with(result1).and_return(result_image1)
       @ll_image =
@@ -39,14 +41,18 @@ RSpec.describe OTLearn::LanguageLearningImage, :wip do
   context "with two results" do
     let(:result1){double('result1')}
     let(:result2){double('result2')}
-    let(:results_list){[result1,result2]}
+    let(:step1){double('step1')}
+    let(:step2){double('step2')}
+    let(:step_list){[step1, step2]}
     let(:result_image1){s=Sheet.new; s[1,1]="result1"; s}
     let(:result_image2){s=Sheet.new; s[1,1]="result2"; s}
     before(:each) do
       allow(language_learning).to receive(:grammar).and_return(grammar)
       allow(grammar).to receive(:label).and_return(grammar_label)
       allow(language_learning).to receive(:learning_successful?).and_return(true)
-      allow(language_learning).to receive(:results_list).and_return(results_list)
+      allow(language_learning).to receive(:step_list).and_return(step_list)
+      allow(step1).to receive(:test_result).and_return(result1)
+      allow(step2).to receive(:test_result).and_return(result2)
       allow(grammar_test_image_class).to \
         receive(:new).and_return(result_image1,result_image2)
       @ll_image =
@@ -71,4 +77,3 @@ RSpec.describe OTLearn::LanguageLearningImage, :wip do
   end
  
 end # RSpec.describe OTLearn::LanguageLearningImage
-

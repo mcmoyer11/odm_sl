@@ -42,7 +42,8 @@ module OTLearn
       # Indicate if learning succeeded.
       @sheet[2,1] = "Learned: #{@language_learning.learning_successful?}"
       # Add each step result to the sheet
-      @language_learning.results_list.each do |result|
+      @language_learning.step_list.each do |step|
+        result = step.test_result
         grammar_test_image = @grammar_test_image_class.new(result)
         @sheet.add_empty_row
         @sheet.append(grammar_test_image)
