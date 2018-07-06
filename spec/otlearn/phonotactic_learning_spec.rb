@@ -5,17 +5,19 @@ require_relative '../../lib/otlearn/phonotactic_learning'
 RSpec.describe OTLearn::PhonotacticLearning do
   context "with a winner list and a grammar, sufficient to learn all the words" do
     let(:winner_list){double('winner_list')}
+    let(:output_list){double('output_list')}
     let(:grammar){double('grammar')}
     let(:otlearn_module){double('otlearn_module')}
     let(:grammar_test_class){double('grammar_test_class')}
     let(:grammar_test){double('grammar_test')}
     before(:each) do
+      allow(output_list).to receive(:map).and_return(winner_list)
       allow(otlearn_module).to receive(:ranking_learning_faith_low).
         and_return(true)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @phonotactic_learning =
-        OTLearn::PhonotacticLearning.new(winner_list, grammar,
+        OTLearn::PhonotacticLearning.new(output_list, grammar,
         learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "calls ranking learning" do

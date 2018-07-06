@@ -26,34 +26,25 @@ module OTLearn
   # Learning is initiated upon construction of the object.
   class LanguageLearning
 
-    # Executes learning on +outputs+ with respect to +grammar+, and
+    # Executes learning on +output_list+ with respect to +grammar+, and
     # stores the results in the returned LanguageLearning object.
-    def initialize(outputs, grammar,
+    def initialize(output_list, grammar,
       phonotactic_learning_class: OTLearn::PhonotacticLearning,
       single_form_learning_class: OTLearn::SingleFormLearning,
       contrast_pair_learning_class: OTLearn::ContrastPairLearning,
       induction_learning_class: OTLearn::InductionLearning)
-      @outputs = outputs
+      @output_list = output_list
       @grammar = grammar
       @phonotactic_learning_class = phonotactic_learning_class
       @single_form_learning_class = single_form_learning_class
       @contrast_pair_learning_class = contrast_pair_learning_class
       @induction_learning_class = induction_learning_class
       @step_list = []
-      # Convert the outputs to full words, using the grammar,
-      # populating the lexicon with the morphemes of the outputs in the process.
-      # parse_output() adds the morphemes of the output forms to the lexicon,
-      # and constructs a UI correspondence for the input of each word, connecting
-      # to the underlying forms of the lexicon.
-      @winner_list = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @learning_successful = execute_learning
     end
 
     # Returns the outputs that were the data for learning.
-    def data_outputs() return @outputs end
-
-    # Returns the winners (full candidates) that were used as interpretations of the outputs.
-    def data_winners() return @winner_list end
+    def data_outputs() return @output_list end
 
     # Returns the final grammar that was the result of learning.
     def grammar() return @grammar end
@@ -71,7 +62,7 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning
       # Phonotactic learning
-      pl = @phonotactic_learning_class.new(@winner_list, @grammar)
+      pl = @phonotactic_learning_class.new(@output_list, @grammar)
       @step_list << pl
       return true if pl.all_correct?
       # Loop until there is no change.
@@ -79,18 +70,18 @@ module OTLearn
       begin
         learning_change = false
         # Single form learning
-        sfl = @single_form_learning_class.new(@winner_list, @grammar)
+        sfl = @single_form_learning_class.new(@output_list, @grammar)
         @step_list << sfl
         return true if sfl.all_correct?
         # Contrast pair learning
-        cpl = @contrast_pair_learning_class.new(@winner_list, @grammar)
+        cpl = @contrast_pair_learning_class.new(@output_list, @grammar)
         if cpl.changed?
           @step_list << cpl
           return true if cpl.all_correct?
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of FSF learning
-          il = @induction_learning_class.new(@winner_list, @grammar, self)
+          il = @induction_learning_class.new(@output_list, @grammar, self)
           if il.changed? then
             @step_list << il
             return true if il.all_correct?

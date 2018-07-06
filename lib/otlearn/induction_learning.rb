@@ -14,7 +14,7 @@ module OTLearn
 
     # Creates the induction learning object, and automatically runs
     # induction learning.
-    # * +word_list+ - the list of grammatical words.
+    # * +output_list+ - the list of grammatical outputs.
     # * +grammar+ - the grammar that learning will use/modify.
     # * +language_learner+ - passed on to +fewest_set_features_class+.new
     # * +learning_module+ - the module containing the method
@@ -25,11 +25,11 @@ module OTLearn
     #   features.  Used for testing (dependency injection).
     #
     # :call-seq:
-    #   InductionLearning.new(word_list, grammar, language_learner) -> obj
-    def initialize(word_list, grammar, language_learner,
+    #   InductionLearning.new(output_list, grammar, language_learner) -> obj
+    def initialize(output_list, grammar, language_learner,
         learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
         fewest_set_features_class: OTLearn::FewestSetFeatures)
-      @outputs = word_list.map{|win| win.output}
+      @output_list = output_list
       @grammar = grammar
       @language_learner = language_learner
       @learning_module = learning_module
@@ -37,11 +37,11 @@ module OTLearn
       @fewest_set_features_class = fewest_set_features_class
       @changed = false
       # Test the words to see which ones currently fail
-      @word_list = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
-      @prior_result = @grammar_test_class.new(@word_list, @grammar)
+      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+      @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_induction_learning
       # TODO: change the label below (or eliminate it)
-      @test_result = @grammar_test_class.new(@word_list, @grammar, "Minimal UF Learning")
+      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Minimal UF Learning")
     end
     
     # Returns true if induction learning made a change to the grammar,
@@ -78,7 +78,7 @@ module OTLearn
       #if consistent_list.empty?
       if true
          # Should call FSF
-         fsf = @fewest_set_features_class.new(@word_list, @grammar,
+         fsf = @fewest_set_features_class.new(@winner_list, @grammar,
            @prior_result, @language_learner)
          @changed = fsf.changed?
       else

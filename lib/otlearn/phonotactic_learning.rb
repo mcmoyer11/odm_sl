@@ -5,14 +5,14 @@ require_relative 'grammar_test'
 
 module OTLearn
   
-  # Executes phonotactic learning on a list of winners, using the
+  # Executes phonotactic learning on a list of data outputs, using the
   # provided grammar. Any effects of learning are realized as side effect
   # changes to the grammar.
   class PhonotacticLearning
     
     # Creates the phonotactic learning object, and automatically
     # runs phonotactic learning.
-    # * +winner_list+ - a list of winners (words)
+    # * +output_list+ - a list of grammatical outputs
     # * +grammar+ - the grammar that learning will use/modify
     # * +learning_module+ - the source of the MRCD variant
     #   run. Used for testing (dependency injection).
@@ -20,15 +20,16 @@ module OTLearn
     #   the grammar. Used for testing (dependency injection).
     #
     # :call-seq:
-    #   PhonotacticLearning.new(winner_list, grammar) -> obj
-    #   PhonotacticLearning.new(winner_list, grammar, learning_module: module, grammar_test_class: class) -> obj
-    def initialize(winner_list, grammar,
+    #   PhonotacticLearning.new(output_list, grammar) -> obj
+    #   PhonotacticLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
+    def initialize(output_list, grammar,
         learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest)
-      @winner_list = winner_list
+      @output_list = output_list
       @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @changed = false # default value
+      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_phonotactic_learning
       @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
     end

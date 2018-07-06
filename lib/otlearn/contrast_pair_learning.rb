@@ -12,7 +12,7 @@ module OTLearn
 
     # Constructs a contrast pair learning object, storing the parameters, and
     # automatically runs contrast pair learning.
-    # * +winner_list+ - the winners considered to form contrast pairs
+    # * +output_list+ - the winners considered to form contrast pairs
     # * +grammar+ - the current grammar (learning may alter it).
     # * +learning_module+ - the module containing several methods used for
     #   learning: #generate_contrast_pair, #set_uf_values, and
@@ -21,17 +21,17 @@ module OTLearn
     #   the grammar. Used for testing (dependency injection).
     #
     # :call-seq:
-    #   ContrastPairLearning.new(winner_list, grammar) -> obj
-    #   ContrastPairLearning.new(winner_list, grammar, learning_module: module, grammar_test_class: class) -> obj
-    def initialize(winner_list, grammar,
+    #   ContrastPairLearning.new(output_list, grammar) -> obj
+    #   ContrastPairLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
+    def initialize(output_list, grammar,
         learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest)
-      @outputs = winner_list.map{|win| win.output}
+      @output_list = output_list
       @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @contrast_pair = nil
       # Test the words to see which ones currently fail
-      @winner_list = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_contrast_pair_learning
       @test_result = @grammar_test_class.new(@winner_list, @grammar, "Contrast Pair Learning")

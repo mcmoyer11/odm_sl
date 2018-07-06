@@ -13,7 +13,6 @@ RSpec.describe OTLearn::ContrastPairLearning do
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){double('grammar_test')}
   before(:each) do
-    allow(winner_list).to receive(:map).and_return(output_list)
     allow(output_list).to receive(:map).and_return(winner_list)
   end
 
@@ -30,7 +29,7 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
-        OTLearn::ContrastPairLearning.new(winner_list, grammar,
+        OTLearn::ContrastPairLearning.new(output_list, grammar,
         learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "returns the first pair" do
@@ -66,7 +65,7 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
-        OTLearn::ContrastPairLearning.new(winner_list, grammar,
+        OTLearn::ContrastPairLearning.new(output_list, grammar,
         learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "returns no contrast pair" do
@@ -106,7 +105,7 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
-        OTLearn::ContrastPairLearning.new(winner_list, grammar,
+        OTLearn::ContrastPairLearning.new(output_list, grammar,
         learning_module: otlearn_module, grammar_test_class: grammar_test_class)
     end
     it "returns the second pair" do

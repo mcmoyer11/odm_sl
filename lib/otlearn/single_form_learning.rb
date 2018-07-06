@@ -6,13 +6,13 @@ require_relative "./data_manip"
 
 module OTLearn
   
-  # This processes all of the words in the winner list, one at a time
-  # in order, with respect to a grammar. Any results of learning are realized
-  # as side effect changes to the grammar.
+  # This processes all of the outputs in the grammatical output list, one at a
+  # time in order, with respect to a grammar. Any results of learning are
+  # realized as side effect changes to the grammar.
   class SingleFormLearning
     
     # Creates the object, and automatically runs single form learning.
-    # * +winner_list+ - the list of all grammatical words.
+    # * +output_list+ - the list of all grammatical outputs.
     # * +grammar+ - the grammar that learning will modify.
     # * +learning_module+ - the module containing several methods used
     #   for learning: #ranking_learning_faith_low, #mismatch_consistency_check,
@@ -22,15 +22,16 @@ module OTLearn
     #   words for learning errors. Used for testing (dependency injection).
     #
     # :call-seq:
-    #   SingleFormLearning.new(winner_list, grammar) -> obj
-    #   SingleFormLearning.new(winner_list, grammar, learning_module: module, grammar_test_class: class) -> obj
-    def initialize(winner_list, grammar, learning_module: OTLearn,
-      grammar_test_class: OTLearn::GrammarTest)
-      @winner_list = winner_list
+    #   SingleFormLearning.new(output_list, grammar) -> obj
+    #   SingleFormLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
+    def initialize(output_list, grammar, learning_module: OTLearn,
+        grammar_test_class: OTLearn::GrammarTest)
+      @output_list = output_list
       @grammar = grammar
       @otlearn_module = learning_module
       @error_test_class = grammar_test_class
       @changed = false
+      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_single_form_learning
       @test_result = @error_test_class.new(@winner_list, @grammar, "Single Form Learning")
     end

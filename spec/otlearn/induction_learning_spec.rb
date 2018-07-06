@@ -3,7 +3,7 @@
 require_relative '../../lib/otlearn/induction_learning'
 
 RSpec.describe OTLearn::InductionLearning do
-  let(:word_list){double('word_list')}
+  let(:winner_list){double('winner_list')}
   let(:output_list){double('output_list')}
   let(:grammar){double('grammar')}
   let(:prior_result){double('prior_result')}
@@ -14,8 +14,7 @@ RSpec.describe OTLearn::InductionLearning do
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){double('grammar_test')}
   before(:each) do
-    allow(word_list).to receive(:map).and_return(output_list)
-    allow(output_list).to receive(:map).and_return(word_list)
+    allow(output_list).to receive(:map).and_return(winner_list)
   end
   
   context "with no failed winners" do
@@ -25,7 +24,7 @@ RSpec.describe OTLearn::InductionLearning do
     end
     it "raises a RuntimeError" do
       expect do
-        OTLearn::InductionLearning.new(word_list, grammar,
+        OTLearn::InductionLearning.new(output_list, grammar,
           language_learner,
           grammar_test_class: grammar_test_class)
       end.to raise_error(RuntimeError)
@@ -53,7 +52,8 @@ RSpec.describe OTLearn::InductionLearning do
     context "that allows a feature to be set" do
       before(:each) do
         allow(fsf).to receive(:changed?).and_return(true)
-        @induction_learning = OTLearn::InductionLearning.new(word_list, grammar,
+        @induction_learning =
+          OTLearn::InductionLearning.new(output_list, grammar,
           language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
@@ -79,7 +79,8 @@ RSpec.describe OTLearn::InductionLearning do
     context " that does not allow a feature to be set" do
       before(:each) do
         allow(fsf).to receive(:changed?).and_return(false)
-        @induction_learning = OTLearn::InductionLearning.new(word_list, grammar,
+        @induction_learning =
+          OTLearn::InductionLearning.new(output_list, grammar,
           language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
