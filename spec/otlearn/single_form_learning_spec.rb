@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/single_form_learning'
+require 'otlearn/single_form_learning'
+require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::SingleFormLearning do
   let(:win1){double('winner 1')}
@@ -49,6 +50,10 @@ RSpec.describe OTLearn::SingleFormLearning do
     end
     it "indicates that all words are handled correctly" do
       expect(@single_form_learning.all_correct?).to be true
+    end
+    it "has step type SINGLE_FORM" do
+      expect(@single_form_learning.step_type).to \
+        eq OTLearn::LanguageLearning::SINGLE_FORM
     end
   end
   

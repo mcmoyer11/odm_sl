@@ -20,6 +20,19 @@ RSpec.describe OTLearn::LanguageLearning do
     allow(induction_learning_class).to receive(:new)
   end
   
+  it "defines a phonotactic step type constant" do
+    expect(defined?(OTLearn::LanguageLearning::PHONOTACTIC)).to be_truthy
+  end
+  it "defines a single form step type constant" do
+    expect(defined?(OTLearn::LanguageLearning::SINGLE_FORM)).to be_truthy
+  end
+  it "defines a contrast pair step type constant" do
+    expect(defined?(OTLearn::LanguageLearning::CONTRAST_PAIR)).to be_truthy
+  end
+  it "defines an induction step type constant" do
+    expect(defined?(OTLearn::LanguageLearning::INDUCTION)).to be_truthy
+  end
+  
   context "given phontactically learnable data" do
     before(:each) do
       allow(phonotactic_learning_class).to \

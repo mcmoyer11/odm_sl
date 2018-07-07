@@ -2,6 +2,7 @@
 
 require_relative 'ranking_learning'
 require_relative 'grammar_test'
+require_relative 'language_learning'
 
 module OTLearn
   
@@ -9,6 +10,8 @@ module OTLearn
   # provided grammar. Any effects of learning are realized as side effect
   # changes to the grammar.
   class PhonotacticLearning
+    # The type of learning step
+    attr_accessor :step_type
     
     # Creates the phonotactic learning object, and automatically
     # runs phonotactic learning.
@@ -29,6 +32,7 @@ module OTLearn
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @changed = false # default value
+      @step_type = LanguageLearning::PHONOTACTIC
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_phonotactic_learning
       @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")

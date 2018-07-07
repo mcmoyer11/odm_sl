@@ -3,12 +3,15 @@
 require_relative 'contrast_pair'
 require_relative 'uf_learning'
 require_relative 'grammar_test'
+require_relative 'language_learning'
 
 module OTLearn
 
   # Instantiates contrast pair learning.
   # Any results of learning are realized as side effect changes to the grammar.
   class ContrastPairLearning
+    # The type of learning step
+    attr_accessor :step_type
 
     # Constructs a contrast pair learning object, storing the parameters, and
     # automatically runs contrast pair learning.
@@ -30,6 +33,7 @@ module OTLearn
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @contrast_pair = nil
+      @step_type = LanguageLearning::CONTRAST_PAIR
       # Test the words to see which ones currently fail
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)

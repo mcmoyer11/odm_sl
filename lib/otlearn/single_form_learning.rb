@@ -3,6 +3,7 @@
 
 require_relative "./grammar_test"
 require_relative "./data_manip"
+require_relative 'language_learning'
 
 module OTLearn
   
@@ -10,6 +11,8 @@ module OTLearn
   # time in order, with respect to a grammar. Any results of learning are
   # realized as side effect changes to the grammar.
   class SingleFormLearning
+    # The type of learning step
+    attr_accessor :step_type
     
     # Creates the object, and automatically runs single form learning.
     # * +output_list+ - the list of all grammatical outputs.
@@ -31,6 +34,7 @@ module OTLearn
       @otlearn_module = learning_module
       @error_test_class = grammar_test_class
       @changed = false
+      @step_type = LanguageLearning::SINGLE_FORM
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_single_form_learning
       @test_result = @error_test_class.new(@winner_list, @grammar, "Single Form Learning")

@@ -29,6 +29,11 @@ module OTLearn
   #
   # Tesar 2014. <em>Output-Driven Phonology</em>.
   class LanguageLearning
+    # Pre-defined type constants
+    PHONOTACTIC = :phonotactic
+    SINGLE_FORM = :single_form
+    CONTRAST_PAIR = :contrast_pair
+    INDUCTION = :induction
 
     # Constructs a language learning simulation object, and automatically runs
     # the simulation upon objection construction.

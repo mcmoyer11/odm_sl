@@ -1,6 +1,7 @@
 # Author: Morgan Moyer / Bruce Tesar
 
-require_relative '../../lib/otlearn/induction_learning'
+require 'otlearn/induction_learning'
+require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::InductionLearning do
   let(:winner_list){double('winner_list')}
@@ -73,6 +74,10 @@ RSpec.describe OTLearn::InductionLearning do
       end
       it "indicates that all words are handled correctly" do
         expect(@induction_learning).to be_all_correct
+      end
+      it "has step type INDUCTION" do
+        expect(@induction_learning.step_type).to \
+          eq OTLearn::LanguageLearning::INDUCTION
       end
     end
 

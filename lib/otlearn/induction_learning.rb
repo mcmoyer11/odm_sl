@@ -4,6 +4,7 @@ require_relative 'ranking_learning'
 require_relative 'data_manip'
 require_relative 'grammar_test'
 require_relative 'fewest_set_features'
+require_relative 'language_learning'
 
 module OTLearn
   
@@ -11,6 +12,8 @@ module OTLearn
   # learning fails to fully learn the language. The two inductive methods
   # are Max Mismatch Ranking (MMR) and Fewest Set Features (FSF).
   class InductionLearning
+    # The type of learning step
+    attr_accessor :step_type
 
     # Creates the induction learning object, and automatically runs
     # induction learning.
@@ -36,6 +39,7 @@ module OTLearn
       @grammar_test_class = grammar_test_class
       @fewest_set_features_class = fewest_set_features_class
       @changed = false
+      @step_type = LanguageLearning::INDUCTION
       # Test the words to see which ones currently fail
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)

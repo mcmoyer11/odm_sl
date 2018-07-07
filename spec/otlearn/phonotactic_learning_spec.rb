@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/phonotactic_learning'
+require 'otlearn/phonotactic_learning'
+require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::PhonotacticLearning do
   context "with a winner list and a grammar, sufficient to learn all the words" do
@@ -34,6 +35,10 @@ RSpec.describe OTLearn::PhonotacticLearning do
     end
     it "indicates that all words are handled correctly" do
       expect(@phonotactic_learning).to be_all_correct
+    end
+    it "has step type PHONOTACTIC" do
+      expect(@phonotactic_learning.step_type).to \
+        eq OTLearn::LanguageLearning::PHONOTACTIC
     end
   end
 end # RSpec.describe OTLearn::PhonotacticLearning

@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/contrast_pair_learning'
+require 'otlearn/contrast_pair_learning'
+require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::ContrastPairLearning do
   let(:winner_list){double('winner_list')}
@@ -49,6 +50,10 @@ RSpec.describe OTLearn::ContrastPairLearning do
     end
     it "indicates that not all words are handled correctly" do
       expect(@contrast_pair_learning).not_to be_all_correct
+    end
+    it "has step type CONTRAST_PAIR" do
+      expect(@contrast_pair_learning.step_type).to \
+        eq OTLearn::LanguageLearning::CONTRAST_PAIR      
     end
   end
 
