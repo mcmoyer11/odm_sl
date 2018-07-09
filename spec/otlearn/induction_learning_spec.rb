@@ -3,7 +3,7 @@
 require 'otlearn/induction_learning'
 require 'otlearn/language_learning'
 
-RSpec.describe OTLearn::InductionLearning do
+RSpec.describe OTLearn::InductionLearning, :wip do
   let(:winner_list){double('winner_list')}
   let(:output_list){double('output_list')}
   let(:grammar){double('grammar')}
@@ -29,6 +29,12 @@ RSpec.describe OTLearn::InductionLearning do
           language_learner,
           grammar_test_class: grammar_test_class)
       end.to raise_error(RuntimeError)
+    end
+    it "defines a substep constant for fewest set features" do
+      expect(defined?(OTLearn::InductionLearning::FEWEST_SET_FEATURES)).to be_truthy
+    end
+    it "defines a substep constant for max mismatch ranking" do
+      expect(defined?(OTLearn::InductionLearning::FEWEST_SET_FEATURES)).to be_truthy
     end
   end
   
