@@ -22,6 +22,9 @@ module OTLearn
     # The type of learning step
     attr_accessor :step_type
 
+    # The subtype of induction learning step
+    attr_reader :step_subtype
+
     # Creates the induction learning object, and automatically runs
     # induction learning.
     # * +output_list+ - the list of grammatical outputs.
@@ -47,6 +50,7 @@ module OTLearn
       @fewest_set_features_class = fewest_set_features_class
       @changed = false
       @step_type = LanguageLearning::INDUCTION
+      @step_subtype = nil
       # Test the words to see which ones currently fail
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
@@ -88,11 +92,13 @@ module OTLearn
       # If there are consistent errors, run MMR on one
       #if consistent_list.empty?
       if true
-         # Should call FSF
-         fsf = @fewest_set_features_class.new(@winner_list, @grammar,
-           @prior_result, @language_learner)
-         @changed = fsf.changed?
+        # Should call FSF
+        @step_subtype = FEWEST_SET_FEATURES
+        fsf = @fewest_set_features_class.new(@winner_list, @grammar,
+          @prior_result, @language_learner)
+        @changed = fsf.changed?
       else
+        @step_subtype = MAX_MISMATCH_RANKING
         # Should call MMR on the first member of the list
         consistent_list.each do |c|
           new_ranking_info = run_max_mismatch_ranking(c, @grammar)

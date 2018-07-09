@@ -85,6 +85,10 @@ RSpec.describe OTLearn::InductionLearning, :wip do
         expect(@induction_learning.step_type).to \
           eq OTLearn::LanguageLearning::INDUCTION
       end
+      it "has step subtype FEWEST_SET_FEATURES" do
+        expect(@induction_learning.step_subtype).to \
+          eq OTLearn::InductionLearning::FEWEST_SET_FEATURES
+      end
     end
 
     context " that does not allow a feature to be set" do
