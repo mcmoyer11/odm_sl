@@ -4,6 +4,7 @@
 # manipulating data.
 
 require 'set'
+require 'loserselector_by_ranking'
 
 module OTLearn
   
@@ -48,7 +49,6 @@ module OTLearn
       OTLearn::mismatches_input_to_output(word) { |mismatched_word| mismatch_list << mismatched_word }
     end
     # Run MRCD to see if the mismatched candidates are consistent.
-    # TODO: make sure the file containing LoserSelector_by_ranking is properly required.
     selector = LoserSelector_by_ranking.new(grammar.system)
     mrcd = Mrcd.new(mismatch_list, grammar, selector)
     return mrcd
