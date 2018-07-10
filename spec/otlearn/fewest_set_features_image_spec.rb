@@ -33,4 +33,22 @@ RSpec.describe OTLearn::FewestSetFeaturesImage, :wip do
       expect(@fsf_image[3,5]).to eq failed_winner_output
     end
   end
+
+  context "given a step without a newly set feature" do
+    let(:failed_winner){double('failed_winner')}
+    before(:each) do
+      allow(fsf_step).to receive(:changed?).and_return(false)
+      @fsf_image = OTLearn::FewestSetFeaturesImage.new(fsf_step)
+    end
+    it "indicates the type of substep" do
+      expect(@fsf_image[1,1]).to eq "Fewest Set Features"
+    end
+    it "indicates the FSF did not change the grammar" do
+      expect(@fsf_image[2,1]).to eq "Grammar Changed: FALSE"
+    end
+    it "only contains two rows" do
+      expect(@fsf_image.row_count).to eq 2
+    end
+  end
+
 end # RSpec.describe OTLearn::FewestSetFeaturesImage
