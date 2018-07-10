@@ -51,6 +51,7 @@ module OTLearn
       @changed = false
       @step_type = LanguageLearning::INDUCTION
       @step_subtype = nil
+      @fsf_step = nil
       # Test the words to see which ones currently fail
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
@@ -63,6 +64,12 @@ module OTLearn
     # returns false otherwise.
     def changed?
       return @changed
+    end
+
+    # Returns the Fewest Set Features learning step. If FSF was not run, then
+    # it returns nil.
+    def fsf_step
+      @fsf_step
     end
 
     # Returns the results of a grammar test after the completion of
@@ -94,9 +101,9 @@ module OTLearn
       if true
         # Should call FSF
         @step_subtype = FEWEST_SET_FEATURES
-        fsf = @fewest_set_features_class.new(@winner_list, @grammar,
+        @fsf_step = @fewest_set_features_class.new(@winner_list, @grammar,
           @prior_result, @language_learner)
-        @changed = fsf.changed?
+        @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING
         # Should call MMR on the first member of the list

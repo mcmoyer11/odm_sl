@@ -2,6 +2,7 @@
 
 require 'sheet'
 require 'otlearn/grammar_test_image'
+require 'otlearn/fewest_set_features_image'
 
 module OTLearn
   
@@ -18,8 +19,10 @@ module OTLearn
     # :call-seq:
     #   InductionLearningImage.new(language_learning) -> img
     def initialize(step,
+        fsf_image_class: OTLearn::FewestSetFeaturesImage,
         grammar_test_image_class: OTLearn::GrammarTestImage)
       @step = step
+      @fsf_image_class = fsf_image_class
       @grammar_test_image_class = grammar_test_image_class
       @sheet = Sheet.new
       construct_induction_learning_image
@@ -35,13 +38,12 @@ module OTLearn
     def construct_induction_learning_image
       @sheet[1,1] = "Induction Learning"
       #
-      substep_image = Sheet.new
       case @step.step_subtype
       when InductionLearning::FEWEST_SET_FEATURES
-#        substep_image = OTLearn::FewestSetFeaturesImage.new(@step)        
-        substep_image[1,1] = "Fewest Set Features"
+        substep_image = @fsf_image_class.new(@step.fsf_step)
       when InductionLearning::MAX_MISMATCH_RANKING
 #        substep_image = OTLearn::MaxMismatchRankingImage.new(@step)        
+        substep_image = Sheet.new
         substep_image[1,1] = "Max Mismatch Learning"        
       else
         raise RuntimeError "InductionLearningImage: invalid step subtype #{step.subtype}"

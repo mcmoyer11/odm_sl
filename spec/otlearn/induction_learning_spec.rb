@@ -72,6 +72,9 @@ RSpec.describe OTLearn::InductionLearning, :wip do
       it "calls fewest set features" do
         expect(fsf_class).to have_received(:new)
       end
+      it "gives the fsf step object" do
+        expect(@induction_learning.fsf_step).to eq fsf
+      end
       it "runs a grammar test after learning" do
         expect(grammar_test_class).to have_received(:new).exactly(2).times
       end
@@ -106,6 +109,9 @@ RSpec.describe OTLearn::InductionLearning, :wip do
       end
       it "calls fewest set features" do
         expect(fsf_class).to have_received(:new)
+      end
+      it "gives the fsf step object" do
+        expect(@induction_learning.fsf_step).to eq fsf
       end
       it "runs a grammar test after learning" do
         expect(grammar_test_class).to have_received(:new).exactly(2).times
