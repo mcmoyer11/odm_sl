@@ -11,6 +11,8 @@ RSpec.describe OTLearn::InductionLearning, :wip do
   let(:language_learner){double('language_learner')}
   let(:fsf){double('fsf')}
   let(:fsf_class){double('FSF_class')}
+  let(:mmr_class){double('MMR_class')}
+  let(:mmr){double('mmr')}
   let(:otlearn_module){double('otlearn_module')}
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){double('grammar_test')}
@@ -125,4 +127,61 @@ RSpec.describe OTLearn::InductionLearning, :wip do
     end
   end
 
+  context "with one consistent failed winner" do
+    let(:failed_winner_1){double('failed_winner_1')}
+    # doubles relevant to checking failed winners for consistency
+    let(:mrcd_gram){double('mrcd_grammar')}
+    let(:mrcd){double('mrcd')}
+    before(:each) do
+      allow(prior_result).to receive(:failed_winners).and_return([failed_winner_1])
+      allow(mrcd_gram).to receive(:consistent?).and_return(true)
+      allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
+      allow(mmr_class).to receive(:new).and_return(mmr)
+      allow(mmr).to receive(:run)
+      allow(mmr).to receive(:changed?)
+      allow(otlearn_module).to receive(:mismatch_consistency_check).
+          with(grammar,[failed_winner_1]).and_return(mrcd)
+      allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
+      allow(grammar_test).to receive(:all_correct?).and_return(true)
+    end
+    
+    context "that allows new ranking information" do
+      before(:each) do
+        allow(mmr).to receive(:changed?).and_return(true)
+        @induction_learning =
+          OTLearn::InductionLearning.new(output_list, grammar,
+          language_learner,
+          learning_module: otlearn_module,
+          grammar_test_class: grammar_test_class,
+          fewest_set_features_class: fsf_class,
+          max_mismatch_ranking_class: mmr_class)
+      end
+      it "reports that the grammar has changed" do
+        expect(@induction_learning).to be_changed
+      end
+      it "calls max mismatch ranking" do
+        expect(mmr_class).to have_received(:new)
+      end
+      it "gives the mmr step object" do
+        expect(@induction_learning.mmr_step).to eq mmr
+      end
+      it "runs a grammar test after learning" do
+        expect(grammar_test_class).to have_received(:new).exactly(2).times
+      end
+      it "gives the grammar test result" do
+        expect(@induction_learning.test_result).to eq grammar_test
+      end
+      it "indicates that all words are handled correctly" do
+        expect(@induction_learning).to be_all_correct
+      end
+      it "has step type INDUCTION" do
+        expect(@induction_learning.step_type).to \
+          eq OTLearn::LanguageLearning::INDUCTION
+      end
+      it "has step subtype MAX_MISMATCH_RANKING" do
+        expect(@induction_learning.step_subtype).to \
+          eq OTLearn::InductionLearning::MAX_MISMATCH_RANKING
+      end
+    end
+  end
 end # RSpec.describe OTLearn::InductionLearning

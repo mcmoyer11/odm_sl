@@ -23,7 +23,7 @@ RSpec.describe OTLearn::MaxMismatchRanking do
     end
     
     it "indicates no change has occurred" do
-      expect(@max_mismatch_rankings.change?).to be false
+      expect(@max_mismatch_rankings.changed?).to be false
     end     
   end #context "if #run is not called
   
@@ -56,7 +56,7 @@ RSpec.describe OTLearn::MaxMismatchRanking do
     end
     
     it "indicates a change has occurred" do
-      expect(@max_mismatch_rankings.change?).to be true
+      expect(@max_mismatch_rankings.changed?).to be true
     end
     
     it "calls #ranking_learning_mark_low_mrcd" do

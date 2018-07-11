@@ -32,7 +32,7 @@ module OTLearn
       @failed_winner = failed_winner
       @language_learner = language_learner
       @newly_added_wl_pairs = []
-      @change = false
+      @changed = false
       # dependency injection defaults
       @ranking_learning_module = OTLearn
     end
@@ -52,8 +52,8 @@ module OTLearn
     # Returns true if MaxMismatchRanking has found a consistent WL pair
     # Will necessarily return false if MaxMismatchRanking#run has not yet
     # been called on this object.
-    def change?
-      return @change
+    def changed?
+      return @changed
     end
     
     # Assigns a new module to be used as the source of the underlying
@@ -87,10 +87,10 @@ module OTLearn
         mrcd_result = @ranking_learning_module.ranking_learning_mark_low_no_mod([cand], @grammar)
       end
       @newly_added_wl_pairs = mrcd_result.added_pairs
-      @change = mrcd_result.any_change?
+      @changed = mrcd_result.any_change?
       raise MMREx.new(@failed_winner, @language_learner), ("A failed consistent" +
-        " winner did not provide new ranking information.") unless @change
-      return @change
+        " winner did not provide new ranking information.") unless @changed
+      return @changed
     end
     
   end # class MaxMismatchRanking

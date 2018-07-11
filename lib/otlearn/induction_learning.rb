@@ -75,6 +75,12 @@ module OTLearn
       @fsf_step
     end
 
+    # Returns the Max Mismatch Ranking learning step. If MMR was not run, then
+    # it returns nil.
+    def mmr_step
+      @mmr_step
+    end
+
     # Returns the results of a grammar test after the completion of
     # phonotactic learning.
     def test_result
@@ -111,7 +117,7 @@ module OTLearn
         @mmr_step = @max_mismatch_ranking_class.new(consistent_list.first,
           @grammar, @language_learner)
         @mmr_step.run
-        @changed = @mmr_step.change?
+        @changed = @mmr_step.changed?
       end
       return @changed
     end

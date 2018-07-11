@@ -4,15 +4,15 @@ require 'sheet'
 
 module OTLearn
   
-  # A 2-dimensional sheet representation of a Fewest Set Features learning
+  # A 2-dimensional sheet representation of a Max Mismatch Ranking learning
   # step.
-  class FewestSetFeaturesImage
-    
-    # Constructs a new image for the provided FSF learning step.
-    # * +step+ - the Fewest Set Features learning step object.
+  class MaxMismatchRankingImage
+
+    # Constructs a new image for the provided MMR learning step.
+    # * +step+ - the Max Mismatch Ranking learning step object.
     #
     # :call-seq:
-    #   FewestSetFeaturesImage.new(fewest_set_features_step) -> img
+    #   MaxMismatchRankingImage.new(max_mismatch_ranking_step) -> img
     def initialize(step)
       @step = step
       @sheet = Sheet.new
@@ -25,9 +25,9 @@ module OTLearn
     end
     protected :method_missing
     
-    # Constructs the FSF sheet image
+    # Constructs the MMR sheet image
     def construct_image
-      @sheet[1,1] = "Fewest Set Features"
+      @sheet[1,1] = "Max Mismatch Ranking"
       # indicate if the grammar was changed
       @sheet[2,1] = "Grammar Changed: #{@step.changed?.to_s.upcase}"
       add_failed_winner_info if @step.changed?
@@ -45,5 +45,5 @@ module OTLearn
       @sheet.append(subsheet)
     end
     protected :add_failed_winner_info
-  end # class FewestSetFeaturesImage
+  end # class MaxMismatchRankingImage
 end # module OTLearn
