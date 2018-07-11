@@ -5,6 +5,7 @@ require_relative 'data_manip'
 require_relative 'grammar_test'
 require_relative 'fewest_set_features'
 require_relative 'language_learning'
+require_relative 'max_mismatch_ranking'
 
 module OTLearn
   
@@ -41,13 +42,15 @@ module OTLearn
     #   InductionLearning.new(output_list, grammar, language_learner) -> obj
     def initialize(output_list, grammar, language_learner,
         learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
-        fewest_set_features_class: OTLearn::FewestSetFeatures)
+        fewest_set_features_class: OTLearn::FewestSetFeatures,
+        max_mismatch_ranking_class: OTLearn::MaxMismatchRanking)
       @output_list = output_list
       @grammar = grammar
       @language_learner = language_learner
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @fewest_set_features_class = fewest_set_features_class
+      @max_mismatch_ranking_class = max_mismatch_ranking_class
       @changed = false
       @step_type = LanguageLearning::INDUCTION
       @step_subtype = nil
@@ -98,34 +101,21 @@ module OTLearn
       end
       # If there are consistent errors, run MMR on one
       #if consistent_list.empty?
-      if true
-        # Should call FSF
+      if consistent_list.empty?
         @step_subtype = FEWEST_SET_FEATURES
         @fsf_step = @fewest_set_features_class.new(@winner_list, @grammar,
           @prior_result, @language_learner)
         @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING
-        # Should call MMR on the first member of the list
-        consistent_list.each do |c|
-          new_ranking_info = run_max_mismatch_ranking(c, @grammar)
-          @changed = true if new_ranking_info
-          break if new_ranking_info
-        end
+        @mmr_step = @max_mismatch_ranking_class.new(consistent_list.first,
+          @grammar, @language_learner)
+        @mmr_step.run
+        @changed = @mmr_step.change?
       end
       return @changed
     end
     protected :run_induction_learning
-
-    # Returns True if any new ranking information was added, false otherwise
-    def run_max_mismatch_ranking(word, grammar)
-      max_disparity_list = []
-      @learning_module.mismatches_input_to_output(word) {|cand| max_disparity_list << cand }
-      winner = max_disparity_list.first 
-      #STDERR.puts winner
-      @learning_module.ranking_learning_faith_low([winner], grammar)
-    end
-    protected :run_max_mismatch_ranking
 
    end #class Induction_learning
 end #module OTLearn

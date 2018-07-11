@@ -7,7 +7,8 @@
 
 require_relative '../../lib/pas/data'
 require_relative '../../lib/otlearn/data_manip'
-require_relative '../../lib/otlearn/language_learning_mmr'
+require_relative '../../lib/otlearn/language_learning'
+require_relative '../../lib/otlearn/language_learning_image'
 require_relative '../../lib/csv_output'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/rcd_bias_low'
@@ -78,27 +79,34 @@ read_languages_from_file(data_file) do |label, outputs|
   grammar.label = label
   
   # Run learning on the language inside an Exception block to catch cases where
-  # learning fails. A created class of Exceptions, LearnEx, returns a 
-  # +language_learning_mmr+ object, which shows the stages of learning up to the point
-  # where learning fails, and a +consistent_feature_val_list+, which shows which
-  # feature-value-pairs are causing an error in the +language_learning+ file.
+  # learning fails.
   lang_sim = nil
   begin
-    lang_sim = OTLearn::LanguageLearningMMR.new(outputs, grammar)
+    lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
   rescue LearnEx => detail
+    # TODO: is this if statement supefluous? won't it always be true when
+    # an exception is raised?
     if lang_sim == nil
       STDERR.puts "More than one single matching feature passes error testing on #{label}."
-      # Assign the Exception object to +lang_sim+ so a language_learning object
-      # can be fed to +learning_sucessful?+
+      # Assign the language learning object in the Exception to lang_sim
+      # so that #learning_successful?() can be called on it at the end.
       lang_sim = detail.lang_learn
       # Output to the STDERR window the feature-value-pairs which are causing the 
       # learning to crash in the first place
       STDERR.puts detail.consistent_feature_value_list
     end
+  rescue MMREx => detail
+    STDERR.puts "#{label} has the error in MMR: #{detail.message}"
+    # Assign the language learning object in the Exception to lang_sim
+    # so that #learning_successful?() can be called on it at the end.
+    lang_sim = detail.lang_learn
+    STDERR.puts detail.failed_winner
   end
-  # Write the results to a CSV file, with the language label as the filename.
+  # Create an image of the language learning simulation, suitable for CSV.
+  sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
+  # Write the image to a CSV file, with the language label as the filename.
   out_file = File.join(out_filepath,"#{label}.csv")
-  write_learning_results_to_csv(lang_sim, out_file)
+  write_learning_results_to_csv(sim_image, out_file)
   # Report to STDOUT if language was not successfully learned
   unless lang_sim.learning_successful?
     puts "#{label} not learned."

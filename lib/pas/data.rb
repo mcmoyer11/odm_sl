@@ -125,7 +125,7 @@ module PAS
   # 1-syllable roots and all of the possible 1-syllable suffixes, and
   # words formed from all possible root+suffix combinations.
   def PAS.generate_competitions_1r1s
-    # Generate the morphemes
+    # Generate the morphemes, a list of lexical entries
     roots = PAS.generate_morphemes(1, Morpheme::ROOT, 0)
     suffixes = PAS.generate_morphemes(1, Morpheme::SUFFIX, 0)
     # Create a new grammar, and add all of the morphemes to the lexicon.

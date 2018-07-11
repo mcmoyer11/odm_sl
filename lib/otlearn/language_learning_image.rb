@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
 require_relative '../sheet'
+require_relative 'induction_learning_image'
 require_relative 'grammar_test_image'
 require_relative 'language_learning'
 
@@ -71,7 +72,6 @@ module OTLearn
 #        step_image = @contrast_pair_image_class.new(step)
         step_image = @grammar_test_image_class.new(step.test_result)
       when LanguageLearning::INDUCTION
-#        step_image = @induction_image_class.new(step)
         step_image = @induction_image_class.new(step)
       else
         step_image = @grammar_test_image_class.new(step.test_result)
