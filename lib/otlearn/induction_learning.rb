@@ -64,14 +64,17 @@ module OTLearn
       # If there are consistent errors, run MMR on one
       if consistent_list.empty?
          # Should call FSF
+         STDERR.puts "running FSF now"
          fsf = @fewest_set_features_class.new(@word_list, @grammar, @prior_result, @language_learner)
          fsf.run
          @change = fsf.change?
+        STDERR.puts "there was a change for FSF" if @change
       else
         # Should call MMR on first member of the list
         mmr = @max_mismatch_ranking_class.new(consistent_list.first, @grammar, @language_learner)
         mmr.run
         @change = mmr.change?
+        STDERR.puts "there was a change for MMR" if @change 
       end
       return @change
     end

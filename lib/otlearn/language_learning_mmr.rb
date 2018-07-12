@@ -64,6 +64,10 @@ module OTLearn
           # Go for induction learning
           guy = OTLearn::InductionLearning.new(@winner_list, @grammar, @results_list.last, self)
           guy.run_induction_learning
+          #
+          #
+          #STDERR.puts guy.flkjasdf;l
+          
           learning_change = true if guy.change?
           # TODO: the label to GrammarTest should have some indication of
           # the *kind* of induction learning that was performed (FSF vs. MMR).
