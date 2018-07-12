@@ -50,7 +50,6 @@ RSpec.describe OTLearn::InductionLearning, :wip do
       allow(mrcd_gram).to receive(:consistent?).and_return(false)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
       allow(fsf_class).to receive(:new).and_return(fsf)
-      allow(fsf).to receive(:run)
       allow(fsf).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
           with(grammar,[failed_winner_1]).and_return(mrcd)
@@ -137,7 +136,6 @@ RSpec.describe OTLearn::InductionLearning, :wip do
       allow(mrcd_gram).to receive(:consistent?).and_return(true)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
       allow(mmr_class).to receive(:new).with([failed_winner_1],grammar,language_learner).and_return(mmr)
-      allow(mmr).to receive(:run)
       allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
           with(grammar,[failed_winner_1]).and_return(mrcd)

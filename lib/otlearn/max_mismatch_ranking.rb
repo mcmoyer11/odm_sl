@@ -22,20 +22,26 @@ module OTLearn
  # not yet complete, suggesting that a paradigmatic subset relation is present.
   class MaxMismatchRanking
     
-    # Initializes a new object, but does _not_ automatically execute
-    # the max mismatch ranking algorithm; #run() must be called to do that.
+    # Initializes a new object, *and* automatically execute
+    # the max mismatch ranking algorithm.
     # * +failed_winner_list+ is the list of *consistent* failed winners that
     #   are candidates for use in MMR.
     # * +grammar+ is the current grammar of the learner.
-    def initialize(failed_winner_list, grammar, language_learner)
+    # * +language_learner+ included in an exception that is raised.
+    # * +ranking_learning_module+ - the module containing the methods
+    #   #mismatches_input_to_output and #ranking_learning_mark_low.
+    #   Used for testing (dependency injection).
+    def initialize(failed_winner_list, grammar, language_learner,
+        ranking_learning_module: OTLearn)
       @grammar = grammar
       @failed_winner_list = failed_winner_list
       @language_learner = language_learner
+      @ranking_learning_module = ranking_learning_module
       @newly_added_wl_pairs = []
       @failed_winner = nil
       @changed = false
-      # dependency injection defaults
-      @ranking_learning_module = OTLearn
+      # automatically execute MMR
+      run
     end
     
     # Returns the ERC that the algorithm has created
@@ -44,31 +50,18 @@ module OTLearn
     end
     
     # Returns the failed winner that was used with max mismatch ranking.
-    # Will necessarily return nil if
-    # MaxMismatchRanking#run has not yet been called on this object.
     def failed_winner
       return @failed_winner
     end
     
     # Returns true if MaxMismatchRanking has found a consistent WL pair
-    # Will necessarily return false if MaxMismatchRanking#run has not yet
-    # been called on this object.
     def changed?
       return @changed
     end
     
-    # Assigns a new module to be used as the source of the underlying
-    # form learning methods. Used for testing (dependency injection).
-    # To be effective, this must be called before #run() is called.
-    # TODO: What other methods are provided by the ranking_learning module?
-    def ranking_learning_module=(mod)
-      @ranking_learning_module = mod
-    end
-    
-
     # Executes the Max Mismatch Ranking algorithm.
     # 
-    # The learner considers only the first failed winner on the list.
+    # The learner chooses a single consistent failed winner from the list.
     # For that failed winner, the learner takes the input with all  
     # unset features set opposite their surface value and creates a candidate.
     # Then, MRCD is used to construct the ERCs necessary to make that
@@ -89,12 +82,14 @@ module OTLearn
         " winner did not provide new ranking information.") unless @changed
       return @changed
     end
+    protected :run
     
     # Choose, from among the consistent failed winners, the failed winner to
     # use with MMR.
     def choose_failed_winner
       @failed_winner = @failed_winner_list.first      
     end
+    protected :choose_failed_winner
     
   end # class MaxMismatchRanking
 end # module OTLearn

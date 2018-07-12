@@ -116,7 +116,6 @@ module OTLearn
         @step_subtype = MAX_MISMATCH_RANKING
         @mmr_step = @max_mismatch_ranking_class.new(consistent_list,
           @grammar, @language_learner)
-        @mmr_step.run
         @changed = @mmr_step.changed?
       end
       return @changed
