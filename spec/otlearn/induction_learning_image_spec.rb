@@ -2,7 +2,7 @@
 
 require 'otlearn/induction_learning_image'
 
-RSpec.describe OTLearn::InductionLearningImage, :wip do
+RSpec.describe OTLearn::InductionLearningImage do
   let(:induction_learning){double('induction_learning')}
   let(:fsf_image_class){double('fsf_image_class')}
   let(:fsf_image){s=Sheet.new; s[1,1]="FSF Image"; s}

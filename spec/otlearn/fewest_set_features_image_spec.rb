@@ -2,7 +2,7 @@
 
 require 'otlearn/fewest_set_features_image'
 
-RSpec.describe OTLearn::FewestSetFeaturesImage, :wip do
+RSpec.describe OTLearn::FewestSetFeaturesImage do
   let(:fsf_step){double('fsf_step')}
   context "given a step with a newly set feature" do
     let(:failed_winner){double('failed_winner')}

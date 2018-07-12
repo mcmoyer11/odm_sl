@@ -105,8 +105,8 @@ module OTLearn
       consistent_list = @prior_result.failed_winners.select do |word|
         @learning_module.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
-      # If there are consistent errors, run MMR on one
-      #if consistent_list.empty?
+      # If there are consistent failed winners, run MMR on them.
+      # Otherwise, run FSF.
       if consistent_list.empty?
         @step_subtype = FEWEST_SET_FEATURES
         @fsf_step = @fewest_set_features_class.new(@winner_list, @grammar,
@@ -114,7 +114,7 @@ module OTLearn
         @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING
-        @mmr_step = @max_mismatch_ranking_class.new(consistent_list.first,
+        @mmr_step = @max_mismatch_ranking_class.new(consistent_list,
           @grammar, @language_learner)
         @mmr_step.run
         @changed = @mmr_step.changed?

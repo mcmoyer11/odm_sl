@@ -24,14 +24,15 @@ module OTLearn
     
     # Initializes a new object, but does _not_ automatically execute
     # the max mismatch ranking algorithm; #run() must be called to do that.
-    # * +failed_winner+ is the current winner pulled from the consistent list
-    # in the InductionLearning algorithm.
+    # * +failed_winner_list+ is the list of *consistent* failed winners that
+    #   are candidates for use in MMR.
     # * +grammar+ is the current grammar of the learner.
-    def initialize(failed_winner, grammar, language_learner)
+    def initialize(failed_winner_list, grammar, language_learner)
       @grammar = grammar
-      @failed_winner = failed_winner
+      @failed_winner_list = failed_winner_list
       @language_learner = language_learner
       @newly_added_wl_pairs = []
+      @failed_winner = nil
       @changed = false
       # dependency injection defaults
       @ranking_learning_module = OTLearn
@@ -67,21 +68,17 @@ module OTLearn
 
     # Executes the Max Mismatch Ranking algorithm.
     # 
-    # The learner considers only the first failed winner on the list
-    # returned by prior_result. The learner takes the input with all  
+    # The learner considers only the first failed winner on the list.
+    # For that failed winner, the learner takes the input with all  
     # unset features set opposite their surface value and creates a candidate.
-    # Then, using the error produced during error testing, the learner creates
-    # a winner-loser pair which is added to the support for inconsistency
-    # detection.
-    # 
-    # If the newly added ERC is consistent, then it is added to the support.
-    # If it is inconsistent, then the learner pursues the Fewest Set Features
-    # algorithm.
+    # Then, MRCD is used to construct the ERCs necessary to make that
+    # candidate grammatical.
     # 
     # Returns True if the consistent max mismatch candidate provides
     # new ranking information. Raises an exception if it does not provide new 
     # ranking information.
     def run
+      choose_failed_winner
       mrcd_result = nil
       @ranking_learning_module.mismatches_input_to_output(@failed_winner) do |cand|
         mrcd_result = @ranking_learning_module.ranking_learning_mark_low_no_mod([cand], @grammar)
@@ -91,6 +88,12 @@ module OTLearn
       raise MMREx.new(@failed_winner, @language_learner), ("A failed consistent" +
         " winner did not provide new ranking information.") unless @changed
       return @changed
+    end
+    
+    # Choose, from among the consistent failed winners, the failed winner to
+    # use with MMR.
+    def choose_failed_winner
+      @failed_winner = @failed_winner_list.first      
     end
     
   end # class MaxMismatchRanking

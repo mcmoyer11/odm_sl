@@ -2,7 +2,7 @@
 
 require 'otlearn/max_mismatch_ranking_image'
 
-RSpec.describe OTLearn::MaxMismatchRankingImage, :wip do
+RSpec.describe OTLearn::MaxMismatchRankingImage do
   let(:mmr_step){double('mmr_step')}
   context "given an MMR step with one failing winner adopted" do
     let(:failed_winner){double('failed_winner')}

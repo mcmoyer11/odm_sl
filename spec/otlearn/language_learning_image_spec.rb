@@ -3,7 +3,7 @@
 require_relative "../../lib/otlearn/language_learning_image"
 require_relative '../../lib/otlearn/language_learning'
 
-RSpec.describe OTLearn::LanguageLearningImage, :wip do
+RSpec.describe OTLearn::LanguageLearningImage do
   let(:language_learning){double('language_learning')}
   let(:grammar){double('grammar')}
   let(:grammar_label){double('grammar_label')}
