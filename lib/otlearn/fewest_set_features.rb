@@ -99,6 +99,7 @@ module OTLearn
       # At present, the learner simply takes the first one on the list
       # of failed winners provided by @prior_result.
       @failed_winner = @prior_result.failed_winners[0]
+      
       # find a feature that can rescue the failed winner.
       find_and_set_a_succeeding_feature
       # Check for any new ranking information based on the newly set features.

@@ -74,7 +74,7 @@ module OTLearn
       choose_failed_winner
       mrcd_result = nil
       @ranking_learning_module.mismatches_input_to_output(@failed_winner) do |cand|
-        mrcd_result = @ranking_learning_module.ranking_learning_mark_low_no_mod([cand], @grammar)
+        mrcd_result = @ranking_learning_module.ranking_learning_faith_low_no_mod([cand], @grammar)
       end
       @newly_added_wl_pairs = mrcd_result.added_pairs
       @changed = mrcd_result.any_change?

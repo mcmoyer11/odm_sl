@@ -60,6 +60,8 @@ end
 # Generate the language typology data.
 lang_list = generate_languages
 
+#l32 = lang_list.keep_if { |l| l.label == "L32"}
+
 # Write the languages to a file
 data_file = File.join(File.dirname(__FILE__),'..','..','data','outputs_1r1s_Typology.mar')
 write_language_list_to_file(lang_list, data_file)
@@ -84,7 +86,7 @@ read_languages_from_file(data_file) do |label, outputs|
   begin
     lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
   rescue LearnEx => detail
-    # TODO: is this if statement supefluous? won't it always be true when
+    # TODO: is this if statement superfluous? won't it always be true when
     # an exception is raised?
     if lang_sim == nil
       STDERR.puts "More than one single matching feature passes error testing on #{label}."

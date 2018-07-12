@@ -93,20 +93,27 @@ module OTLearn
       begin
         learning_change = false
         # Single form learning
-        sfl = @single_form_learning_class.new(@output_list, @grammar)
+        begin
+          sfl = @single_form_learning_class.new(@output_list, @grammar)
+        rescue RuntimeError => ex
+          STDERR.puts "Error with #{@grammar.label}: " + ex.to_s
+          return
+        end
         @step_list << sfl
         return true if sfl.all_correct?
         # Contrast pair learning
         cpl = @contrast_pair_learning_class.new(@output_list, @grammar)
+        @step_list << cpl
         if cpl.changed?
-          @step_list << cpl
+          #STDERR.puts "there is a contrast pair"
           return true if cpl.all_correct?
           learning_change = true
         else
-          # No suitable contrast pair, so pursue a step of FSF learning
+          #STDERR.puts "no contrast pair was found"
+          # No suitable contrast pair, so pursue a step of Induction learning
           il = @induction_learning_class.new(@output_list, @grammar, self)
+          @step_list << il
           if il.changed? then
-            @step_list << il
             return true if il.all_correct?
             learning_change = true
           end

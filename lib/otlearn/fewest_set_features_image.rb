@@ -30,7 +30,7 @@ module OTLearn
       @sheet[1,1] = "Fewest Set Features"
       # indicate if the grammar was changed
       @sheet[2,1] = "Grammar Changed: #{@step.changed?.to_s.upcase}"
-      add_failed_winner_info if @step.changed?
+      add_failed_winner_info
     end
     protected :construct_image
     

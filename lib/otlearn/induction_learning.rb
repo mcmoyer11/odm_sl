@@ -108,11 +108,13 @@ module OTLearn
       # If there are consistent failed winners, run MMR on them.
       # Otherwise, run FSF.
       if consistent_list.empty?
+        #STDERR.puts "FSF is being run."
         @step_subtype = FEWEST_SET_FEATURES
         @fsf_step = @fewest_set_features_class.new(@winner_list, @grammar,
           @prior_result, @language_learner)
         @changed = @fsf_step.changed?
       else
+        #STDERR.puts "MMR is being run."
         @step_subtype = MAX_MISMATCH_RANKING
         @mmr_step = @max_mismatch_ranking_class.new(consistent_list,
           @grammar, @language_learner)
