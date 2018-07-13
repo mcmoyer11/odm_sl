@@ -164,8 +164,8 @@ RSpec.describe OTLearn::LanguageLearning do
     it "calls single form learning two times" do
       expect(single_form_learning_class).to have_received(:new).exactly(2).times
     end
-    it "has PL, SFL, IL, and SFL learning steps" do
-      expect(@language_learning.step_list).to eq [pl_obj, sfl_obj, il_obj, sfl_obj2]
+    it "has PL, SFL, CPL, IL, and SFL learning steps" do
+      expect(@language_learning.step_list).to eq [pl_obj, sfl_obj, cpl_obj, il_obj, sfl_obj2]
     end
     it "calls contrast pair learning one time" do
       expect(contrast_pair_learning_class).to have_received(:new).exactly(1).times

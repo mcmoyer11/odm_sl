@@ -96,6 +96,8 @@ module OTLearn
         begin
           sfl = @single_form_learning_class.new(@output_list, @grammar)
         rescue RuntimeError => ex
+          # TODO: add a learning step to the list containing info about the
+          # raised exception, so it can appear in the output file.
           STDERR.puts "Error with #{@grammar.label}: " + ex.to_s
           return
         end
@@ -105,11 +107,9 @@ module OTLearn
         cpl = @contrast_pair_learning_class.new(@output_list, @grammar)
         @step_list << cpl
         if cpl.changed?
-          #STDERR.puts "there is a contrast pair"
           return true if cpl.all_correct?
           learning_change = true
         else
-          #STDERR.puts "no contrast pair was found"
           # No suitable contrast pair, so pursue a step of Induction learning
           il = @induction_learning_class.new(@output_list, @grammar, self)
           @step_list << il
