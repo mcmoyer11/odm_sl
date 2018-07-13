@@ -9,7 +9,6 @@ module OTLearn
   
   # A 2-dimensional sheet representation of a GrammarTest object.
   # The displayed results consist of:
-  # * the label of the grammar test (e.g., the step of learning it follows)
   # * the ERCs of the grammar
   # * the lexicon of the grammar
   #
@@ -48,15 +47,13 @@ module OTLearn
   
     # Constructs the image from the grammar test.
     def construct_image
-      # insert the GrammarTest label
-      @sheet[1,1] = @grammar_test.label
       # Compute the faith-low bias ranking, to provide the display
       # order of the constraints.
       rcd_result = @rcd_class.new(@grammar_test.grammar.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
       rcd_image = @rcd_image_class.new(rcd_result)
-      @sheet.append(rcd_image, start_col: 2)
+      @sheet.put_range[1,2] = rcd_image
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_class.new(@grammar_test.grammar.lexicon)
