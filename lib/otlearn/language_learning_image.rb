@@ -26,7 +26,7 @@ module OTLearn
     def initialize(language_learning,
         phonotactic_image_class: OTLearn::PhonotacticLearningImage,
         single_form_image_class: OTLearn::SingleFormLearningImage,
-        contrast_pair_image_class: nil,
+        contrast_pair_image_class: OTLearn::ContrastPairLearningImage,
         induction_image_class: OTLearn::InductionLearningImage,
         grammar_test_image_class: OTLearn::GrammarTestImage)
       @language_learning = language_learning
@@ -67,8 +67,7 @@ module OTLearn
       when LanguageLearning::SINGLE_FORM
         step_image = @single_form_image_class.new(step)
       when LanguageLearning::CONTRAST_PAIR
-#        step_image = @contrast_pair_image_class.new(step)
-        step_image = @grammar_test_image_class.new(step.test_result)
+        step_image = @contrast_pair_image_class.new(step)
       when LanguageLearning::INDUCTION
         step_image = @induction_image_class.new(step)
       else
