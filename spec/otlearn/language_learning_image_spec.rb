@@ -107,8 +107,8 @@ RSpec.describe OTLearn::LanguageLearningImage do
         receive(:new).and_return(result_image1,result_image2)
       allow(phonotactic_image_class).to receive(:new).and_return(result_image1)
       allow(single_form_image_class).to receive(:new).and_return(result_image2)
-      allow(grammar_test_image_class).to \
-        receive(:new).and_return(result_image2)
+#      allow(grammar_test_image_class).to \
+#        receive(:new).and_return(result_image2)
       @ll_image =
         OTLearn::LanguageLearningImage.new(language_learning,
         phonotactic_image_class: phonotactic_image_class,
@@ -125,7 +125,6 @@ RSpec.describe OTLearn::LanguageLearningImage do
       expect(phonotactic_image_class).to have_received(:new).with(step1).exactly(1).times
     end
     it "creates a single form step image" do
-      pending "development of a single form image class"
       expect(single_form_image_class).to have_received(:new).with(step2).exactly(1).times
     end
     it "adds the first result image" do

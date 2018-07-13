@@ -25,7 +25,7 @@ module OTLearn
     #   LanguageLearningImage.new(language_learning, grammar_test_image_class: class) -> img
     def initialize(language_learning,
         phonotactic_image_class: OTLearn::PhonotacticLearningImage,
-        single_form_image_class: nil,
+        single_form_image_class: OTLearn::SingleFormLearningImage,
         contrast_pair_image_class: nil,
         induction_image_class: OTLearn::InductionLearningImage,
         grammar_test_image_class: OTLearn::GrammarTestImage)
@@ -65,8 +65,7 @@ module OTLearn
       when LanguageLearning::PHONOTACTIC
         step_image = @phonotactic_image_class.new(step)
       when LanguageLearning::SINGLE_FORM
-#        step_image = @single_form_image_class.new(step)
-        step_image = @grammar_test_image_class.new(step.test_result)
+        step_image = @single_form_image_class.new(step)
       when LanguageLearning::CONTRAST_PAIR
 #        step_image = @contrast_pair_image_class.new(step)
         step_image = @grammar_test_image_class.new(step.test_result)
