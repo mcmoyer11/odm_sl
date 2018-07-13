@@ -24,7 +24,7 @@ module OTLearn
     #   LanguageLearningImage.new(language_learning) -> img
     #   LanguageLearningImage.new(language_learning, grammar_test_image_class: class) -> img
     def initialize(language_learning,
-        phonotactic_image_class: nil,
+        phonotactic_image_class: OTLearn::PhonotacticLearningImage,
         single_form_image_class: nil,
         contrast_pair_image_class: nil,
         induction_image_class: OTLearn::InductionLearningImage,
@@ -63,8 +63,7 @@ module OTLearn
     def construct_step_image(step)
       case step.step_type
       when LanguageLearning::PHONOTACTIC
-#        step_image = @phonotactic_image_class.new(step)
-        step_image = @grammar_test_image_class.new(step.test_result)
+        step_image = @phonotactic_image_class.new(step)
       when LanguageLearning::SINGLE_FORM
 #        step_image = @single_form_image_class.new(step)
         step_image = @grammar_test_image_class.new(step.test_result)
@@ -74,6 +73,7 @@ module OTLearn
       when LanguageLearning::INDUCTION
         step_image = @induction_image_class.new(step)
       else
+        # TODO: should an exception be raised here instead?
         step_image = @grammar_test_image_class.new(step.test_result)
       end
       return step_image
