@@ -1,5 +1,4 @@
 # Author: Morgan Moyer
-#
 
 require_relative 'data_manip'
 require_relative 'learning_exceptions'
@@ -29,7 +28,7 @@ module OTLearn
     # * +grammar+ is the current grammar of the learner.
     # * +language_learner+ included in an exception that is raised.
     # * +ranking_learning_module+ - the module containing the methods
-    #   #mismatches_input_to_output and #ranking_learning_mark_low.
+    #   #mismatches_input_to_output and #ranking_learning_faith_low.
     #   Used for testing (dependency injection).
     def initialize(failed_winner_list, grammar, language_learner,
         ranking_learning_module: OTLearn)

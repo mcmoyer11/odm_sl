@@ -19,7 +19,7 @@ RSpec.describe OTLearn::MaxMismatchRanking, :wip do
       allow(ranking_learning_module).to \
         receive(:mismatches_input_to_output).with(failed_winner).and_yield(mismatch)
       allow(ranking_learning_module).to \
-        receive(:ranking_learning_mark_low_no_mod).with([mismatch], grammar).and_return(mrcd_result)
+        receive(:ranking_learning_faith_low_no_mod).with([mismatch], grammar).and_return(mrcd_result)
       @max_mismatch_rankings =
         OTLearn::MaxMismatchRanking.new(failed_winner_list, grammar,
         language_learner, ranking_learning_module: ranking_learning_module)
@@ -31,7 +31,7 @@ RSpec.describe OTLearn::MaxMismatchRanking, :wip do
       expect(@max_mismatch_rankings.changed?).to be true
     end
     it "calls #ranking_learning_mark_low_mrcd" do
-      expect(ranking_learning_module).to have_received(:ranking_learning_mark_low_no_mod)
+      expect(ranking_learning_module).to have_received(:ranking_learning_faith_low_no_mod)
     end
     it "determines the failed winner" do
       expect(@max_mismatch_rankings.failed_winner).to eq(failed_winner)
@@ -45,7 +45,7 @@ RSpec.describe OTLearn::MaxMismatchRanking, :wip do
       allow(ranking_learning_module).to \
         receive(:mismatches_input_to_output).with(failed_winner).and_yield(mismatch)
       allow(ranking_learning_module).to \
-        receive(:ranking_learning_mark_low_no_mod).with([mismatch],grammar).and_return(mrcd_result)
+        receive(:ranking_learning_faith_low_no_mod).with([mismatch],grammar).and_return(mrcd_result)
     end
     it "should raise an exception" do
       expect do
