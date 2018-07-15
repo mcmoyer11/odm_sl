@@ -82,9 +82,8 @@ module OTLearn
     
     # Executes the fewest set features algorithm.
     # 
-    # The learner considers only the first failed winner on the list
-    # returned by prior_result. If a unique single feature is identified
-    # among the unset features of the failed winner that rescues that winner,
+    # If a unique single feature is identified
+    # among the unset features of a failed winner that rescues that winner,
     # then that feature is set in the grammar. The learner pursues
     # non-phonotactic ranking information for the newly set feature.
     # 
@@ -95,19 +94,21 @@ module OTLearn
     # containing references to the language_learner object and the list
     # of (more than one) successful features.
     def run_fewest_set_features
-      # Select a failed winner.
-      # At present, the learner simply takes the first one on the list
-      # of failed winners provided by @prior_result.
-      @failed_winner = @prior_result.failed_winners[0]
-      
-      # find a feature that can rescue the failed winner.
-      find_and_set_a_succeeding_feature
-      # Check for any new ranking information based on the newly set features.
-      # NOTE: currently, only one feature can be newly set, but it is stored
-      # in the list newly_set_features.
-      newly_set_features.each do |feat|
-        @uf_learning_module.new_rank_info_from_feature(@grammar, @word_list, feat)
+      # Check the failed winners until one is found that can succeed by
+      # setting one feature.
+      @prior_result.failed_winners.each do |failed_winner|
+        @failed_winner = failed_winner
+        # find a feature that can rescue the failed winner.
+        find_and_set_a_succeeding_feature
+        # Check for any new ranking information based on the newly set features.
+        # NOTE: currently, only one feature can be newly set, but it is stored
+        # in the list newly_set_features.
+        newly_set_features.each do |feat|
+          @uf_learning_module.new_rank_info_from_feature(@grammar, @word_list, feat)
+        end
+        break unless newly_set_features.empty?
       end
+      @failed_winner = nil if newly_set_features.empty?
       return changed?
     end
     protected :run_fewest_set_features

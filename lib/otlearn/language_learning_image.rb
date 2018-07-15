@@ -1,6 +1,9 @@
 # Author: Bruce Tesar
 
 require_relative '../sheet'
+require_relative 'phonotactic_learning_image'
+require_relative 'single_form_learning_image'
+require_relative 'contrast_pair_learning_image'
 require_relative 'induction_learning_image'
 require_relative 'grammar_test_image'
 require_relative 'language_learning'
