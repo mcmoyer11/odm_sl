@@ -2,7 +2,7 @@
 
 require_relative '../../lib/otlearn/max_mismatch_ranking'
 
-RSpec.describe OTLearn::MaxMismatchRanking, :wip do
+RSpec.describe OTLearn::MaxMismatchRanking do
   let(:failed_winner){double('failed_winner')}
   let(:failed_winner_list){[failed_winner]}
   let(:grammar){double('grammar')}

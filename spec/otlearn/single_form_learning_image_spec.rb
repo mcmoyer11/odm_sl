@@ -2,7 +2,7 @@
 
 require 'otlearn/single_form_learning_image'
 
-RSpec.describe OTLearn::SingleFormLearningImage, :wip do
+RSpec.describe OTLearn::SingleFormLearningImage do
   let(:single_form_learning){double('single_form_learning')}
   let(:grammar_test_image_class){double('grammar_test_image_class')}
   let(:test_result){double('test_result')}

@@ -2,7 +2,7 @@
 
 require 'otlearn/phonotactic_learning_image'
 
-RSpec.describe OTLearn::PhonotacticLearningImage, :wip do
+RSpec.describe OTLearn::PhonotacticLearningImage do
   let(:phonotactic_learning){double('phonotactic_learning')}
   let(:grammar_test_image_class){double('grammar_test_image_class')}
   let(:test_result){double('test_result')}

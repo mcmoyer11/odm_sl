@@ -3,7 +3,7 @@
 require 'otlearn/induction_learning'
 require 'otlearn/language_learning'
 
-RSpec.describe OTLearn::InductionLearning, :wip do
+RSpec.describe OTLearn::InductionLearning do
   let(:winner_list){double('winner_list')}
   let(:output_list){double('output_list')}
   let(:grammar){double('grammar')}

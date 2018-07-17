@@ -34,11 +34,30 @@ module OTLearn
     # Constructs the image from the contrast pair learning step.
     def construct_contrast_pair_learning_image
       @sheet[1,1] = "Contrast Pair Learning"
-      # Construct and add Grammar Test information
-      test_image = @grammar_test_image_class.new(@step.test_result)
-      @sheet.append(test_image)
+      # Add the contrast pair to the sheet, or indicate that none were found.
+      cpair = @step.contrast_pair
+      if cpair then
+        @sheet[2,2] = "Contrast Pair:"
+        @sheet[2,3] = word_string_short(cpair[0])
+        @sheet[2,4] = word_string_short(cpair[1])
+      else
+        @sheet[2,2] = "None Found"
+      end
+      # If the grammar changes, construct and add Grammar Test info.
+      if @step.changed?
+        test_image = @grammar_test_image_class.new(@step.test_result)
+        @sheet.append(test_image)
+      end
+      return nil
     end
     protected :construct_contrast_pair_learning_image
+    
+    # Returns a string representing +word+ that is short, only giving
+    # the morphword, input and output.
+    def word_string_short(word)
+      return "#{word.morphword} #{word.input}->#{word.output}"
+    end
+    protected :word_string_short
     
   end # class ContrastPairLearningImage
 end # module OTLearn
