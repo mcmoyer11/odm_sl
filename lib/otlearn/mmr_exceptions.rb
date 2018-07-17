@@ -3,8 +3,8 @@
 #
 #
 # This class of exceptions holds the +languge_learning+ object
-# for languages which fail MMR learning. It is used in the +language_learning_mmr+ and 
-# +r1s1_typology_learning_mmr+ files. 
+# for languages which fail MMR learning. It is used in the language_learning and 
+# r1s1_typology_learning_mmr files. 
 #
 
 #TODO: this should be contained in the module OTLearn.

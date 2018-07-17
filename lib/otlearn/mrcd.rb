@@ -1,9 +1,7 @@
 # Author: Bruce Tesar
 #
  
-require_relative '../most_harmonic'
-require_relative '../rcd'
-require_relative '../loserselector_by_ranking'
+require_relative '../win_lose_pair'
 
 module OTLearn
 
