@@ -1,11 +1,11 @@
 # Author: Bruce Tesar
 
-require 'loserselector_exhaustive'
+require 'loser_selector_exhaustive'
 require 'sl/system'
 require 'word'
 require 'erc_list'
 
-RSpec.describe LoserSelector_exhaustive, :wip do
+RSpec.describe LoserSelectorExhaustive, :wip do
   # Returns an instance double for a word
   def test_word(input, label)
     word = instance_double(Word, label)
@@ -35,7 +35,7 @@ RSpec.describe LoserSelector_exhaustive, :wip do
     allow(winner).to receive(:ident_viols?).with(winner).and_return(true)
     allow(cand1).to receive(:ident_viols?).with(winner).and_return(false)
     allow(ident_viols).to receive(:ident_viols?).with(winner).and_return(true)
-    @selector = LoserSelector_exhaustive.new(sys,
+    @selector = LoserSelectorExhaustive.new(sys,
       erc_list_class: erc_list_class, win_lose_pair_class: win_lose_pair_class)
   end
   
@@ -96,4 +96,4 @@ RSpec.describe LoserSelector_exhaustive, :wip do
     end
   end
 
-end # RSpec.describe LoserSelector_exhaustive
+end # RSpec.describe LoserSelectorExhaustive

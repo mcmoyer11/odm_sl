@@ -4,7 +4,7 @@ require 'erc_list'
 require 'win_lose_pair'
 
 # An object for selecting a loser in pursuit of ranking information.
-# The +_exhaustive+ criterion means that it will check every candidate of
+# The Exhaustive criterion means that it will check every candidate of
 # the competition until it either finds an informative loser or verifies that
 # there are none.
 # The competition is obtained by calling GEN with the input of the winner.
@@ -14,8 +14,8 @@ require 'win_lose_pair'
 # An informative loser is one that is more harmonic than the winner
 # for at least one ranking consistent with the ranking information in
 # +erc_list+.
-class LoserSelector_exhaustive
-  # Returns a new LoserSelector_exhaustive object, initialized with the
+class LoserSelectorExhaustive
+  # Returns a new LoserSelectorExhaustive object, initialized with the
   # linguistic system object +system+.
   # +system+ provides access to GEN for the system.
   def initialize(system,
@@ -52,4 +52,4 @@ class LoserSelector_exhaustive
     return nil
   end
   
-end # class LoserSelector_exhaustive
+end # class LoserSelectorExhaustive
