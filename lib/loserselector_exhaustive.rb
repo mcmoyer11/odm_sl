@@ -18,8 +18,11 @@ class LoserSelector_exhaustive
   # Returns a new LoserSelector_exhaustive object, initialized with the
   # linguistic system object +system+.
   # +system+ provides access to GEN for the system.
-  def initialize(system)
+  def initialize(system,
+      erc_list_class: Erc_list, win_lose_pair_class: Win_lose_pair)
     @system = system
+    @erc_list_class = erc_list_class
+    @win_lose_pair_class = win_lose_pair_class
   end
   
   # Returns an informative loser if one is found, otherwise returns nil.
@@ -28,7 +31,7 @@ class LoserSelector_exhaustive
   def select_loser(winner, ranking_info)
     # Construct an internal Erc_list, and copy ranking_info into it.
     # This way, we don't need to assume ranking_info is of class Erc_list.
-    internal_ercs = Erc_list.new
+    internal_ercs = @erc_list_class.new
     ranking_info.each {|erc| internal_ercs.add(erc)}
     # Generate the competition, and iterate over the competitors
     competition = @system.gen(winner.input)
@@ -37,7 +40,7 @@ class LoserSelector_exhaustive
       unless cand.ident_viols?(winner)
         # Construct a negated WL-pair, with cand as the winner,
         # and winner as the loser
-        test_erc = Win_lose_pair.new(cand, winner)
+        test_erc = @win_lose_pair_class.new(cand, winner)
         # Add WL-pair to a duplicate internal erc list
         ercs = internal_ercs.dup
         ercs.add(test_erc)
