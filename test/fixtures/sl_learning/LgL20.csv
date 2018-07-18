@@ -22,6 +22,7 @@ Single Form Learning,,,,,,,,,,,
 ,s1,??,,s2,??,,s3,?.,,s4,?:
 ,,,,,,,,,,,
 Contrast Pair Learning,,,,,,,,,,,
+,Contrast Pair:,r1-s1 ?.-??->S.s.,r1-s3 ?.-?.->s.S.,,,,,,,,
 ,ERC#,Input,Winner,Loser,2:WSP,5:IDStress,3:ML,4:MR,6:IDLength,1:NoLong,
 ,r3-s4,S.-s:,S.s.,S.s:,W,,,,L,W,
 ,r1-s1,S.-s.,S.s.,s.S.,,W,W,L,,,
