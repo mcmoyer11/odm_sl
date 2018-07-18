@@ -16,8 +16,14 @@ require 'win_lose_pair'
 # +erc_list+.
 class LoserSelectorExhaustive
   # Returns a new LoserSelectorExhaustive object, initialized with the
-  # linguistic system object +system+.
-  # +system+ provides access to GEN for the system.
+  # linguistic system.
+  # * +system+ - provides access to GEN for the system.
+  # * +erc_list_class+ - Used for testing (dependency injection).
+  # * +win_lose_pair_class+ - Used for testing (dependency injection).
+  #
+  # :call-seq:
+  #   LoserSelectorExhaustive.new(system) -> obj
+  #   LoserSelectorExhaustive.new(system, erc_list_class: class, win_lose_pair_class: class) -> obj
   def initialize(system,
       erc_list_class: Erc_list, win_lose_pair_class: Win_lose_pair)
     @system = system
@@ -28,6 +34,9 @@ class LoserSelectorExhaustive
   # Returns an informative loser if one is found, otherwise returns nil.
   # The candidates are searched in the order of the list returned by GEN,
   # and the method returns as soon as the first informative loser is found.
+  #
+  # :call-seq:
+  #   select_loser(winner, erc_list) -> candidate or nil
   def select_loser(winner, ranking_info)
     # Construct an internal Erc_list, and copy ranking_info into it.
     # This way, we don't need to assume ranking_info is of class Erc_list.

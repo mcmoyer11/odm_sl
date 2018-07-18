@@ -6,17 +6,11 @@ require 'word'
 require 'erc_list'
 
 RSpec.describe LoserSelectorExhaustive, :wip do
-  # Returns an instance double for a word
-  def test_word(input, label)
-    word = instance_double(Word, label)
-    allow(word).to receive(:input).and_return(input)
-    return word
-  end
-  
   let(:input){instance_double(Input, "Input")}
-  let(:winner){test_word(input, "Winner")}
-  let(:cand1){test_word(input, "Cand1")}
-  let(:ident_viols){test_word(input, "Ident_viols")}
+  let(:winner){instance_double(Word, "Winner")}
+  let(:cand1){instance_double(Word, "Cand1")}
+  let(:ident_viols){instance_double(Word, "Ident_viols")}
+  let(:uninformative){instance_double(Word, "uninformative")}
   let(:competition){[]}
   let(:sys){instance_double(SL::System, "system")}
   # Dependency Injections (and related)
@@ -32,9 +26,11 @@ RSpec.describe LoserSelectorExhaustive, :wip do
     allow(erc_list).to receive(:add)
     allow(erc_list).to receive(:dup).and_return(erc_list_dup)
     allow(erc_list_dup).to receive(:add)
+    allow(winner).to receive(:input).and_return(input)
     allow(winner).to receive(:ident_viols?).with(winner).and_return(true)
     allow(cand1).to receive(:ident_viols?).with(winner).and_return(false)
     allow(ident_viols).to receive(:ident_viols?).with(winner).and_return(true)
+    allow(uninformative).to receive(:ident_viols?).with(winner).and_return(false)
     @selector = LoserSelectorExhaustive.new(sys,
       erc_list_class: erc_list_class, win_lose_pair_class: win_lose_pair_class)
   end
@@ -49,6 +45,9 @@ RSpec.describe LoserSelectorExhaustive, :wip do
       end
       it "returns the first candidate in the list" do
         expect(@loser).to eq(competition[0])
+      end
+      it "does not add any external ercs to erc_list" do
+        expect(erc_list).not_to have_received(:add)
       end
     end
 
@@ -92,6 +91,38 @@ RSpec.describe LoserSelectorExhaustive, :wip do
       end
       it "returns nil" do
         expect(@loser).to be_nil
+      end
+    end
+    
+    context "and a competition where an uniformative candidate precedes an informative one" do
+      before(:example) do
+        competition << uninformative << cand1 << winner
+        allow(erc_list_dup).to receive(:consistent?).and_return(false, true)
+        @loser = @selector.select_loser(winner, param_ercs)
+      end
+      it "returns the second candidate" do
+        expect(@loser).to eq(competition[1])
+      end
+    end
+  end
+
+  context "given an ERC list with one external erc" do
+    let(:extern_erc){double('extern_erc')}
+    let(:param_ercs){[extern_erc]}
+    before(:example) do
+      allow(extern_erc).to receive(:ident_viols?).with(winner).and_return(false)
+    end
+    context "and a competition ordered uninformative, winner, cand1, ident_viols" do
+      before(:example) do
+        competition << uninformative << winner << cand1 << ident_viols
+        allow(erc_list_dup).to receive(:consistent?).and_return(false, true)
+        @loser = @selector.select_loser(winner, param_ercs)
+      end
+      it "returns cand1" do
+        expect(@loser).to eq(competition[2])
+      end
+      it "adds the external erc to erc_list" do
+        expect(erc_list).to have_received(:add).with(extern_erc)
       end
     end
   end
