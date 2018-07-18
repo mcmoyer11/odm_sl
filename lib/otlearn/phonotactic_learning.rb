@@ -33,9 +33,7 @@ module OTLearn
       @grammar_test_class = grammar_test_class
       @changed = false # default value
       @step_type = LanguageLearning::PHONOTACTIC
-      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_phonotactic_learning
-      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
     end
 
     # Returns true if phonotactic learning modified the grammar;
@@ -58,10 +56,25 @@ module OTLearn
     
     # Actually executes phonotactic learning.
     def run_phonotactic_learning
+      @winner_list = construct_winners
       @changed = @learning_module.
         ranking_learning_faith_low(@winner_list, @grammar)
+      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
     end
     protected :run_phonotactic_learning
     
+    # Parse the outputs into winners, with input features matching set
+    # lexicon values, and unset features assigned values matching the output.
+    def construct_winners
+      winner_list = @output_list.map do |out|
+        @grammar.system.parse_output(out, @grammar.lexicon)
+      end
+      winner_list.each do |winner|
+        @learning_module.match_input_to_output!(winner)
+      end
+      return winner_list
+    end
+    protected :construct_winners
+
   end # class PhonotacticLearning
 end # module OTLearn

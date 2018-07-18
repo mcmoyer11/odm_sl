@@ -3,7 +3,7 @@
 require 'otlearn/phonotactic_learning'
 require 'otlearn/language_learning'
 
-RSpec.describe OTLearn::PhonotacticLearning do
+RSpec.describe OTLearn::PhonotacticLearning, :wip do
   context "with a winner list and a grammar, sufficient to learn all the words" do
     let(:winner_list){double('winner_list')}
     let(:output_list){double('output_list')}
@@ -13,6 +13,9 @@ RSpec.describe OTLearn::PhonotacticLearning do
     let(:grammar_test){double('grammar_test')}
     before(:each) do
       allow(output_list).to receive(:map).and_return(winner_list)
+      # winner_list.each() takes a block which assigns output-matching values
+      # to unset features.
+      allow(winner_list).to receive(:each)
       allow(otlearn_module).to receive(:ranking_learning_faith_low).
         and_return(true)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
@@ -20,6 +23,9 @@ RSpec.describe OTLearn::PhonotacticLearning do
       @phonotactic_learning =
         OTLearn::PhonotacticLearning.new(output_list, grammar,
         learning_module: otlearn_module, grammar_test_class: grammar_test_class)
+    end
+    it "assigns output-matching values to unset features" do
+      expect(winner_list).to have_received(:each)
     end
     it "calls ranking learning" do
       expect(otlearn_module).to have_received(:ranking_learning_faith_low)
