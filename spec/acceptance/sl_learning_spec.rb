@@ -6,14 +6,22 @@
 project_dir = "C:/Users/Tesar/NetBeansProjects/odm_sl"
 sl_fixture_dir = File.join(project_dir,'test','fixtures','sl_learning')
 generated_dir = File.join(project_dir,'temp','sl_learning')
-RSpec.describe "Running odm on all 24 SL languages", :acceptance do
-  before(:each) do
+
+RSpec.describe "Running ODL", :acceptance do
+  before(:context) do
     load "bin/r1s1_typology.rb"
-    @success = system "diff #{sl_fixture_dir} #{generated_dir}"
+  end
+  
+  (1..24).each do |num|
+    context "on language L#{num}" do
+      before(:example) do
+        @success = system "diff #{sl_fixture_dir}/LgL#{num}.csv #{generated_dir}/LgL#{num}.csv"
+      end
+      
+      it "produces output that matches its test fixture" do
+        expect(@success).to be true
+      end
+    end
   end
 
-  it "produces output matching the test fixtures" do
-    expect(@success).to be true
-  end
-end
-
+end # RSpec.describe
