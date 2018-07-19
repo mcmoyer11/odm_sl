@@ -9,6 +9,7 @@ RSpec.describe OTLearn::LanguageLearning do
   let(:single_form_learning_class){double('single_form_learning_class')}
   let(:contrast_pair_learning_class){double('contrast_pair_learning_class')}
   let(:induction_learning_class){double('induction_learning_class')}
+  let(:loser_selector){double('loser_selector')}
   let(:pl_obj){double('pl_obj')}
   let(:sfl_obj){double('sfl_obj')}
   let(:cpl_obj){double('cpl_obj')}
@@ -36,17 +37,18 @@ RSpec.describe OTLearn::LanguageLearning do
   context "given phontactically learnable data" do
     before(:each) do
       allow(phonotactic_learning_class).to \
-        receive(:new).with(output_list,grammar).and_return(pl_obj)
+        receive(:new).with(output_list,grammar, loser_selector: loser_selector).and_return(pl_obj)
       allow(pl_obj).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new(output_list, grammar,
         phonotactic_learning_class: phonotactic_learning_class,
         single_form_learning_class: single_form_learning_class,
         contrast_pair_learning_class: contrast_pair_learning_class,
-        induction_learning_class: induction_learning_class)
+        induction_learning_class: induction_learning_class,
+        loser_selector: loser_selector)
     end
     it "calls phonotactic learning" do
       expect(phonotactic_learning_class).to \
-        have_received(:new).with(output_list,grammar)
+        have_received(:new).with(output_list,grammar, loser_selector: loser_selector)
     end
     it "has phonotactic learning as its only learning step" do
       expect(@language_learning.step_list).to eq [pl_obj]
@@ -65,7 +67,7 @@ RSpec.describe OTLearn::LanguageLearning do
   context "given single form learnable data" do
     before(:each) do
       allow(phonotactic_learning_class).to \
-        receive(:new).with(output_list,grammar).and_return(pl_obj)
+        receive(:new).with(output_list,grammar,loser_selector:loser_selector).and_return(pl_obj)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).with(output_list,grammar).and_return(sfl_obj)
@@ -74,11 +76,12 @@ RSpec.describe OTLearn::LanguageLearning do
         phonotactic_learning_class: phonotactic_learning_class,
         single_form_learning_class: single_form_learning_class,
         contrast_pair_learning_class: contrast_pair_learning_class,
-        induction_learning_class: induction_learning_class)
+        induction_learning_class: induction_learning_class,
+        loser_selector: loser_selector)
     end
     it "calls phonotactic learning" do
       expect(phonotactic_learning_class).to \
-        have_received(:new).with(output_list,grammar)
+        have_received(:new).with(output_list, grammar, loser_selector:loser_selector)
     end
     it "calls single form learning one time" do
       expect(single_form_learning_class).to have_received(:new).exactly(1).times
@@ -113,11 +116,12 @@ RSpec.describe OTLearn::LanguageLearning do
         phonotactic_learning_class: phonotactic_learning_class,
         single_form_learning_class: single_form_learning_class,
         contrast_pair_learning_class: contrast_pair_learning_class,
-        induction_learning_class: induction_learning_class)
+        induction_learning_class: induction_learning_class,
+        loser_selector: loser_selector)
     end
     it "calls phonotactic learning" do
       expect(phonotactic_learning_class).to \
-        have_received(:new).with(output_list,grammar)
+        have_received(:new).with(output_list,grammar,loser_selector:loser_selector)
     end
     it "calls single form learning two times" do
       expect(single_form_learning_class).to have_received(:new).exactly(2).times
@@ -155,11 +159,12 @@ RSpec.describe OTLearn::LanguageLearning do
         phonotactic_learning_class: phonotactic_learning_class,
         single_form_learning_class: single_form_learning_class,
         contrast_pair_learning_class: contrast_pair_learning_class,
-        induction_learning_class: induction_learning_class)
+        induction_learning_class: induction_learning_class,
+        loser_selector: loser_selector)
     end
     it "calls phonotactic learning" do
       expect(phonotactic_learning_class).to \
-        have_received(:new).with(output_list,grammar)
+        have_received(:new).with(output_list,grammar,loser_selector:loser_selector)
     end
     it "calls single form learning two times" do
       expect(single_form_learning_class).to have_received(:new).exactly(2).times

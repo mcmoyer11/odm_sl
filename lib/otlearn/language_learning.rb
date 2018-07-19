@@ -4,6 +4,9 @@ require_relative 'phonotactic_learning'
 require_relative 'single_form_learning'
 require_relative 'contrast_pair_learning'
 require_relative 'induction_learning'
+require_relative '../loser_selector_exhaustive'
+require_relative '../loserselector_by_ranking'
+require_relative 'rcd_bias_low'
 
 module OTLearn
 
@@ -55,13 +58,20 @@ module OTLearn
         phonotactic_learning_class: OTLearn::PhonotacticLearning,
         single_form_learning_class: OTLearn::SingleFormLearning,
         contrast_pair_learning_class: OTLearn::ContrastPairLearning,
-        induction_learning_class: OTLearn::InductionLearning)
+        induction_learning_class: OTLearn::InductionLearning,
+        loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
       @phonotactic_learning_class = phonotactic_learning_class
       @single_form_learning_class = single_form_learning_class
       @contrast_pair_learning_class = contrast_pair_learning_class
       @induction_learning_class = induction_learning_class
+      @loser_selector = loser_selector
+      # the default value of @loser_selector
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
+#        @loser_selector = LoserSelectorExhaustive.new(@grammar.system)
+      end
       @step_list = []
       @learning_successful = execute_learning
     end
@@ -85,7 +95,8 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning
       # Phonotactic learning
-      pl = @phonotactic_learning_class.new(@output_list, @grammar)
+      pl = @phonotactic_learning_class.new(@output_list, @grammar,
+        loser_selector: @loser_selector)
       @step_list << pl
       return true if pl.all_correct?
       # Loop until there is no change.
