@@ -33,7 +33,7 @@ RSpec.describe OTLearn::GrammarTest do
     context "given one optimal winner" do
       before(:each) do
         allow(winner_list).to receive(:map).and_return([output_opt])
-        @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar, "SPECS",
+        @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar,
           loser_selector: selector, otlearn_module: ot_mod)
       end
       it "returns a list with that winner for success winners" do
@@ -50,7 +50,7 @@ RSpec.describe OTLearn::GrammarTest do
     context "given one non-optimal winner" do
       before(:each) do
         allow(winner_list).to receive(:map).and_return([output_nopt])
-        @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar, "SPECS",
+        @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar,
           loser_selector: selector, otlearn_module: ot_mod)
       end
       it "returns an empty list for success winners" do
@@ -67,7 +67,7 @@ RSpec.describe OTLearn::GrammarTest do
     context "given one optimal and one non-optimal winner" do
       before(:each) do
         allow(winner_list).to receive(:map).and_return([output_opt, output_nopt])
-        @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar, "SPECS",
+        @grammar_test = OTLearn::GrammarTest.new(winner_list, grammar,
           loser_selector: selector, otlearn_module: ot_mod)
       end
       it "returns a list with the opt winner for success winners" do

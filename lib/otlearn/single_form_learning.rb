@@ -37,7 +37,7 @@ module OTLearn
       @step_type = LanguageLearning::SINGLE_FORM
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_single_form_learning
-      @test_result = @error_test_class.new(@winner_list, @grammar, "Single Form Learning")
+      @test_result = @error_test_class.new(@winner_list, @grammar)
     end
     
     # The list of winner words used for learning.

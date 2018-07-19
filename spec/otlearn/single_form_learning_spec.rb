@@ -12,7 +12,6 @@ RSpec.describe OTLearn::SingleFormLearning do
   let(:otlearn_module){double('OTLearn module')}
   let(:consistency_result){double('consistency_result')}
   let(:cr_grammar){double('cr_grammar')}
-  let(:label){"Single Form Learning"}
   
   context "with one correct winner" do
     let(:winner_list){[win1]}
@@ -21,7 +20,7 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(output_list).to receive(:map).and_return(winner_list)
       allow(otlearn_module).to receive(:mismatch_consistency_check)
       allow(grammar_test_class).to receive(:new).with([win1], grammar).and_return(grammar_test)
-      allow(grammar_test_class).to receive(:new).with(winner_list, grammar, label).and_return(grammar_test)
+      allow(grammar_test_class).to receive(:new).with(winner_list, grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @single_form_learning = OTLearn::SingleFormLearning.new(output_list,
         grammar, learning_module: otlearn_module,
@@ -36,14 +35,11 @@ RSpec.describe OTLearn::SingleFormLearning do
     it "returns the grammar unchanged" do
       expect(@single_form_learning.grammar).to eq grammar
     end
-    it "tests the winner during learning, all winners afterward" do
+    it "tests the winner once during learning, all winners afterward" do
       expect(grammar_test_class).to have_received(:new).exactly(2).times
     end    
     it "does not perform a mismatch consistency check" do
       expect(otlearn_module).not_to have_received(:mismatch_consistency_check)
-    end
-    it "runs a grammar test after learning" do
-      expect(grammar_test_class).to have_received(:new).with([win1], grammar, label)
     end
     it "gives the grammar test result" do
       expect(@single_form_learning.test_result).to eq grammar_test
@@ -84,9 +80,6 @@ RSpec.describe OTLearn::SingleFormLearning do
     it "returns the grammar" do
       expect(@single_form_learning.grammar).to eq grammar
     end
-    it "tests the winner twice" do
-      expect(grammar_test_class).to have_received(:new).with([win1], grammar).exactly(2).times
-    end    
     it "performs two mismatch consistency checks" do
       expect(otlearn_module).to have_received(:mismatch_consistency_check).with(grammar,[win1]).exactly(2).times
     end

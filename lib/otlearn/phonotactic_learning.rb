@@ -66,7 +66,7 @@ module OTLearn
       @winner_list = construct_winners
       @changed = @learning_module.
         ranking_learning(@winner_list, @grammar, @loser_selector)
-      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
+      @test_result = @grammar_test_class.new(@winner_list, @grammar)
     end
     protected :run_phonotactic_learning
     

@@ -38,7 +38,7 @@ module OTLearn
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_contrast_pair_learning
-      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Contrast Pair Learning")
+      @test_result = @grammar_test_class.new(@winner_list, @grammar)
     end
     
     # Returns the contrast pair found by contrast pair learning. If no

@@ -16,9 +16,8 @@ module OTLearn
 
     # Returns a new GrammarTest, for the provided +winners+, and with
     # respect to the provided +grammar+.
-    def initialize(winners, grammar, label="NoLabel",
-      loser_selector: nil, otlearn_module: OTLearn)
-      @label = label
+    def initialize(winners, grammar, loser_selector: nil,
+        otlearn_module: OTLearn)
       @system = grammar.system
       # loser_selector default cannot be put into the parameter list, because
       # the parameter +system+ needs to be computed.
@@ -47,11 +46,6 @@ module OTLearn
       @failed_winners.freeze
       @success_winners.each {|sw| sw.freeze}
       @success_winners.freeze
-    end
-
-    # Returns the label assigned by the constructor.
-    def label()
-      @label
     end
 
     # Returns a reference to the linguistic system in use.

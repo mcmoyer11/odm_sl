@@ -60,7 +60,7 @@ module OTLearn
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_induction_learning
       # TODO: change the label below (or eliminate it)
-      @test_result = @grammar_test_class.new(@winner_list, @grammar, "Minimal UF Learning")
+      @test_result = @grammar_test_class.new(@winner_list, @grammar)
     end
     
     # Returns true if induction learning made a change to the grammar,
