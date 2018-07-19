@@ -105,7 +105,8 @@ module OTLearn
         learning_change = false
         # Single form learning
         begin
-          sfl = @single_form_learning_class.new(@output_list, @grammar)
+          sfl = @single_form_learning_class.new(@output_list, @grammar,
+            loser_selector: @loser_selector)
         rescue RuntimeError => ex
           # TODO: add a learning step to the list containing info about the
           # raised exception, so it can appear in the output file.

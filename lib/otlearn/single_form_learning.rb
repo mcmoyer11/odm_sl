@@ -4,6 +4,7 @@
 require_relative "./grammar_test"
 require_relative "./data_manip"
 require_relative 'language_learning'
+require_relative 'ranking_learning'
 
 module OTLearn
   
@@ -26,21 +27,27 @@ module OTLearn
     #
     # :call-seq:
     #   SingleFormLearning.new(output_list, grammar) -> obj
-    #   SingleFormLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
-    def initialize(output_list, grammar, learning_module: OTLearn,
-        grammar_test_class: OTLearn::GrammarTest,
+    #   SingleFormLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class, loser_selector: obj) -> obj
+    def initialize(output_list, grammar,
+        learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
         loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
       @otlearn_module = learning_module
       @error_test_class = grammar_test_class
-      @changed = false
       @loser_selector = loser_selector
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
       if @loser_selector.nil? then
-        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
+        @loser_selector = LoserSelectorExhaustive.new(grammar.system)
       end
       @step_type = LanguageLearning::SINGLE_FORM
-      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+      @changed = false
+      # The winner list contains a full word for each output, with the input
+      # feature values matching their counterparts in the lexicon.
+      @winner_list = @output_list.map do |out|
+        @grammar.system.parse_output(out, @grammar.lexicon)
+      end
       run_single_form_learning
       @test_result = @error_test_class.new(@winner_list, @grammar)
     end
@@ -132,7 +139,8 @@ module OTLearn
       # TODO: investigate residual ranking info learning further
       winner = @grammar.system.parse_output(output, @grammar.lexicon)
       @otlearn_module.match_input_to_output!(winner)
-      new_ranking_info = @otlearn_module.ranking_learning([winner], @grammar, @loser_selector)
+      new_ranking_info =
+        @otlearn_module.ranking_learning([winner], @grammar, @loser_selector)
       change_on_winner = true if new_ranking_info.any_change?
       # Check the mismatched input for consistency. Only attempt to set
       # features in the winner if the mismatched winner is inconsistent.
@@ -143,11 +151,14 @@ module OTLearn
         # returning a list of newly set features
         set_feature_list = @otlearn_module.set_uf_values([winner], @grammar)
         # Rebuild the winner list to reflect any just-set features
-        @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+        @winner_list = @output_list.map do |out|
+          @grammar.system.parse_output(out, @grammar.lexicon)
+        end
         # For each newly set feature, check words unfaithfully mapping that
         # feature for new ranking information.
         set_feature_list.each do |set_f|
-          @otlearn_module.new_rank_info_from_feature(@grammar, @winner_list, set_f)
+          @otlearn_module.
+            new_rank_info_from_feature(@grammar, @winner_list, set_f)
         end
         change_on_winner = true unless set_feature_list.empty?
       end

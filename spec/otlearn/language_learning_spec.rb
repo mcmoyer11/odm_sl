@@ -67,10 +67,10 @@ RSpec.describe OTLearn::LanguageLearning do
   context "given single form learnable data" do
     before(:each) do
       allow(phonotactic_learning_class).to \
-        receive(:new).with(output_list,grammar,loser_selector:loser_selector).and_return(pl_obj)
+        receive(:new).with(output_list,grammar, loser_selector: loser_selector).and_return(pl_obj)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
-        receive(:new).with(output_list,grammar).and_return(sfl_obj)
+        receive(:new).with(output_list,grammar, loser_selector: loser_selector).and_return(sfl_obj)
       allow(sfl_obj).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new(output_list, grammar,
         phonotactic_learning_class: phonotactic_learning_class,
