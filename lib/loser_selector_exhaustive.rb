@@ -38,20 +38,18 @@ class LoserSelectorExhaustive
   # :call-seq:
   #   select_loser(winner, erc_list) -> candidate or nil
   def select_loser(winner, ranking_info)
-    # Construct an internal Erc_list, and copy ranking_info into it.
-    # This way, we don't need to assume ranking_info is of class Erc_list.
-    internal_ercs = @erc_list_class.new
-    ranking_info.each {|erc| internal_ercs.add(erc)}
     # Generate the competition, and iterate over the competitors
     competition = @system.gen(winner.input)
     competition.each do |cand|
       # a candidate with an identical violation profile won't be informative
       unless cand.ident_viols?(winner)
+        # Construct an internal Erc_list, and copy ranking_info into it.
+        # Better than #dup: don't assume ranking_info is class Erc_list.
+        ercs = @erc_list_class.new.add_all(ranking_info)
         # Construct a negated WL-pair, with cand as the winner,
         # and winner as the loser
         test_erc = @win_lose_pair_class.new(cand, winner)
-        # Add WL-pair to a duplicate internal erc list
-        ercs = internal_ercs.dup
+        # Add negated WL-pair to the list
         ercs.add(test_erc)
         # if the test_erc is consistent with the existing ercs,
         # then the candidate is an informative loser

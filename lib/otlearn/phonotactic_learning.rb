@@ -21,16 +21,23 @@ module OTLearn
     #   run. Used for testing (dependency injection).
     # * +grammar_test_class+ - the class of the object used to test
     #   the grammar. Used for testing (dependency injection).
+    # * +loser_selector+ - selects losers for ranking learning.
     #
     # :call-seq:
     #   PhonotacticLearning.new(output_list, grammar) -> obj
-    #   PhonotacticLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
     def initialize(output_list, grammar,
-        learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest)
+        learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
+        loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
+      @loser_selector = loser_selector
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelectorExhaustive.new(grammar.system)
+      end
       @changed = false # default value
       @step_type = LanguageLearning::PHONOTACTIC
       run_phonotactic_learning
@@ -58,7 +65,7 @@ module OTLearn
     def run_phonotactic_learning
       @winner_list = construct_winners
       @changed = @learning_module.
-        ranking_learning_faith_low(@winner_list, @grammar)
+        ranking_learning(@winner_list, @grammar, @loser_selector)
       @test_result = @grammar_test_class.new(@winner_list, @grammar, "Phonotactic Learning")
     end
     protected :run_phonotactic_learning
