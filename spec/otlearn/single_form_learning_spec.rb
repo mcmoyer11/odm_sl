@@ -2,29 +2,41 @@
 
 require 'otlearn/single_form_learning'
 require 'otlearn/language_learning'
+require 'otlearn/grammar_test'
 
 RSpec.describe OTLearn::SingleFormLearning do
   let(:win1){double('winner 1')}
   let(:out1){double('output 1')}
   let(:grammar){double('grammar')}
+  let(:system){double('system')}
+  let(:lexicon){double('lexicon')}
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){instance_double(OTLearn::GrammarTest)}
   let(:otlearn_module){double('OTLearn module')}
   let(:consistency_result){double('consistency_result')}
   let(:cr_grammar){double('cr_grammar')}
+  let(:loser_selector){double('loser_selector')}
+  let(:mrcd_result){double('mrcd_result')}
+  before(:example) do
+    allow(grammar).to receive(:system).and_return(system)
+    allow(grammar).to receive(:lexicon).and_return(lexicon)
+    allow(otlearn_module).to receive(:match_input_to_output!)
+  end
   
   context "with one correct winner" do
     let(:winner_list){[win1]}
     let(:output_list){[out1]}
     before(:each) do
       allow(output_list).to receive(:map).and_return(winner_list)
+      allow(system).to receive(:parse_output).with(out1,lexicon).and_return(win1)
       allow(otlearn_module).to receive(:mismatch_consistency_check)
       allow(grammar_test_class).to receive(:new).with([win1], grammar).and_return(grammar_test)
       allow(grammar_test_class).to receive(:new).with(winner_list, grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @single_form_learning = OTLearn::SingleFormLearning.new(output_list,
         grammar, learning_module: otlearn_module,
-        grammar_test_class: grammar_test_class)
+        grammar_test_class: grammar_test_class,
+        loser_selector: loser_selector)
     end
     it "does not change the grammar" do
       expect(@single_form_learning).not_to be_changed
@@ -32,7 +44,7 @@ RSpec.describe OTLearn::SingleFormLearning do
     it "returns a winner list with one winner" do
       expect(@single_form_learning.winner_list).to eq winner_list
     end
-    it "returns the grammar unchanged" do
+    it "returns the grammar" do
       expect(@single_form_learning.grammar).to eq grammar
     end
     it "tests the winner once during learning, all winners afterward" do
@@ -58,10 +70,12 @@ RSpec.describe OTLearn::SingleFormLearning do
     let(:output_list){[out1]}
     before(:each) do
       allow(output_list).to receive(:map).and_return(winner_list)
+      allow(system).to receive(:parse_output).with(out1,lexicon).and_return(win1)
       allow(otlearn_module).to receive(:mismatch_consistency_check).and_return(consistency_result)
       allow(otlearn_module).to receive(:set_uf_values).with([win1], grammar).and_return(["feature1"],[])
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feature1")
-      allow(otlearn_module).to receive(:ranking_learning_faith_low).and_return(false)
+      allow(otlearn_module).to receive(:ranking_learning).and_return(mrcd_result)
+      allow(mrcd_result).to receive(:any_change?).and_return(false)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
       allow(grammar_test_class).to receive(:new).with([win1], grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
@@ -69,7 +83,8 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(cr_grammar).to receive(:consistent?).and_return(false, false)
       @single_form_learning = OTLearn::SingleFormLearning.new(output_list,
         grammar, learning_module: otlearn_module,
-        grammar_test_class: grammar_test_class)
+        grammar_test_class: grammar_test_class,
+        loser_selector: loser_selector)
     end
     it "changes the grammar" do
       expect(@single_form_learning).to be_changed
@@ -95,7 +110,7 @@ RSpec.describe OTLearn::SingleFormLearning do
     it "gives the grammar test result" do
       expect(@single_form_learning.test_result).to eq grammar_test
     end
-    it "indicates that all words are handled correctly" do
+    it "indicates that not all words are handled correctly" do
       expect(@single_form_learning.all_correct?).to be false
     end
   end

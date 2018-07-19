@@ -28,12 +28,17 @@ module OTLearn
     #   SingleFormLearning.new(output_list, grammar) -> obj
     #   SingleFormLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
     def initialize(output_list, grammar, learning_module: OTLearn,
-        grammar_test_class: OTLearn::GrammarTest)
+        grammar_test_class: OTLearn::GrammarTest,
+        loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
       @otlearn_module = learning_module
       @error_test_class = grammar_test_class
       @changed = false
+      @loser_selector = loser_selector
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
+      end
       @step_type = LanguageLearning::SINGLE_FORM
       @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       run_single_form_learning
@@ -67,13 +72,15 @@ module OTLearn
       @test_result.all_correct?
     end
     
-# Processes the winners of #winners for new grammatical information.
+    # Processes the observed outputs for new grammatical information.
     # 
-    # Passes repeatedly through the list of winners until a pass is made
-    # with no changes to the grammar. For each winner:
+    # Passes repeatedly through the list of outputs until a pass is made
+    # with no changes to the grammar. For each output:
+    # * Parse the output into a winner candidate, with all input feature
+    #   values matching their counterparts in the lexicon.
     # * Error test the winner: see if it is the sole optimum for the
     #   mismatched input (all unset features assigned opposite their
-    #   surface values) using the Faith-Low hierarchy. If it is, don't bother
+    #   surface values). If it is, don't bother
     #   processing it (there is no learning error).
     # * If a learning error is detected, process the winner for new information.
     # 
@@ -82,13 +89,14 @@ module OTLearn
     def run_single_form_learning
       begin
         grammar_changed_on_pass = false
-        winner_list.each do |winner|
+        @output_list.each do |output|
+          winner = @grammar.system.parse_output(output, @grammar.lexicon)
           # Error test the winner by checking to see if it is the sole
-          # optimum for the mismatched input using the Faith-Low hierarchy.
+          # optimum for the mismatched input.
           error_test = @error_test_class.new([winner], grammar)
           # Unless no error is detected, try learning with the winner.
           unless error_test.all_correct? then
-            grammar_changed_on_winner = process_winner(winner)
+            grammar_changed_on_winner = process_winner(output)
             grammar_changed_on_pass = true if grammar_changed_on_winner
           end
         end
@@ -98,7 +106,7 @@ module OTLearn
     end
     protected :run_single_form_learning
 
-    # Processes +winner+ for new information about the grammar.
+    # Processes a winner output for new information about the grammar.
     # * First, it checks the winner for ranking information with a matched
     #   input, to see if any information was missed by phonotactic learning
     #   but is visible now.
@@ -116,25 +124,30 @@ module OTLearn
     # false otherwise.
     #--
     # TODO: spin #process_winner off into a separate class.
-    def process_winner(winner)
+    def process_winner(output)
       change_on_winner = false
       # Check the winner to see if it is the sole optimum for
       # the matched input; if not, more ranking info is gained.
       # NOTE: several languages aren't learned if this step isn't taken.
       # TODO: investigate residual ranking info learning further
-      new_ranking_info = @otlearn_module.ranking_learning_faith_low([winner], grammar)
-      change_on_winner = true if new_ranking_info
+      winner = @grammar.system.parse_output(output, @grammar.lexicon)
+      @otlearn_module.match_input_to_output!(winner)
+      new_ranking_info = @otlearn_module.ranking_learning([winner], @grammar, @loser_selector)
+      change_on_winner = true if new_ranking_info.any_change?
       # Check the mismatched input for consistency. Only attempt to set
       # features in the winner if the mismatched winner is inconsistent.
-      consistency_result = @otlearn_module.mismatch_consistency_check(grammar, [winner])
+      consistency_result =
+        @otlearn_module.mismatch_consistency_check(@grammar, [winner])
       unless consistency_result.grammar.consistent?
         # Attempt to set each unset feature of winner,
         # returning a list of newly set features
-        set_feature_list = @otlearn_module.set_uf_values([winner], grammar)
+        set_feature_list = @otlearn_module.set_uf_values([winner], @grammar)
+        # Rebuild the winner list to reflect any just-set features
+        @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
         # For each newly set feature, check words unfaithfully mapping that
         # feature for new ranking information.
         set_feature_list.each do |set_f|
-          @otlearn_module.new_rank_info_from_feature(grammar, winner_list, set_f)
+          @otlearn_module.new_rank_info_from_feature(@grammar, @winner_list, set_f)
         end
         change_on_winner = true unless set_feature_list.empty?
       end
