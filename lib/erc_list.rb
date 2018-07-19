@@ -117,7 +117,7 @@ class Erc_list
   # adding or removing ERCs from the duplicate will not affect the original.
   # The ERC objects themselves are <em>not</em> duplicated.
   def dup
-    Erc_list.new(constraint_list: constraint_list, rcd_class: @rcd_class).add_all(self)
+    Erc_list.new(constraint_list: @constraint_list, rcd_class: @rcd_class).add_all(self)
   end
   
   # Returns a list of the constraints used in the list. If no constraints were

@@ -31,6 +31,26 @@ RSpec.describe Erc_list do
         expect(@erc_list.label).to eq("LABEL")
       end
     end
+    context "when duplicated" do
+      before(:example) do
+        @erc_list_dup = @erc_list.dup
+      end
+      it "returns an empty list of constraints" do
+        expect(@erc_list_dup.constraint_list).to be_empty
+      end
+      context "and then an erc is added" do
+        let(:erc1){double("erc1")}
+        let(:con_list){["C1","C2"]}
+        before(:example) do
+          allow(erc1).to receive(:constraint_list).and_return(con_list)
+          allow(erc1).to receive(:test_cond).and_return(true)
+          @erc_list_dup.add(erc1)
+        end
+        it "returns a constraint list with two constraints" do
+          expect(@erc_list_dup.constraint_list.size).to eq 2
+        end
+      end
+    end
   end
   
   context "An Erc_list provided with a list of constraints" do
