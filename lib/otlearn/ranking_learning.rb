@@ -3,9 +3,16 @@
 
 require_relative 'data_manip'
 require 'loserselector_by_ranking'
+require 'loser_selector_exhaustive'
 require_relative 'mrcd'
 
 module OTLearn
+  
+  def OTLearn.ranking_learning(word_list, grammar, selector, mrcd_class: Mrcd)
+    mrcd_result = mrcd_class.new(word_list, grammar, selector)
+    mrcd_result.added_pairs.each { |pair| grammar.add_erc(pair) }
+    return mrcd_result
+  end
   
   # Performs ranking learning on the given word list, using the
   # given grammar. The parameter +grammar+ is directly updated
