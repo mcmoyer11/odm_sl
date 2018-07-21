@@ -1,11 +1,11 @@
 # Author: Morgan Moyer / Bruce Tesar
 
-require_relative 'ranking_learning'
-require_relative 'data_manip'
-require_relative 'grammar_test'
 require_relative 'fewest_set_features'
-require_relative 'language_learning'
 require_relative 'max_mismatch_ranking'
+require_relative 'ranking_learning'
+require_relative 'grammar_test'
+require_relative 'language_learning'
+require_relative 'data_manip'
 
 module OTLearn
   
@@ -56,11 +56,11 @@ module OTLearn
       @step_subtype = nil
       @fsf_step = nil
       # Test the words to see which ones currently fail
-      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+      @winner_list = @output_list.map do |out|
+        @grammar.system.parse_output(out, @grammar.lexicon)
+      end
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_induction_learning
-      # TODO: change the label below (or eliminate it)
-      @test_result = @grammar_test_class.new(@winner_list, @grammar)
     end
     
     # Returns true if induction learning made a change to the grammar,
@@ -103,26 +103,26 @@ module OTLearn
       end
       # Check failed winners for consistency, and collect the consistent ones
       consistent_list = @prior_result.failed_winners.select do |word|
-        @learning_module.mismatch_consistency_check(@grammar, [word]).grammar.consistent?
+        @learning_module.
+          mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
       # If there are consistent failed winners, run MMR on them.
       # Otherwise, run FSF.
       if consistent_list.empty?
-        #STDERR.puts "FSF is being run."
         @step_subtype = FEWEST_SET_FEATURES
         @fsf_step = @fewest_set_features_class.new(@winner_list, @grammar,
           @prior_result, @language_learner)
         @changed = @fsf_step.changed?
       else
-        #STDERR.puts "MMR is being run."
         @step_subtype = MAX_MISMATCH_RANKING
         @mmr_step = @max_mismatch_ranking_class.new(consistent_list,
           @grammar, @language_learner)
         @changed = @mmr_step.changed?
       end
+      @test_result = @grammar_test_class.new(@winner_list, @grammar)
       return @changed
     end
     protected :run_induction_learning
 
-   end #class Induction_learning
+   end #class InductionLearning
 end #module OTLearn
