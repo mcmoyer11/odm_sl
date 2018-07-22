@@ -28,7 +28,7 @@ module OTLearn
     # * +grammar+ is the current grammar of the learner.
     # * +language_learner+ included in an exception that is raised.
     # * +learning_module+ - the module containing the methods
-    #   #mismatches_input_to_output and #ranking_learning_faith_low.
+    #   #mismatches_input_to_output and #ranking_learning.
     #   Used for testing (dependency injection).
     # * +loser_selector+ - object used to select informative losers.
     def initialize(failed_winner_list, grammar, language_learner,

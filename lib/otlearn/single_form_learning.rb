@@ -19,7 +19,7 @@ module OTLearn
     # * +output_list+ - the list of all grammatical outputs.
     # * +grammar+ - the grammar that learning will modify.
     # * +learning_module+ - the module containing several methods used
-    #   for learning: #ranking_learning_faith_low, #mismatch_consistency_check,
+    #   for learning: #ranking_learning, #mismatch_consistency_check,
     #   #set_uf_values, and #new_rank_info_from_feature.
     #   Used for testing (dependency injection).
     # * +grammar_test_class+ - the class of object used for testing
@@ -33,7 +33,7 @@ module OTLearn
         loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
-      @otlearn_module = learning_module
+      @learning_module = learning_module
       @error_test_class = grammar_test_class
       @loser_selector = loser_selector
       # Cannot put the default in the parameter list because of the call
@@ -138,18 +138,18 @@ module OTLearn
       # NOTE: several languages aren't learned if this step isn't taken.
       # TODO: investigate residual ranking info learning further
       winner = @grammar.system.parse_output(output, @grammar.lexicon)
-      @otlearn_module.match_input_to_output!(winner)
+      @learning_module.match_input_to_output!(winner)
       new_ranking_info =
-        @otlearn_module.ranking_learning([winner], @grammar, @loser_selector)
+        @learning_module.ranking_learning([winner], @grammar, @loser_selector)
       change_on_winner = true if new_ranking_info.any_change?
       # Check the mismatched input for consistency. Only attempt to set
       # features in the winner if the mismatched winner is inconsistent.
       consistency_result =
-        @otlearn_module.mismatch_consistency_check(@grammar, [winner])
+        @learning_module.mismatch_consistency_check(@grammar, [winner])
       unless consistency_result.grammar.consistent?
         # Attempt to set each unset feature of winner,
         # returning a list of newly set features
-        set_feature_list = @otlearn_module.set_uf_values([winner], @grammar)
+        set_feature_list = @learning_module.set_uf_values([winner], @grammar)
         # Rebuild the winner list to reflect any just-set features
         @winner_list = @output_list.map do |out|
           @grammar.system.parse_output(out, @grammar.lexicon)
@@ -157,7 +157,7 @@ module OTLearn
         # For each newly set feature, check words unfaithfully mapping that
         # feature for new ranking information.
         set_feature_list.each do |set_f|
-          @otlearn_module.
+          @learning_module.
             new_rank_info_from_feature(@grammar, @winner_list, set_f)
         end
         change_on_winner = true unless set_feature_list.empty?
