@@ -42,7 +42,6 @@ module OTLearn
       # to grammar.system.
       if @loser_selector.nil? then
         @loser_selector = LoserSelectorExhaustive.new(grammar.system)
-#        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
       end
       @newly_added_wl_pairs = []
       @failed_winner = nil

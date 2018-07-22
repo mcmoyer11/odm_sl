@@ -37,13 +37,17 @@ module OTLearn
     #   the grammar. Used for testing (dependency injection).
     # * +fewest_set_features_class+ - the class of object used for fewest set
     #   features.  Used for testing (dependency injection).
+    # * +max_mismatch_ranking_class+ - the class of object used for max
+    #   mismatch ranking.  Used for testing (dependency injection).
+    # * +loser_selector+ - object used to select informative losers.
     #
     # :call-seq:
     #   InductionLearning.new(output_list, grammar, language_learner) -> obj
     def initialize(output_list, grammar, language_learner,
         learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
         fewest_set_features_class: OTLearn::FewestSetFeatures,
-        max_mismatch_ranking_class: OTLearn::MaxMismatchRanking)
+        max_mismatch_ranking_class: OTLearn::MaxMismatchRanking,
+        loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
       @language_learner = language_learner
@@ -51,6 +55,12 @@ module OTLearn
       @grammar_test_class = grammar_test_class
       @fewest_set_features_class = fewest_set_features_class
       @max_mismatch_ranking_class = max_mismatch_ranking_class
+      @loser_selector = loser_selector
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelectorExhaustive.new(grammar.system)
+      end
       @changed = false
       @step_type = LanguageLearning::INDUCTION
       @step_subtype = nil
@@ -116,7 +126,7 @@ module OTLearn
       else
         @step_subtype = MAX_MISMATCH_RANKING
         @mmr_step = @max_mismatch_ranking_class.new(consistent_list,
-          @grammar, @language_learner)
+          @grammar, @language_learner, loser_selector: @loser_selector)
         @changed = @mmr_step.changed?
       end
       @test_result = @grammar_test_class.new(@winner_list, @grammar)

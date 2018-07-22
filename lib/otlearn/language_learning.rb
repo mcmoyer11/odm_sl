@@ -123,7 +123,8 @@ module OTLearn
           learning_change = true
         else
           # No suitable contrast pair, so pursue a step of Induction learning
-          il = @induction_learning_class.new(@output_list, @grammar, self)
+          il = @induction_learning_class.
+            new(@output_list, @grammar, self, loser_selector: @loser_selector)
           @step_list << il
           if il.changed? then
             return true if il.all_correct?

@@ -13,10 +13,12 @@ RSpec.describe OTLearn::InductionLearning do
   let(:fsf_class){double('FSF_class')}
   let(:mmr_class){double('MMR_class')}
   let(:mmr){double('mmr')}
+  let(:loser_selector){double('loser_selector')}
   let(:otlearn_module){double('otlearn_module')}
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){double('grammar_test')}
   before(:each) do
+    allow(grammar).to receive(:system)
     allow(output_list).to receive(:map).and_return(winner_list)
   end
   
@@ -135,11 +137,14 @@ RSpec.describe OTLearn::InductionLearning do
       allow(prior_result).to receive(:failed_winners).and_return([failed_winner_1])
       allow(mrcd_gram).to receive(:consistent?).and_return(true)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
-      allow(mmr_class).to receive(:new).with([failed_winner_1],grammar,language_learner).and_return(mmr)
+      allow(mmr_class).to receive(:new).
+        with([failed_winner_1],grammar,language_learner,loser_selector: loser_selector).
+        and_return(mmr)
       allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
           with(grammar,[failed_winner_1]).and_return(mrcd)
-      allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
+      allow(grammar_test_class).to receive(:new).
+        and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
     end
     
@@ -152,7 +157,8 @@ RSpec.describe OTLearn::InductionLearning do
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class,
-          max_mismatch_ranking_class: mmr_class)
+          max_mismatch_ranking_class: mmr_class,
+          loser_selector: loser_selector)
       end
       it "reports that the grammar has changed" do
         expect(@induction_learning).to be_changed
