@@ -21,21 +21,29 @@ module OTLearn
  # not yet complete, suggesting that a paradigmatic subset relation is present.
   class MaxMismatchRanking
     
-    # Initializes a new object, *and* automatically execute
+    # Initializes a new object, *and* automatically executes
     # the max mismatch ranking algorithm.
     # * +failed_winner_list+ is the list of *consistent* failed winners that
     #   are candidates for use in MMR.
     # * +grammar+ is the current grammar of the learner.
     # * +language_learner+ included in an exception that is raised.
-    # * +ranking_learning_module+ - the module containing the methods
+    # * +learning_module+ - the module containing the methods
     #   #mismatches_input_to_output and #ranking_learning_faith_low.
     #   Used for testing (dependency injection).
+    # * +loser_selector+ - object used to select informative losers.
     def initialize(failed_winner_list, grammar, language_learner,
-        ranking_learning_module: OTLearn)
+        learning_module: OTLearn, loser_selector: nil)
       @grammar = grammar
       @failed_winner_list = failed_winner_list
       @language_learner = language_learner
-      @ranking_learning_module = ranking_learning_module
+      @learning_module = learning_module
+      @loser_selector = loser_selector
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelectorExhaustive.new(grammar.system)
+#        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
+      end
       @newly_added_wl_pairs = []
       @failed_winner = nil
       @changed = false
@@ -72,8 +80,9 @@ module OTLearn
     def run
       choose_failed_winner
       mrcd_result = nil
-      @ranking_learning_module.mismatches_input_to_output(@failed_winner) do |cand|
-        mrcd_result = @ranking_learning_module.ranking_learning_faith_low_no_mod([cand], @grammar)
+      @learning_module.mismatches_input_to_output(@failed_winner) do |cand|
+        mrcd_result = @learning_module.
+          ranking_learning([cand], @grammar, @loser_selector)
       end
       @newly_added_wl_pairs = mrcd_result.added_pairs
       @changed = mrcd_result.any_change?
