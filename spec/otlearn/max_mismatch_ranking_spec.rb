@@ -35,7 +35,7 @@ RSpec.describe OTLearn::MaxMismatchRanking do
     it "indicates a change has occurred" do
       expect(@max_mismatch_rankings.changed?).to be true
     end
-    it "calls #ranking_learning_mark_low_mrcd" do
+    it "calls #ranking_learning" do
       expect(learning_module).to have_received(:ranking_learning)
     end
     it "determines the failed winner" do
