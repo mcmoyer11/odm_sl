@@ -270,8 +270,9 @@ module OTLearn
     # find words with output value of set feature that differs from the uf set value.
     uo_conflict_words = containing_words.inject([]) do |cwords, word|
       out_feat_inst = word.out_feat_corr_of_uf(uf_feat_inst)
-      cwords if out_feat_inst.nil?
-      cwords << word if uf_feat_inst.value != out_feat_inst.value
+      unless out_feat_inst.nil?
+        cwords << word if uf_feat_inst.value != out_feat_inst.value
+      end
       cwords
     end
     # Duplicate and output-match the conflict words
