@@ -4,6 +4,7 @@ require_relative 'contrast_pair'
 require_relative 'uf_learning'
 require_relative 'grammar_test'
 require_relative 'language_learning'
+require 'loser_selector_exhaustive'
 
 module OTLearn
 
@@ -27,15 +28,24 @@ module OTLearn
     #   ContrastPairLearning.new(output_list, grammar) -> obj
     #   ContrastPairLearning.new(output_list, grammar, learning_module: module, grammar_test_class: class) -> obj
     def initialize(output_list, grammar,
-        learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest)
+        learning_module: OTLearn, grammar_test_class: OTLearn::GrammarTest,
+        loser_selector: nil)
       @output_list = output_list
       @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @contrast_pair = nil
+      @loser_selector = loser_selector
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelectorExhaustive.new(grammar.system)
+      end
       @step_type = LanguageLearning::CONTRAST_PAIR
       # Test the words to see which ones currently fail
-      @winner_list = @output_list.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
+      @winner_list = @output_list.map do |out|
+        @grammar.system.parse_output(out, @grammar.lexicon)
+      end
       @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_contrast_pair_learning
       @test_result = @grammar_test_class.new(@winner_list, @grammar)
@@ -91,7 +101,7 @@ module OTLearn
         # is now available.
         set_feature_list.each do |set_f|
           @learning_module.new_rank_info_from_feature(@grammar, @winner_list,
-            set_f)
+            set_f, loser_selector: @loser_selector)
         end
         # If an underlying feature was set, return the contrast pair.
         # Otherwise, keep processing contrast pairs.

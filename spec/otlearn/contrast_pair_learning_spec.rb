@@ -13,7 +13,9 @@ RSpec.describe OTLearn::ContrastPairLearning do
   let(:second_cp){double('second_cp')}
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){double('grammar_test')}
+  let(:loser_selector){double('loser_selector')}
   before(:each) do
+    allow(grammar).to receive(:system)
     allow(output_list).to receive(:map).and_return(winner_list)
   end
 
@@ -26,18 +28,19 @@ RSpec.describe OTLearn::ContrastPairLearning do
         result.yield first_cp
       end
       allow(otlearn_module).to receive(:set_uf_values).with(first_cp,grammar).and_return(["feat1"])
-      allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feat1")
+      allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feat1",loser_selector: loser_selector)
       allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning.new(output_list, grammar,
-        learning_module: otlearn_module, grammar_test_class: grammar_test_class)
+        learning_module: otlearn_module, grammar_test_class: grammar_test_class,
+        loser_selector: loser_selector)
     end
     it "returns the first pair" do
       expect(@contrast_pair_learning.contrast_pair).to eq first_cp
     end
     it "checks for ranking information wih feat1" do
-      expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar,winner_list,"feat1").exactly(1).times
+      expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar,winner_list,"feat1",loser_selector: loser_selector).exactly(1).times
     end
     it "changes the grammar" do
       expect(@contrast_pair_learning).to be_changed
@@ -71,7 +74,8 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning.new(output_list, grammar,
-        learning_module: otlearn_module, grammar_test_class: grammar_test_class)
+        learning_module: otlearn_module, grammar_test_class: grammar_test_class,
+        loser_selector: loser_selector)
     end
     it "returns no contrast pair" do
       expect(@contrast_pair_learning.contrast_pair).to be_nil
@@ -106,18 +110,21 @@ RSpec.describe OTLearn::ContrastPairLearning do
       end
       allow(otlearn_module).to receive(:set_uf_values).with(first_cp,grammar).and_return([])
       allow(otlearn_module).to receive(:set_uf_values).with(second_cp,grammar).and_return(["feat1"])
-      allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feat1")
+      allow(otlearn_module).to receive(:new_rank_info_from_feature).
+        with(grammar,winner_list,"feat1",loser_selector: loser_selector)
       allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning.new(output_list, grammar,
-        learning_module: otlearn_module, grammar_test_class: grammar_test_class)
+        learning_module: otlearn_module, grammar_test_class: grammar_test_class,
+        loser_selector: loser_selector)
     end
     it "returns the second pair" do
       expect(@contrast_pair_learning.contrast_pair).to eq second_cp
     end
     it "checks for ranking information wih feat1" do
-      expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar,winner_list,"feat1").exactly(1).times
+      expect(otlearn_module).to have_received(:new_rank_info_from_feature).
+        with(grammar,winner_list,"feat1",loser_selector: loser_selector).exactly(1).times
     end
     it "changes the grammar" do
       expect(@contrast_pair_learning).to be_changed
