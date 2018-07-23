@@ -65,11 +65,6 @@ module OTLearn
       @step_type = LanguageLearning::INDUCTION
       @step_subtype = nil
       @fsf_step = nil
-      # Test the words to see which ones currently fail
-      @winner_list = @output_list.map do |out|
-        @grammar.system.parse_output(out, @grammar.lexicon)
-      end
-      @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       run_induction_learning
     end
     
@@ -105,6 +100,12 @@ module OTLearn
     
    # Returns true if anything changed about the grammar
     def run_induction_learning
+      # Parse the outputs into words
+      @winner_list = @output_list.map do |out|
+        @grammar.system.parse_output(out, @grammar.lexicon)
+      end
+      # Test the words to see which ones currently fail
+      @prior_result = @grammar_test_class.new(@winner_list, @grammar)
       # If there are no failed winners, raise an exception, because
       # induction learning shouldn't be called unless there are failed
       # winners to work on.
