@@ -116,7 +116,8 @@ module OTLearn
         @step_list << sfl
         return true if sfl.all_correct?
         # Contrast pair learning
-        cpl = @contrast_pair_learning_class.new(@output_list, @grammar)
+        cpl = @contrast_pair_learning_class.new(@output_list, @grammar,
+          loser_selector: @loser_selector)
         @step_list << cpl
         if cpl.changed?
           return true if cpl.all_correct?
