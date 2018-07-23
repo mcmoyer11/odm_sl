@@ -1,5 +1,4 @@
 # Author: Bruce Tesar
-#
 
 require_relative 'data_manip'
 require_relative '../feature_value_pair'
@@ -44,6 +43,7 @@ module OTLearn
     #   #mismatch_consistency_check. Used for testing (dependency injection).
     # * +feature_value_pair_class+ - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
+    # * +loser_selector+ - object used to select informative losers.
     def initialize(word_list, grammar, prior_result, language_learner,
         learning_module: OTLearn, feature_value_pair_class: FeatureValuePair,
         loser_selector: nil)

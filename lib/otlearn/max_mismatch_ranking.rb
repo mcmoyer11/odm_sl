@@ -47,7 +47,7 @@ module OTLearn
       @failed_winner = nil
       @changed = false
       # automatically execute MMR
-      run
+      run_max_mismatch_learning
     end
     
     # Returns the ERC that the algorithm has created
@@ -76,7 +76,7 @@ module OTLearn
     # Returns True if the consistent max mismatch candidate provides
     # new ranking information. Raises an exception if it does not provide new 
     # ranking information.
-    def run
+    def run_max_mismatch_learning
       choose_failed_winner
       mrcd_result = nil
       @learning_module.mismatches_input_to_output(@failed_winner) do |cand|
@@ -89,7 +89,7 @@ module OTLearn
         " winner did not provide new ranking information.") unless @changed
       return @changed
     end
-    protected :run
+    protected :run_max_mismatch_learning
     
     # Choose, from among the consistent failed winners, the failed winner to
     # use with MMR.
