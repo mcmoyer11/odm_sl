@@ -45,7 +45,8 @@ module OTLearn
     # * +feature_value_pair_class+ - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
     def initialize(word_list, grammar, prior_result, language_learner,
-      learning_module: OTLearn, feature_value_pair_class: FeatureValuePair)
+        learning_module: OTLearn, feature_value_pair_class: FeatureValuePair,
+        loser_selector: nil)
       @word_list = word_list
       @grammar = grammar
       @prior_result = prior_result
@@ -55,7 +56,13 @@ module OTLearn
       @failed_winner = nil
       @newly_set_features = []
       # dependency injection defaults
-      @uf_learning_module = learning_module
+      @learning_module = learning_module
+      @loser_selector = loser_selector
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
+      if @loser_selector.nil? then
+        @loser_selector = LoserSelectorExhaustive.new(grammar.system)
+      end
       @feature_value_pair_class = feature_value_pair_class
       run_fewest_set_features
     end
@@ -104,7 +111,8 @@ module OTLearn
         # NOTE: currently, only one feature can be newly set, but it is stored
         # in the list newly_set_features.
         newly_set_features.each do |feat|
-          @uf_learning_module.new_rank_info_from_feature(@grammar, @word_list, feat)
+          @learning_module.new_rank_info_from_feature(@grammar, @word_list,
+            feat, loser_selector: @loser_selector)
         end
         break unless newly_set_features.empty?
       end
@@ -154,7 +162,7 @@ module OTLearn
       failed_winner_dup = @grammar.system.parse_output(output, @grammar.lexicon)
       # Find the unset underlying feature instances
       unset_uf_features =
-        @uf_learning_module.find_unset_features_in_words([failed_winner_dup],@grammar)
+        @learning_module.find_unset_features_in_words([failed_winner_dup],@grammar)
       # Assign, in turn, each unset feature to match its output correspondent.
       # Then test the modified failed winner along with
       # the success winners for collective consistency with the grammar.
@@ -201,7 +209,7 @@ module OTLearn
       # Check the list of words for consistency, using the main grammar,
       # with each word's unset features mismatching their output correspondents.
       mrcd_result =
-        @uf_learning_module.mismatch_consistency_check(@grammar, word_list)
+        @learning_module.mismatch_consistency_check(@grammar, word_list)
       # If result is consistent, add the UF value to the list.
       val_pair = nil
       if mrcd_result.grammar.consistent? then
