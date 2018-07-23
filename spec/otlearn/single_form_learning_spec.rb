@@ -73,7 +73,7 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(system).to receive(:parse_output).with(out1,lexicon).and_return(win1)
       allow(otlearn_module).to receive(:mismatch_consistency_check).and_return(consistency_result)
       allow(otlearn_module).to receive(:set_uf_values).with([win1], grammar).and_return(["feature1"],[])
-      allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feature1")
+      allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feature1",loser_selector: loser_selector)
       allow(otlearn_module).to receive(:ranking_learning).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(false)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
@@ -102,7 +102,7 @@ RSpec.describe OTLearn::SingleFormLearning do
       expect(otlearn_module).to have_received(:set_uf_values).with([win1],grammar).exactly(2).times
     end
     it "checks for new ranking information on the set feature once" do
-      expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar,winner_list,"feature1").exactly(1).times
+      expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar,winner_list,"feature1",loser_selector:loser_selector).exactly(1).times
     end
     it "tests the winner twice during learning, all winners afterward" do
       expect(grammar_test_class).to have_received(:new).exactly(3).times

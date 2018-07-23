@@ -158,7 +158,7 @@ module OTLearn
         # feature for new ranking information.
         set_feature_list.each do |set_f|
           @learning_module.
-            new_rank_info_from_feature(@grammar, @winner_list, set_f)
+            new_rank_info_from_feature(@grammar, @winner_list, set_f, loser_selector: @loser_selector)
         end
         change_on_winner = true unless set_feature_list.empty?
       end

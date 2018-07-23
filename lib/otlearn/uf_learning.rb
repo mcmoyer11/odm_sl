@@ -261,8 +261,7 @@ module OTLearn
       learning_module: OTLearn, loser_selector: nil)
     # Assign the default value for loser_selector
     if loser_selector.nil? then
-#      loser_selector = LoserSelectorExhaustive.new(grammar.system)
-      loser_selector = LoserSelector_by_ranking.new(grammar.system, rcd_class: OTLearn::RcdMarkLow)
+      loser_selector = LoserSelectorExhaustive.new(grammar.system)
     end
     # find words containing the same morpheme as the set feature
     containing_words = word_list.find_all do |w|

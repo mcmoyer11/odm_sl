@@ -69,8 +69,8 @@ module OTLearn
       @loser_selector = loser_selector
       # the default value of @loser_selector
       if @loser_selector.nil? then
-        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
-#        @loser_selector = LoserSelectorExhaustive.new(@grammar.system)
+#        @loser_selector = LoserSelector_by_ranking.new(@grammar.system, rcd_class: OTLearn::RcdFaithLow)
+        @loser_selector = LoserSelectorExhaustive.new(@grammar.system)
       end
       @step_list = []
       @learning_successful = execute_learning
