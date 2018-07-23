@@ -257,7 +257,13 @@ module OTLearn
   # feature within the given word list, relative to the given grammar.
   # Any new ranking information is added to the grammar.
   # Returns true if any new ranking information was obtained; false otherwise.
-  def OTLearn.new_rank_info_from_feature(grammar, word_list, uf_feat_inst)
+  def OTLearn.new_rank_info_from_feature(grammar, word_list, uf_feat_inst,
+      learning_module: OTLearn, loser_selector: nil)
+    # Assign the default value for loser_selector
+    if loser_selector.nil? then
+#      loser_selector = LoserSelectorExhaustive.new(grammar.system)
+      loser_selector = LoserSelector_by_ranking.new(grammar.system, rcd_class: OTLearn::RcdMarkLow)
+    end
     # find words containing the same morpheme as the set feature
     containing_words = word_list.find_all do |w|
       w.morphword.include?(uf_feat_inst.morpheme)
@@ -269,8 +275,15 @@ module OTLearn
       cwords << word if uf_feat_inst.value != out_feat_inst.value
       cwords
     end
-    # Run each such word through mrcd, searching for new ranking info
-    return OTLearn::ranking_learning_mark_low(uo_conflict_words, grammar)
+    # Duplicate and output-match the conflict words
+    dup_conflict_words = uo_conflict_words.map do |word|
+      dup = grammar.system.parse_output(word.output, grammar.lexicon)
+      learning_module.match_input_to_output!(dup)
+      dup
+    end
+    # Run each such word through MRCD, searching for new ranking info
+    return learning_module.
+      ranking_learning(dup_conflict_words, grammar, loser_selector)
   end
   
 end # module OTLearn
