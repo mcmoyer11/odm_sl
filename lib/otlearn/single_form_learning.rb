@@ -49,7 +49,7 @@ module OTLearn
         @grammar.system.parse_output(out, @grammar.lexicon)
       end
       run_single_form_learning
-      @test_result = @error_test_class.new(@winner_list, @grammar)
+      @test_result = @error_test_class.new(@output_list, @grammar)
     end
     
     # The list of winner words used for learning.
@@ -100,7 +100,7 @@ module OTLearn
           winner = @grammar.system.parse_output(output, @grammar.lexicon)
           # Error test the winner by checking to see if it is the sole
           # optimum for the mismatched input.
-          error_test = @error_test_class.new([winner], grammar)
+          error_test = @error_test_class.new([output], grammar)
           # Unless no error is detected, try learning with the winner.
           unless error_test.all_correct? then
             grammar_changed_on_winner = process_winner(output)

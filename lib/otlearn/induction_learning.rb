@@ -105,7 +105,7 @@ module OTLearn
         @grammar.system.parse_output(out, @grammar.lexicon)
       end
       # Test the words to see which ones currently fail
-      @prior_result = @grammar_test_class.new(@winner_list, @grammar)
+      @prior_result = @grammar_test_class.new(@output_list, @grammar)
       # If there are no failed winners, raise an exception, because
       # induction learning shouldn't be called unless there are failed
       # winners to work on.
@@ -130,7 +130,7 @@ module OTLearn
           @grammar, @language_learner, loser_selector: @loser_selector)
         @changed = @mmr_step.changed?
       end
-      @test_result = @grammar_test_class.new(@winner_list, @grammar)
+      @test_result = @grammar_test_class.new(@output_list, @grammar)
       return @changed
     end
     protected :run_induction_learning

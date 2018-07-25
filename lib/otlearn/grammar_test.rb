@@ -7,53 +7,44 @@ require_relative 'rcd_bias_low'
 module OTLearn
 
   # A GrammarTest object holds the results of the evaluation of a set
-  # of winners with respect to a grammar. The tests are initiated by
-  # creating a GrammarTest; the constructor takes a list of winners and
+  # of grammatical outputs with respect to a grammar. The tests are initiated
+  # by creating a GrammarTest; the constructor takes a list of outputs and
   # a grammar as parameters.
-  #
-  # Each winner is a Word, possibly with unset features in the input.
   class GrammarTest
 
     # Returns a new GrammarTest, for the provided +winners+, and with
     # respect to the provided +grammar+.
-    def initialize(winners, grammar, loser_selector: nil,
+    # * +output_list+ - the outputs used to test the grammar
+    # * +grammar+ - the grammar being tested
+    # * +loser_selector+ - used for testing (dependency injection).
+    # * +otlearn_module+ - used for testing (dependency injection).
+    def initialize(output_list, grammar, loser_selector: nil,
         otlearn_module: OTLearn)
+      @output_list = output_list
+      # Dup the grammar, so it can be frozen.
+      @grammar = grammar.dup
       @system = grammar.system
       # loser_selector default cannot be put into the parameter list, because
       # the parameter +system+ needs to be computed.
       if loser_selector.nil? then
-        @loser_selector = LoserSelector_by_ranking.new(system,
+        @loser_selector = LoserSelector_by_ranking.new(@system,
           rcd_class: OTLearn::RcdFaithLow)
       else
         @loser_selector = loser_selector
       end
       @otlearn_module = otlearn_module
-      # Dup the grammar, so it can be frozen.
-      @grammar = grammar.dup
-      # Parse the winner outputs, creating candidates fully reflecting
-      # the lexicon of the current grammar.
-      @outputs = winners.map{|win| win.output}
-      @winners = @outputs.map{|out| @grammar.system.parse_output(out, @grammar.lexicon)}
       # Initialize lists for failed and successful winners
       @failed_winners = []
       @success_winners = []
       check_all
       # Freeze the test results, so they cannot be accidentally altered later.
       @grammar.freeze
-      @winners.each {|win| win.freeze}
-      @winners.freeze
       @failed_winners.each {|fw| fw.freeze}
       @failed_winners.freeze
       @success_winners.each {|sw| sw.freeze}
       @success_winners.freeze
     end
 
-    # Returns a reference to the linguistic system in use.
-    def system
-      @system
-    end
-    protected :system
-    
     # Returns the grammar used in this test.
     # NOTE: returned object is frozen, and cannot be altered.
     # Create a duplicate to alter it.
@@ -76,7 +67,8 @@ module OTLearn
     end
 
     # Returns a list of the winners that succeeded (are sole optima for
-    # inputs with all unset features set to mismatch their surface correspondents.
+    # inputs with all unset features set to mismatch their surface
+    # correspondents.
     def success_winners()
       @success_winners
     end
@@ -99,10 +91,11 @@ module OTLearn
     # maximally distinct input is added to the failed winner list,
     # accessible by #failed_winners.
     def check_all
-      @winners.each do |word|
+      @output_list.each do |output|
+        word = @grammar.system.parse_output(output, @grammar.lexicon)
         @otlearn_module.mismatches_input_to_output(word) do |mismatched_word|
           loser = @loser_selector.select_loser(mismatched_word,
-            grammar.erc_list)
+            @grammar.erc_list)
           if loser.nil? then
             @success_winners << mismatched_word
           else

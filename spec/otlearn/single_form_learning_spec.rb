@@ -30,8 +30,8 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(output_list).to receive(:map).and_return(winner_list)
       allow(system).to receive(:parse_output).with(out1,lexicon).and_return(win1)
       allow(otlearn_module).to receive(:mismatch_consistency_check)
-      allow(grammar_test_class).to receive(:new).with([win1], grammar).and_return(grammar_test)
-      allow(grammar_test_class).to receive(:new).with(winner_list, grammar).and_return(grammar_test)
+      allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
+      allow(grammar_test_class).to receive(:new).with(output_list, grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @single_form_learning = OTLearn::SingleFormLearning.new(output_list,
         grammar, learning_module: otlearn_module,
@@ -77,7 +77,7 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(otlearn_module).to receive(:ranking_learning).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(false)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
-      allow(grammar_test_class).to receive(:new).with([win1], grammar).and_return(grammar_test)
+      allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
       allow(cr_grammar).to receive(:consistent?).and_return(false, false)
