@@ -41,8 +41,8 @@ RSpec.describe OTLearn::SingleFormLearning do
     it "does not change the grammar" do
       expect(@single_form_learning).not_to be_changed
     end
-    it "returns a winner list with one winner" do
-      expect(@single_form_learning.winner_list).to eq winner_list
+    it "returns an output list with one output" do
+      expect(@single_form_learning.output_list).to eq output_list
     end
     it "returns the grammar" do
       expect(@single_form_learning.grammar).to eq grammar
@@ -89,8 +89,8 @@ RSpec.describe OTLearn::SingleFormLearning do
     it "changes the grammar" do
       expect(@single_form_learning).to be_changed
     end
-    it "returns a winner list with one winner" do
-      expect(@single_form_learning.winner_list).to eq winner_list
+    it "returns an output list with one output" do
+      expect(@single_form_learning.output_list).to eq output_list
     end
     it "returns the grammar" do
       expect(@single_form_learning.grammar).to eq grammar

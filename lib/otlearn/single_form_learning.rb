@@ -1,5 +1,4 @@
 # Author: Bruce Tesar
-#
 
 require_relative "./grammar_test"
 require_relative "./data_manip"
@@ -34,27 +33,22 @@ module OTLearn
       @output_list = output_list
       @grammar = grammar
       @learning_module = learning_module
-      @error_test_class = grammar_test_class
-      @loser_selector = loser_selector
+      @grammar_test_class = grammar_test_class
       # Cannot put the default in the parameter list because of the call
       # to grammar.system.
-      if @loser_selector.nil? then
+      if loser_selector.nil? then
         @loser_selector = LoserSelectorExhaustive.new(grammar.system)
+      else
+        @loser_selector = loser_selector
       end
       @step_type = LanguageLearning::SINGLE_FORM
       @changed = false
-      # The winner list contains a full word for each output, with the input
-      # feature values matching their counterparts in the lexicon.
-      @winner_list = @output_list.map do |out|
-        @grammar.system.parse_output(out, @grammar.lexicon)
-      end
       run_single_form_learning
-      @test_result = @error_test_class.new(@output_list, @grammar)
     end
     
-    # The list of winner words used for learning.
-    def winner_list
-      @winner_list
+    # The list of outputs used for learning.
+    def output_list
+      @output_list
     end
     
     # The grammar resulting from this run of single form learning.
@@ -97,18 +91,18 @@ module OTLearn
       begin
         grammar_changed_on_pass = false
         @output_list.each do |output|
-          winner = @grammar.system.parse_output(output, @grammar.lexicon)
-          # Error test the winner by checking to see if it is the sole
+          # Error test the output by checking to see if it is the sole
           # optimum for the mismatched input.
-          error_test = @error_test_class.new([output], grammar)
+          grammar_test = @grammar_test_class.new([output], @grammar)
           # Unless no error is detected, try learning with the winner.
-          unless error_test.all_correct? then
+          unless grammar_test.all_correct? then
             grammar_changed_on_winner = process_winner(output)
             grammar_changed_on_pass = true if grammar_changed_on_winner
           end
         end
         @changed = true if grammar_changed_on_pass
       end while grammar_changed_on_pass
+      @test_result = @grammar_test_class.new(@output_list, @grammar)
       return changed?
     end
     protected :run_single_form_learning
@@ -133,15 +127,16 @@ module OTLearn
     # TODO: spin #process_winner off into a separate class.
     def process_winner(output)
       change_on_winner = false
-      # Check the winner to see if it is the sole optimum for
-      # the matched input; if not, more ranking info is gained.
-      # NOTE: several languages aren't learned if this step isn't taken.
-      # TODO: investigate residual ranking info learning further
       winner = @grammar.system.parse_output(output, @grammar.lexicon)
       @learning_module.match_input_to_output!(winner)
-      new_ranking_info =
-        @learning_module.ranking_learning([winner], @grammar, @loser_selector)
-      change_on_winner = true if new_ranking_info.any_change?
+      # Check the winner to see if it is the sole optimum for
+      # the matched input; if not, more ranking info is gained.
+      # NOTE: several languages aren't learned if this step isn't taken, if
+      # loser selection by ranking is used; if exhaustive loser selection is
+      # used, this extra ranking info check doesn't seem to be needed.
+#      new_ranking_info =
+#        @learning_module.ranking_learning([winner], @grammar, @loser_selector)
+#      change_on_winner = true if new_ranking_info.any_change?
       # Check the mismatched input for consistency. Only attempt to set
       # features in the winner if the mismatched winner is inconsistent.
       consistency_result =
@@ -150,15 +145,16 @@ module OTLearn
         # Attempt to set each unset feature of winner,
         # returning a list of newly set features
         set_feature_list = @learning_module.set_uf_values([winner], @grammar)
-        # Rebuild the winner list to reflect any just-set features
-        @winner_list = @output_list.map do |out|
+        # (re)construct the winner list (to reflect any just-set features)
+        winner_list = @output_list.map do |out|
           @grammar.system.parse_output(out, @grammar.lexicon)
         end
         # For each newly set feature, check words unfaithfully mapping that
         # feature for new ranking information.
         set_feature_list.each do |set_f|
           @learning_module.
-            new_rank_info_from_feature(@grammar, @winner_list, set_f, loser_selector: @loser_selector)
+            new_rank_info_from_feature(@grammar, winner_list, set_f,
+            loser_selector: @loser_selector)
         end
         change_on_winner = true unless set_feature_list.empty?
       end
