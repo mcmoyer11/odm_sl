@@ -42,11 +42,6 @@ module OTLearn
         @loser_selector = LoserSelectorExhaustive.new(grammar.system)
       end
       @step_type = LanguageLearning::CONTRAST_PAIR
-      # Test the words to see which ones currently fail
-      @winner_list = @output_list.map do |out|
-        @grammar.system.parse_output(out, @grammar.lexicon)
-      end
-      @prior_result = @grammar_test_class.new(@output_list, @grammar)
       run_contrast_pair_learning
       @test_result = @grammar_test_class.new(@output_list, @grammar)
     end
@@ -83,11 +78,16 @@ module OTLearn
     # at least one underlying feature. If none of the constructed
     # contrast pairs is able to set any features, nil is returned.
     def run_contrast_pair_learning
+      # Test the words to see which ones currently fail
+      winner_list = @output_list.map do |out|
+        @grammar.system.parse_output(out, @grammar.lexicon)
+      end
+      prior_result = @grammar_test_class.new(@output_list, @grammar)
       # Create an external iterator which calls generate_contrast_pair()
       # to generate contrast pairs.
       cp_gen = Enumerator.new do |result|
-        @learning_module.generate_contrast_pair(result, @winner_list,
-          @grammar, @prior_result)
+        @learning_module.generate_contrast_pair(result, winner_list,
+          @grammar, prior_result)
       end
       # Process contrast pairs until one is found that sets an underlying
       # feature, or until all contrast pairs have been processed.
@@ -100,7 +100,7 @@ module OTLearn
         # For each newly set feature, see if any new ranking information
         # is now available.
         set_feature_list.each do |set_f|
-          @learning_module.new_rank_info_from_feature(@grammar, @winner_list,
+          @learning_module.new_rank_info_from_feature(@grammar, winner_list,
             set_f, loser_selector: @loser_selector)
         end
         # If an underlying feature was set, return the contrast pair.
