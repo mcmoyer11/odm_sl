@@ -100,20 +100,16 @@ module OTLearn
     
    # Returns true if anything changed about the grammar
     def run_induction_learning
-      # Parse the outputs into words
-      @winner_list = @output_list.map do |out|
-        @grammar.system.parse_output(out, @grammar.lexicon)
-      end
       # Test the words to see which ones currently fail
-      @prior_result = @grammar_test_class.new(@output_list, @grammar)
+      prior_result = @grammar_test_class.new(@output_list, @grammar)
       # If there are no failed winners, raise an exception, because
       # induction learning shouldn't be called unless there are failed
       # winners to work on.
-      if @prior_result.failed_winners.empty? then
+      if prior_result.failed_winners.empty? then
         raise RuntimeError.new("InductionLearning invoked with no failed winners.")
       end
       # Check failed winners for consistency, and collect the consistent ones
-      consistent_list = @prior_result.failed_winners.select do |word|
+      consistent_list = prior_result.failed_winners.select do |word|
         @learning_module.
           mismatch_consistency_check(@grammar, [word]).grammar.consistent?
       end
@@ -121,8 +117,12 @@ module OTLearn
       # Otherwise, run FSF.
       if consistent_list.empty?
         @step_subtype = FEWEST_SET_FEATURES
-        @fsf_step = @fewest_set_features_class.new(@winner_list, @grammar,
-          @prior_result, @language_learner, loser_selector: @loser_selector)
+        # Parse the outputs into words
+        winner_list = @output_list.map do |out|
+          @grammar.system.parse_output(out, @grammar.lexicon)
+        end
+        @fsf_step = @fewest_set_features_class.new(winner_list, @grammar,
+          prior_result, @language_learner, loser_selector: @loser_selector)
         @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING
