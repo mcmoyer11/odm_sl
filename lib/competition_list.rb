@@ -17,25 +17,6 @@ class Competition_list < Array
     return self[0].constraint_list    
   end
 
-  # Auto-numbers the candidates of each competition.
-  # The numbering takes the form of {competition_#}.{candidate_#},
-  # where both competition and candidate numbering start from 1.
-  #
-  # The first candidate of the first competition is numbered 1.1;
-  # The fifth candidate of the ninth competition is numbered 9.5.
-  def auto_number_candidates
-    comp_number = '0'
-    self.each do |competition|
-      comp_number = comp_number.succ
-      cand_number = '0'
-      competition.each do |cand|
-        cand_number = cand_number.succ
-        cand.label = "#{comp_number}.#{cand_number}"
-      end
-    end
-    return true
-  end
-
   # Searches for duplicate inputs among the competitions in the list.
   # Returns an array containing each input that appears in more than
   # one competition. Returns an empty array if there are no duplicate inputs.

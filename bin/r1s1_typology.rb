@@ -17,7 +17,6 @@ require_relative '../lib/factorial_typology'
 # consisting of a single syllable.
 def generate_languages
   competition_list = SL.generate_competitions_1r1s
-  competition_list.auto_number_candidates
   ft_result = FactorialTypology.new(competition_list)
   lang_list = ft_result.factorial_typology
   return lang_list
