@@ -114,7 +114,7 @@ class FactorialTypology
   # typology object, but with all of the harmonically bound candidates
   # removed.
   def non_hb_competition_list
-    comp_list_new = Competition_list.new
+    comp_list_new = CompetitionList.new
     comp_list_new.label = @original_comp_list.label
     @original_comp_list.each do |comp|
       comp_new = Competition.new

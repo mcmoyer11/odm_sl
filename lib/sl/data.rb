@@ -90,7 +90,7 @@ module SL
   # Returns a list of the optimal candidates of the language.
   def SL.generate_language(hier, inputs)
     competitions = inputs.map{|i| SYSTEM.gen(i)}
-    comp_list = Competition_list.new.concat(competitions)
+    comp_list = CompetitionList.new.concat(competitions)
     comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,hier)}
     # each competition returns a list of winners; collapse to one-level list.
     lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
@@ -107,8 +107,8 @@ module SL
     inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,lexicon)}
     # Generate the corresponding competition for each input
     competitions = inputs.map{|i| SYSTEM.gen(i)}
-    # Convert the array of competitions into a proper Competition_list.
-    comp_list = Competition_list.new.concat(competitions)
+    # Convert the array of competitions into a proper CompetitionList.
+    comp_list = CompetitionList.new.concat(competitions)
     comp_list.label = "SL"
     return comp_list
   end

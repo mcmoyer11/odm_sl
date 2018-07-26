@@ -93,7 +93,7 @@ module PAS
   # Returns a list of the optimal candidates of the language.
   def PAS.generate_language(hier, inputs, gram)
     competitions = inputs.map{|i| SYSTEM.gen(i)}
-    comp_list = Competition_list.new.concat(competitions)
+    comp_list = CompetitionList.new.concat(competitions)
     gram.hierarchy = hier
     comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,gram.hierarchy)}
     # each competition returns a list of winners; collapse to one-level list.
@@ -111,8 +111,8 @@ module PAS
     inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,lexicon)}
     # Generate the corresponding competition for each input
     competitions = inputs.map{|i| SYSTEM.gen(i)}
-    # Convert the array of competitions into a proper Competition_list.
-    comp_list = Competition_list.new.concat(competitions)
+    # Convert the array of competitions into a proper CompetitionList.
+    comp_list = CompetitionList.new.concat(competitions)
     comp_list.label = "PAS"
     return comp_list
   end
