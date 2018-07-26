@@ -48,18 +48,6 @@ class Competition < Array
     (find_all{|c| c.opt?}).size > 0
   end
 
-  # Returns true if more than one candidate is marked as optimal;
-  # false otherwise.
-  def mult_optima?
-    (find_all{|c| c.opt?}).size > 1
-  end
-
-  # Returns true if exactly one candidate is marked as optimal;
-  # false otherwise.
-  def sing_optimum?
-    (find_all{|c| c.opt?}).size == 1
-  end
-
   # Returns a list of the candidates marked as optimal.
   def winners
     find_all{|c| c.opt?}
