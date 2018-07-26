@@ -3,7 +3,7 @@
 require 'otlearn/phonotactic_learning'
 require 'otlearn/language_learning'
 
-RSpec.describe OTLearn::PhonotacticLearning, :wip do
+RSpec.describe OTLearn::PhonotacticLearning do
   context "with a winner list and a grammar, sufficient to learn all the words" do
     let(:winner_list){double('winner_list')}
     let(:output_list){double('output_list')}

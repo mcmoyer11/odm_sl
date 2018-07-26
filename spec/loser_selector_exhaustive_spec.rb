@@ -5,12 +5,12 @@ require 'sl/system'
 require 'word'
 require 'erc_list'
 
-RSpec.describe LoserSelectorExhaustive, :wip do
+RSpec.describe LoserSelectorExhaustive do
   let(:input){instance_double(Input, "Input")}
-  let(:winner){instance_double(Word, "Winner")}
-  let(:cand1){instance_double(Word, "Cand1")}
-  let(:ident_viols){instance_double(Word, "Ident_viols")}
-  let(:uninformative){instance_double(Word, "uninformative")}
+  let(:winner){double("Winner")}
+  let(:cand1){double("Cand1")}
+  let(:ident_viols){double("Ident_viols")}
+  let(:uninformative){double("uninformative")}
   let(:competition){[]}
   let(:sys){instance_double(SL::System, "system")}
   # Dependency Injections (and related)

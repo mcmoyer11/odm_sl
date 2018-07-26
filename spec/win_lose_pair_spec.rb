@@ -3,13 +3,13 @@
 RSpec.describe Win_lose_pair do
   before(:each) do
     @constraint_list = ["C1","C2"]
-    @winner = instance_double(Word, "Winner")
+    @winner = double("Winner")
     allow(@winner).to receive(:input).and_return("input")
     allow(@winner).to receive(:label).and_return("win-label")
     allow(@winner).to receive(:constraint_list).and_return(@constraint_list)
     allow(@winner).to receive(:get_viols).with("C1").and_return(0)
     allow(@winner).to receive(:get_viols).with("C2").and_return(3)
-    @loser = instance_double(Word, "Loser")
+    @loser = double("Loser")
     allow(@loser).to receive(:input).and_return("input")
     allow(@loser).to receive(:label).and_return("lose-label")
     allow(@loser).to receive(:get_viols).with("C1").and_return(1)
@@ -48,13 +48,13 @@ RSpec.describe Win_lose_pair do
   context "with mis-matching inputs" do
     before do
       @constraint_list = ["C1","C2"]
-      @winner = instance_double(Word, "Winner")
+      @winner = double("Winner")
       allow(@winner).to receive(:input).and_return("one-input")
       allow(@winner).to receive(:label).and_return("win-label")
       allow(@winner).to receive(:constraint_list).and_return(@constraint_list)
       allow(@winner).to receive(:get_viols).with("C1").and_return(0)
       allow(@winner).to receive(:get_viols).with("C2").and_return(3)
-      @loser = instance_double(Word, "Loser")
+      @loser = double("Loser")
       allow(@loser).to receive(:input).and_return("other-input")
       allow(@loser).to receive(:label).and_return("lose-label")
       allow(@loser).to receive(:get_viols).with("C1").and_return(1)

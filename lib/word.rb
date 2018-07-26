@@ -1,27 +1,33 @@
 # Author: Bruce Tesar
-#
 
 require_relative 'input'
 require_relative 'output'
 require_relative 'io_correspondence'
 require_relative 'candidate'
 
-# A Word is a Candidate (input, output, opt?, constraints),
+# A Word is a candidate (input, output, opt?, constraints),
 # combined with an IO correspondence relation and a reference to
 # the linguistic system.
-class Word < Candidate
+class Word
   
   # A word starts out with an empty input and output by default, but
   # input and output can be optionally passed as parameters.
   # The linguistic system is a mandatory parameter, and
   # the correspondence relation is initially empty;
   # correspondences must be added after the word is created.
-  def initialize(system, input=Input.new, output=Output.new)
+  def initialize(system, input=Input.new, output=Output.new,
+      candidate_class: Candidate)
     @system = system
-    super(input, output, nil, @system.constraints)
+    @candidate = candidate_class.new(input, output, nil, @system.constraints)
     @io_corr = IOCorrespondence.new
   end
 
+  # Delegate all method calls not explicitly defined here to the candidate.
+  def method_missing(name, *args)
+    @candidate.send(name, *args)
+  end
+  protected :method_missing
+  
   # Returns a reference to the IO correspondence of this word.
   def io_corr
     @io_corr
@@ -168,7 +174,7 @@ class Word < Candidate
   # Freezes the word, and additionally freezes the IO correspondence
   # relation.
   def freeze
-    super
+    @candidate.freeze
     @io_corr.freeze
   end
 
@@ -188,6 +194,13 @@ class Word < Candidate
     return input.morphword
   end
   
+  # Returns the candidate internal to the word.
+  # Used in defining #==().
+  def candidate
+    @candidate
+  end
+  protected :candidate
+  
   # Two words are equivalent if their underlying Candidates are equivalent
   # (input and output are equivalent).
   #--
@@ -196,7 +209,7 @@ class Word < Candidate
   # correspondence relations themselves for the two candidates.
   #++
   def ==(other)
-    super
+    return @candidate == other.candidate
   end
   
   def eql?(other)
@@ -204,7 +217,7 @@ class Word < Candidate
   end
   
   def to_s
-    input.morphword.to_s + ' ' + super
+    input.morphword.to_s + ' ' + @candidate.to_s
   end
 
 end # class Word

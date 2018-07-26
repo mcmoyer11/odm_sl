@@ -2,7 +2,7 @@
 
 require 'otlearn/ranking_learning'
 
-RSpec.describe "OTLearn.ranking_learning()", :wip do
+RSpec.describe "OTLearn.ranking_learning()" do
   let(:word_list){double('word_list')}
   let(:grammar){double('grammar')}
   let(:loser_selector){double('loser_selector')}

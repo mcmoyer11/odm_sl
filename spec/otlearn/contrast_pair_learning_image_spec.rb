@@ -2,7 +2,7 @@
 
 require 'otlearn/contrast_pair_learning_image'
 
-RSpec.describe OTLearn::ContrastPairLearningImage, :wip do
+RSpec.describe OTLearn::ContrastPairLearningImage do
   let(:contrast_pair_learning){double('contrast_pair_learning')}
   let(:grammar_test_image_class){double('grammar_test_image_class')}
   let(:test_result){double('test_result')}
