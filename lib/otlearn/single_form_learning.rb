@@ -128,7 +128,7 @@ module OTLearn
     def process_winner(output)
       change_on_winner = false
       winner = @grammar.system.parse_output(output, @grammar.lexicon)
-      @learning_module.match_input_to_output!(winner)
+      winner.match_input_to_output!
       # Check the winner to see if it is the sole optimum for
       # the matched input; if not, more ranking info is gained.
       # NOTE: several languages aren't learned if this step isn't taken, if

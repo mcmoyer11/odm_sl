@@ -44,7 +44,7 @@ module OTLearn
     # Duplicate and output-match the conflict words
     dup_conflict_words = uo_conflict_words.map do |word|
       dup = grammar.system.parse_output(word.output, grammar.lexicon)
-      learning_module.match_input_to_output!(dup)
+      dup.match_input_to_output!
       dup
     end
     # Run each such word through MRCD, searching for new ranking info

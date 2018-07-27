@@ -14,7 +14,7 @@ module OTLearn
     word_list = words.map{|word| word.dup}
     # Set all unset input features to match their output correspondents
     word_list.each{|word| OTLearn::match_input_to_uf!(word)}
-    word_list.each{|word| OTLearn::match_input_to_output!(word)}
+    word_list.each{|word| word.match_input_to_output!}
     # Construct two lists of unset underlying features: those that have
     # conflicting values in the outputs, and those that do not.
     morph_in_words = find_morphemes_in_words(word_list)

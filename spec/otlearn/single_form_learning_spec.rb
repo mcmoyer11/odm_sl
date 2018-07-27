@@ -20,7 +20,7 @@ RSpec.describe OTLearn::SingleFormLearning do
   before(:example) do
     allow(grammar).to receive(:system).and_return(system)
     allow(grammar).to receive(:lexicon).and_return(lexicon)
-    allow(otlearn_module).to receive(:match_input_to_output!)
+    allow(win1).to receive(:match_input_to_output!)
   end
   
   context "with one correct winner" do

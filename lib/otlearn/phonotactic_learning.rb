@@ -77,7 +77,7 @@ module OTLearn
         @grammar.system.parse_output(out, @grammar.lexicon)
       end
       winner_list.each do |winner|
-        @learning_module.match_input_to_output!(winner)
+        winner.match_input_to_output!
       end
       return winner_list
     end

@@ -8,24 +8,6 @@ require 'loserselector_by_ranking'
 
 module OTLearn
   
-  # For the given word, set each *unset* feature of the input to the value
-  # of that feature type in the corresponding element of the output.
-  # Returns a reference to the word itself.
-  def OTLearn::match_input_to_output!(word)
-    input = word.input
-    input.each do |element|  # For each element of the input
-      element.each_feature do |f|  # For each feature of the input element
-        if f.unset? then
-          # Set the input feature value to match the value of
-          # the corresponding feature in the output.
-          out_feat_inst = word.out_feat_corr_of_in(FeatureInstance.new(element,f))
-          f.value = out_feat_inst.value
-        end
-      end
-    end
-    word.eval # re-evaluate constraint violations b/c changed input
-  end
-  
   # Given a list of words and a grammar, check the word list for
   # consistency with the grammar using MRCD. Any features unset
   # in the lexicon of the grammar are set in the input of a word

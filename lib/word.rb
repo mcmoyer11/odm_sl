@@ -4,6 +4,7 @@ require_relative 'input'
 require_relative 'output'
 require_relative 'io_correspondence'
 require_relative 'candidate'
+require_relative 'feature_instance'
 
 # A Word is a candidate (input, output, opt?, constraints),
 # combined with an IO correspondence relation and a reference to
@@ -16,9 +17,10 @@ class Word
   # the correspondence relation is initially empty;
   # correspondences must be added after the word is created.
   def initialize(system, input=Input.new, output=Output.new,
-      candidate_class: Candidate)
+      candidate_class: Candidate, feature_instance_class: FeatureInstance)
     @system = system
     @candidate = candidate_class.new(input, output, nil, @system.constraints)
+    @feature_instance_class = feature_instance_class
     @io_corr = IOCorrespondence.new
   end
 
@@ -61,6 +63,7 @@ class Word
   def out_feat_corr_of_in(in_feat_inst)
     # Make sure the parameter really is a feature instance of an input
     # segment of *this* word.
+    # TODO: this should raise an exception, not return nil
     return nil unless input.member?(in_feat_inst.element)
     # Get the corresponding output element and feature for the input element.
     out_corr_element = io_corr.out_corr(in_feat_inst.element)
@@ -108,6 +111,22 @@ class Word
     # If uf feat has no input correspondent, then it has no output correspondent.
     return nil if in_feat_inst.nil?
     return out_feat_corr_of_in(in_feat_inst)
+  end
+  
+  # Assign each *unset* feature of the input the value of its counterpart
+  # feature in the output. Returns a reference to this word.
+  def match_input_to_output!
+    input.each do |element|
+      element.each_feature do |f|
+        if f.unset? then
+          f_instance = @feature_instance_class.new(element,f)
+          out_feat_instance = out_feat_corr_of_in(f_instance)
+          f.value = out_feat_instance.value
+        end
+      end
+    end
+    eval # re-evaluate constraint violations b/c changed input
+    return self
   end
 
   # Returns a deep copy of the word, with distinct input syllables and features,
