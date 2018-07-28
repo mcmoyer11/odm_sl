@@ -116,13 +116,10 @@ class Word
   # Assign each *unset* feature of the input the value of its counterpart
   # feature in the output. Returns a reference to this word.
   def match_input_to_output!
-    input.each do |element|
-      element.each_feature do |f|
-        if f.unset? then
-          f_instance = @feature_instance_class.new(element,f)
-          out_feat_instance = out_feat_corr_of_in(f_instance)
-          f.value = out_feat_instance.value
-        end
+    input.each_feature do |finst|
+      if finst.feature.unset? then
+        out_feat_instance = out_feat_corr_of_in(finst)
+        finst.value = out_feat_instance.value
       end
     end
     eval # re-evaluate constraint violations b/c changed input

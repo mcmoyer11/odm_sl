@@ -6,8 +6,8 @@ RSpec.describe Word, :wip do
   let(:system){double('system')}
   let(:candidate_class){double('candidate_class')}
   let(:candidate){double('candidate')}
-  let(:input){[]}
-  let(:output){[]}
+  let(:input){double('input')}
+  let(:output){double('output')}
   before(:example) do
     allow(candidate_class).to receive(:new).and_return(candidate)
     allow(system).to receive(:constraints)
@@ -34,42 +34,37 @@ RSpec.describe Word, :wip do
     let(:inseg1){double('inseg1')}
     let(:outseg1){double('outseg1')}
     let(:set_feat){double('set_feat')}
-    let(:set_feat_type){double('set_feat_type')}
-    let(:set_feat_out){double('set_feat_out')}
-    let(:set_feat_out_value){double('set_feat_out_value')}
     let(:unset_feat){double('unset_feat')}
     let(:unset_feat_type){double('unset_feat_type')}
     let(:unset_feat_out){double('unset_feat_out')}
     let(:unset_feat_out_value){double('unset_feat_out_value')}
+    let(:finst_1){double('finst_1')}
+    let(:finst_2){double('finst_2')}
     before(:example) do
-      input << inseg1
-      output << outseg1
-      allow(inseg1).to receive(:each_feature).and_yield(set_feat).and_yield(unset_feat)
-      allow(inseg1).to receive(:get_feature).with(set_feat_type).and_return(set_feat)
-      allow(inseg1).to receive(:get_feature).with(unset_feat_type).and_return(unset_feat)
-      allow(inseg1).to receive(:get_feature).with(set_feat_type).and_return(set_feat)
-      allow(outseg1).to receive(:get_feature).with(set_feat_type).and_return(set_feat_out)
-      allow(outseg1).to receive(:get_feature).with(unset_feat_type).and_return(unset_feat_out)
+      allow(input).to receive(:<<).with(inseg1)
+      allow(input).to receive(:each).and_yield(inseg1)
+      allow(input).to receive(:each_feature).and_yield(finst_1).and_yield(finst_2)
+      allow(input).to receive(:member?).with(inseg1).and_return(true)
+      allow(finst_1).to receive(:element).and_return(inseg1)
+      allow(finst_1).to receive(:feature).and_return(set_feat)
+      allow(finst_2).to receive(:element).and_return(inseg1)
+      allow(finst_2).to receive(:feature).and_return(unset_feat)
+      allow(finst_2).to receive(:value=).with(unset_feat_out_value)
       allow(set_feat).to receive(:unset?).and_return(false)
-      allow(set_feat).to receive(:value=).with(set_feat_out_value)
-      allow(set_feat).to receive(:type).and_return(set_feat_type)
       allow(unset_feat).to receive(:unset?).and_return(true)
-      allow(unset_feat).to receive(:value=).with(unset_feat_out_value)
       allow(unset_feat).to receive(:type).and_return(unset_feat_type)
-      allow(set_feat_out).to receive(:type).and_return(set_feat_type)
-      allow(set_feat_out).to receive(:value).and_return(set_feat_out_value)
       allow(unset_feat_out).to receive(:type).and_return(unset_feat_type)
-      allow(unset_feat_out).to receive(:value).and_return(unset_feat_out_value)
+      # required for internals of FeatureInstance
+      allow(outseg1).to receive(:get_feature).with(unset_feat_type).and_return(unset_feat_out)
+      allow(unset_feat_out).to receive(:value).and_return(unset_feat_out_value)      
+      #
       @word = Word.new(system, input, output, candidate_class: candidate_class)
       allow(@word).to receive(:eval)
       @word.io_corr << [inseg1,outseg1]
       @ret_value = @word.match_input_to_output!
     end
     it "assigns the unset feature the value of the output correspondent" do
-      expect(unset_feat).to have_received(:value=).with(unset_feat_out_value)
-    end
-    it "does not change the set feature" do
-      expect(set_feat).not_to have_received(:value=)
+      expect(finst_2).to have_received(:value=).with(unset_feat_out_value)
     end
     it "re-evaluates the constraint violations" do
       expect(@word).to have_received(:eval)
