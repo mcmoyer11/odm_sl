@@ -1,7 +1,5 @@
 # Author: Bruce Tesar
-#
 
-require 'REXML/syncenumerator'
 require_relative 'morph_word'
 require_relative 'ui_correspondence'
 
@@ -18,9 +16,9 @@ class Input < Array
 
   # Creates a new input, with an empty morphological word, and an empty
   # underlying-input (UI) correspondence relation.
-  def initialize
-    @morphword = MorphWord.new
-    @ui_corr = UICorrespondence.new
+  def initialize(morphword: MorphWord.new, ui_corr: UICorrespondence.new)
+    @morphword = morphword
+    @ui_corr = ui_corr
   end
 
   # Makes a duplicate copy of each syllable when duplicating the input,
@@ -29,7 +27,6 @@ class Input < Array
   def dup
     copy = Input.new # contents of copy are filled in below
     copy.morphword = @morphword.dup unless @morphword.nil?
-    copy.ui_corr = UICorrespondence.new
     self.each do |old_syl|
       new_syl = old_syl.dup # duplicate the old syllable
       copy << new_syl # add the dup to the copy
@@ -43,9 +40,12 @@ class Input < Array
   end
 
   # Two inputs are the same if they contain equivalent syllables.
+  # TODO: create separate method #eql_elements? for this. Let #eql?
+  # also check equivalence of morphword, maybe ui_corr.
   def ==(other)
-    return false unless super
-    true
+    return false unless self.size == other.size
+    self.each_index {|idx| return false unless self[idx] == other[idx]}
+    return true
   end
 
   # the same as ==(_other_).
