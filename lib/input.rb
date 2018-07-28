@@ -2,6 +2,7 @@
 
 require_relative 'morph_word'
 require_relative 'ui_correspondence'
+require_relative 'feature_instance'
 
 # An ordered list of elements, and a correspondence relation between those
 # elements and their correspondents in the lexicon. An input is typically
@@ -16,9 +17,11 @@ class Input
 
   # Creates a new input, with a morphological word and an
   # underlying-input (UI) correspondence relation.
-  def initialize(morphword: MorphWord.new, ui_corr: UICorrespondence.new)
+  def initialize(morphword: MorphWord.new, ui_corr: UICorrespondence.new,
+      feature_instance_class: FeatureInstance)
     @morphword = morphword
     @ui_corr = ui_corr
+    @feature_instance_class = feature_instance_class
     @element_list = []
   end
 
@@ -59,6 +62,18 @@ class Input
   # the same as ==(_other_).
   def eql?(other)
     self==other
+  end
+  
+  # Iterates through all feature instances of the input, yielding each
+  # to the block. It progresses through the elements in order (in the input),
+  # and each feature for a given element is yielded before moving on to
+  # the next element.
+  def each_feature
+    self.each do |element|
+      element.each_feature do |feat|
+        yield @feature_instance_class.new(element,feat)
+      end
+    end
   end
   
   # Lists the elements of the input as a string, with dashes between morphemes.

@@ -6,6 +6,7 @@ RSpec.describe Input, :wip do
   let(:morphword){double('morphword')}
   let(:morphword_dup){double('morphword_dup')}
   let(:ui_corr){double('ui_corr')}
+  let(:feature_instance_class){double('feature_instance_class')}
   before(:example) do
     allow(morphword).to receive(:dup).and_return(morphword_dup)
   end
@@ -59,6 +60,8 @@ RSpec.describe Input, :wip do
         @input2 = Input.new(morphword: morphword, ui_corr: ui_corr)
         @input2 << element_2_1 << element_2_2
       end
+      # Regression spec making sure that methods taking blocks, like
+      # #each_index, are properly delegated to the internal element list.
       it "yields 2 indices" do
         expect{|probe| @input1.each_index(&probe)}.to yield_control.exactly(2).times
       end
@@ -164,5 +167,33 @@ RSpec.describe Input, :wip do
     it "the dup has a dup of the morphword" do
       expect(@input_dup.morphword).to eq morphword_dup
     end
+  end
+  
+  context "with two segments each with two features" do
+    let(:seg1){double('seg1')}
+    let(:seg2){double('seg2')}
+    let(:feat_1_1){double('feat_1_1')}
+    let(:feat_1_2){double('feat_1_2')}
+    let(:feat_2_1){double('feat_2_1')}
+    let(:feat_2_2){double('feat_2_2')}
+    let(:finst_1_1){double('finst_1_1')}
+    let(:finst_1_2){double('finst_1_2')}
+    let(:finst_2_1){double('finst_2_1')}
+    let(:finst_2_2){double('finst_2_2')}
+    before(:example) do
+      allow(seg1).to receive(:each_feature).and_yield(feat_1_1).and_yield(feat_1_2)
+      allow(seg2).to receive(:each_feature).and_yield(feat_2_1).and_yield(feat_2_2)
+      allow(feature_instance_class).to receive(:new).with(seg1,feat_1_1).and_return(finst_1_1)
+      allow(feature_instance_class).to receive(:new).with(seg1,feat_1_2).and_return(finst_1_2)
+      allow(feature_instance_class).to receive(:new).with(seg2,feat_2_1).and_return(finst_2_1)
+      allow(feature_instance_class).to receive(:new).with(seg2,feat_2_2).and_return(finst_2_2)
+      @input = Input.new(morphword: morphword, ui_corr: ui_corr,
+        feature_instance_class: feature_instance_class)
+      @input << seg1 << seg2
+    end
+    it "yields four feature instances in succession" do
+      expect{|probe| @input.each_feature(&probe)}.to yield_successive_args(finst_1_1, finst_1_2, finst_2_1, finst_2_2)
+    end
+    
   end
 end # RSpec.describe Input
