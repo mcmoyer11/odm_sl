@@ -25,8 +25,8 @@ class Word
   end
 
   # Delegate all method calls not explicitly defined here to the candidate.
-  def method_missing(name, *args)
-    @candidate.send(name, *args)
+  def method_missing(name, *args, &block)
+    @candidate.send(name, *args, &block)
   end
   protected :method_missing
   

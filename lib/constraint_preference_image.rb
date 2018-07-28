@@ -32,8 +32,8 @@ class ConstraintPreferenceImage
   end
 
   # Delegate all method calls not explicitly defined here to the sheet object.
-  def method_missing(name, *args)
-    @sheet.send(name, *args)
+  def method_missing(name, *args, &block)
+    @sheet.send(name, *args, &block)
   end
   protected :method_missing
 
