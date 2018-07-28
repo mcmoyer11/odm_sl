@@ -59,21 +59,44 @@ RSpec.describe Input, :wip do
         @input2 = Input.new(morphword: morphword, ui_corr: ui_corr)
         @input2 << element_2_1 << element_2_2
       end
+      it "yields 2 indices" do
+        expect{|probe| @input1.each_index(&probe)}.to yield_control.exactly(2).times
+      end
       it "are ==" do
         expect(@input1==@input2).to be true
       end
       it "are eql" do
         expect(@input1.eql?(@input2)).to be true
       end
+      it "have equivalent first elements" do
+        expect(@input1[0]==@input2[0]).to be true
+      end
+      it "each have size 2" do
+        expect(@input1.size).to eq 2
+        expect(@input2.size).to eq 2
+      end
     end
     context "each with a distinct element" do
       before(:example) do
+        allow(element_1_1).to receive(:==).and_return(false)
         allow(element_1_1).to receive(:==).with(element_2_1).and_return(true)
-        allow(element_1_2).to receive(:==).with(element_2_2).and_return(false)
+        allow(element_1_2).to receive(:==).and_return(false)
         @input1 = Input.new(morphword: morphword, ui_corr: ui_corr)
         @input1 << element_1_1 << element_1_2
         @input2 = Input.new(morphword: morphword, ui_corr: ui_corr)
         @input2 << element_2_1 << element_2_2
+      end
+      it "have size 2" do
+        expect(@input1.size).to eq 2
+      end
+      it "have equivalent first elements" do
+        expect(@input1[0]==@input2[0]).to be true
+      end
+      it "have non-equivalent second elements" do
+        expect(@input1[1]==@input2[1]).to be false
+      end
+      it "yields 2 indices" do
+        expect{|probe| @input1.each_index(&probe)}.to yield_control.exactly(2).times
       end
       it "are not ==" do
         expect(@input1==@input2).to be false
