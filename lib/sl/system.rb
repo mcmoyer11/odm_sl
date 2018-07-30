@@ -167,7 +167,7 @@ module SL
       end
       gen = REXML::SyncEnumerator.new(input, output)
       gen.each do |in_syl,out_syl|
-        word.io_corr << [in_syl,out_syl]
+        word.add_to_io_corr(in_syl,out_syl)
         if in_syl.morpheme != out_syl.morpheme then
           raise "Input syllable morph #{in_syl.morpheme.label} != " +
             "output syllable morph #{out_syl.morpheme.label}"
@@ -253,7 +253,7 @@ module SL
       new_w = word.dup_for_gen
       out_syl = yield(in_syl.dup) # block sets features of new output syllable.
       new_w.output << out_syl
-      new_w.io_corr << [in_syl,out_syl]
+      new_w.add_to_io_corr(in_syl,out_syl)
       return new_w
     end
 

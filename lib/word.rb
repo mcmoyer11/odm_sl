@@ -30,6 +30,11 @@ class Word
   end
   protected :method_missing
   
+  # Adds a new IO correspondence pair, with +in_el+ corresponding to +out_el+.
+  def add_to_io_corr(in_el, out_el)
+    @io_corr.add_corr(in_el, out_el)
+  end
+  
   # Returns a reference to the IO correspondence of this word.
   def io_corr
     @io_corr

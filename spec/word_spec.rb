@@ -60,7 +60,7 @@ RSpec.describe Word, :wip do
       #
       @word = Word.new(system, input, output, candidate_class: candidate_class)
       allow(@word).to receive(:eval)
-      @word.io_corr << [inseg1,outseg1]
+      @word.add_to_io_corr(inseg1,outseg1)
       @ret_value = @word.match_input_to_output!
     end
     it "assigns the unset feature the value of the output correspondent" do
