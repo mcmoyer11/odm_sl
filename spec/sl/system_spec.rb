@@ -45,7 +45,7 @@ RSpec.describe SL::System do
       @cand = double("candidate")
       @input = Array.new()
       @output = Array.new()
-      @io_corr = Array.new()
+      @io_corr = IOCorrespondence.new
       allow(@cand).to receive(:input).and_return(@input)
       allow(@cand).to receive(:output).and_return(@output)
       allow(@cand).to receive(:io_corr).and_return(@io_corr)
@@ -67,7 +67,7 @@ RSpec.describe SL::System do
         allow(@sylo1).to receive(:unstressed?).and_return(false)
         allow(@sylo1).to receive(:main_stress?).and_return(true)
         # IO correspondence
-        @io_corr << [@syli1, @sylo1]
+        @io_corr.add_corr(@syli1, @sylo1)
       end
       it "assigns 1 violation of NoLong" do
         expect(@system.nolong.eval_candidate(@cand)).to eq(1)
@@ -105,7 +105,7 @@ RSpec.describe SL::System do
         allow(@sylo1).to receive(:unstressed?).and_return(false)
         allow(@sylo1).to receive(:main_stress?).and_return(true)
         # IO correspondence
-        @io_corr << [@syli1, @sylo1]
+        @io_corr.add_corr(@syli1, @sylo1)
       end
       it "assigns 0 violations of NoLong" do
         expect(@system.nolong.eval_candidate(@cand)).to eq(0)
@@ -157,7 +157,7 @@ RSpec.describe SL::System do
         allow(@sylo2).to receive(:unstressed?).and_return(true)
         allow(@sylo2).to receive(:main_stress?).and_return(false)
         # IO correspondence
-        @io_corr << [@syli1, @sylo1] << [@syli2, @sylo2]
+        @io_corr.add_corr(@syli1, @sylo1).add_corr(@syli2, @sylo2)
       end
       it "assigns 1 violation of NoLong" do
         expect(@system.nolong.eval_candidate(@cand)).to eq(1)
@@ -209,7 +209,7 @@ RSpec.describe SL::System do
         allow(@sylo2).to receive(:unstressed?).and_return(false)
         allow(@sylo2).to receive(:main_stress?).and_return(true)
         # IO correspondence
-        @io_corr << [@syli1, @sylo1] << [@syli2, @sylo2]
+        @io_corr.add_corr(@syli1, @sylo1).add_corr(@syli2, @sylo2)
       end
       it "assigns 1 violation of NoLong" do
         expect(@system.nolong.eval_candidate(@cand)).to eq(1)

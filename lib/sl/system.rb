@@ -1,5 +1,4 @@
 # Author: Bruce Tesar
-#
  
 require 'singleton'
 require 'REXML/syncenumerator'
@@ -210,20 +209,24 @@ module SL
         viol_count
       end
       @idstress = Constraint.new("IDStress", 5, FAITH) do |cand|
-        cand.io_corr.inject(0) do |sum, pair|
-          if pair[0].stress_unset? then sum
-          elsif pair[0].main_stress?!=pair[1].main_stress? then sum+1
-          else sum
+        viol_count = 0
+        cand.input.each do |in_syl|
+          unless in_syl.stress_unset? then
+            out_syl = cand.io_corr.out_corr(in_syl)
+            viol_count+=1 if (in_syl.main_stress?!=out_syl.main_stress?)
           end
         end
+        viol_count
       end
       @idlength = Constraint.new("IDLength", 6, FAITH) do |cand|
-        cand.io_corr.inject(0) do |sum, pair|
-          if pair[0].length_unset? then sum
-          elsif pair[0].long?!=pair[1].long? then sum+1
-          else sum
+        viol_count = 0
+        cand.input.each do |in_syl|
+          unless in_syl.length_unset? then
+            out_syl = cand.io_corr.out_corr(in_syl)
+            viol_count+=1 if (in_syl.long?!=out_syl.long?)
           end
         end
+        viol_count
       end      
     end
     
