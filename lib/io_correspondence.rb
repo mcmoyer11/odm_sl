@@ -1,9 +1,7 @@
 # Author: Bruce Tesar
-#
 
 # An IO correspondence relation contains input-output correspondence
-# pairs, each pair a size 2 array with the first element the input
-# correspondent and the second element the output correspondent.
+# pairs.
 #
 # NOTE: a correspondence is specific to a particular instance of
 # a particular structural description. References to the actual
@@ -12,20 +10,39 @@
 # This is important: two phonologically identical elements could have
 # separate existence in the same input or output (and even belong to
 # the same morpheme).
+#---
+# Each pair is a size 2 array with the first element the input
+# correspondent and the second element the output correspondent.
 class IOCorrespondence < Array
 
+  # The index in a correspondence pair for the input element.
+  IN = 0
+  
+  # The index in a correspondence pair for the output element.
+  OUT = 1
+  
   # Returns an empty IOCorrespondence.
   def initialize
+  end
+  
+  # Adds a correspondence pair indicating that +in_el+ and +out_el+
+  # are IO correspondents. Returns a reference to the IO correspondence itself.
+  def add_corr(in_el,out_el)
+    pair = []
+    pair[IN] = in_el
+    pair[OUT] = out_el
+    self << pair
+    return self
   end
 
   # Returns true if the output element _out_ has an input correspondent.
   def in_corr?(out)
-    any?{|pair| pair[1].equal?(out)}    
+    any?{|pair| pair[OUT].equal?(out)}    
   end
   
   # Returns true if the input element _input_ has an output correspondent.
   def out_corr?(input)
-    any?{|pair| pair[0].equal?(input)}
+    any?{|pair| pair[IN].equal?(input)}
   end
 
   # Returns the input correspondent for output element _out_. If _out_ has
@@ -33,9 +50,9 @@ class IOCorrespondence < Array
   # input correspondent, the first one listed in the correspondence
   # relation is returned.
   def in_corr(out)
-    first_pair = find{|pair| pair[1].equal?(out)}
+    first_pair = find{|pair| pair[OUT].equal?(out)}
     return nil if first_pair.nil?
-    return first_pair[0]
+    return first_pair[IN]
   end
   
   # Returns the output correspondent for input element _input_. If _input_ has
@@ -43,9 +60,9 @@ class IOCorrespondence < Array
   # output correspondent, the first one listed in the correspondence
   # relation is returned.
   def out_corr(input)
-    first_pair = find{|pair| pair[0].equal?(input)}
+    first_pair = find{|pair| pair[IN].equal?(input)}
     return nil if first_pair.nil?
-    return first_pair[1]
+    return first_pair[OUT]
   end
 
 end # class IOCorrespondence
