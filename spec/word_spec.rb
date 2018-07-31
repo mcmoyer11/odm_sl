@@ -90,4 +90,58 @@ RSpec.describe Word, :wip do
       expect(@word1==@word2).to be true
     end
   end
+  
+  # Because Word#dup constructs a new Word internally, the testing will
+  # involve some other dependent classes.
+  context "its duplicate" do
+    let(:in_1){double('in_1')}
+    let(:in_2){double('in_2')}
+    let(:out_1){double('out_1')}
+    let(:out_2){double('out_2')}
+    let(:in_1_dup){double('in_1_dup')}
+    let(:in_2_dup){double('in_2_dup')}
+    let(:out_1_dup){double('out_1_dup')}
+    let(:out_2_dup){double('out_2_dup')}
+    before(:example) do
+      allow(in_1).to receive(:dup).and_return(in_1_dup)
+      allow(in_2).to receive(:dup).and_return(in_2_dup)
+      allow(out_1).to receive(:dup).and_return(out_1_dup)
+      allow(out_2).to receive(:dup).and_return(out_2_dup)
+      allow(in_1).to receive(:==).with(in_1_dup).and_return(true)
+      allow(in_2).to receive(:==).with(in_2_dup).and_return(true)
+      allow(out_1).to receive(:==).with(out_1_dup).and_return(true)
+      allow(out_2).to receive(:==).with(out_2_dup).and_return(true)
+      allow(input).to receive(:morphword).and_return(nil)
+      @word = Word.new(system)
+      @word.input << in_1 << in_2
+      @word.output << out_1 << out_2
+      @word.add_to_io_corr(in_1, out_1)
+      @word.add_to_io_corr(in_2, out_2)
+      @word_dup = @word.dup
+    end
+    it "the two are not the same object" do
+      expect(@word_dup).not_to equal @word
+    end
+    it "the two are equivalent" do
+      expect(@word_dup).to eq @word
+    end
+    it "has dup input element 0" do
+      expect(@word_dup.input[0]).to equal in_1_dup
+    end
+    it "has dup input element 1" do
+      expect(@word_dup.input[1]).to equal in_2_dup
+    end
+    it "has dup output element 0" do
+      expect(@word_dup.output[0]).to equal out_1_dup
+    end
+    it "has dup output element 1" do
+      expect(@word_dup.output[1]).to equal out_2_dup
+    end
+    it "has corresponding first elements" do
+      expect(@word_dup.io_corr.out_corr(in_1_dup)).to equal out_1_dup
+    end
+    it "has corresponding second elements" do
+      expect(@word_dup.io_corr.out_corr(in_2_dup)).to equal out_2_dup
+    end
+  end
 end # RSpec.describe Word

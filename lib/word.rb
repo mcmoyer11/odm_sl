@@ -160,7 +160,7 @@ class Word
       c_input.ui_corr << [under_syl,new_in_syl] unless under_syl.nil?
       # get the corresponding output syllable in the original word's IO corresp.
       out_syl = @io_corr.out_corr(old_in_syl)
-      c_io_corr << [new_in_syl,out_syl] unless out_syl.nil?
+      c_io_corr.add_corr(new_in_syl,out_syl) unless out_syl.nil?
     end
     # Make a copy of the output, adjusting the O part of IO correspondence.
     output.each do |old_out_syl|
