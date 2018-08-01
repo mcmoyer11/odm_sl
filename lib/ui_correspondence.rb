@@ -37,7 +37,7 @@ class UICorrespondence
     return self
   end
   
-  # TODO: modernize the system_spec.rb files, so this method can be eliminated.
+  # Returns the number of correspondence pairs in the relation.
   def size
     @pair_list.size
   end

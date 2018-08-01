@@ -35,10 +35,9 @@ class IOCorrespondence
     return self
   end
   
-  # Returns true if the correspondence relation contains no pairs;
-  # returns false otherwise.
-  def empty?
-    @pair_list.empty?
+  # Returns the number of correspondence pairs in the relation.
+  def size
+    @pair_list.size
   end
 
   # Returns true if the output element +out_el+ has an input correspondent.
@@ -51,12 +50,12 @@ class IOCorrespondence
     @pair_list.any?{|pair| pair[IN].equal?(in_el)}
   end
 
-  # Returns the input correspondent for output element _out_. If _out_ has
-  # no input correspondent, nil is returned. If _out_ has more than one
+  # Returns the input correspondent for output element +out_el+. If +out_el+.
+  # has no input correspondent, nil is returned. If +out_el+. has more than one
   # input correspondent, the first one listed in the correspondence
   # relation is returned.
-  def in_corr(out)
-    first_pair = @pair_list.find{|pair| pair[OUT].equal?(out)}
+  def in_corr(out_el)
+    first_pair = @pair_list.find{|pair| pair[OUT].equal?(out_el)}
     return nil if first_pair.nil?
     return first_pair[IN]
   end

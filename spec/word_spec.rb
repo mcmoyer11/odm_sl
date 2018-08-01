@@ -20,7 +20,7 @@ RSpec.describe Word do
       @word = Word.new(system, input, output, candidate_class: candidate_class)
     end
     it "gives an empty IO correspondence" do
-      expect(@word.io_corr).to be_empty
+      expect(@word.io_corr.size).to eq 0
     end
     it "gives the input" do
       expect(@word.input).to eq input
