@@ -144,4 +144,49 @@ RSpec.describe Word, :wip do
       expect(@word_dup.io_corr.out_corr(in_2_dup)).to equal out_2_dup
     end
   end
+
+  context "its dup_for_gen" do
+    let(:in_1){double('in_1')}
+    let(:in_2){double('in_2')}
+    let(:in_3){double('in_3')}
+    let(:out_1){double('out_1')}
+    let(:out_2){double('out_2')}
+    before(:example) do
+      allow(input).to receive(:morphword).and_return(nil)
+      @word = Word.new(system)
+      @word.input << in_1 << in_2 << in_3
+      @word.output << out_1 << out_2
+      @word.add_to_io_corr(in_1, out_1)
+      @word.add_to_io_corr(in_2, out_2)
+      @word_dup_gen = @word.dup_for_gen
+    end
+    it "the two are not the same object" do
+      expect(@word_dup_gen).not_to equal @word
+    end
+    it "the two are equivalent" do
+      expect(@word_dup_gen).to eq @word
+    end
+    it "has the same input element 0" do
+      expect(@word_dup_gen.input[0]).to equal in_1
+    end
+    it "has the same input element 1" do
+      expect(@word_dup_gen.input[1]).to equal in_2
+    end
+    it "has no output correspondent for input element 3" do
+      expect(@word_dup_gen.io_corr.out_corr?(in_3)).to be false
+    end
+    it "has the same output element 0" do
+      expect(@word_dup_gen.output[0]).to equal out_1
+    end
+    it "has the same output element 1" do
+      expect(@word_dup_gen.output[1]).to equal out_2
+    end
+    it "has corresponding first elements" do
+      expect(@word_dup_gen.io_corr.out_corr(in_1)).to equal out_1
+      expect(@word_dup_gen.io_corr.in_corr(out_1)).to equal in_1
+    end
+    it "has corresponding second elements" do
+      expect(@word_dup_gen.io_corr.out_corr(in_2)).to equal out_2
+    end
+  end
 end # RSpec.describe Word

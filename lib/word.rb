@@ -190,9 +190,10 @@ class Word
   def dup_for_gen
     # use clone() method for a shallow copy of output.
     copy = Word.new(@system,input,output.clone)
-    # Copy the original IO correspondence contents into the new
-    # IO correspondence relation.
-    copy.io_corr.concat(io_corr)
+    input.each do |in_el|
+      out_el = io_corr.out_corr(in_el) # output correspondent (if it exists)
+      copy.io_corr.add_corr(in_el, out_el) unless out_el.nil?
+    end
     return copy
   end
 
