@@ -94,7 +94,7 @@ module PAS
         uf.each do |syl| # for each syllable of the underlying form
           in_syl = syl.dup
           input.push(in_syl) # add a duplicate of the underlying syllable to input.
-          input.ui_corr << [syl,in_syl] # create a correspondence between underlying and input syllables.
+          input.ui_corr.add_corr(syl,in_syl) # create a correspondence between underlying and input syllables.
         end
       end
       return input

@@ -159,7 +159,7 @@ class Word
       c_input << new_in_el # add the element copy to the input copy
       under_el = ui_corr.under_corr(old_in_el) # UF correspondent
       unless under_el.nil?
-        c_input.ui_corr << [under_el,new_in_el]
+        c_input.ui_corr.add_corr(under_el,new_in_el)
       end
     end
     # Fill the copy output with copies of the output elements, and fill the

@@ -155,14 +155,11 @@ RSpec.describe Input do
       expect(@input[0].equal?(@input_dup[0])).to be false
       expect(@input[1].equal?(@input_dup[1])).to be false
     end
-    it "have the same size UI correspondences" do
-      expect(@input_dup.ui_corr.size).to eq 2
-    end
     it "the dup's first underlying element is the same" do
-      expect(@input_dup.ui_corr.under_corr(@input_dup[0])).to eq uf1
+      expect(@input_dup.ui_corr.under_corr(@input_dup[0])).to equal uf1
     end
     it "the dup's second underlying element is the same" do
-      expect(@input_dup.ui_corr.under_corr(@input_dup[1])).to eq uf2
+      expect(@input_dup.ui_corr.under_corr(@input_dup[1])).to equal uf2
     end
     it "the dup has a dup of the morphword" do
       expect(@input_dup.morphword).to eq morphword_dup

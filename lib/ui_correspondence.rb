@@ -30,6 +30,14 @@ class UICorrespondence < Array
     return self
   end
   
+#  def size
+#    super.size
+#  end
+#  
+#  def [](idx)
+#    super[idx]
+#  end
+  
   # Returns true if underlying element _under_ has an input
   # correspondent. Returns false otherwise.
   def in_corr?(under)

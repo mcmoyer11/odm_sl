@@ -45,7 +45,7 @@ class Input
       # between this underlying element and the duplicated input element
       # in the copy.
       under_el = @ui_corr.under_corr(old_el)
-      copy.ui_corr << [under_el,new_el] unless under_el.nil?
+      copy.ui_corr.add_corr(under_el,new_el) unless under_el.nil?
     end
     return copy
   end
