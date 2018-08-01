@@ -2,7 +2,7 @@
 
 require 'word'
 
-RSpec.describe Word, :wip do
+RSpec.describe Word do
   let(:system){double('system')}
   let(:candidate_class){double('candidate_class')}
   let(:candidate){double('candidate')}

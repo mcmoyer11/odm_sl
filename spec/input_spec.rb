@@ -2,7 +2,7 @@
 
 require 'input'
 
-RSpec.describe Input, :wip do
+RSpec.describe Input do
   let(:morphword){double('morphword')}
   let(:morphword_dup){double('morphword_dup')}
   let(:ui_corr){double('ui_corr')}
