@@ -9,10 +9,27 @@
 # at the level of individual correspondence elements.
 class UICorrespondence < Array
 
+  # The index in a correspondence pair for the underlying element.
+  UF = 0
+  
+  # The index in a correspondence pair for the input element.
+  IN = 1
+  
   # Returns an empty UICorrespondence.
-  def initialize    
+  def initialize
+#    @pair_list = []
   end
 
+  # Adds a correspondence pair indicating that +uf_el+ and +in_el+
+  # are UI correspondents. Returns a reference to the UI correspondence itself.
+  def add_corr(uf_el,in_el)
+    pair = []
+    pair[UF] = uf_el
+    pair[IN] = in_el
+    self << pair
+    return self
+  end
+  
   # Returns true if underlying element _under_ has an input
   # correspondent. Returns false otherwise.
   def in_corr?(under)
