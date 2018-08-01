@@ -148,26 +148,30 @@ class Word
       c_input.morphword = c_morphword
       c_output.morphword = c_morphword
     end
-    # Make a copy of the input, constructing updated versions of the UI
-    # and IO correspondences using the new copies of the input syllables.
-    input.each do |old_in_syl|
-      new_in_syl = old_in_syl.dup # duplicate the old input syllable
-      c_input << new_in_syl # add the dup to the copy
-      # get the corresponding underlying syllable in the original's UI correspondence.
-      # If it exists, add a correspondence to the copy between this underlying
-      # syllable and the duplicated input syllable in the copy.
-      under_syl = input.ui_corr.under_corr(old_in_syl)
-      c_input.ui_corr << [under_syl,new_in_syl] unless under_syl.nil?
-      # get the corresponding output syllable in the original word's IO corresp.
-      out_syl = @io_corr.out_corr(old_in_syl)
-      c_io_corr.add_corr(new_in_syl,out_syl) unless out_syl.nil?
+    # Make copies of the old input's elements, creating a map from each
+    # old element to its copy.
+    input_dup_map = Hash.new
+    input.each{|old| input_dup_map[old] = old.dup}
+    # Fill the copy input with copies of the input elements, and fill the
+    # copy's UI correspondence using the copy input elements.
+    input.each do |old_in_el|
+      new_in_el = input_dup_map[old_in_el]
+      c_input << new_in_el # add the element copy to the input copy
+      under_el = ui_corr.under_corr(old_in_el) # UF correspondent
+      unless under_el.nil?
+        c_input.ui_corr << [under_el,new_in_el]
+      end
     end
-    # Make a copy of the output, adjusting the O part of IO correspondence.
-    output.each do |old_out_syl|
-      new_out_syl = old_out_syl.dup # duplicate the old output syllable
-      c_output << new_out_syl # add the dup to the copy
-      corr_pair = c_io_corr.find{|p| p[1].equal?(old_out_syl)} # find IO corr. pair
-      corr_pair[1] = new_out_syl unless corr_pair.nil? # replace old with new output syl.
+    # Fill the copy output with copies of the output elements, and fill the
+    # copy's IO correspondence using the copy input and output elements.
+    output.each do |old_out_el|
+      new_out_el = old_out_el.dup # duplicate the old output element
+      c_output << new_out_el # add the element copy to the output copy
+      old_in_el = io_corr.in_corr(old_out_el) # old input correspondent
+      unless old_in_el.nil?
+        new_in_el = input_dup_map[old_in_el]
+        c_io_corr.add_corr(new_in_el, new_out_el)
+      end
     end
     copy.eval # set the constraint violations
     return copy
