@@ -5,25 +5,28 @@ require_relative '../../lib/otlearn/max_mismatch_ranking'
 RSpec.describe OTLearn::MaxMismatchRanking do
   let(:failed_winner){double('failed_winner')}
   let(:failed_winner_list){[failed_winner]}
+  let(:mismatch){double('mismatch')}
   let(:grammar){double('grammar')}
+  let(:system){double('system')}
   let(:language_learner){double("language_learner").as_null_object}
   let(:learning_module){double("learning_module")}
   let(:loser_selector){double('loser_selector')}
   let(:mrcd_result){double('mrcd_result')}
-  let(:mismatch){double('mismatch')}
   before(:example) do
-    allow(grammar).to receive(:system)
+    allow(grammar).to receive(:system).and_return(system)
+    allow(grammar).to receive(:lexicon)
+    allow(failed_winner).to receive(:output)
+    allow(system).to receive(:parse_output).and_return(mismatch)
+    allow(mismatch).to receive(:mismatch_input_to_output!)
+    allow(learning_module).to receive(:ranking_learning).
+      with([mismatch],grammar,loser_selector).and_return(mrcd_result)
   end
   
   context "given a consistent failed winner that yields new ranking information" do
     let(:new_pair){double('new_pair')}
-    before(:each) do
+    before(:example) do
       allow(mrcd_result).to receive(:any_change?).and_return(true)
       allow(mrcd_result).to receive(:added_pairs).and_return([new_pair])
-      allow(learning_module).to receive(:mismatches_input_to_output).
-        with(failed_winner).and_yield(mismatch)
-      allow(learning_module).to receive(:ranking_learning).
-        with([mismatch],grammar,loser_selector).and_return(mrcd_result)
       @max_mismatch_rankings =
         OTLearn::MaxMismatchRanking.new(failed_winner_list, grammar,
         language_learner, learning_module: learning_module,
@@ -39,18 +42,13 @@ RSpec.describe OTLearn::MaxMismatchRanking do
       expect(learning_module).to have_received(:ranking_learning)
     end
     it "determines the failed winner" do
-      expect(@max_mismatch_rankings.failed_winner).to eq(failed_winner)
+      expect(@max_mismatch_rankings.failed_winner).to eq(mismatch)
     end
   end
      
   context "when a consistent failed winner does not yield new ranking information" do
-    before(:each) do
+    before(:example) do
       allow(mrcd_result).to receive(:any_change?).and_return(false)
-      allow(mrcd_result).to receive(:added_pairs).and_return([])
-      allow(learning_module).to receive(:mismatches_input_to_output).
-        with(failed_winner).and_yield(mismatch)
-      allow(learning_module).to receive(:ranking_learning).
-        with([mismatch],grammar,loser_selector).and_return(mrcd_result)
     end
     it "should raise an exception" do
       expect do

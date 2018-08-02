@@ -1,5 +1,6 @@
 # Author: Morgan Moyer
 
+require 'word'
 require_relative 'data_manip'
 require_relative 'learning_exceptions'
 require_relative 'mmr_exceptions'
@@ -7,18 +8,21 @@ require_relative 'ranking_learning'
 
 module OTLearn
   
- # MaxMismatchRanking takes winners that are failing Initial Word Evaluation
- # (where the candidate created using the maximally dissimilar input paired 
- # with the output is error testing), and creates a winner-loser pair using the 
- # error. Then, this WL pair is added to the learner's support for inconsistency 
- # testing. If the WL pair is consistent with the learner's support, then the learner
- # can assume that this WL pair encodes missing ranking information.
- # If the WL pair is inconsistent, then the learner should attempt to set an
- # underlying feature, using FewestSetFeatures.
- # 
- # This class would typically be invoked when neither single form learning nor
- # contrast pairs are able to make further progress, yet learning is
- # not yet complete, suggesting that a paradigmatic subset relation is present.
+  # MaxMismatchRanking takes winners that are failing Initial Word Evaluation
+  # (where the candidate created using the maximally dissimilar input paired 
+  # with the output is error testing), and creates a winner-loser pair using the 
+  # error. Then, this WL pair is added to the learner's support for inconsistency 
+  # testing. If the WL pair is consistent with the learner's support, then the
+  # learner can assume that this WL pair encodes missing ranking information.
+  # If the WL pair is inconsistent, then the learner should attempt to set an
+  # underlying feature, using FewestSetFeatures.
+  # 
+  # This class would typically be invoked when neither single form learning nor
+  # contrast pairs are able to make further progress, yet learning is
+  # not yet complete, suggesting that a paradigmatic subset relation is present.
+  #
+  # This assumes that all of the unset features are binary; see the
+  # documentation for Word#mismatch_input_to_output!.
   class MaxMismatchRanking
     
     # Initializes a new object, *and* automatically executes
@@ -27,8 +31,8 @@ module OTLearn
     #   are candidates for use in MMR.
     # * +grammar+ is the current grammar of the learner.
     # * +language_learner+ included in an exception that is raised.
-    # * +learning_module+ - the module containing the methods
-    #   #mismatches_input_to_output and #ranking_learning.
+    # * +learning_module+ - the module containing the method
+    #   #ranking_learning.
     #   Used for testing (dependency injection).
     # * +loser_selector+ - object used to select informative losers.
     def initialize(failed_winner_list, grammar, language_learner,
@@ -78,15 +82,14 @@ module OTLearn
     # ranking information.
     def run_max_mismatch_learning
       choose_failed_winner
-      mrcd_result = nil
-      @learning_module.mismatches_input_to_output(@failed_winner) do |cand|
-        mrcd_result = @learning_module.
-          ranking_learning([cand], @grammar, @loser_selector)
-      end
-      @newly_added_wl_pairs = mrcd_result.added_pairs
+      @failed_winner = @grammar.system.parse_output(@failed_winner.output, @grammar.lexicon)
+      @failed_winner.mismatch_input_to_output!
+      mrcd_result = @learning_module.
+        ranking_learning([@failed_winner], @grammar, @loser_selector)
       @changed = mrcd_result.any_change?
       raise MMREx.new(@failed_winner, @language_learner), ("A failed consistent" +
         " winner did not provide new ranking information.") unless @changed
+      @newly_added_wl_pairs = mrcd_result.added_pairs
       return @changed
     end
     protected :run_max_mismatch_learning
