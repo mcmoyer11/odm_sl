@@ -16,6 +16,9 @@ module OTLearn
   # then there is nothing more to be learned about the grammar from the word:
   # by output-drivenness, all viable inputs for the word map to the correct
   # output.
+  #
+  # This class assumes that all of the unset features are binary; see the
+  # documentation for Word#mismatch_input_to_output!.
   class GrammarTest
 
     # Returns a new GrammarTest, for the provided +winners+, and with
@@ -86,9 +89,6 @@ module OTLearn
     # every other possible candidate for that winner output is also
     # optimal, because it will have a subset of the possible disparities.
     # Thus, none of the remaining unset features matters.
-    #
-    # This assumes that all of the unset features are binary; see the
-    # documentation for Word#mismatch_input_to_output!.
     #
     # Each winner that does not form a sole optimal candidate with a
     # maximally distinct input is added to the failed winner list,
