@@ -30,7 +30,7 @@ RSpec.describe Word do
     end
   end
   
-  context "with a single input segment with one set and one unset feature, #match_input_to_output" do
+  context "with a single input segment with one set and one unset feature, " do
     let(:inseg1){double('inseg1')}
     let(:outseg1){double('outseg1')}
     let(:set_feat){double('set_feat')}
@@ -49,7 +49,6 @@ RSpec.describe Word do
       allow(finst_1).to receive(:feature).and_return(set_feat)
       allow(finst_2).to receive(:element).and_return(inseg1)
       allow(finst_2).to receive(:feature).and_return(unset_feat)
-      allow(finst_2).to receive(:value=).with(unset_feat_out_value)
       allow(set_feat).to receive(:unset?).and_return(false)
       allow(unset_feat).to receive(:unset?).and_return(true)
       allow(unset_feat).to receive(:type).and_return(unset_feat_type)
@@ -61,16 +60,39 @@ RSpec.describe Word do
       @word = Word.new(system, input, output, candidate_class: candidate_class)
       allow(@word).to receive(:eval)
       @word.add_to_io_corr(inseg1,outseg1)
-      @ret_value = @word.match_input_to_output!
     end
-    it "assigns the unset feature the value of the output correspondent" do
-      expect(finst_2).to have_received(:value=).with(unset_feat_out_value)
+    context "#match_input_to_output" do
+      before(:example) do
+        allow(finst_2).to receive(:value=).with(unset_feat_out_value)
+        @ret_value = @word.match_input_to_output!        
+      end
+      it "assigns the unset feature the value of the output correspondent" do
+        expect(finst_2).to have_received(:value=).with(unset_feat_out_value)
+      end
+      it "re-evaluates the constraint violations" do
+        expect(@word).to have_received(:eval)
+      end
+      it "returns a reference to the word" do
+        expect(@ret_value).to eq @word
+      end
     end
-    it "re-evaluates the constraint violations" do
-      expect(@word).to have_received(:eval)
-    end
-    it "returns a reference to the word" do
-      expect(@ret_value).to eq @word
+    context "#mismatch_input_to_output" do
+      let(:unset_feat_oppout_value){double('unset_feat_oppout_value')}
+      before(:example) do
+        allow(finst_2).to receive(:value=).with(unset_feat_oppout_value)
+        allow(unset_feat).to receive(:each_value).
+          and_yield(unset_feat_out_value).and_yield(unset_feat_oppout_value)
+        @ret_value = @word.mismatch_input_to_output!        
+      end
+      it "assigns the unset feature the value opposite the output correspondent" do
+        expect(finst_2).to have_received(:value=).with(unset_feat_oppout_value)
+      end
+      it "re-evaluates the constraint violations" do
+        expect(@word).to have_received(:eval)
+      end
+      it "returns a reference to the word" do
+        expect(@ret_value).to eq @word
+      end
     end
   end
   

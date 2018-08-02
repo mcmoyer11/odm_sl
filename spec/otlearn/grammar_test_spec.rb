@@ -23,8 +23,8 @@ RSpec.describe OTLearn::GrammarTest do
     allow(system).to receive(:parse_output).with(output_nopt, lexicon).and_return(winner_nopt)
     allow(winner_opt).to receive(:freeze)
     allow(winner_nopt).to receive(:freeze)
-    allow(ot_mod).to receive(:mismatches_input_to_output).with(winner_opt).and_yield(winner_opt)
-    allow(ot_mod).to receive(:mismatches_input_to_output).with(winner_nopt).and_yield(winner_nopt)
+    allow(winner_opt).to receive(:mismatch_input_to_output!)
+    allow(winner_nopt).to receive(:mismatch_input_to_output!)
     allow(selector).to receive(:select_loser).with(winner_opt,"ERCs").and_return(nil)
     allow(selector).to receive(:select_loser).with(winner_nopt,"ERCs").and_return(loser)
   end

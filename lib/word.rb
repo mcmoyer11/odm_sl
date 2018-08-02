@@ -130,6 +130,25 @@ class Word
     eval # re-evaluate constraint violations b/c changed input
     return self
   end
+  
+  # Assign each *unset* feature of the input the value opposite the value
+  # of its counterpart feature in the output. Returns a reference to this word.
+  # NOTE: this method assumes binary features. If an unset feature has more
+  # than two values, the first value returned by Feature#each_value that is
+  # not the output value will be assigned.
+  def mismatch_input_to_output!
+    input.each_feature do |finst|
+      if finst.feature.unset? then
+        out_feat_instance = out_feat_corr_of_in(finst)
+        feature = finst.feature
+        feature.each_value do |val|
+          finst.value = val if (val != out_feat_instance.value)
+        end
+      end
+    end
+    eval # re-evaluate constraint violations b/c changed input
+    return self
+  end
 
   # Returns a deep copy of the word, with distinct input syllables and features,
   # distinct output elements and features, and appropriately revises UI and

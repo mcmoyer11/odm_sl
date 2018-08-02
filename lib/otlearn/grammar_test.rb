@@ -84,23 +84,23 @@ module OTLearn
     # optimal, because it will have a subset of the possible disparities.
     # Thus, none of the remaining unset features matters.
     #
-    # If some of the features are suprabinary, than all combinations of
-    # non-output-matching values for the unset features are tried.
+    # This assumes that all of the unset features are binary; see the
+    # documentation for Word#mismatch_input_to_output!.
     #
     # Each winner that does not form a sole optimal candidate with a
     # maximally distinct input is added to the failed winner list,
     # accessible by #failed_winners.
     def check_all
+      # Parse each output, to create a test instance of the word.
       @output_list.each do |output|
         word = @grammar.system.parse_output(output, @grammar.lexicon)
-        @otlearn_module.mismatches_input_to_output(word) do |mismatched_word|
-          loser = @loser_selector.select_loser(mismatched_word,
-            @grammar.erc_list)
-          if loser.nil? then
-            @success_winners << mismatched_word
-          else
-            @failed_winners << mismatched_word
-          end
+        word.mismatch_input_to_output!
+        loser = @loser_selector.select_loser(word, @grammar.erc_list)
+        # If no loser was found, then the word is optimal, and a success.
+        if loser.nil? then
+          @success_winners << word
+        else
+          @failed_winners << word
         end
       end
     end
