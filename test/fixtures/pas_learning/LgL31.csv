@@ -1,0 +1,78 @@
+ , , , , , , , , , , , 
+LgL31,,,,,,,,,,,
+Learned: true,,,,,,,,,,,
+,,,,,,,,,,,
+Phonotactic Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,2:WSP,4:MR,5:IDStress,3:ML,7:Culm,6:IDLength,1:NoLong
+,r1-s2,s.-S:,s.S:,S.s:,W,W,W,L,,,
+,r1-s2,s.-S:,s.S:,s.s:,W,,W,L,W,,
+,r1-s1,s.-s.,s.s.,S.s.,,W,W,,L,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,W,L,,W,L
+,r1-s3,s.-S.,s.S.,S.s.,,W,W,L,,,
+,r1-s1,s.-s.,s.s.,s.S.,,,W,W,L,,
+,r1-s2,s.-S:,s.S:,s.s.,,,W,L,W,W,L
+,r1-s3,s.-S.,s.S.,s.s.,,,W,L,W,,
+,r1-s2,s.-S:,s.S:,s.S.,,,,,,W,L
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,??,,s2,??,,s3,??,,s4,??
+,,,,,,,,,,,
+Single Form Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,2:WSP,4:MR,5:IDStress,3:ML,7:Culm,6:IDLength,1:NoLong
+,r1-s2,s.-S:,s.S:,S.s:,W,W,W,L,,,
+,r1-s2,s.-S:,s.S:,s.s:,W,,W,L,W,,
+,r1-s1,s.-s.,s.s.,S.s.,,W,W,,L,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,W,L,,W,L
+,r1-s3,s.-S.,s.S.,S.s.,,W,W,L,,,
+,r1-s1,s.-s.,s.s.,s.S.,,,W,W,L,,
+,r1-s2,s.-S:,s.S:,s.s.,,,W,L,W,W,L
+,r1-s3,s.-S.,s.S.,s.s.,,,W,L,W,,
+,r1-s2,s.-S:,s.S:,s.S.,,,,,,W,L
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,s?,,s2,?:,,s3,S.,,s4,?:
+,,,,,,,,,,,
+Contrast Pair Learning,,,,,,,,,,,
+,None Found,,,,,,,,,,
+,,,,,,,,,,,
+Induction Learning,,,,,,,,,,,
+Max Mismatch Ranking,,,,,,,,,,,
+Grammar Changed: TRUE,,,,,,,,,,,
+,Failed Winner,r1-s2,S:-s:,s.S:,,,,,,,
+,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,2:WSP,4:MR,6:IDLength,1:NoLong,5:IDStress,3:ML,7:Culm
+,r1-s2,s.-S:,s.S:,S.s:,W,W,,,W,L,
+,r1-s2,s.-S:,s.S:,s.s:,W,,,,W,L,W
+,r1-s2,S:-s:,s.S:,s:S:,W,,L,W,,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,W,L,W,L,
+,r1-s2,S:-s:,s.S:,S.s.,,W,W,L,L,L,
+,r1-s1,s.-s.,s.s.,S.s.,,W,,,W,,L
+,r1-s3,s.-S.,s.S.,S.s.,,W,,,W,L,
+,r1-s2,S:-s:,s.S:,S:s.,,W,,,L,L,
+,r1-s2,s.-S:,s.S:,s.s.,,,W,L,W,L,W
+,r1-s2,s.-S:,s.S:,s.S.,,,W,L,,,
+,r1-s2,S:-s:,s.S:,s.s.,,,W,L,L,L,W
+,r1-s1,s.-s.,s.s.,s.S.,,,,,W,W,L
+,r1-s3,s.-S.,s.S.,s.s.,,,,,W,L,W
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,s?,,s2,?:,,s3,S.,,s4,?:
+,,,,,,,,,,,
+Single Form Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,2:WSP,4:MR,6:IDLength,1:NoLong,5:IDStress,3:ML,7:Culm
+,r1-s2,s.-S:,s.S:,S.s:,W,W,,,W,L,
+,r1-s2,s.-S:,s.S:,s.s:,W,,,,W,L,W
+,r1-s2,S:-s:,s.S:,s:S:,W,,L,W,,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,W,L,W,L,
+,r1-s2,S:-s:,s.S:,S.s.,,W,W,L,L,L,
+,r1-s1,s.-s.,s.s.,S.s.,,W,,,W,,L
+,r1-s3,s.-S.,s.S.,S.s.,,W,,,W,L,
+,r1-s2,S:-s:,s.S:,S:s.,,W,,,L,L,
+,r1-s2,s.-S:,s.S:,s.s.,,,W,L,W,L,W
+,r1-s2,s.-S:,s.S:,s.S.,,,W,L,,,
+,r1-s2,S:-s:,s.S:,s.s.,,,W,L,L,L,W
+,r1-s1,s.-s.,s.s.,s.S.,,,,,W,W,L
+,r1-s3,s.-S.,s.S.,s.s.,,,,,W,L,W
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,s.,,s2,?:,,s3,S.,,s4,?:

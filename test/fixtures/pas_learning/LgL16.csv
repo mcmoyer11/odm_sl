@@ -1,0 +1,69 @@
+ , , , , , , , , , , , 
+LgL16,,,,,,,,,,,
+Learned: true,,,,,,,,,,,
+,,,,,,,,,,,
+Phonotactic Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,7:Culm,5:IDStress,3:ML,4:MR,6:IDLength,1:NoLong,2:WSP
+,r1-s1,S.-s.,S.s.,s.s.,W,W,,L,,,
+,r2-s2,S:-s:,S:s:,s.S.,,W,W,L,W,L,L
+,r1-s1,S.-s.,S.s.,s.S.,,W,W,L,,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,L,W,W,L,
+,r1-s2,s.-S:,s.S:,S.s:,,W,L,W,,,W
+,r1-s3,s.-S.,s.S.,S.s.,,W,L,W,,,
+,r1-s2,s.-S:,s.S:,s.S.,,,,,W,L,
+,r2-s2,S:-s:,S:s:,S.s.,,,,,W,L,L
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,??,,s2,??,,s3,??,,s4,??
+,,,,,,,,,,,
+Single Form Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,7:Culm,5:IDStress,3:ML,4:MR,6:IDLength,1:NoLong,2:WSP
+,r1-s1,S.-s.,S.s.,s.s.,W,W,,L,,,
+,r2-s2,S:-s:,S:s:,s.S.,,W,W,L,W,L,L
+,r1-s1,S.-s.,S.s.,s.S.,,W,W,L,,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,L,W,W,L,
+,r1-s2,s.-S:,s.S:,S.s:,,W,L,W,,,W
+,r1-s3,s.-S.,s.S.,S.s.,,W,L,W,,,
+,r1-s2,s.-S:,s.S:,s.S.,,,,,W,L,
+,r2-s2,S:-s:,S:s:,S.s.,,,,,W,L,L
+,,,,,,,,,,,
+,r1,?.,,r2,?:,,r3,?.,,r4,?:
+,s1,?.,,s2,?:,,s3,?.,,s4,?:
+,,,,,,,,,,,
+Contrast Pair Learning,,,,,,,,,,,
+,Contrast Pair:,r1-s1 ?.-?.->S.s.,r1-s3 ?.-?.->s.S.,,,,,,,,
+,ERC#,Input,Winner,Loser,7:Culm,5:IDStress,3:ML,4:MR,6:IDLength,1:NoLong,2:WSP
+,r1-s1,S.-s.,S.s.,s.s.,W,W,,L,,,
+,r2-s2,S:-s:,S:s:,s.S.,,W,W,L,W,L,L
+,r1-s1,S.-s.,S.s.,s.S.,,W,W,L,,,
+,r1-s2,s.-S:,s.S:,S.s.,,W,L,W,W,L,
+,r1-s2,s.-S:,s.S:,S.s:,,W,L,W,,,W
+,r1-s3,s.-S.,s.S.,S.s.,,W,L,W,,,
+,r2-s3,S:-S.,S:s.,s.S.,,,W,L,W,L,
+,r2-s3,S:-S.,S:s.,s:S.,,,W,L,,,W
+,r3-s3,S.-S.,S.s.,s.S.,,,W,L,,,
+,r1-s2,s.-S:,s.S:,s.S.,,,,,W,L,
+,r2-s2,S:-s:,S:s:,S.s.,,,,,W,L,L
+,,,,,,,,,,,
+,r1,?.,,r2,?:,,r3,?.,,r4,?:
+,s1,s.,,s2,?:,,s3,S.,,s4,?:
+,,,,,,,,,,,
+Single Form Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,7:Culm,6:IDLength,1:NoLong,2:WSP,5:IDStress,3:ML,4:MR
+,r1-s1,S.-s.,S.s.,s.s.,W,,,,W,,L
+,r1-s1,s.-s.,S.s.,s.s.,W,,,,L,,L
+,r1-s2,s.-S:,s.S:,S.s.,,W,L,,W,L,W
+,r2-s3,S:-S.,S:s.,s.S.,,W,L,,,W,L
+,r1-s2,s.-S:,s.S:,s.S.,,W,L,,,,
+,r2-s3,s:-S.,S:s.,s.S.,,W,L,,L,W,L
+,r2-s2,S:-s:,S:s:,s.S.,,W,L,L,W,W,L
+,r2-s2,S:-s:,S:s:,S.s.,,W,L,L,,,
+,r1-s2,s.-S:,s.S:,S.s:,,,,W,W,L,W
+,r2-s3,S:-S.,S:s.,s:S.,,,,W,,W,L
+,r2-s3,s:-S.,S:s.,s:S.,,,,W,L,W,L
+,r1-s1,S.-s.,S.s.,s.S.,,,,,W,W,L
+,r1-s3,s.-S.,s.S.,S.s.,,,,,W,L,W
+,r3-s3,S.-S.,S.s.,s.S.,,,,,,W,L
+,,,,,,,,,,,
+,r1,s.,,r2,s:,,r3,S.,,r4,S:
+,s1,s.,,s2,s:,,s3,S.,,s4,S:

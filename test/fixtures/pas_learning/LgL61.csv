@@ -1,0 +1,33 @@
+ , , , , , , , , , , , 
+LgL61,,,,,,,,,,,
+Learned: true,,,,,,,,,,,
+,,,,,,,,,,,
+Phonotactic Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,3:ML,5:IDStress,4:MR,7:Culm,6:IDLength,1:NoLong,2:WSP
+,r1-s2,s.-s:,s.s:,s.S.,W,W,,L,W,L,L
+,r1-s1,s.-s.,s.s.,s.S.,W,W,,L,,,
+,r1-s2,s.-s:,s.s:,s.S:,W,W,,L,,,L
+,r3-s1,S.-s.,S.s.,s.S.,W,W,L,,,,
+,r1-s2,s.-s:,s.s:,S.s.,,W,W,L,W,L,L
+,r1-s1,s.-s.,s.s.,S.s.,,W,W,L,,,
+,r2-s1,s:-s.,s:s.,S:s.,,W,W,L,,,L
+,r3-s1,S.-s.,S.s.,s.s.,,W,L,W,,,
+,r1-s2,s.-s:,s.s:,s.s.,,,,,W,L,L
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,??,,s2,??,,s3,??,,s4,??
+,,,,,,,,,,,
+Single Form Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,3:ML,5:IDStress,4:MR,7:Culm,6:IDLength,1:NoLong,2:WSP
+,r1-s2,s.-s:,s.s:,s.S.,W,W,,L,W,L,L
+,r1-s1,s.-s.,s.s.,s.S.,W,W,,L,,,
+,r1-s2,s.-s:,s.s:,s.S:,W,W,,L,,,L
+,r3-s1,S.-s.,S.s.,s.S.,W,W,L,,,,
+,r1-s2,s.-s:,s.s:,S.s.,,W,W,L,W,L,L
+,r1-s1,s.-s.,s.s.,S.s.,,W,W,L,,,
+,r2-s1,s:-s.,s:s.,S:s.,,W,W,L,,,L
+,r3-s1,S.-s.,S.s.,s.s.,,W,L,W,,,
+,r1-s2,s.-s:,s.s:,s.s.,,,,,W,L,L
+,,,,,,,,,,,
+,r1,s.,,r2,s:,,r3,S.,,r4,S:
+,s1,?.,,s2,?:,,s3,?.,,s4,?:

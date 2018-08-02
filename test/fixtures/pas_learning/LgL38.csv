@@ -1,0 +1,39 @@
+ , , , , , , , , , , , 
+LgL38,,,,,,,,,,,
+Learned: true,,,,,,,,,,,
+,,,,,,,,,,,
+Phonotactic Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,6:IDLength,1:NoLong,2:WSP,3:ML,4:MR,7:Culm,5:IDStress
+,r2-s1,S:-s.,S:s.,s.S.,W,L,,W,L,,W
+,r1-s2,s.-S:,s.S:,s.S.,W,L,,,,,
+,r1-s2,s.-S:,s.S:,S.s.,W,L,,L,W,,W
+,r1-s2,s.-S:,s.S:,s.s.,W,L,,L,,W,W
+,r2-s2,S:-s:,S:s:,s.S.,W,L,L,W,L,,W
+,r2-s2,S:-s:,S:s:,S.s.,W,L,L,,,,
+,r2-s1,S:-s.,S:s.,s:S.,,,W,W,L,,W
+,r1-s2,s.-S:,s.S:,S.s:,,,W,L,W,,W
+,r1-s2,s.-S:,s.S:,s.s:,,,W,L,,W,W
+,r1-s1,s.-s.,s.s.,s.S.,,,,W,,L,W
+,r2-s2,S:-s:,S:s:,s:S:,,,,W,L,,W
+,r1-s1,s.-s.,s.s.,S.s.,,,,,W,L,W
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,??,,s2,??,,s3,??,,s4,??
+,,,,,,,,,,,
+Single Form Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,6:IDLength,1:NoLong,2:WSP,3:ML,4:MR,7:Culm,5:IDStress
+,r2-s1,S:-s.,S:s.,s.S.,W,L,,W,L,,W
+,r1-s2,s.-S:,s.S:,s.S.,W,L,,,,,
+,r1-s2,s.-S:,s.S:,S.s.,W,L,,L,W,,W
+,r1-s2,s.-S:,s.S:,s.s.,W,L,,L,,W,W
+,r2-s2,S:-s:,S:s:,s.S.,W,L,L,W,L,,W
+,r2-s2,S:-s:,S:s:,S.s.,W,L,L,,,,
+,r2-s1,S:-s.,S:s.,s:S.,,,W,W,L,,W
+,r1-s2,s.-S:,s.S:,S.s:,,,W,L,W,,W
+,r1-s2,s.-S:,s.S:,s.s:,,,W,L,,W,W
+,r1-s1,s.-s.,s.s.,s.S.,,,,W,,L,W
+,r2-s2,S:-s:,S:s:,s:S:,,,,W,L,,W
+,r1-s1,s.-s.,s.s.,S.s.,,,,,W,L,W
+,,,,,,,,,,,
+,r1,?.,,r2,?:,,r3,?.,,r4,?:
+,s1,?.,,s2,?:,,s3,?.,,s4,?:

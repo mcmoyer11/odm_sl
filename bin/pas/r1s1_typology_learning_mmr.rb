@@ -73,7 +73,8 @@ end
 puts "The typology has #{lang_count} languages."
 
 # Learn the languages, writing output for each to a separate file.
-out_filepath = File.join(File.dirname(__FILE__),'..','..','temp')
+out_filepath = File.join(File.dirname(__FILE__),'..','..','temp','pas_learning')
+Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank grammar, and assign it the label of the language.
   grammar = PAS::Grammar.new

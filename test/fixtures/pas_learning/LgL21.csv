@@ -1,0 +1,11 @@
+ , , , , , , , , , , , 
+LgL21,,,,,,,,,,,
+Learned: true,,,,,,,,,,,
+,,,,,,,,,,,
+Phonotactic Learning,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,1:NoLong,2:WSP,3:ML,7:Culm,4:MR,5:IDStress,6:IDLength
+,r1-s1,S.-s.,S.s.,s.S.,,,W,,L,W,
+,r1-s1,S.-s.,S.s.,s.s.,,,,W,L,W,
+,,,,,,,,,,,
+,r1,??,,r2,??,,r3,??,,r4,??
+,s1,??,,s2,??,,s3,??,,s4,??
