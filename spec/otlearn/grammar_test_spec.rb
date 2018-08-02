@@ -7,7 +7,6 @@ RSpec.describe OTLearn::GrammarTest do
   let(:lexicon){double('lexicon')}
   let(:system){double('system')}
   let(:selector){double{'loser_selector'}}
-  let(:ot_mod){double{'ot_mod'}}
   let(:output_opt){double('output_opt')}
   let(:winner_opt){double('winner_opt')}
   let(:output_nopt){double('output_nopt')}
@@ -33,7 +32,7 @@ RSpec.describe OTLearn::GrammarTest do
     let(:output_list){[output_opt]}
     before(:each) do
       @grammar_test = OTLearn::GrammarTest.new(output_list, grammar,
-        loser_selector: selector, otlearn_module: ot_mod)
+        loser_selector: selector)
     end
     it "returns a list with that winner for success winners" do
       expect(@grammar_test.success_winners).to eq [winner_opt]
@@ -50,7 +49,7 @@ RSpec.describe OTLearn::GrammarTest do
     let(:output_list){[output_nopt]}
     before(:each) do
       @grammar_test = OTLearn::GrammarTest.new(output_list, grammar,
-        loser_selector: selector, otlearn_module: ot_mod)
+        loser_selector: selector)
     end
     it "returns an empty list for success winners" do
       expect(@grammar_test.success_winners).to be_empty
@@ -67,7 +66,7 @@ RSpec.describe OTLearn::GrammarTest do
     let(:output_list){[output_opt, output_nopt]}
     before(:each) do
       @grammar_test = OTLearn::GrammarTest.new(output_list, grammar,
-        loser_selector: selector, otlearn_module: ot_mod)
+        loser_selector: selector)
     end
     it "returns a list with the opt winner for success winners" do
       expect(@grammar_test.success_winners).to eq [winner_opt]

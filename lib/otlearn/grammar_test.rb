@@ -1,7 +1,6 @@
 # Author: Bruce Tesar
 
 require_relative '../loserselector_by_ranking'
-require_relative 'data_manip'
 require_relative 'rcd_bias_low'
 
 module OTLearn
@@ -10,6 +9,13 @@ module OTLearn
   # of grammatical outputs with respect to a grammar. The tests are initiated
   # by creating a GrammarTest; the constructor takes a list of outputs and
   # a grammar as parameters.
+  #
+  # Each word is evaluated with a mismatched input: each unset feature is
+  # set to the value opposite its surface realization in the word. If
+  # a word with a mismatched input is still optimal for the current grammar,
+  # then there is nothing more to be learned about the grammar from the word:
+  # by output-drivenness, all viable inputs for the word map to the correct
+  # output.
   class GrammarTest
 
     # Returns a new GrammarTest, for the provided +winners+, and with
@@ -17,9 +23,7 @@ module OTLearn
     # * +output_list+ - the outputs used to test the grammar
     # * +grammar+ - the grammar being tested
     # * +loser_selector+ - used for testing (dependency injection).
-    # * +otlearn_module+ - used for testing (dependency injection).
-    def initialize(output_list, grammar, loser_selector: nil,
-        otlearn_module: OTLearn)
+    def initialize(output_list, grammar, loser_selector: nil)
       @output_list = output_list
       # Dup the grammar, so it can be frozen.
       @grammar = grammar.dup
@@ -32,7 +36,6 @@ module OTLearn
       else
         @loser_selector = loser_selector
       end
-      @otlearn_module = otlearn_module
       # Initialize lists for failed and successful winners
       @failed_winners = []
       @success_winners = []
