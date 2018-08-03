@@ -62,6 +62,8 @@ lang_list = generate_languages
 data_file = File.join(File.dirname(__FILE__),'..','data','outputs_1r1s_Typology.mar')
 write_language_list_to_file(lang_list, data_file)
 
+puts "\nLearning the SL typology."
+
 # Learn the languages, writing output for each to a separate file.
 out_filepath = File.join(File.dirname(__FILE__),'..','temp','sl_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath

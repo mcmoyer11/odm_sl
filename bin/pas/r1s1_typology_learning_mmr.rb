@@ -65,12 +65,7 @@ lang_list = generate_languages
 data_file = File.join(File.dirname(__FILE__),'..','..','data','outputs_1r1s_Typology.mar')
 write_language_list_to_file(lang_list, data_file)
 
-# Report the number of languages in the typology
-lang_count = 0
-read_languages_from_file(data_file) do |label, outputs|
-  lang_count += 1
-end
-puts "The typology has #{lang_count} languages."
+puts "\nLearning the PAS typology."
 
 # Learn the languages, writing output for each to a separate file.
 out_filepath = File.join(File.dirname(__FILE__),'..','..','temp','pas_learning')
