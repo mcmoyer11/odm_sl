@@ -44,7 +44,6 @@ module OTLearn
     end
     # For each failed winner, look for qualifying contrast pairs
     f_winners.each do |failed_winner|
-      OTLearn::match_input_to_uf!(failed_winner)
       failed_winner.morphword.each do |morph|
         # Find features of morph that are unset in the lexicon.
         unset_features = OTLearn::find_unset_features([morph], grammar)
