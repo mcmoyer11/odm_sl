@@ -139,8 +139,9 @@ class Word
   def mismatch_input_to_output!
     input.each_feature do |finst|
       if finst.feature.unset? then
-        out_feat_instance = out_feat_corr_of_in(finst)
         feature = finst.feature
+        feature_arity_check(feature)
+        out_feat_instance = out_feat_corr_of_in(finst)
         feature.each_value do |val|
           finst.value = val if (val != out_feat_instance.value)
         end
@@ -148,6 +149,17 @@ class Word
     end
     eval # re-evaluate constraint violations b/c changed input
     return self
+  end
+
+  # Checks the given features to see if it is suprabinary (has more than two
+  # possible values). Raises a RuntimeError if the feature is suprabinary.
+  def feature_arity_check(feature)
+    arity = 0
+    feature.each_value{|val| arity += 1}
+    if arity > 2 then
+      raise "Word#mismatch_input_to_output! attempted to mismatch a suprabinary feature."
+    end
+    return true
   end
 
   # Returns a deep copy of the word, with distinct input syllables and features,

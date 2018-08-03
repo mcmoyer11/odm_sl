@@ -95,6 +95,51 @@ RSpec.describe Word do
       end
     end
   end
+
+  context "with a single input segment with a suprabinary feature, " do
+    let(:inseg1){double('inseg1')}
+    let(:outseg1){double('outseg1')}
+    let(:suprabinary_feat){double('suprabinary_feat')}
+    let(:suprabinary_feat_type){double('suprabinary_feat_type')}
+    let(:suprabinary_feat_out){double('suprabinary_feat_out')}
+    let(:suprabinary_feat_out_value){double('suprabinary_feat_out_value')}
+    let(:suprabinary_feat_value2){double('suprabinary_feat_value2')}
+    let(:suprabinary_feat_value3){double('suprabinary_feat_value3')}
+    let(:finst_1){double('finst_1')}
+    before(:example) do
+      allow(input).to receive(:<<).with(inseg1)
+      allow(input).to receive(:each).and_yield(inseg1)
+      allow(input).to receive(:each_feature).and_yield(finst_1)
+      allow(input).to receive(:member?).with(inseg1).and_return(true)
+      allow(finst_1).to receive(:element).and_return(inseg1)
+      allow(finst_1).to receive(:feature).and_return(suprabinary_feat)
+      allow(suprabinary_feat).to receive(:unset?).and_return(true)
+      allow(suprabinary_feat).to receive(:type).
+        and_return(suprabinary_feat_type)
+      allow(suprabinary_feat_out).to receive(:type).
+        and_return(suprabinary_feat_type)
+      # required for internals of FeatureInstance
+      allow(outseg1).to receive(:get_feature).with(suprabinary_feat_type).
+        and_return(suprabinary_feat_out)
+      allow(suprabinary_feat_out).to receive(:value).
+        and_return(suprabinary_feat_out_value)      
+      #
+      @word = Word.new(system, input, output, candidate_class: candidate_class)
+      allow(@word).to receive(:eval)
+      @word.add_to_io_corr(inseg1,outseg1)
+    end
+    context "#mismatch_input_to_output!" do
+      before(:example) do
+        allow(suprabinary_feat).to receive(:each_value).
+          and_yield(suprabinary_feat_out_value).
+          and_yield(suprabinary_feat_value2).
+          and_yield(suprabinary_feat_value3)
+      end
+      it "raises a RuntimeError indicating a suprabinary feature" do
+        expect{@word.mismatch_input_to_output!}.to raise_error(RuntimeError)
+      end
+    end
+  end
   
   context "given two words with distinct but equivalent candidates" do
     let(:candidate2){double('candidate2')}
