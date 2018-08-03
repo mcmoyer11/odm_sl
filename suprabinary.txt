@@ -1,0 +1,65 @@
+The methods below were once written with the handling of suprabinary features
+in mind. They have been decommissioned for now as too complex and untested,
+but are retained here in case we start working with suprabinary features in
+the future.
+
+  # For the given word, test the *unset* features by examining each combination
+  # of values such that each unset feature does *not* match its output
+  # correspondent. For each combination, the code block is run.
+  #
+  # If all features are strictly binary, then there is only one input that
+  # maximally mismatches the output with respect to the unset features.
+  # If one or more features is suprabinary, then the
+  # different possible combinations of non-surface-matching values are
+  # all tried.
+  #-- TODO: test on supra-binary features. ++
+  def OTLearn::mismatches_input_to_output(word_param, &block)
+    word = word_param.dup
+    OTLearn::match_input_to_uf!(word)
+    # Construct a list of the unset features in the word
+    unset_features = []
+    input = word.input
+    input.each do |in_el|
+      in_el.each_feature do |f|
+        unset_features << FeatureInstance.new(in_el,f) if f.unset?
+      end
+    end
+    # Invoke the block on each combination of mismatched values, by
+    # passing the block as a procedure object.
+    test_each_mismatch_value(word, unset_features, block)
+  end
+  
+  # Run the provided procedure object _block_proc_ on variations of _word_.
+  # The variations are all possible combinations of values for the input
+  # features in _unset_features_ such that all of those input features do
+  # not match their output correspondent values in _word_.
+  # 
+  # _block_proc_ is a procedure object version of the code block to be
+  # called on each combination of output-mismatched feature values.
+  def OTLearn::test_each_mismatch_value(word, unset_features, block_proc)
+    # Base case: if no unset features remain, call the block on a duplicate
+    # of the word, and return.
+    if unset_features.empty? then
+      block_proc.call(word.dup)
+      return
+    end
+    # Get the first unset feature instance on the list, and make a copy list of
+    # the rest of the unset features (that way, the original list is unchanged
+    # when referenced by other recursive calls).
+    unset_f_inst = unset_features[0]
+    rest_unset_features = unset_features.slice(1..-1) # list with first element removed
+    # Obtain the value of the unset feature's corresponding instance in the output.
+    out_f_inst = word.out_feat_corr_of_in(unset_f_inst)
+    out_f_val = out_f_inst.value
+    # Obtain the unset feature itself.
+    unset_f = unset_f_inst.feature
+    # For each value of the unset feature type that does not match the
+    # value in the output correspondent, assign that value to the
+    # unset feature *in the input* (i.e., not in the lexicon).
+    unset_f.each_value do |val|
+      if val!=out_f_val then
+        unset_f.value = val
+        test_each_mismatch_value(word, rest_unset_features, block_proc)
+      end
+    end
+  end
