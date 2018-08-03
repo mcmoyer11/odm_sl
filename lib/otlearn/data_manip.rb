@@ -21,14 +21,11 @@ module OTLearn
   # result.grammar.consistent? (where result is the Mrcd object returned
   # by #mismatch_consistency_check).
   def OTLearn.mismatch_consistency_check(grammar, word_list)
-    w_list = word_list.map { |winner| winner.dup }
-    # Set each word's input so that features unset in the lexicon
-    # mismatch their output correspondents. A given output could appear
-    # more than once in the mismatch list ONLY if there are suprabinary
-    # features (a suprabinary feature can mismatch in more than one way).
-    mismatch_list = []
-    w_list.map do |word|
-      OTLearn::mismatches_input_to_output(word) { |mismatched_word| mismatch_list << mismatched_word }
+    # Parse the outputs of the word_list to create test copies matching
+    # the lexicon, and mismatch the unset features to the output.
+    mismatch_list = word_list.map do |winner| 
+      word = grammar.system.parse_output(winner.output, grammar.lexicon)
+      word.mismatch_input_to_output!
     end
     # Run MRCD to see if the mismatched candidates are consistent.
     selector = LoserSelector_by_ranking.new(grammar.system)
