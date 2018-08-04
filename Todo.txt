@@ -25,10 +25,6 @@ Called Outside
 .find_morphemes_in_words() called by contrast_pair.rb
 
 OTHER
-OTLearn::match_input_to_uf!(Word) (defined in data_manip.rb) should be
-eliminated. Taking an output and parsing it with the grammar will give a
-*new* word with the input matched to the lexicon.
-
 Add some basic field value validation to OTGeneric::Erc_conversion.
 
 Implement a ranking information (erc list) only linguistic system and

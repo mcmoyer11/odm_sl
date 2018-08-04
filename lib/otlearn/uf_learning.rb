@@ -11,9 +11,10 @@ module OTLearn
   # morpheme of the word list to see if it can be set.
   def OTLearn.set_uf_values(words, grammar)
     # Duplicate the words (working copies for this method)
-    word_list = words.map{|word| word.dup}
+    word_list = words.map do |word|
+      grammar.system.parse_output(word.output, grammar.lexicon)
+    end
     # Set all unset input features to match their output correspondents
-    word_list.each{|word| OTLearn::match_input_to_uf!(word)}
     word_list.each{|word| word.match_input_to_output!}
     # Construct two lists of unset underlying features: those that have
     # conflicting values in the outputs, and those that do not.

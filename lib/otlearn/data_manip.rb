@@ -33,22 +33,6 @@ module OTLearn
     return mrcd
   end
 
-  # For the given word, set each feature of the input to the value
-  # of the corresponding feature in the lexicon.
-  # Returns a reference to the word itself.
-  def OTLearn::match_input_to_uf!(word)
-    input = word.input
-    input.each do |in_el|
-      # Set each input element feature to the value of its underlying correspondent
-      in_el.each_feature do |f|
-        uf_feat_inst = word.uf_feat_corr_of_in(FeatureInstance.new(in_el, f))
-        f.value = uf_feat_inst.value
-      end
-    end
-    word.eval # re-evaluate constraint violations b/c changed input
-    return word
-  end
-
   # Takes a competition list and a hierarchy, and returns a list of
   # structural descriptions that are optimal with respect to the hierarchy.
   # The returned structural description objects are the same objects as
