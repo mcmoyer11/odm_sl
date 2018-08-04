@@ -2,7 +2,6 @@
 
 require_relative 'fewest_set_features'
 require_relative 'max_mismatch_ranking'
-require_relative 'ranking_learning'
 require_relative 'grammar_test'
 require_relative 'language_learning'
 require_relative 'data_manip'
@@ -126,7 +125,11 @@ module OTLearn
         @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING
-        @mmr_step = @max_mismatch_ranking_class.new(consistent_list,
+        # extract outputs to pass to max_mismatch_ranking
+        consistent_output_list = consistent_list.map do |word|
+          word.output
+        end
+        @mmr_step = @max_mismatch_ranking_class.new(consistent_output_list,
           @grammar, @language_learner, loser_selector: @loser_selector)
         @changed = @mmr_step.changed?
       end
