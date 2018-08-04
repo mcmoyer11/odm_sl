@@ -11,12 +11,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
   let(:learning_module){double('learning_module')}
   let(:loser_selector){double('loser_selector')}
   let(:feature_value_pair_class){double('FeatureValuePair class')}
-  # other elements
-  let(:system){double('system')}
-  let(:lexicon){double('lexicon')}
-  before(:each) do
-    allow(grammar).to receive(:system).and_return(system)
-    allow(grammar).to receive(:lexicon).and_return(lexicon)    
+  before(:example) do
+    allow(grammar).to receive(:parse_output)
   end
 
   context "given a failed winner" do
@@ -34,7 +30,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     let(:fw_output){double('fw_output')}
     let(:fv_pair1){double('feature-value pair1')}
     let(:fv_pair2){double('feature-value pair2')}
-    before(:each) do
+    before(:example) do
       # set up prior_result to return a list with one failed winner
       allow(prior_result).to receive(:failed_winners).and_return([failed_winner])
       allow(prior_result).to receive(:success_winners).and_return([])
@@ -54,7 +50,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(unset_feat2).to receive(:value=).with(nil)
       # mock the parse of failed_winner's output used to test a feature
       allow(failed_winner).to receive(:output).and_return(fw_output)
-      allow(system).to receive(:parse_output).with(fw_output, lexicon).and_return(failed_winner_dup)
+      allow(grammar).to receive(:parse_output).with(fw_output).and_return(failed_winner_dup)
       allow(learning_module).to \
         receive(:mismatch_consistency_check).with(grammar,[failed_winner_dup]).and_return(mrcd_result)
       allow(failed_winner_dup).to \
@@ -73,7 +69,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
     
     context "with one consistent unset feature" do
-      before(:each) do
+      before(:example) do
         allow(learning_module).to \
           receive(:find_unset_features_in_words).with([failed_winner_dup],grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true)
@@ -103,7 +99,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
     
     context "with one inconsistent unset feature" do
-      before(:each) do
+      before(:example) do
         allow(learning_module).to \
           receive(:find_unset_features_in_words).with([failed_winner_dup],grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false)
@@ -130,7 +126,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
 
     context "with one consistent and one inconsistent unset feature" do
-      before(:each) do
+      before(:example) do
         allow(learning_module).to \
           receive(:find_unset_features_in_words).with([failed_winner_dup],grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, false)
@@ -160,7 +156,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
 
     context "with one inconsistent and one consistent unset feature" do
-      before(:each) do
+      before(:example) do
         allow(learning_module).to \
           receive(:find_unset_features_in_words).with([failed_winner_dup],grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false, true)
@@ -190,7 +186,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
     
     context "with two consistent features" do
-      before(:each) do
+      before(:example) do
         allow(learning_module).to \
           receive(:find_unset_features_in_words).with([failed_winner_dup],grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, true)
@@ -227,7 +223,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
     let(:unset_feat2){double('unset_feature_2')}
     let(:fv_pair1){double('feature-value pair1')}
     let(:fv_pair2){double('feature-value pair2')}
-    before(:each) do
+    before(:example) do
       # set up prior_result
       allow(prior_result).to receive(:failed_winners).
         and_return([failed_winner_1, failed_winner_2])
@@ -235,8 +231,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       
       # Failed winner 1
       allow(failed_winner_1).to receive(:output).and_return(fw_output_1)
-      allow(system).to receive(:parse_output).with(fw_output_1, lexicon).
-        and_return(failed_winner_1_dup)
+      allow(grammar).to receive(:parse_output).with(fw_output_1).and_return(failed_winner_1_dup)
       allow(learning_module).to receive(:mismatch_consistency_check).
         with(grammar,[failed_winner_1_dup]).and_return(mrcd_result_1)
       allow(mrcd_result_1).to receive(:grammar).and_return(mrcd_grammar_1)
@@ -248,8 +243,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
       # Failed winner 2
       allow(failed_winner_2).to receive(:output).and_return(fw_output_2)
-      allow(system).to receive(:parse_output).with(fw_output_2, lexicon).
-        and_return(failed_winner_2_dup)
+      allow(grammar).to receive(:parse_output).with(fw_output_2).and_return(failed_winner_2_dup)
       allow(learning_module).to receive(:mismatch_consistency_check).
         with(grammar,[failed_winner_2_dup]).and_return(mrcd_result_2)
       allow(mrcd_result_2).to receive(:grammar).and_return(mrcd_grammar_2)
@@ -279,7 +273,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(fv_pair2).to receive(:set_to_alt_value)
     end
     context "with the first failed winner inconsistent" do
-      before(:each) do
+      before(:example) do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(false)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
@@ -307,7 +301,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       end
     end
     context "with the first failed winner consistent" do
-      before(:each) do
+      before(:example) do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(true)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies

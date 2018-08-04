@@ -4,7 +4,6 @@ require_relative '../../lib/otlearn/grammar_test'
 
 RSpec.describe OTLearn::GrammarTest do
   let(:grammar){double{'grammar'}}
-  let(:lexicon){double('lexicon')}
   let(:system){double('system')}
   let(:selector){double{'loser_selector'}}
   let(:output_opt){double('output_opt')}
@@ -14,12 +13,11 @@ RSpec.describe OTLearn::GrammarTest do
   let(:loser){double('loser')}
   before(:each) do
     allow(grammar).to receive(:system).and_return(system)
-    allow(grammar).to receive(:lexicon).and_return(lexicon)
     allow(grammar).to receive(:dup).and_return(grammar)
     allow(grammar).to receive(:freeze)
     allow(grammar).to receive(:erc_list).and_return('ERCs')
-    allow(system).to receive(:parse_output).with(output_opt, lexicon).and_return(winner_opt)
-    allow(system).to receive(:parse_output).with(output_nopt, lexicon).and_return(winner_nopt)
+    allow(grammar).to receive(:parse_output).with(output_opt).and_return(winner_opt)
+    allow(grammar).to receive(:parse_output).with(output_nopt).and_return(winner_nopt)
     allow(winner_opt).to receive(:freeze)
     allow(winner_nopt).to receive(:freeze)
     allow(winner_opt).to receive(:mismatch_input_to_output!)

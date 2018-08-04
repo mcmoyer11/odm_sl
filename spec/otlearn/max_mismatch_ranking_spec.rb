@@ -7,16 +7,13 @@ RSpec.describe OTLearn::MaxMismatchRanking do
   let(:failed_winner_list){[failed_winner]}
   let(:mismatch){double('mismatch')}
   let(:grammar){double('grammar')}
-  let(:system){double('system')}
   let(:language_learner){double("language_learner").as_null_object}
   let(:learning_module){double("learning_module")}
   let(:loser_selector){double('loser_selector')}
   let(:mrcd_result){double('mrcd_result')}
   before(:example) do
-    allow(grammar).to receive(:system).and_return(system)
-    allow(grammar).to receive(:lexicon)
     allow(failed_winner).to receive(:output)
-    allow(system).to receive(:parse_output).and_return(mismatch)
+    allow(grammar).to receive(:parse_output).and_return(mismatch)
     allow(mismatch).to receive(:mismatch_input_to_output!)
     allow(learning_module).to receive(:ranking_learning).
       with([mismatch],grammar,loser_selector).and_return(mrcd_result)

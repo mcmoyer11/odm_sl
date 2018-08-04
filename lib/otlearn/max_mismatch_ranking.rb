@@ -104,7 +104,7 @@ module OTLearn
     # set features match the lexicon and unset features mismatch the output.
     def choose_failed_winner
       chosen_output = @failed_winner_output_list.first
-      chosen_winner = @grammar.system.parse_output(chosen_output, @grammar.lexicon)
+      chosen_winner = @grammar.parse_output(chosen_output)
       chosen_winner.mismatch_input_to_output!
       return chosen_winner
     end

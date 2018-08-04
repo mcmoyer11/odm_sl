@@ -159,7 +159,7 @@ module OTLearn
       # Parse the failed winner's outputs with the grammar to generate
       # distinct candidates in correspondence with the lexicon of the grammar.
       output = failed_winner.output
-      failed_winner_dup = @grammar.system.parse_output(output, @grammar.lexicon)
+      failed_winner_dup = @grammar.parse_output(output)
       # Find the unset underlying feature instances
       unset_uf_features =
         @learning_module.find_unset_features_in_words([failed_winner_dup],@grammar)

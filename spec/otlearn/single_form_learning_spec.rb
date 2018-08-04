@@ -8,8 +8,6 @@ RSpec.describe OTLearn::SingleFormLearning do
   let(:win1){double('winner 1')}
   let(:out1){double('output 1')}
   let(:grammar){double('grammar')}
-  let(:system){double('system')}
-  let(:lexicon){double('lexicon')}
   let(:grammar_test_class){double('grammar_test_class')}
   let(:grammar_test){instance_double(OTLearn::GrammarTest)}
   let(:otlearn_module){double('OTLearn module')}
@@ -18,17 +16,15 @@ RSpec.describe OTLearn::SingleFormLearning do
   let(:loser_selector){double('loser_selector')}
   let(:mrcd_result){double('mrcd_result')}
   before(:example) do
-    allow(grammar).to receive(:system).and_return(system)
-    allow(grammar).to receive(:lexicon).and_return(lexicon)
     allow(win1).to receive(:match_input_to_output!)
   end
   
   context "with one correct winner" do
     let(:winner_list){[win1]}
     let(:output_list){[out1]}
-    before(:each) do
+    before(:example) do
       allow(output_list).to receive(:map).and_return(winner_list)
-      allow(system).to receive(:parse_output).with(out1,lexicon).and_return(win1)
+      allow(grammar).to receive(:parse_output).with(out1).and_return(win1)
       allow(otlearn_module).to receive(:mismatch_consistency_check)
       allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
       allow(grammar_test_class).to receive(:new).with(output_list, grammar).and_return(grammar_test)
@@ -68,9 +64,9 @@ RSpec.describe OTLearn::SingleFormLearning do
   context "with one incorrect winner with a settable feature and other unsettable features" do
     let(:winner_list){[win1]}
     let(:output_list){[out1]}
-    before(:each) do
+    before(:example) do
       allow(output_list).to receive(:map).and_return(winner_list)
-      allow(system).to receive(:parse_output).with(out1,lexicon).and_return(win1)
+      allow(grammar).to receive(:parse_output).with(out1).and_return(win1)
       allow(otlearn_module).to receive(:mismatch_consistency_check).and_return(consistency_result)
       allow(otlearn_module).to receive(:set_uf_values).with([win1], grammar).and_return(["feature1"],[])
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar,winner_list,"feature1",loser_selector: loser_selector)

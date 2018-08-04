@@ -24,7 +24,7 @@ module OTLearn
     # Parse the outputs of the word_list to create test copies matching
     # the lexicon, and mismatch the unset features to the output.
     mismatch_list = word_list.map do |winner| 
-      word = grammar.system.parse_output(winner.output, grammar.lexicon)
+      word = grammar.parse_output(winner.output)
       word.mismatch_input_to_output!
     end
     # Run MRCD to see if the mismatched candidates are consistent.

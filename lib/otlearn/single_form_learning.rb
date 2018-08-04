@@ -127,7 +127,7 @@ module OTLearn
     # TODO: spin #process_winner off into a separate class.
     def process_winner(output)
       change_on_winner = false
-      winner = @grammar.system.parse_output(output, @grammar.lexicon)
+      winner = @grammar.parse_output(output)
       winner.match_input_to_output!
       # Check the winner to see if it is the sole optimum for
       # the matched input; if not, more ranking info is gained.
@@ -147,7 +147,7 @@ module OTLearn
         set_feature_list = @learning_module.set_uf_values([winner], @grammar)
         # (re)construct the winner list (to reflect any just-set features)
         winner_list = @output_list.map do |out|
-          @grammar.system.parse_output(out, @grammar.lexicon)
+          @grammar.parse_output(out)
         end
         # For each newly set feature, check words unfaithfully mapping that
         # feature for new ranking information.

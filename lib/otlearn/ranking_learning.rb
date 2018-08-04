@@ -43,7 +43,7 @@ module OTLearn
     end
     # Duplicate and output-match the conflict words
     dup_conflict_words = uo_conflict_words.map do |word|
-      dup = grammar.system.parse_output(word.output, grammar.lexicon)
+      dup = grammar.parse_output(word.output)
       dup.match_input_to_output!
       dup
     end

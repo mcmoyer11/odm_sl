@@ -74,7 +74,7 @@ module OTLearn
     # lexicon values, and unset features assigned values matching the output.
     def construct_winners
       winner_list = @output_list.map do |out|
-        @grammar.system.parse_output(out, @grammar.lexicon)
+        @grammar.parse_output(out)
       end
       winner_list.each do |winner|
         winner.match_input_to_output!

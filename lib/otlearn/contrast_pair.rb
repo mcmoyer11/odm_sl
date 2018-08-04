@@ -40,7 +40,7 @@ module OTLearn
     # candidates in correspondence with the lexicon of +grammar+.
     f_winners = test_result.failed_winners.map do |winner|
       output = winner.output
-      grammar.system.parse_output(output, grammar.lexicon)
+      grammar.parse_output(output)
     end
     # For each failed winner, look for qualifying contrast pairs
     f_winners.each do |failed_winner|

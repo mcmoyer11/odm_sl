@@ -96,7 +96,7 @@ module OTLearn
     def check_all
       # Parse each output, to create a test instance of the word.
       @output_list.each do |output|
-        word = @grammar.system.parse_output(output, @grammar.lexicon)
+        word = @grammar.parse_output(output)
         word.mismatch_input_to_output!
         loser = @loser_selector.select_loser(word, @grammar.erc_list)
         # If no loser was found, then the word is optimal, and a success.

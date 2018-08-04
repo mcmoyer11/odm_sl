@@ -118,7 +118,7 @@ module OTLearn
         @step_subtype = FEWEST_SET_FEATURES
         # Parse the outputs into words
         winner_list = @output_list.map do |out|
-          @grammar.system.parse_output(out, @grammar.lexicon)
+          @grammar.parse_output(out)
         end
         @fsf_step = @fewest_set_features_class.new(winner_list, @grammar,
           prior_result, @language_learner, loser_selector: @loser_selector)

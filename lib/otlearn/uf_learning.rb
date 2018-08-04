@@ -12,7 +12,7 @@ module OTLearn
   def OTLearn.set_uf_values(words, grammar)
     # Duplicate the words (working copies for this method)
     word_list = words.map do |word|
-      grammar.system.parse_output(word.output, grammar.lexicon)
+      grammar.parse_output(word.output)
     end
     # Set all unset input features to match their output correspondents
     word_list.each{|word| word.match_input_to_output!}

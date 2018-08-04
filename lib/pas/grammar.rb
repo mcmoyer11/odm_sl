@@ -72,6 +72,13 @@ module PAS
       @lexicon.get_uf(morph)
     end
 
+    # Parses the given output, returning the full word (with input,
+    # correspondence). The input features match the lexicon for set features,
+    # and are unset in the input for features unset in the lexicon.
+    def parse_output(out)
+      system.parse_output(out, lexicon)
+    end
+    
   end # class Grammar
 
 end # module PAS

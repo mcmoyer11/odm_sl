@@ -80,7 +80,7 @@ module OTLearn
     def run_contrast_pair_learning
       # Test the words to see which ones currently fail
       winner_list = @output_list.map do |out|
-        @grammar.system.parse_output(out, @grammar.lexicon)
+        @grammar.parse_output(out)
       end
       prior_result = @grammar_test_class.new(@output_list, @grammar)
       # Create an external iterator which calls generate_contrast_pair()
