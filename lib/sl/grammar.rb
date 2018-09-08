@@ -2,8 +2,8 @@
 #
 
 require_relative 'system'
-require 'erc_list'
-require 'lexicon'
+require_relative '../erc_list'
+require_relative '../lexicon'
 
 module SL
 
