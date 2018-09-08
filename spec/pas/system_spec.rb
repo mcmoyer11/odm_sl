@@ -1,8 +1,8 @@
 # Author: Bruce Tesar
 
-require 'pas/system'
-require 'lexical_entry'
-require 'output'
+require_relative '../../lib/pas/system'
+require_relative '../../lib/lexical_entry'
+require_relative '../../lib/output'
 
 RSpec.describe PAS::System do
   before(:each) do

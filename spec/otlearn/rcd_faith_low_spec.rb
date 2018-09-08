@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'otlearn/rcd_bias_low'
+require_relative '../../lib/otlearn/rcd_bias_low'
 require_relative '../../test/helpers/quick_erc'
 
 module Test

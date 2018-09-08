@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'pas/length_feat'
+require_relative '../../lib/pas/length_feat'
 
 RSpec.describe PAS::Length_feat do
   context "A new Length_feat" do

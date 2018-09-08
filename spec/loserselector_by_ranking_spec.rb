@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'loserselector_by_ranking'
+require_relative '../lib/loserselector_by_ranking'
 
 RSpec.describe LoserSelector_by_ranking do
   before(:each) do

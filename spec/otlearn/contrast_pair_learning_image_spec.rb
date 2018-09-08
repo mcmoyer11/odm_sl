@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'otlearn/contrast_pair_learning_image'
+require_relative '../../lib/otlearn/contrast_pair_learning_image'
 
 RSpec.describe OTLearn::ContrastPairLearningImage do
   let(:contrast_pair_learning){double('contrast_pair_learning')}

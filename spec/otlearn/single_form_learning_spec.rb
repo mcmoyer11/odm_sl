@@ -1,8 +1,8 @@
 # Author: Bruce Tesar
 
-require 'otlearn/single_form_learning'
-require 'otlearn/language_learning'
-require 'otlearn/grammar_test'
+require_relative '../../lib/otlearn/single_form_learning'
+require_relative '../../lib/otlearn/language_learning'
+require_relative '../../lib/otlearn/grammar_test'
 
 RSpec.describe OTLearn::SingleFormLearning do
   let(:win1){double('winner 1')}

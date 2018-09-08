@@ -1,10 +1,10 @@
 # Author: Bruce Tesar
 
-require 'sl/system'
-require 'lexicon'
-require 'lexical_entry'
-require 'morph_word'
-require 'sl/syllable'
+require_relative '../../lib/sl/system'
+require_relative '../../lib/lexicon'
+require_relative '../../lib/lexical_entry'
+require_relative '../../lib/morph_word'
+require_relative '../../lib/sl/syllable'
 
 RSpec.describe SL::System do
   before(:each) do

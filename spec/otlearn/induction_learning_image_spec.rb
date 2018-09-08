@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'otlearn/induction_learning_image'
+require_relative '../../lib/otlearn/induction_learning_image'
 
 RSpec.describe OTLearn::InductionLearningImage do
   let(:induction_learning){double('induction_learning')}

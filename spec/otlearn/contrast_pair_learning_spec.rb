@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'otlearn/contrast_pair_learning'
-require 'otlearn/language_learning'
+require_relative '../../lib/otlearn/contrast_pair_learning'
+require_relative '../../lib/otlearn/language_learning'
 
 RSpec.describe OTLearn::ContrastPairLearning do
   let(:winner_list){double('winner_list')}

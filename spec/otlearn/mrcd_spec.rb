@@ -1,8 +1,8 @@
 # Author: Bruce Tesar
 
-require 'otlearn/mrcd'
-require 'loserselector_by_ranking'
-require 'sl/grammar'
+require_relative '../../lib/otlearn/mrcd'
+require_relative '../../lib/loserselector_by_ranking'
+require_relative '../../lib/sl/grammar'
 
 RSpec.describe "MRCD" do
   context "with default rcd class and an empty word list" do

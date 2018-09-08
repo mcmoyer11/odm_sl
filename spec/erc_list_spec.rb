@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'erc_list'
+require_relative '../lib/erc_list'
 
 RSpec.describe Erc_list do
   context "A newly created Erc_list" do

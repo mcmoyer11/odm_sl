@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'pas/stress_feat'
+require_relative '../../lib/pas/stress_feat'
 
 RSpec.describe PAS::Stress_feat do
   context "A new Stress_feat" do

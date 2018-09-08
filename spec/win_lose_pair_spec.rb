@@ -1,5 +1,7 @@
 # Author: Bruce Tesar
 
+require_relative '../lib/win_lose_pair'
+
 RSpec.describe Win_lose_pair do
   before(:each) do
     @constraint_list = ["C1","C2"]

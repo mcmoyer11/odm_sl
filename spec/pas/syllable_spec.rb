@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'pas/syllable'
-require 'feature'
+require_relative '../../lib/pas/syllable'
+require_relative '../../lib/feature'
 
 RSpec.describe PAS::Syllable do
   context "A new Syllable" do

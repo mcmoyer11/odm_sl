@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'ui_correspondence'
+require_relative '../lib/ui_correspondence'
 
 RSpec.describe UICorrespondence do
   let(:uf1){double('uf1')}

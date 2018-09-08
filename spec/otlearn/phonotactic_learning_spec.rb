@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'otlearn/phonotactic_learning'
-require 'otlearn/language_learning'
+require_relative '../../lib/otlearn/phonotactic_learning'
+require_relative '../../lib/otlearn/language_learning'
 
 RSpec.describe OTLearn::PhonotacticLearning do
   context "with a winner list and a grammar, sufficient to learn all the words" do

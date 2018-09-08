@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'pas/grammar'
+require_relative '../../lib/pas/grammar'
 
 RSpec.describe PAS::Grammar do
   context "A new PAS::Grammar, with no parameters," do

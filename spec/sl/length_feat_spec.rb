@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'sl/length_feat'
+require_relative '../../lib/sl/length_feat'
 
 RSpec.describe SL::Length_feat do
   context "A new Length_feat" do

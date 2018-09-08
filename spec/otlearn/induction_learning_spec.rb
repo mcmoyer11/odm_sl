@@ -1,7 +1,7 @@
 # Author: Morgan Moyer / Bruce Tesar
 
-require 'otlearn/induction_learning'
-require 'otlearn/language_learning'
+require_relative '../../lib/otlearn/induction_learning'
+require_relative '../../lib/otlearn/language_learning'
 
 RSpec.describe OTLearn::InductionLearning do
   let(:winner_list){double('winner_list')}

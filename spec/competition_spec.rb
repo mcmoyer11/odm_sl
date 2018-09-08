@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'competition'
+require_relative '../lib/competition'
 
 RSpec.describe Competition do
   before(:example) do

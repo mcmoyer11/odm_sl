@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'csv_input'
+require_relative '../lib/csv_input'
 
 project_dir = File.absolute_path(File.join(File.dirname(__FILE__),'..'))
 fixture_dir = File.join(project_dir,'test','fixtures')

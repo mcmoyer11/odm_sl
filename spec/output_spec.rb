@@ -1,7 +1,7 @@
 #Author: Morgan Moyer
 #
 
-require 'output'
+require_relative '../lib/output'
 
 RSpec.describe Output do
   before(:each) do

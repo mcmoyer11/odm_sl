@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'feature_instance'
+require_relative '../lib/feature_instance'
 
 RSpec.describe FeatureInstance do
   context "A new FeatureInstance" do

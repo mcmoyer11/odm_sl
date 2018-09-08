@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
 require_relative "../../lib/otlearn/grammar_test_image"
-require "sheet"
+require_relative "../../lib/sheet"
 
 RSpec.describe OTLearn::GrammarTestImage do
   let(:grammar_test){double('grammar_test')}

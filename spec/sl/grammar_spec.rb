@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'sl/grammar'
+require_relative '../../lib/sl/grammar'
 
 RSpec.describe SL::Grammar do
   context "A new SL::Grammar, with no parameters," do
