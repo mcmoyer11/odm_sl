@@ -1,8 +1,8 @@
 # Author: Bruce Tesar
 #
 
-require 'rcd'
-require 'most_harmonic'
+require_relative 'rcd'
+require_relative 'most_harmonic'
 
 # This class defines objects that select a loser for the formation of
 # a winner-loser pair. Specifically, such an object does so by computing

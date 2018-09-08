@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'erc_list'
-require 'win_lose_pair'
+require_relative 'erc_list'
+require_relative 'win_lose_pair'
 
 # An object for selecting a loser in pursuit of ranking information.
 # The Exhaustive criterion means that it will check every candidate of

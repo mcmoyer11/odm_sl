@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'sheet'
+require_relative 'sheet'
 
 # A 2-dimensional sheet representation of a set of constraint preferences
 # for ercs. The sheet has one column for each constraint, and one row for

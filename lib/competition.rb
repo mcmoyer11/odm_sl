@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'win_lose_pair'
-require 'erc_list'
+require_relative 'win_lose_pair'
+require_relative 'erc_list'
 
 # Stores the candidates of a competition (i.e., candidates
 # that have the same input).

@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'sheet'
-require 'constraint_preference_image'
+require_relative 'sheet'
+require_relative 'constraint_preference_image'
 
 # A 2-dimensional sheet representation of a comparative tableau, i.e.,
 # a list of ercs, typically winner-loser pairs, and the preference of each
