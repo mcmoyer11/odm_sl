@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require 'erc'
-require 'constraint'
+require_relative '../../lib/erc'
+require_relative '../../lib/constraint'
 
 module Test
   # Constants for evaluation by constraints
