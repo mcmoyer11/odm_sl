@@ -4,7 +4,7 @@ require_relative 'contrast_pair'
 require_relative 'uf_learning'
 require_relative 'grammar_test'
 require_relative 'language_learning'
-require 'loser_selector_exhaustive'
+require_relative '../loser_selector_exhaustive'
 
 module OTLearn
 

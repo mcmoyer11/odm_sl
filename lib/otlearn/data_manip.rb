@@ -4,7 +4,7 @@
 # manipulating data.
 
 require 'set'
-require 'loserselector_by_ranking'
+require_relative '../loserselector_by_ranking'
 
 module OTLearn
   

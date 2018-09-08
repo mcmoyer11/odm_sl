@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require 'sheet'
+require_relative '../sheet'
 
 module OTLearn
   

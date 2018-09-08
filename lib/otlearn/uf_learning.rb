@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
 require_relative 'data_manip'
-require 'loserselector_by_ranking'
+require_relative '../loserselector_by_ranking'
 require_relative '../feature_instance'
 require_relative '../feature_value_pair'
 

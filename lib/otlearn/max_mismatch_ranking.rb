@@ -1,6 +1,6 @@
 # Author: Morgan Moyer
 
-require 'word'
+require_relative '../word'
 require_relative 'learning_exceptions'
 require_relative 'mmr_exceptions'
 require_relative 'ranking_learning'

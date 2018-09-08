@@ -1,5 +1,8 @@
 # Author: Bruce Tesar
 
+require_relative 'grammar_test_image'
+require_relative '../sheet'
+
 module OTLearn
   
   # A 2-dimensional sheet representation of a SingleFormLearning object,

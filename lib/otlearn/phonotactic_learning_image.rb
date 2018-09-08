@@ -1,5 +1,7 @@
 # Author: Bruce Tesar
 
+require_relative 'grammar_test_image'
+
 module OTLearn
   
   # A 2-dimensional sheet representation of a PhonotacticLearning object,

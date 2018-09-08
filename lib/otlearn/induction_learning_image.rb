@@ -1,9 +1,9 @@
 # Author: Bruce Tesar
 
-require 'sheet'
-require 'otlearn/grammar_test_image'
-require 'otlearn/fewest_set_features_image'
-require 'otlearn/max_mismatch_ranking_image'
+require_relative '../sheet'
+require_relative 'grammar_test_image'
+require_relative 'fewest_set_features_image'
+require_relative 'max_mismatch_ranking_image'
 
 module OTLearn
   
