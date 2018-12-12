@@ -34,8 +34,9 @@ module OTLearn
       # loser_selector default cannot be put into the parameter list, because
       # the parameter +system+ needs to be computed.
       if loser_selector.nil? then
-        @loser_selector = LoserSelector_by_ranking.new(@system,
-          rcd_class: OTLearn::RcdFaithLow)
+#        @loser_selector = LoserSelector_by_ranking.new(@system,
+#          rcd_class: OTLearn::RcdFaithLow)
+        @loser_selector = LoserSelectorExhaustive.new(@system)
       else
         @loser_selector = loser_selector
       end

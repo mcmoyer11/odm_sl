@@ -68,7 +68,7 @@ write_language_list_to_file(lang_list, data_file)
 puts "\nLearning the PAS typology."
 
 # Learn the languages, writing output for each to a separate file.
-out_filepath = File.join(File.dirname(__FILE__),'..','..','temp','pas_learning')
+out_filepath = File.join(File.dirname(__FILE__),'..','..','temp','pas_learning','exhaustive_ls')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank grammar, and assign it the label of the language.
