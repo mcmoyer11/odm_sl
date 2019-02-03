@@ -64,8 +64,9 @@ module OTLearn
     # Actually executes phonotactic learning.
     def run_phonotactic_learning
       @winner_list = construct_winners
-      @changed = @learning_module.
+      mrcd_result = @learning_module.
         ranking_learning(@winner_list, @grammar, @loser_selector)
+      @changed = true if mrcd_result.any_change?
       @test_result = @grammar_test_class.new(@output_list, @grammar)
     end
     protected :run_phonotactic_learning
