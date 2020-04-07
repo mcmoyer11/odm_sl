@@ -4,8 +4,8 @@
 # within the PAS (stress-length) linguistic system.
 
 require_relative 'system'
-require_relative 'grammar'
 require_relative 'syllable'
+require_relative '../grammar'
 require_relative '../morpheme'
 require_relative '../morph_word'
 require_relative '../underlying'
@@ -129,7 +129,7 @@ module PAS
     roots = PAS.generate_morphemes(1, Morpheme::ROOT, 0)
     suffixes = PAS.generate_morphemes(1, Morpheme::SUFFIX, 0)
     # Create a new grammar, and add all of the morphemes to the lexicon.
-    gram = Grammar.new
+    gram = Grammar.new(system: PAS::System.instance)
     roots.each{|root_le| gram.lexicon.add(root_le)}
     suffixes.each{|suf_le| gram.lexicon.add(suf_le)}
     # Morphology: create all combinations of one root and one suffix
@@ -157,7 +157,7 @@ module PAS
     roots = PAS.generate_morphemes(2, Morpheme::ROOT, 0)
     suffixes = PAS.generate_morphemes(1, Morpheme::SUFFIX, 0)
     # Create a new grammar, and add all of the morphemes to the lexicon.
-    gram = Grammar.new
+    gram = Grammar.new(system: PAS::System.instance)
     roots.each{|root_le| gram.lexicon.add(root_le)}
     suffixes.each{|suf_le| gram.lexicon.add(suf_le)}
     # Morphology: create all combinations of one root and one suffix
@@ -183,7 +183,7 @@ module PAS
       roots = PAS.generate_morphemes(2, Morpheme::ROOT, 0)
       prefixes = PAS.generate_morphemes(1, Morpheme::PREFIX, 0)
       # Create a new grammar, and add all of the morphemes to the lexicon.
-      gram = Grammar.new
+      gram = Grammar.new(system: PAS::System.instance)
       roots.each{|root_le| gram.lexicon.add(root_le)}
       prefixes.each{|pre_le| gram.lexicon.add(pre_le)}
       # Morphology: create all combinations of one root and one prefix

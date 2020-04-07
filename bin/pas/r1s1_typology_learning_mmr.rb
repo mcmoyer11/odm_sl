@@ -5,13 +5,15 @@
 # Tests learning on every language in the typology.
 # All output is written to CSV files, one file for each language.
 
+require_relative '../../lib/grammar'
+require_relative '../../lib/csv_output'
+require_relative '../../lib/factorial_typology'
+require_relative '../../lib/pas/system'
 require_relative '../../lib/pas/data'
+require_relative '../../lib/otlearn/rcd_bias_low'
 require_relative '../../lib/otlearn/data_manip'
 require_relative '../../lib/otlearn/language_learning'
 require_relative '../../lib/otlearn/language_learning_image'
-require_relative '../../lib/csv_output'
-require_relative '../../lib/factorial_typology'
-require_relative '../../lib/otlearn/rcd_bias_low'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix
@@ -68,11 +70,11 @@ write_language_list_to_file(lang_list, data_file)
 puts "\nLearning the PAS typology."
 
 # Learn the languages, writing output for each to a separate file.
-out_filepath = File.join(File.dirname(__FILE__),'..','..','temp','pas_learning','exhaustive_ls')
+out_filepath = File.join(File.dirname(__FILE__),'..','..','temp','pas_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank grammar, and assign it the label of the language.
-  grammar = PAS::Grammar.new
+  grammar = Grammar.new(system: PAS::System.instance)
   grammar.label = label
   
   # Run learning on the language inside an Exception block to catch cases where
