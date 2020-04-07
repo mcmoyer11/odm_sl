@@ -5,12 +5,14 @@
 # Tests learning on every language in the typology.
 # All output is written to CSV files, one file for each language.
 
+require_relative '../lib/grammar'
+require_relative '../lib/sl/system'
 require_relative '../lib/sl/data'
+require_relative '../lib/csv_output'
+require_relative '../lib/factorial_typology'
 require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/otlearn/language_learning_image'
-require_relative '../lib/csv_output'
-require_relative '../lib/factorial_typology'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the SL system, with each root and each suffix
@@ -73,7 +75,7 @@ out_filepath = File.join(temp_filepath,'sl_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank grammar, and assign it the label of the language.
-  grammar = SL::Grammar.new
+  grammar = Grammar.new(system: SL::System.instance)
   grammar.label = label
   # Run learning on the language
   lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
