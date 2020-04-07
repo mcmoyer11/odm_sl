@@ -1,5 +1,7 @@
 # Author: Bruce Tesar
 
+require 'forwardable'
+
 # An Erc_list is a list of ERC-like objects. All ERCs in the list must respond
 # to #constraint_list with a list of the very same constraints.
 # ---
