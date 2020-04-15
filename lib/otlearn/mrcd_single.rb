@@ -7,10 +7,27 @@ module OTLearn
   # An MrcdSingle object contains the results of applying
   # MultiRecursive Constraint Demotion to a single winner, with respect
   # to a given grammar and a given loser selection routine.
+  # It does not modify the grammar passed into the constructor.
+  # Methods of the object will indicate if MRCD resulted in an (in)consistent
+  # grammar, and return a list of the winner-loser pairs constructed and
+  # added. If the caller wants to accept the results of MRCD, it should
+  # append the list of added winner-loser pairs to its own grammar's support.
   class MrcdSingle
     
     # Returns a new MrcdSingle object.
-    # wl_pair_class - dependency injection parameter for testing.
+    #
+    # ==== Parameters
+    # 
+    # * +winner+ - the candidate the learner is attempting to make optimal.
+    # * +grammar+ - the grammar being tested. This grammar is first
+    #   duplicated internally, and so is not modified; the internal duplicate
+    #   may have additional winner-loser pairs added to it.
+    # * +selector+ - the loser selector (given a winner and an ERC list).
+    # * +wl_pair_class+ - dependency injection parameter for testing.
+    #
+    # :call-seq:
+    #   MrcdSingle.new(winner, grammar, selector) -> mrcdsingle
+    #   MrcdSingle.new(winner, grammar, selector, wl_pair_class: my_pair_class) -> mrcdsingle
     def initialize(winner, grammar, selector, wl_pair_class: Win_lose_pair)
       @winner = winner
       @grammar = grammar.dup_same_lexicon
@@ -37,6 +54,7 @@ module OTLearn
     end
     
     # Runs MRCD on the winner, using the given grammar and loser selector.
+    # Called automatically by the constructor.
     def run_mrcd_single
       loser = @selector.select_loser(@winner, @grammar.erc_list)
       while !loser.nil? do
