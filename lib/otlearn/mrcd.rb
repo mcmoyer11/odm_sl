@@ -2,6 +2,7 @@
 #
  
 require_relative '../win_lose_pair'
+require_relative 'mrcd_single'
 
 module OTLearn
 
@@ -27,7 +28,8 @@ module OTLearn
     # from the initial grammar +grammar+. Both +word_list+
     # and +grammar+ are duplicated internally before use. MRCD uses
     # +selector+ as the loser selection object.
-    def initialize(word_list, grammar, selector)
+    def initialize(word_list, grammar, selector,
+        single_mrcd_class: OTLearn::MrcdSingle)
       # Make a duplicate copy of each word, so that components of Win-Lose
       # pairs cannot be altered externally.
       @word_list = word_list.map{|word| word.dup}
@@ -36,6 +38,7 @@ module OTLearn
       # grammar cannot be altered externally.
       @grammar = grammar.dup_same_lexicon
       @selector = selector  # loser selector
+      @single_mrcd_class = single_mrcd_class
       @added_pairs = []
       @any_change = run_mrcd
     end
@@ -67,10 +70,14 @@ module OTLearn
       begin
         pass_change = false  # any change on this pass through the loop
         @word_list.each do |winner|
-          local_added_pairs = run_mrcd_on_single(winner)
-          if (local_added_pairs.size > 0) then
-            pass_change, any_change = true,true
-            @added_pairs.concat(local_added_pairs)
+          # run MRCD on the winner
+          mrcd_single = @single_mrcd_class.new(winner, @grammar, @selector)
+          # retrieve any added winner-loser pairs
+          local_added_pairs = mrcd_single.added_pairs
+          pass_change, any_change = true,true if (local_added_pairs.size > 0)
+          local_added_pairs.each do |p|
+            @added_pairs << p
+            @grammar.add_erc(p)
           end
           break unless @grammar.consistent?
         end
@@ -79,27 +86,7 @@ module OTLearn
       return any_change
     end
     protected :run_mrcd
-
-    # Runs MRCD on _winner_, and returns a list of any additional
-    # winner-loser pairs added to the grammar.
-    def run_mrcd_on_single(winner)
-      local_added_pairs = []
-      loser = @selector.select_loser(winner, @grammar.erc_list)
-      # Error-driven processing is complete when no informative losers remain.
-      while !loser.nil? do
-        # Create a new WL pair.
-        new_pair = Win_lose_pair.new(winner, loser)
-        new_pair.label = winner.morphword.to_s
-        # Add the new pair to the grammar.
-        local_added_pairs << new_pair
-        @grammar.add_erc(new_pair)
-        break unless @grammar.consistent?
-        loser = @selector.select_loser(winner, @grammar.erc_list)
-      end
-      return local_added_pairs
-    end
-    protected :run_mrcd_on_single
-
+    
   end # class Mrcd
 
 end # module OTLearn

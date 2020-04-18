@@ -3,7 +3,7 @@
 require_relative '../../lib/otlearn/mrcd'
 require_relative '../../lib/loserselector_by_ranking'
 
-RSpec.describe "MRCD" do
+RSpec.describe "MRCD", :wip do
   context "with default rcd class and an empty word list" do
     let(:sys){double('system')}
     let(:grammar){double('grammar')}
