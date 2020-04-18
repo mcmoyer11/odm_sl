@@ -2,7 +2,7 @@
 
 require_relative '../../lib/otlearn/mrcd_single'
 
-RSpec.describe OTLearn::MrcdSingle, :wip do
+RSpec.describe OTLearn::MrcdSingle do
   let(:winner){double('winner')}
   let(:morphword){double('morphword')}
   let(:param_grammar){double('parameter grammar')}
