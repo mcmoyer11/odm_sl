@@ -15,7 +15,10 @@ module OTLearn
   # Both the word list and the grammar passed to the constructor
   # are duplicated internally prior to use, so that the original objects
   # passed in are not affected by the operations of Mrcd.
-  #
+  # A method will return a list of the winner-loser pairs constructed and
+  # added. If the caller wants to accept the results of MRCD, it should
+  # append the list of added winner-loser pairs to its own grammar's support.
+  # 
   # Once an Mrcd object has been constructed, it should be treated only
   # as a source of results; no further computation can be initiated on
   # the contents. Typically, a caller of Mrcd#new will retain a reference
@@ -23,11 +26,21 @@ module OTLearn
   # winner-loser pairs that were additionally constructed by MRCD.
   class Mrcd
 
-    # Returns a new Mrcd object, with the results of executing
-    # MultiRecursive Constraint Demotion (MRCD) to +word_list+ starting
-    # from the initial grammar +grammar+. Both +word_list+
-    # and +grammar+ are duplicated internally before use. MRCD uses
-    # +selector+ as the loser selection object.
+    # Returns a new Mrcd object containing the results of executing
+    # MultiRecursive Constraint Demotion (MRCD) on +word_list+ starting
+    # from +grammar+. Both +word_list+ and +grammar+ are duplicated
+    # internally before use.
+    #
+    # ==== Parameters
+    #
+    # * +word_list+ - list of words to be used as winners (positive data)
+    # * +grammar+ - the grammar to use in learning (not modified internally)
+    # * +selector+ - loser selection object.
+    # * +single_mrcd_class+ - dependency injection parameter for testing.
+    #
+    # :call-seq:
+    #   Mrcd.new(word_list, grammar, selector) -> mrcdsingle
+    #   Mrcd.new(word_list, grammar, selector, single_mrcd_class: my_class) -> mrcd
     def initialize(word_list, grammar, selector,
         single_mrcd_class: OTLearn::MrcdSingle)
       # Make a duplicate copy of each word, so that components of Win-Lose
@@ -58,34 +71,45 @@ module OTLearn
       @any_change
     end
     
-    # Runs MRCD on the given word list, using the given grammar.
-    # MRCD is applied to each word of the list in turn; passes are made
-    # through the word list until a pass is completed without any change
-    # to the grammar.
-    # Returns true if any change at all is made to
-    # the grammar (any new winner-loser pairs are added).    
+    # Runs MRCD on the given word list, making repeated passes through
+    # the word list until pass is completed without change to the grammar.
+    # Returns true if any change at all is made to the grammar
+    # (any new winner-loser pairs are added), and false otherwise.
     def run_mrcd
-      # any_change if grammar changed at all during method execution.
-      any_change = false
+      any_change = false  # initialize grammar change flag
       begin
-        pass_change = false  # any change on this pass through the loop
-        @word_list.each do |winner|
-          # run MRCD on the winner
-          mrcd_single = @single_mrcd_class.new(winner, @grammar, @selector)
-          # retrieve any added winner-loser pairs
-          local_added_pairs = mrcd_single.added_pairs
-          pass_change, any_change = true,true if (local_added_pairs.size > 0)
-          local_added_pairs.each do |p|
-            @added_pairs << p
-            @grammar.add_erc(p)
-          end
-          break unless @grammar.consistent?
-        end
+        change_on_pass = word_list_pass
+        any_change = true if change_on_pass
+        # quit if the grammar has become inconsistent
         break unless @grammar.consistent?
-      end while pass_change
+      end while change_on_pass  # repeat until a pass with no change
       return any_change
     end
     protected :run_mrcd
+    
+    # Runs a single pass through the word list. Each word is treated as
+    # a winner, and MRCD (via MrcdSingle) is run on that winner.
+    # Any additionally constructed winner-loser pairs are added to both
+    # the grammar and the list of added winner-loser pairs.
+    # Returns a boolean indicating if the grammar was changed during
+    # the class, i.e., if a new winner-loser pair was created and added.
+    def word_list_pass
+      change = false
+      @word_list.each do |winner|
+        # run MRCD on the winner
+        mrcd_single = @single_mrcd_class.new(winner, @grammar, @selector)
+        # retrieve any added winner-loser pairs
+        local_added_pairs = mrcd_single.added_pairs
+        change = true if (local_added_pairs.size > 0)
+        local_added_pairs.each do |p|
+          @added_pairs << p
+          @grammar.add_erc(p)
+        end
+        break unless @grammar.consistent?
+      end
+      return change
+    end
+    protected :word_list_pass
     
   end # class Mrcd
 
