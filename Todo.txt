@@ -31,8 +31,6 @@ Implement a ranking information (erc list) only linguistic system and
 grammar class. Use it to set up basic bin scripts for experimenting with
 different ranking biases.
 
-Create some more substantive specs for Mrcd.
-
 Either find some reasonable way to unit-test LoserSelector_by_ranking,
 or delete the specs for it.
 
