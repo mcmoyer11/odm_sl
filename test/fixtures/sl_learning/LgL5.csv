@@ -21,3 +21,21 @@ Single Form Learning,,,,,,,,,,,
 ,,,,,,,,,,,
 ,r1,?.,,r2,?:,,r3,?.,,r4,?:
 ,s1,?.,,s2,?:,,s3,?.,,s4,?:
+,,,,,,,,,,,
+Contrast Pair Learning,,,,,,,,,,,
+,None Found,,,,,,,,,,
+,,,,,,,,,,,
+Induction Learning,,,,,,,,,,,
+Max Mismatch Ranking,,,,,,,,,,,
+Grammar Changed: TRUE,,,,,,,,,,,
+,Failed Winner,r1-s1,S.-s.,s.S.,,,,,,,
+,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,4:MR,3:ML,6:IDLength,1:NoLong,2:WSP,5:IDStress,
+,r1-s1,s.-S.,s.S.,S.s.,W,L,,,,W,
+,r1-s1,S.-s.,s.S.,S.s.,W,L,,,,L,
+,r2-s1,s:-S.,s:S.,S:s.,W,L,,,L,W,
+,r1-s2,s.-S:,s.S:,s.S.,,,W,L,,,
+,r2-s1,s:-S.,s:S.,s.S.,,,W,L,L,,
+,,,,,,,,,,,
+,r1,?.,,r2,?:,,r3,?.,,r4,?:
+,s1,?.,,s2,?:,,s3,?.,,s4,?:

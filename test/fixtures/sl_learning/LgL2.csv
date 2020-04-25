@@ -36,3 +36,20 @@ Single Form Learning,,,,,,,,,,,
 ,,,,,,,,,,,
 ,r1,s?,,r2,s?,,r3,S?,,r4,S?
 ,s1,s?,,s2,s?,,s3,S?,,s4,S?
+,,,,,,,,,,,
+Contrast Pair Learning,,,,,,,,,,,
+,None Found,,,,,,,,,,
+,,,,,,,,,,,
+Induction Learning,,,,,,,,,,,
+Max Mismatch Ranking,,,,,,,,,,,
+Grammar Changed: TRUE,,,,,,,,,,,
+,Failed Winner,r1-s1,s:-s:,s.S.,,,,,,,
+,,,,,,,,,,,
+,ERC#,Input,Winner,Loser,1:NoLong,2:WSP,5:IDStress,4:MR,3:ML,6:IDLength,
+,r1-s1,s:-s:,s.S.,s.S:,W,,,,,L,
+,r1-s1,s.-S.,s.S.,S.s.,,,W,W,L,,
+,r3-s1,S.-s.,S.s.,s.S.,,,W,L,W,,
+,r3-s3,S.-S.,s.S.,S.s.,,,,W,L,,
+,,,,,,,,,,,
+,r1,s?,,r2,s?,,r3,S?,,r4,S?
+,s1,s?,,s2,s?,,s3,S?,,s4,S?
