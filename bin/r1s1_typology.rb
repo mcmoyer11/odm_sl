@@ -1,7 +1,5 @@
 # Author: Bruce Tesar
 #
-# Generates the entire topology for the SL system with
-# monosyllabic morphemes and root+suffix words.
 # Tests learning on every language in the typology.
 # All output is written to CSV files, one file for each language.
 
@@ -9,31 +7,8 @@ require_relative '../lib/grammar'
 require_relative '../lib/sl/system'
 require_relative '../lib/sl/data'
 require_relative '../lib/csv_output'
-require_relative '../lib/factorial_typology'
-require_relative '../lib/otlearn/data_manip'
 require_relative '../lib/otlearn/language_learning'
 require_relative '../lib/otlearn/language_learning_image'
-
-# Generate a list of sets of language data, one for each language
-# in the typology of the SL system, with each root and each suffix
-# consisting of a single syllable.
-def generate_languages
-  competition_list = SL.generate_competitions_1r1s
-  ft_result = FactorialTypology.new(competition_list)
-  lang_list = ft_result.factorial_typology
-  return lang_list
-end
-
-# Writes a list +lang_list+ of language data to file +data_file+.
-# Uses Marshal to write objects to file.
-def write_language_list_to_file(lang_list, data_file)
-  File.open(data_file, 'wb') do |f|
-    lang_list.each do |lang|
-      outputs = OTLearn::convert_wl_pairs_to_learning_data(lang)
-      Marshal.dump(["Lg#{lang.label}",outputs], f)
-    end
-  end  
-end
 
 # Read languages from a Marshal-format file, successively yielding
 # the label and outputs of each language.
@@ -57,22 +32,20 @@ end
 # Actual execution of the simulation
 #***********************************
 
-# Generate the language typology data.
-lang_list = generate_languages
-
-# Write the languages to a file
-data_path = File.join(File.dirname(__FILE__),'..','data')
-Dir.mkdir(data_path) unless Dir.exists?(data_path)
-data_file = File.join(data_path,'outputs_1r1s_Typology.mar')
-write_language_list_to_file(lang_list, data_file)
-
 puts "\nLearning the SL typology."
 
-# Learn the languages, writing output for each to a separate file.
+# Set the source of learning data (input file name)
+data_path = File.join(File.dirname(__FILE__),'..','data','sl')
+data_file = File.join(data_path,'outputs_typology_1r1s.mar')
+
+# Set the target directory of learning results: temp/sl_learning.
+# If the temp or sl_learning directories don't already exist, create them.
 temp_filepath = File.join(File.dirname(__FILE__),'..','temp')
 Dir.mkdir temp_filepath unless Dir.exist? temp_filepath
 out_filepath = File.join(temp_filepath,'sl_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
+
+# Learn the languages, writing output for each to a separate file.
 read_languages_from_file(data_file) do |label, outputs|
   # Create a new, blank grammar, and assign it the label of the language.
   grammar = Grammar.new(system: SL::System.instance)
