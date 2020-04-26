@@ -13,8 +13,8 @@ RSpec.describe "Running ODL on SL", :acceptance do
     # command is executed. Maybe the paths fed to the require statements
     # look different with an absolute path, and require fails to recognize
     # that a file has already been required?
-    executable_dir = File.join('bin')
-    load "#{executable_dir}/r1s1_typology.rb"
+    executable_dir = File.join('bin','sl')
+    load "#{executable_dir}/learn_typology_1r1s.rb"
   end
   
   (1..24).each do |num|

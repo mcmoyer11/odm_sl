@@ -3,12 +3,12 @@
 # Tests learning on every language in the typology.
 # All output is written to CSV files, one file for each language.
 
-require_relative '../lib/grammar'
-require_relative '../lib/sl/system'
-require_relative '../lib/sl/data'
-require_relative '../lib/csv_output'
-require_relative '../lib/otlearn/language_learning'
-require_relative '../lib/otlearn/language_learning_image'
+require_relative '../../lib/grammar'
+require_relative '../../lib/sl/system'
+require_relative '../../lib/sl/data'
+require_relative '../../lib/csv_output'
+require_relative '../../lib/otlearn/language_learning'
+require_relative '../../lib/otlearn/language_learning_image'
 
 # Read languages from a Marshal-format file, successively yielding
 # the label and outputs of each language.
@@ -35,12 +35,12 @@ end
 puts "\nLearning the SL typology."
 
 # Set the source of learning data (input file name)
-data_path = File.join(File.dirname(__FILE__),'..','data','sl')
+data_path = File.join(File.dirname(__FILE__),'..','..','data','sl')
 data_file = File.join(data_path,'outputs_typology_1r1s.mar')
 
 # Set the target directory of learning results: temp/sl_learning.
 # If the temp or sl_learning directories don't already exist, create them.
-temp_filepath = File.join(File.dirname(__FILE__),'..','temp')
+temp_filepath = File.join(File.dirname(__FILE__),'..','..','temp')
 Dir.mkdir temp_filepath unless Dir.exist? temp_filepath
 out_filepath = File.join(temp_filepath,'sl_learning')
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
