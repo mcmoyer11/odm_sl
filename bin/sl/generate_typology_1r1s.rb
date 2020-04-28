@@ -8,16 +8,6 @@ require_relative '../../lib/sl/data'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/data_manip'
 
-# Generate a list of sets of language data, one for each language
-# in the typology of the SL system, with each root and each suffix
-# consisting of a single syllable.
-def generate_languages
-  competition_list = SL.generate_competitions_1r1s
-  ft_result = FactorialTypology.new(competition_list)
-  lang_list = ft_result.factorial_typology
-  return lang_list
-end
-
 # Writes a list +lang_list+ of language data to file +data_file+.
 # Uses Marshal to write objects to file.
 def write_language_list_to_file(lang_list, data_file)
@@ -29,8 +19,13 @@ def write_language_list_to_file(lang_list, data_file)
   end  
 end
 
-# Generate the language typology data.
-lang_list = generate_languages
+# Generate the language typology data:
+# a list of sets of language data, one for each language in
+# the typology of the SL system, with each root and each suffix
+# consisting of a single syllable (1r1s).
+competition_list = SL.generate_competitions_1r1s
+ft_result = FactorialTypology.new(competition_list)
+lang_list = ft_result.factorial_typology
 
 # Write the languages to a file
 data_path = File.join(File.dirname(__FILE__),'..','..','data','sl')
