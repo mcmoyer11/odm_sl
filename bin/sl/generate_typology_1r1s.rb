@@ -1,9 +1,8 @@
 # Author: Bruce Tesar
 #
 # Generates the entire topology for the SL system with
-# monosyllabic morphemes and root+suffix words.
+# monosyllabic morphemes and root+suffix words (1r1s).
 
-require_relative '../../lib/sl/system'
 require_relative '../../lib/sl/data'
 require_relative '../../lib/factorial_typology'
 require_relative '../../lib/otlearn/data_manip'
