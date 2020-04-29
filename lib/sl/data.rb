@@ -197,8 +197,8 @@ module SL
 # Hierarchies
 #++
 
-  # The hierarchy for Language A, also known as L20 (in the typology).
-  def SL.hier_a
+  # The hierarchy for Language L20.
+  def SL.hier_l20
     hier = Hierarchy.new
     hier << [SYSTEM.wsp] << [SYSTEM.idstress] << [SYSTEM.ml] <<
       [SYSTEM.mr] << [SYSTEM.idlength] << [SYSTEM.nolong]
