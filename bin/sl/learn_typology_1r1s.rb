@@ -21,13 +21,6 @@ def read_languages_from_file(data_file)
   end  
 end
 
-# Formats the language simulation results +lang_sim+ as CSV, and writes
-# the formatted results to +csv_filename+.
-def write_learning_results_to_csv(lang_sim, csv_file)
-  csv = CSV_Output.new(lang_sim)
-  csv.write_to_file(csv_file)  
-end
-
 #***********************************
 # Actual execution of the simulation
 #***********************************
@@ -55,7 +48,8 @@ read_languages_from_file(data_file) do |label, outputs|
   sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
   # Write the results to a CSV file, with the language label as the filename.
   out_file = File.join(out_filepath,"#{label}.csv")
-  write_learning_results_to_csv(sim_image, out_file)
+  csv = CSV_Output.new(sim_image)
+  csv.write_to_file(out_file)
   # Report to STDOUT if language was not successfully learned
   unless lang_sim.learning_successful?
     puts "#{label} not learned."
