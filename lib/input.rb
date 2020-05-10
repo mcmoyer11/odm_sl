@@ -50,9 +50,11 @@ class Input
     return copy
   end
 
-  # Two inputs are the same if they contain equivalent elements.
-  # TODO: create separate method #eql_elements? for this. Let #eql?
-  # also check equivalence of morphword, maybe ui_corr.
+  # Returns true if self and other contain equivalent (==) elements.
+  # Returns false otherwise.
+  # 
+  # NOTE: does not check for equivalence of morphwords. To require that
+  # as well, use Input#eql?().
   def ==(other)
     return false unless self.size == other.size
     self.each_index {|idx| return false unless self[idx] == other[idx]}
@@ -60,6 +62,8 @@ class Input
   end
 
   # the same as ==(_other_).
+  # TODO: modify this so it only returns true if self==other *and* self
+  # and other have the same morphword.
   def eql?(other)
     self==other
   end
