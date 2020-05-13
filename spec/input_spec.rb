@@ -2,13 +2,14 @@
 
 require_relative '../lib/input'
 
-RSpec.describe Input do
+RSpec.describe Input, :wip do
   let(:morphword){double('morphword')}
   let(:morphword_dup){double('morphword_dup')}
   let(:ui_corr){double('ui_corr')}
   let(:feature_instance_class){double('feature_instance_class')}
   before(:example) do
     allow(morphword).to receive(:dup).and_return(morphword_dup)
+    allow(morphword).to receive(:==).with(morphword_dup).and_return(true)
   end
   context "with one element" do
     let(:element1){double('element1')}
@@ -25,7 +26,7 @@ RSpec.describe Input do
     it "returns the morphword" do
       expect(@input.morphword).to eq morphword
     end
-    it "has the UI correspondence" do
+    it "returns the provided UI correspondence" do
       expect(@input.ui_corr).to eq ui_corr
     end
     
@@ -46,7 +47,7 @@ RSpec.describe Input do
     end
   end
   
-  context "two inputs" do
+  context "two inputs with the same morphword" do
     let(:element_1_1){double('element_1_1')}
     let(:element_1_2){double('element_1_2')}
     let(:element_2_1){double('element_2_1')}
@@ -124,6 +125,47 @@ RSpec.describe Input do
       end
     end
   end
+
+  context "two inputs with different morphwords" do
+    let(:morphword2){double('morphword 2')}
+    let(:element_1_1){double('element_1_1')}
+    let(:element_1_2){double('element_1_2')}
+    let(:element_2_1){double('element_2_1')}
+    let(:element_2_2){double('element_2_2')}
+    context "each with two equivalent elements" do
+      before(:example) do
+        allow(morphword).to receive(:==).with(morphword2).and_return(false)
+        allow(element_1_1).to receive(:==).with(element_2_1).and_return(true)
+        allow(element_1_2).to receive(:==).with(element_2_2).and_return(true)
+        @input1 = Input.new(morphword: morphword, ui_corr: ui_corr)
+        @input1 << element_1_1 << element_1_2
+        @input2 = Input.new(morphword: morphword2, ui_corr: ui_corr)
+        @input2 << element_2_1 << element_2_2
+      end
+      it "are ==" do
+        expect(@input1==@input2).to be true
+      end
+      it "are not eql (i.e, different morphwords)" do
+        expect(@input1.eql?(@input2)).not_to be true
+      end
+    end
+    context "with non-equivalent elements" do
+      before(:example) do
+        allow(element_1_1).to receive(:==).with(element_2_1).and_return(false)
+        allow(element_1_2).to receive(:==).with(element_2_2).and_return(true)
+        @input1 = Input.new(morphword: morphword, ui_corr: ui_corr)
+        @input1 << element_1_1 << element_1_2
+        @input2 = Input.new(morphword: morphword2, ui_corr: ui_corr)
+        @input2 << element_2_1 << element_2_2
+      end
+      it "are not ==" do
+        expect(@input1==@input2).not_to be true
+      end
+      it "are not eql" do
+        expect(@input1.eql?(@input2)).not_to be true
+      end
+    end
+  end
   
   context "and a dup" do
     let(:element_1_1){double('element_1_1')}
@@ -150,6 +192,9 @@ RSpec.describe Input do
     end
     it "have equivalent elements" do
       expect(@input==@input_dup).to be true
+    end
+    it "are eql()" do
+      expect(@input.eql?(@input_dup)).to be true
     end
     it "do not have identical elements" do
       expect(@input[0].equal?(@input_dup[0])).to be false

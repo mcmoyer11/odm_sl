@@ -61,11 +61,14 @@ class Input
     return true
   end
 
-  # the same as ==(_other_).
-  # TODO: modify this so it only returns true if self==other *and* self
-  # and other have the same morphword.
+  # Returns true of self and other contain equivalent (==) elements *and*
+  # equivalent (==) morphwords.
+  # The morphword equivalence requirement distinguishes Input#eql?() from 
+  # Input#==().
   def eql?(other)
-    self==other
+    return false unless self==other
+    return false unless self.morphword == other.morphword
+    return true
   end
   
   # Iterates through all feature instances of the input, yielding each
