@@ -3,7 +3,7 @@
 require_relative '../../lib/otlearn/mrcd'
 require_relative '../../lib/loserselector_by_ranking'
 
-RSpec.describe "MRCD", :wip do
+RSpec.describe "MRCD" do
   let(:grammar){double('grammar')}
   let(:dup_grammar){double('dup_grammar')}
   let(:selector){double('selector')}
