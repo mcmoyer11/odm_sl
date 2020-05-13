@@ -39,7 +39,7 @@ module OTLearn
     # * +single_mrcd_class+ - dependency injection parameter for testing.
     #
     # :call-seq:
-    #   Mrcd.new(word_list, grammar, selector) -> mrcdsingle
+    #   Mrcd.new(word_list, grammar, selector) -> mrcd
     #   Mrcd.new(word_list, grammar, selector, single_mrcd_class: my_class) -> mrcd
     def initialize(word_list, grammar, selector,
         single_mrcd_class: OTLearn::MrcdSingle)
