@@ -15,8 +15,25 @@ class Input
   # the UI (underlying <-> input) correspondence
   attr_accessor :ui_corr
 
-  # Creates a new input, with a morphological word and an
-  # underlying-input (UI) correspondence relation.
+  # Creates a new input, with an empty element list and an empty UI
+  # correspondence relation. If no morphword is provided as a parameter,
+  # a new, empty instance of MorphWord is adopted.
+  #
+  # ==== Parameters
+  #
+  # * +morphword+ - the morphological word associated with the input.
+  # * +ui_corr+ - dependency injection parameter for testing.
+  # * +feature_instance_class+ - dependency injection parameter for testing.
+  #
+  # :call-seq:
+  #   Input.new() -> input
+  #   Input.new(morphword: my_mword) -> input
+  #   Input.new(morphword: my_mword, ui_corr: my_corr, feature_instance_class: my_class) -> input
+  #---
+  # The feature_instance_class is the class used to return feature instances
+  # by the #each_feature() method. Instances of the feature_instance_class
+  # package up a particular feature object with the segment that the feature
+  # belongs to.
   def initialize(morphword: MorphWord.new, ui_corr: UICorrespondence.new,
       feature_instance_class: FeatureInstance)
     @morphword = morphword
@@ -106,15 +123,11 @@ class Input
     return out_str
   end
 
-  # A string output appropriate for GraphViz.
+  # A string output appropriate for GraphViz (no dashes between morphemes).
   def to_gv
     morph = first.morpheme
     out_str = ""
     self.each do |syl|
-#      unless syl.morpheme==morph then # a new morpheme has been reached
-#        out_str += ' '
-#        morph = syl.morpheme
-#      end
       out_str += syl.to_gv
     end
     return out_str
