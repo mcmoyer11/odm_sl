@@ -30,21 +30,30 @@ class Input
     @element_list.send(name, *args, &block)
   end
   protected :method_missing
-  
-  # Makes a duplicate of each element when duplicating the input,
-  # and makes an appropriately adjusted UI correspondence as well (containing
-  # the duplicated elements). The morphword is also duplicated.
+
+  # Returns a duplicate of the input. This is a deep copy, containing
+  # a duplicate of the morphword and a duplicate of each input element.
+  # The copy's UI correspondence is between the duplicate input elements and
+  # the very same underlying elements of the lexicon.
   def dup
-    copy = Input.new # contents of copy are filled in below
-    copy.morphword = @morphword.dup unless @morphword.nil?
+    # Create an empty input for the copy. The morphword is set to nil in
+    # the constructor call to avoid generation of a new Morphword object,
+    # since the morphword field will be overwritten with a duplicate
+    # of self's morphword.
+    # The copy has an empty UI correspondence relation, which will have pairs
+    # added to it that match the UI pairs of self.
+    copy = Input.new(morphword: nil)
+    copy.morphword = @morphword.dup
+    # For each element of self, create a duplicate element and add it to
+    # the copy. Then add a corresponding UI pair for the duplicate element,
+    # if such a pair exists in self.
     self.each do |old_el|
-      new_el = old_el.dup # duplicate the old element
-      copy << new_el # add the dup to the copy
-      # Get the corresponding underlying element in the original's
-      # UI correspondence. If it exists, add a correspondence to the copy
-      # between this underlying element and the duplicated input element
-      # in the copy.
+      new_el = old_el.dup
+      copy << new_el
+      # Get the corresponding underlying element in self's UI correspondence.
       under_el = @ui_corr.under_corr(old_el)
+      # If a corresponding underlying element exists, add a correspondence
+      # between the underlying element and the copy's input element.
       copy.ui_corr.add_corr(under_el,new_el) unless under_el.nil?
     end
     return copy
