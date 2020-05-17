@@ -5,7 +5,9 @@
 
 RSpec.describe "Running ODL on SL", :acceptance do
   before(:context) do
-    project_dir = "C:/Users/Tesar/NetBeansProjects/odm_sl"
+    # TODO: define project root directory accessible everywhere,
+    #       maybe a resolver class? config.rb? environments.rb?
+    project_dir = File.join(__dir__, '..', '..')
     @sl_fixture_dir = File.join(project_dir,'test','fixtures','sl_learning')
     @generated_dir = File.join(project_dir,'temp','sl_learning')
     # The executable dir must be a relative path, otherwise a bunch of
