@@ -1,12 +1,11 @@
 # Author: Bruce Tesar
-#
 
-# A candidate has an input, an output, and a violation count for each constraint.
-# It also has a field (+opt+) indicating whether the candidate is asserted to be
-# optimal, denied being optimal, or neither. Finally, a candidate has
-# a list of the constraints in the system, a label, and a remarks string.
+# A candidate has an input, an output, and a violation count for each
+# constraint. It also has a field (+opt+) indicating whether the candidate
+# is asserted to be optimal, denied being optimal, or neither. Finally,
+# a candidate has a list of the constraints in the system, a label, and
+# a remarks string.
 class Candidate
-
   # The input form
   attr_accessor :input
 
@@ -26,20 +25,20 @@ class Candidate
   # must be subsequently assigned to each constraint via set_viols().
   #
   # ==== Parameters
-  # 
+  #
   # * +input+ - the input structure
   # * +output+ - the output structure
   # * +optimal+ - indicates that the candidate is asserted optimal ("Y"),
   #   denied optimal ("N") or optionally optimal (nil).
   # * +constraints+ - a list of the constraint objects for the system; must
-  #   be convertable to Array via +constraints.to_a+.
+  #   be convertible to Array via +constraints.to_a+.
   #
   def initialize(input, output, optimal, constraints)
     @input = input
     @output = output
     @opt = standardize_opt_value(optimal)
     @constraints = constraints.to_a # make sure the list is an array.
-    @violations = Hash.new
+    @violations = {}
     @label = nil
     @remark = nil
     # Initially, a candidate has no merged candidates (ones with identical violations).
@@ -61,7 +60,7 @@ class Candidate
     # set @merged_candidates of the copy to be A DUPLICATE of
     # @merged_candidates of the current candidate.
     copy.instance_variable_set(:@merge_candidates, @merge_candidates.dup)
-    return copy
+    copy
   end
 
   # Freezes the candidate, and also freeze's the candidates input, output,
@@ -73,7 +72,7 @@ class Candidate
     @output.freeze
     @violations.freeze
     @merge_candidates.freeze
-    return self
+    self
   end
 
   # Returns true if +con+ is in the candidate's constraint list;
@@ -85,7 +84,7 @@ class Candidate
   # Returns true if this candidate is marked as necessarily optimal.
   # Returns false otherwise.
   def opt?
-    @opt == "Y"
+    @opt == 'Y'
   end
 
   # Returns true if this candidate has not been marked as either asserted
@@ -98,7 +97,7 @@ class Candidate
   # Returns true if that candidate has been denied to be optimal.
   # Returns false otherwise.
   def opt_denied?
-    @opt == "N"
+    @opt == 'N'
   end
 
   # Returns the actual internal value of the opt field.
@@ -114,13 +113,13 @@ class Candidate
 
   # Marks the candidate as mandatorily optimal.
   def assert_opt
-    @opt = "Y"
+    @opt = 'Y'
   end
 
   # Marks the candidate as mandatorily non-optimal (relevant for
   # factorial typology calculations).
   def deny_opt
-    @opt = "N"
+    @opt = 'N'
   end
 
   # Removes any commitment concerning this candidate's optimality; it is
@@ -137,11 +136,10 @@ class Candidate
   # which should be "Y", "N", or nil, but is here also allowed to be
   # _true_ or _false_.
   def opt=(opt_value) #:nodoc:
-    opt_value = "Y" if opt_value == true
+    opt_value = 'Y' if opt_value == true
     opt_value = nil if opt_value == false
     @opt = standardize_opt_value(opt_value)
   end
-
   protected :opt=
 
   # Standardizes the internal values of the opt field to one of:
@@ -152,11 +150,11 @@ class Candidate
   # Converts variations on "y" and "yes" to "Y", "n" and "no" to "N",
   # and everything else to nil.
   def standardize_opt_value(val)
-    return "Y" if val =~ /^(y|Y)/
-    return "N" if val =~ /^(n|N)/
-    return nil
-  end
+    return 'Y' if val =~ /^(y|Y)/
+    return 'N' if val =~ /^(n|N)/
 
+    nil
+  end
   protected :standardize_opt_value
 
   # Returns a reference to the constraint list of the candidate.
@@ -194,7 +192,7 @@ class Candidate
   # Returns true if the candidate harmonically bounds +other+.
   # Returns false if +other+ harmonically
   # bounds this candidate, or if neither harmonically bounds the other.
-  # 
+  #
   # One candidate harmonically bounds another if the first
   # candidate is preferred (has fewer violations) by at least one constraint,
   # and the other candidate is not preferred by any constraint.
@@ -202,10 +200,14 @@ class Candidate
     better_on_a_constraint = false
     worse_on_a_constraint = false
     @constraints.each do |con|
-      better_on_a_constraint = true if (self.get_viols(con) < other.get_viols(con))
-      worse_on_a_constraint = true if (self.get_viols(con) > other.get_viols(con))
+      if self.get_viols(con) < other.get_viols(con)
+        better_on_a_constraint = true
+      end
+      if self.get_viols(con) > other.get_viols(con)
+        worse_on_a_constraint = true
+      end
     end
-    return better_on_a_constraint && !worse_on_a_constraint
+    better_on_a_constraint && !worse_on_a_constraint
   end
 
   # Compares this candidate with +other+ for value equality, with respect
@@ -216,6 +218,7 @@ class Candidate
   def ==(other)
     return false unless input == other.input
     return false unless output == other.output
+
     true
   end
 
@@ -244,11 +247,16 @@ class Candidate
   # * violation profile
   # * optimality status
   def add_merge_candidate(merge_cand)
-    raise "Merge candidates must have identical violations" unless ident_viols?(merge_cand)
-    raise "Merge candidates must have identical opt status" unless (merge_cand.opt_value == opt_value)
+    unless ident_viols?(merge_cand)
+      raise 'Merge candidates must have identical violations'
+    end
+    unless merge_cand.opt_value == opt_value
+      raise 'Merge candidates must have identical opt status'
+    end
+
     @merge_candidates << merge_cand
     @merged = true
-    @remark = "MERGED"
+    @remark = 'MERGED'
   end
 
   # Represent the candidate with a string.
@@ -260,35 +268,34 @@ class Candidate
   # * If this is a merged candidate, the outputs of the individual
   #   merge candidates are listed, one per line.
   def to_s
-    if @label then
+    if @label
       label_s = "#{@label}: "
     else
-      label_s = ""
+      label_s = ''
     end
-    if opt?() then
-      opt_s = "Y"
+    if opt?
+      opt_s = 'Y'
     else
-      opt_s = "N"
+      opt_s = 'N'
     end
-    viol_s = " "
+    viol_s = ' '
     @constraints.each do |c|
-      if @violations.has_key?(c) then # if c has been assigned a violation count
+      if @violations.key?(c) # if c has been assigned a violation count
         viols_c = get_viols(c)
       else
-        viols_c = "?"
+        viols_c = '?'
       end
       viol_s += " #{c}:#{viols_c}"
     end
-    if @remark then
+    if @remark
       remark_s = "  #{@remark}"
     else
-      remark_s = ""
+      remark_s = ''
     end
     output_s = @output.to_s
-    merge_s = ""
-    @merge_candidates.each { |c| merge_s += "\n --> #{c.output.to_s}" }
-    full_s = "#{label_s}#{@input} --> #{output_s} opt:#{opt_s}#{viol_s}#{remark_s}#{merge_s}"
-    return full_s
+    merge_s = ''
+    @merge_candidates.each { |c| merge_s += "\n --> #{c.output}" }
+    "#{label_s}#{@input} --> #{output_s} opt:#{opt_s}#{viol_s}#{remark_s}#{merge_s}"
   end
 
   # Returns a string with the +to_s+ of the output of each merged candidate,
@@ -297,7 +304,7 @@ class Candidate
   def merged_outputs_to_s
     full_s = @output.to_s
     @merge_candidates.each { |c| full_s += " MER #{c.output}" }
-    return full_s
+    full_s
   end
 
   # Returns an array a of the elements of the candidate, all
@@ -316,9 +323,11 @@ class Candidate
     ca[2] = @output.to_s
     ca[3] = @opt
     col = 4
-    @constraints.each { |c| ca[col] = @violations[c]; col += 1 }
+    @constraints.each do |c|
+      ca[col] = @violations[c]
+      col += 1
+    end
     ca[5 + @constraints.size] = @remark
-    return ca
+    ca
   end
-
-end # class Candidate
+end
