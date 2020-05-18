@@ -53,7 +53,7 @@ class Candidate
   # The copy candidate also gets a duplicate of the constraint violations.
   def dup
     copy = Candidate.new(@input.dup, @output.dup, @opt, @constraints)
-    @constraints.each{|con| copy.set_viols(con,get_viols(con))}
+    @constraints.each { |con| copy.set_viols(con, get_viols(con)) }
     copy.label = @label.dup unless @label.nil? # cannot call nil.dup()
     copy.remark = @remark.dup unless @remark.nil?
     # set @merged of the copy to be the same as @merged of the current candidate.
@@ -100,7 +100,7 @@ class Candidate
   def opt_denied?
     @opt == "N"
   end
-  
+
   # Returns the actual internal value of the opt field.
   # * "Y" indicates the candidate is asserted optimal.
   # * "N" indicates the candidate is denied optimal.
@@ -137,10 +137,11 @@ class Candidate
   # which should be "Y", "N", or nil, but is here also allowed to be
   # _true_ or _false_.
   def opt=(opt_value) #:nodoc:
-    opt_value = "Y" if opt_value==true
-    opt_value = nil if opt_value==false
+    opt_value = "Y" if opt_value == true
+    opt_value = nil if opt_value == false
     @opt = standardize_opt_value(opt_value)
   end
+
   protected :opt=
 
   # Standardizes the internal values of the opt field to one of:
@@ -155,6 +156,7 @@ class Candidate
     return "N" if val =~ /^(n|N)/
     return nil
   end
+
   protected :standardize_opt_value
 
   # Returns a reference to the constraint list of the candidate.
@@ -212,14 +214,14 @@ class Candidate
   # identical if the inputs have the same value and the outputs have the
   # same value).
   def ==(other)
-    return false unless input==other.input
-    return false unless output==other.output
+    return false unless input == other.input
+    return false unless output == other.output
     true
   end
 
   # The same as ==
   def eql?(other)
-    self==other
+    self == other
   end
 
   # Returns true if this candidate is a "merged" candidate, that is,
@@ -248,7 +250,7 @@ class Candidate
     @merged = true
     @remark = "MERGED"
   end
-  
+
   # Represent the candidate with a string.
   # * The candidate's label.
   # * The input and output strings, separated by " --> "
@@ -258,8 +260,16 @@ class Candidate
   # * If this is a merged candidate, the outputs of the individual
   #   merge candidates are listed, one per line.
   def to_s
-    if @label then label_s = "#{@label}: " else label_s = "" end
-    if opt?() then opt_s = "Y" else opt_s = "N" end
+    if @label then
+      label_s = "#{@label}: "
+    else
+      label_s = ""
+    end
+    if opt?() then
+      opt_s = "Y"
+    else
+      opt_s = "N"
+    end
     viol_s = " "
     @constraints.each do |c|
       if @violations.has_key?(c) then # if c has been assigned a violation count
@@ -269,10 +279,14 @@ class Candidate
       end
       viol_s += " #{c}:#{viols_c}"
     end
-    if @remark then remark_s = "  #{@remark}" else remark_s = "" end
+    if @remark then
+      remark_s = "  #{@remark}"
+    else
+      remark_s = ""
+    end
     output_s = @output.to_s
     merge_s = ""
-    @merge_candidates.each{|c| merge_s += "\n --> #{c.output.to_s}"}
+    @merge_candidates.each { |c| merge_s += "\n --> #{c.output.to_s}" }
     full_s = "#{label_s}#{@input} --> #{output_s} opt:#{opt_s}#{viol_s}#{remark_s}#{merge_s}"
     return full_s
   end
@@ -282,10 +296,10 @@ class Candidate
   # the to_s() of the (single) output.
   def merged_outputs_to_s
     full_s = @output.to_s
-    @merge_candidates.each{|c| full_s += " MER #{c.output}"}
+    @merge_candidates.each { |c| full_s += " MER #{c.output}" }
     return full_s
   end
-  
+
   # Returns an array a of the elements of the candidate, all
   # represented as strings. This is used when presenting the
   # candidate in a sequence of cells.
@@ -302,8 +316,8 @@ class Candidate
     ca[2] = @output.to_s
     ca[3] = @opt
     col = 4
-    @constraints.each {|c| ca[col] = @violations[c]; col+=1}
-    ca[5+@constraints.size] = @remark
+    @constraints.each { |c| ca[col] = @violations[c]; col += 1 }
+    ca[5 + @constraints.size] = @remark
     return ca
   end
 
