@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
 require 'forwardable'
+require_relative 'rcd'
 
 # An Erc_list is a list of ERC-like objects. All ERCs in the list must respond
 # to #constraint_list with a list of the very same constraints.
@@ -114,6 +115,19 @@ class Erc_list
     @list.each{|e| ary.push(e)}
     ary
   end
+
+  # Returns an array containing the ERCs of the ERC list. #to_ary is called on
+  # an object whenever the Ruby interpreter needs a parameter passed to
+  # a method to be an array, such as when an Erc_list is compared to an array
+  # for content equivalence using Array#==. The conversion method #to_a
+  # produces the same output, but is called by Ruby (and users) in other
+  # circumstances. These conventions are built into Ruby's standard library;
+  # see the Pickaxe book for 1.9 & 2.0, section 23.3 "Standard Protocols and
+  # Conversions".
+  def to_ary
+    return self.to_a
+  end
+
   
   # Returns a duplicate Erc_list with an independent list, meaning that
   # adding or removing ERCs from the duplicate will not affect the original.

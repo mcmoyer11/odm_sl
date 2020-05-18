@@ -1,5 +1,6 @@
 # Author: Bruce Tesar
 
+require_relative '../lib/erc'
 require_relative '../lib/erc_list'
 
 RSpec.describe Erc_list do
@@ -19,6 +20,9 @@ RSpec.describe Erc_list do
     end
     it "converts to an empty array" do
       expect(@erc_list.to_a).to be_empty
+    end
+    it "converts to an empty array via #to_ary" do
+      expect(@erc_list.to_ary).to be_empty
     end
     it "returns an empty label" do
       expect(@erc_list.label).to eq("")
@@ -125,7 +129,10 @@ RSpec.describe Erc_list do
       expect(@erc_list.to_a).to contain_exactly(@erc1)
       expect(dup_list.to_a).to contain_exactly(@erc1, erc_new)
     end
-    
+    it "converts to an equivalent array via #to_ary" do
+      expect(@erc_list.to_ary).to eq [@erc1]
+    end
+
     context "and a second erc with the same constraints is added" do
       before(:example) do
         @erc2 = double("erc2")
