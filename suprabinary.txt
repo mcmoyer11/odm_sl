@@ -12,7 +12,6 @@ the future.
   # If one or more features is suprabinary, then the
   # different possible combinations of non-surface-matching values are
   # all tried.
-  #-- TODO: test on supra-binary features. ++
   def OTLearn::mismatches_input_to_output(word_param, &block)
     word = word_param.dup
     OTLearn::match_input_to_uf!(word)
