@@ -40,9 +40,11 @@ class Rcd
     run_rcd
   end
 
-  # Returns a list of all the ERCs.
+  # Returns a list of all the ERCs, as an Erc_list object.
   def erc_list
-    @ercs
+    new_erc_list = Erc_list.new
+    new_erc_list.add_all(@ercs)
+    return new_erc_list
   end
   
   # Returns the label
@@ -131,7 +133,7 @@ class Rcd
     # Initially, all ERCs are unexplained and all constraints are unranked.
     @consistent = true # innocent until proven guilty
     @ranked = Hierarchy.new
-    @unex_ercs = erc_list
+    @unex_ercs = @ercs
     @ex_ercs = []
     @unranked = constraint_list
     # Find the initially rankable constraints

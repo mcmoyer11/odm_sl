@@ -6,6 +6,7 @@
 # * Constraint
 
 require_relative '../lib/rcd'
+require_relative '../lib/erc_list'
 require_relative '../test/helpers/quick_erc'
 
 RSpec.describe Rcd do
@@ -46,8 +47,11 @@ RSpec.describe Rcd do
     it "has no unranked constraints" do
       expect(@rcd.unranked).to be_empty
     end
-    it "has a list of the ERCs passed in" do
-      expect(@rcd.erc_list).to eq []
+    it "has an empty list of the ERCs passed in" do
+      expect(@rcd.erc_list).to be_empty
+    end
+    it "returns an Erc_list of ERCs passed in" do
+      expect(@rcd.erc_list).to be_a_kind_of(Erc_list)
     end
     it "has no explained ERCs" do
       expect(@rcd.ex_ercs).to eq [[]]
@@ -86,7 +90,8 @@ RSpec.describe Rcd do
       expect(@rcd.unranked).to be_empty
     end
     it "has a list of the ERCs passed in" do
-      expect(@rcd.erc_list).to eq [erc1]
+      # Rcd#erc_list returns an Erc_list, convert to Array to compare.
+      expect(@rcd.erc_list.to_ary).to eq [erc1]
     end
     it "has explained ERCs [[erc1],[]]" do
       expect(@rcd.ex_ercs).to eq [[erc1],[]]
@@ -132,7 +137,7 @@ RSpec.describe Rcd do
       expect(@rcd.unranked).to be_empty
     end
     it "has a list of the ERCs passed in" do
-      expect(@rcd.erc_list).to eq [erc1, erc2]
+      expect(@rcd.erc_list.to_ary).to eq [erc1, erc2]
     end
     it "has explained ERCs [[erc1],[erc2],[]]" do
       expect(@rcd.ex_ercs).to eq [[erc1],[erc2],[]]
@@ -176,7 +181,7 @@ RSpec.describe Rcd do
       expect(@rcd.ranked).to eq [[con1]]
     end
     it "has a list of the ERCs passed in" do
-      expect(@rcd.erc_list).to eq [erc1,erc2,erc3]
+      expect(@rcd.erc_list.to_ary).to eq [erc1,erc2,erc3]
     end
     it "has explained ERCs [[erc1]]" do
       expect(@rcd.ex_ercs).to eq [[erc1]]
