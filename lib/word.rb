@@ -6,7 +6,7 @@ require_relative 'io_correspondence'
 require_relative 'candidate'
 require_relative 'feature_instance'
 
-# A Word is a candidate (input, output, opt?, constraints),
+# A Word is a candidate (input, output, constraints),
 # combined with an IO correspondence relation and a reference to
 # the linguistic system.
 class Word
@@ -168,7 +168,6 @@ class Word
   def dup
     copy = Word.new(@system)
     copy.label = self.label
-    copy.opt=self.opt?
     # Make local references to reduce number of method calls
     c_input = copy.input
     c_output = copy.output
