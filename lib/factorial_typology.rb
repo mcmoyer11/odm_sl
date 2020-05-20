@@ -78,12 +78,9 @@ class FactorialTypology
       lang_list_new = [] # will receive languages with winners from comp added
       lang_list.each do |lang| # for each prior language
         comp.each do |winner| # for each possible winner in the current competition
-          # don't include as a winner if explicitly marked to the contrary
-          # (factorial typology filtering)
-          next if winner.opt_denied?
           lang_new = lang.dup
-          winner_comp = construct_competition_with_winner(winner, comp)
-          new_pairs = winner_comp.winner_loser_pairs
+          losers = comp.reject{|c| c == winner}
+          new_pairs = winner_loser_pairs(winner, losers)
           lang_new.add_all(new_pairs)
           rcd_result = Rcd.new(lang_new)
           # If the new language is consistent, add it to the new language list.
