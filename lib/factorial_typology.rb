@@ -71,7 +71,6 @@ class FactorialTypology
   def factorial_typology
     # start with competitions containing only possible optima (non-HB)
     comp_list = non_hb_competition_list
-    set_competitions_with_fixed_optima(comp_list)
     # Construct initial language list with a single empty language
     lang_list = [Erc_list.new(constraint_list: @constraint_list)]
     # Iterate over the competitions
@@ -137,27 +136,7 @@ class FactorialTypology
       comp.each {|cand| comp_new.push(cand) unless hbound?(cand.label)}
       comp_list_new << comp_new
     end
-    return comp_list_new
+    comp_list_new
   end
 
-  # Checks each competition in +comp_list+, to see if a candidate has been
-  # asserted to be optimal. For each such competition, the candidates
-  # are duplicated, and then the non-optimal candidates are set so that
-  # optimality is explicitly denied. Thus, when the factorial typology
-  # computation skips over (as possible optima) candidates for which optimality
-  # is explicitly denied, it will skip all competitors to a candidate for
-  # which optimality has been explicitly asserted.
-  #
-  # Returns true.
-  def set_competitions_with_fixed_optima(comp_list)
-    comp_list.each do |comp|
-      if comp.optima? then
-        comp.map!{|cand| cand.dup} #dup candidates so originals aren't altered
-        # set each non-optimal candidate so opt is explicitly denied
-        comp.each{|cand| cand.deny_opt unless cand.opt?}
-      end
-    end
-    return true
-  end
-
-end # class FactorialTypology
+end
