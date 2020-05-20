@@ -42,7 +42,6 @@ module OTLearn
     comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,hier)}
     # each competition returns a list of winners; collapse to one-level list.
     lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
-    lang.each{|winner| winner.assert_opt}
     return lang
   end
 

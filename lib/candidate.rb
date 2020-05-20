@@ -77,40 +77,6 @@ class Candidate
     @constraints.include?(con)
   end
 
-  # Marks the candidate as mandatorily optimal.
-  def assert_opt
-    @opt = 'Y'
-  end
-
-  # This protected method is intended for use only in the +dup+ method
-  # of this class and its subclasses.
-  # To change the opt field value elsewhere, use the setting methods
-  # +assert_opt+, +deny_opt+, and +option_opt+ instead.
-  # Sets the optimality status of the candidate to +opt_value+,
-  # which should be "Y", "N", or nil, but is here also allowed to be
-  # _true_ or _false_.
-  def opt=(opt_value) #:nodoc:
-    opt_value = 'Y' if opt_value == true
-    opt_value = nil if opt_value == false
-    @opt = standardize_opt_value(opt_value)
-  end
-  protected :opt=
-
-  # Standardizes the internal values of the opt field to one of:
-  # * "Y"
-  # * "N"
-  # * nil
-  #
-  # Converts variations on "y" and "yes" to "Y", "n" and "no" to "N",
-  # and everything else to nil.
-  def standardize_opt_value(val)
-    return 'Y' if val =~ /^(y|Y)/
-    return 'N' if val =~ /^(n|N)/
-
-    nil
-  end
-  protected :standardize_opt_value
-
   # Returns a reference to the constraint list of the candidate.
   #
   # *WARNING*: altering the list returned from this method will alter
@@ -212,7 +178,7 @@ class Candidate
     output_s = @output.to_s
     merge_s = ''
     @merge_candidates.each { |c| merge_s += "\n --> #{c.output}" }
-    "#{label_s}#{@input} --> #{output_s} opt:#{opt_s}#{viol_s}#{remark_s}#{merge_s}"
+    "#{label_s}#{@input} --> #{output_s} #{viol_s}#{remark_s}#{merge_s}"
   end
 
   # Returns a string with the +to_s+ of the output of each merged candidate,
@@ -230,21 +196,19 @@ class Candidate
   # * a[0] - label
   # * a[1] - input
   # * a[2] - output
-  # * a[3] - optimality status
-  # * a[4 thru 4+con_count-1] - violations of each constraint
-  # * a[4+con_count] - remark
+  # * a[3 thru 3+con_count-1] - violations of each constraint
+  # * a[3+con_count] - remark
   def to_a
     ca = []
     ca[0] = @label.to_s
     ca[1] = @input.to_s
     ca[2] = @output.to_s
-    ca[3] = @opt
-    col = 4
+    col = 3
     @constraints.each do |c|
       ca[col] = @violations[c]
       col += 1
     end
-    ca[5 + @constraints.size] = @remark
+    ca[3 + @constraints.size] = @remark
     ca
   end
 end
