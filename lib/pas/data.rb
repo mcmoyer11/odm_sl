@@ -13,7 +13,6 @@ require_relative '../lexical_entry'
 require_relative '../most_harmonic'
 require_relative '../otlearn/data_manip'
 require_relative '../competition'
-require_relative '../competition_list'
 
 module PAS
 
@@ -93,9 +92,8 @@ module PAS
   # Returns a list of the optimal candidates of the language.
   def PAS.generate_language(hier, inputs, gram)
     competitions = inputs.map{|i| SYSTEM.gen(i)}
-    comp_list = CompetitionList.new.concat(competitions)
     gram.hierarchy = hier
-    comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,gram.hierarchy)}
+    comp_mh = competitions.map{|comp| MostHarmonic.new(comp,gram.hierarchy)}
     # each competition returns a list of winners; collapse to one-level list.
     lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
     return lang
@@ -110,10 +108,7 @@ module PAS
     inputs = words.map{|mw| SYSTEM.input_from_morphword(mw,lexicon)}
     # Generate the corresponding competition for each input
     competitions = inputs.map{|i| SYSTEM.gen(i)}
-    # Convert the array of competitions into a proper CompetitionList.
-    comp_list = CompetitionList.new.concat(competitions)
-    comp_list.label = "PAS"
-    return comp_list
+    return competitions
   end
 
   # Generates a list of competitions and a grammar with a lexicon of
