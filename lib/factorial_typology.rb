@@ -1,7 +1,6 @@
 # Author: Bruce Tesar
  
 require_relative 'competition'
-require_relative 'competition_list'
 require_relative 'erc_list'
 require_relative 'win_lose_pair'
 require_relative 'rcd'
@@ -101,18 +100,17 @@ class FactorialTypology
     @hb_flags[clabel]
   end
 
-  # Returns the competition list defining the system that is the basis for
-  # the typology.
+  # Returns the competition list extensionally defining the system that is
+  # the basis for the typology.
   def competition_list
     @original_comp_list
   end
 
-  # Returns a competition list of the competitions of this factorial
+  # Returns an array of the competitions of this factorial
   # typology object, but with all of the harmonically bound candidates
   # removed.
   def non_hb_competition_list
-    comp_list_new = CompetitionList.new
-    comp_list_new.label = @original_comp_list.label
+    comp_list_new = []
     @original_comp_list.each do |comp|
       comp_new = Competition.new
       comp.each {|cand| comp_new.push(cand) unless hbound?(cand.label)}
