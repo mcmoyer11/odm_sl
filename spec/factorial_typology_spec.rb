@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 
 require 'rspec'
@@ -11,9 +13,7 @@ RSpec.describe 'FactorialTypology' do
 
   context 'given a competition list' do
     before(:each) do
-      allow(comp_list).to receive(:constraint_list)
       allow(comp_list).to receive(:each)
-      allow(comp_list).to receive(:label).and_return('comp_list_label')
       @factyp = FactorialTypology.new(comp_list)
     end
     it 'provides the original competition list' do

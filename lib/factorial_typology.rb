@@ -1,5 +1,6 @@
-# Author: Bruce Tesar
 # frozen_string_literal: true
+
+# Author: Bruce Tesar
 
 require_relative 'erc_list'
 require_relative 'win_lose_pair'
