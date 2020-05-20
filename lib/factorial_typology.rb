@@ -3,6 +3,7 @@
 require_relative 'competition'
 require_relative 'competition_list'
 require_relative 'erc_list'
+require_relative 'win_lose_pair'
 require_relative 'rcd'
 
 # FactorialTypology objects summarize typologies of competition lists
@@ -24,7 +25,7 @@ class FactorialTypology
   def initialize(comp_list)
     @original_comp_list = comp_list
     @constraint_list = comp_list.constraint_list
-    @hb_flags = Hash.new
+    @hb_flags = {}
     check_harmonic_boundedness
   end
 
@@ -34,16 +35,31 @@ class FactorialTypology
   # @hb_flags[cand.label] is true if cand is harmonically bound; false otherwise.
   def check_harmonic_boundedness
     @original_comp_list.each do |comp|
-      comp.each do |cand|
+      comp.each do |winner|
         # if WL pairs with cand are inconsistent, then cand is harmonically bound
-        winner_comp = construct_competition_with_winner(cand, comp)
-        erc_list = winner_comp.winner_loser_pairs
-        @hb_flags[cand.label] = !erc_list.consistent?
+        losers = comp.reject{|c| c == winner}
+        erc_list = winner_loser_pairs(winner, losers)
+        @hb_flags[winner.label] = !erc_list.consistent?
       end
     end
   end
   private :check_harmonic_boundedness
-  
+
+  # Returns an Erc_list of winner-loser pairs for the competition.
+  #
+  # Raises a RuntimeError if no candidate is indicated as an optimum.
+  # Raises a RuntimeError if multiple candidates are indicated as optima.
+  def winner_loser_pairs(winner, losers)
+    # Construct a list of winner-loser pairs, one per loser
+    wl_list = Erc_list.new
+    losers.each do |loser|
+      pair = Win_lose_pair.new(winner,loser)
+      wl_list.add(pair)
+    end
+    wl_list
+  end
+  protected :winner_loser_pairs
+
   # Computes the factorial typology of the list of competitions stored in this
   # object. Each language is represented as a list of winner-loser pairs,
   # one for each combination of a winner and a possibly optimal
