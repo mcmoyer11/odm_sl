@@ -24,7 +24,7 @@ class Word
                  candidate_class: Candidate,
                  feature_instance_class: FeatureInstance)
     @system = system
-    @candidate = candidate_class.new(input, output, nil, @system.constraints)
+    @candidate = candidate_class.new(input, output, @system.constraints)
     @feature_instance_class = feature_instance_class
     @io_corr = IOCorrespondence.new
   end

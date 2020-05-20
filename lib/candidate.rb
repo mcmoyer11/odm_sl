@@ -1,8 +1,7 @@
 # Author: Bruce Tesar
 
 # A candidate has an input, an output, and a violation count for each
-# constraint. It also has a field (+opt+) indicating whether the candidate
-# is asserted to be optimal, denied being optimal, or neither. Finally,
+# constraint. Finally,
 # a candidate has a list of the constraints in the system, a label, and
 # a remarks string.
 class Candidate
@@ -28,15 +27,12 @@ class Candidate
   #
   # * +input+ - the input structure
   # * +output+ - the output structure
-  # * +optimal+ - indicates that the candidate is asserted optimal ("Y"),
-  #   denied optimal ("N") or optionally optimal (nil).
   # * +constraints+ - a list of the constraint objects for the system; must
   #   be convertible to Array via +constraints.to_a+.
   #
-  def initialize(input, output, optimal, constraints)
+  def initialize(input, output, constraints)
     @input = input
     @output = output
-    @opt = standardize_opt_value(optimal)
     @constraints = constraints.to_a # make sure the list is an array.
     @violations = {}
     @label = nil
@@ -51,7 +47,7 @@ class Candidate
   # (the merged candidates themselves are not duplicated).
   # The copy candidate also gets a duplicate of the constraint violations.
   def dup
-    copy = Candidate.new(@input.dup, @output.dup, @opt, @constraints)
+    copy = Candidate.new(@input.dup, @output.dup, @constraints)
     @constraints.each { |con| copy.set_viols(con, get_viols(con)) }
     copy.label = @label.dup unless @label.nil? # cannot call nil.dup()
     copy.remark = @remark.dup unless @remark.nil?
@@ -81,51 +77,9 @@ class Candidate
     @constraints.include?(con)
   end
 
-  # Returns true if this candidate is marked as necessarily optimal.
-  # Returns false otherwise.
-  def opt?
-    @opt == 'Y'
-  end
-
-  # Returns true if this candidate has not been marked as either asserted
-  # to be optimal or denied to be optimal.
-  # Returns false otherwise.
-  def opt_optional?
-    @opt.nil?
-  end
-
-  # Returns true if that candidate has been denied to be optimal.
-  # Returns false otherwise.
-  def opt_denied?
-    @opt == 'N'
-  end
-
-  # Returns the actual internal value of the opt field.
-  # * "Y" indicates the candidate is asserted optimal.
-  # * "N" indicates the candidate is denied optimal.
-  # * nil indicates the candidate is neither asserted nor denied optimal.
-  #
-  # This method is intended primarily for copying values from one candidate
-  # to another, and for writing the opt values to sheet representations.
-  def opt_value
-    @opt
-  end
-
   # Marks the candidate as mandatorily optimal.
   def assert_opt
     @opt = 'Y'
-  end
-
-  # Marks the candidate as mandatorily non-optimal (relevant for
-  # factorial typology calculations).
-  def deny_opt
-    @opt = 'N'
-  end
-
-  # Removes any commitment concerning this candidate's optimality; it is
-  # optionally optimal.
-  def option_opt
-    @opt = nil
   end
 
   # This protected method is intended for use only in the +dup+ method
@@ -227,38 +181,6 @@ class Candidate
     self == other
   end
 
-  # Returns true if this candidate is a "merged" candidate, that is,
-  # it really represents multiple candidates with identical constraint
-  # violation profiles.
-  def merged?
-    @merged
-  end
-
-  # For merged candidates, returns a list of the individual (non-merged)
-  # candidates. For non-merged candidates, returns an empty list.
-  def get_merge_candidates
-    @merge_candidates
-  end
-
-  # Adds +merg_cand+ as a merged candidate to this candidate.
-  #
-  # An exception is raised if +merg_cand+ does not match this candidate
-  # with respect to:
-  # * violation profile
-  # * optimality status
-  def add_merge_candidate(merge_cand)
-    unless ident_viols?(merge_cand)
-      raise 'Merge candidates must have identical violations'
-    end
-    unless merge_cand.opt_value == opt_value
-      raise 'Merge candidates must have identical opt status'
-    end
-
-    @merge_candidates << merge_cand
-    @merged = true
-    @remark = 'MERGED'
-  end
-
   # Represent the candidate with a string.
   # * The candidate's label.
   # * The input and output strings, separated by " --> "
@@ -272,11 +194,6 @@ class Candidate
       label_s = "#{@label}: "
     else
       label_s = ''
-    end
-    if opt?
-      opt_s = 'Y'
-    else
-      opt_s = 'N'
     end
     viol_s = ' '
     @constraints.each do |c|
