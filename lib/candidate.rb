@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 
 # A candidate has an input, an output, and a violation count for each
@@ -37,7 +39,8 @@ class Candidate
     @violations = {}
     @label = nil
     @remark = nil
-    # Initially, a candidate has no merged candidates (ones with identical violations).
+    # Initially, a candidate has no merged candidates
+    # (ones with identical violations).
     @merged = false
     @merge_candidates = []
   end
@@ -51,7 +54,7 @@ class Candidate
     @constraints.each { |con| copy.set_viols(con, get_viols(con)) }
     copy.label = @label.dup unless @label.nil? # cannot call nil.dup()
     copy.remark = @remark.dup unless @remark.nil?
-    # set @merged of the copy to be the same as @merged of the current candidate.
+    # set @merged of the copy to match @merged of the current candidate.
     copy.instance_variable_set(:@merged, @merged)
     # set @merged_candidates of the copy to be A DUPLICATE of
     # @merged_candidates of the current candidate.
