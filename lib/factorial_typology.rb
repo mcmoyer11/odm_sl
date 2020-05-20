@@ -1,5 +1,6 @@
 # Author: Bruce Tesar
- 
+# frozen_string_literal: true
+
 require_relative 'erc_list'
 require_relative 'win_lose_pair'
 require_relative 'rcd'
@@ -11,11 +12,10 @@ require_relative 'rcd'
 # * Determining the typology of possible languages.
 # The harmonic boundedness of a candidate is obtained via +hbound?+.
 # The language typology is obtained via method +factorial_typology+.
-# 
+#
 # Candidates are identified by their labels; the user has the responsibility
 # of ensuring that all candidate labels are unique.
 class FactorialTypology
-
   # Returns an object summarizing the factorial typology of the competition
   # list +comp_list+. The harmonic boundedness status of each candidate
   # is computed upon creation of the object. The language typology is
@@ -29,12 +29,14 @@ class FactorialTypology
   # Private method, called by +initialize+, to check and record the harmonic
   # boundedness status of each candidate.
   #--
-  # @hb_flags[cand.label] is true if cand is harmonically bound; false otherwise.
+  # @hb_flags[cand.label] is true if cand is harmonically bound;
+  # false otherwise.
   def check_harmonic_boundedness
     @original_comp_list.each do |comp|
       comp.each do |winner|
-        # if WL pairs with cand are inconsistent, then cand is harmonically bound
-        losers = comp.reject{|c| c == winner}
+        # if WL pairs with cand are inconsistent,
+        # then cand is harmonically bound
+        losers = comp.reject { |c| c == winner }
         erc_list = winner_loser_pairs(winner, losers)
         @hb_flags[winner.label] = !erc_list.consistent?
       end
@@ -48,7 +50,7 @@ class FactorialTypology
     # Construct a list of winner-loser pairs, one per loser
     wl_list = Erc_list.new
     losers.each do |loser|
-      pair = Win_lose_pair.new(winner,loser)
+      pair = Win_lose_pair.new(winner, loser)
       wl_list.add(pair)
     end
     wl_list
@@ -60,7 +62,7 @@ class FactorialTypology
   # one for each combination of a winner and a possibly optimal
   # competitor. The languages are assigned numeric labels, in the order in
   # which they are generated. An array of the languages is returned.
-  # 
+  #
   # To get a list of the optimal candidates for a particular language,
   # call OTLearn::wlp_winners(+language+).
   def factorial_typology
@@ -72,9 +74,9 @@ class FactorialTypology
     comp_list.each do |comp|
       lang_list_new = [] # will receive languages with winners from comp added
       lang_list.each do |lang| # for each prior language
-        comp.each do |winner| # for each possible winner in the current competition
+        comp.each do |winner| # test each candidate as a winner
           lang_new = lang.dup
-          losers = comp.reject{|c| c == winner}
+          losers = comp.reject { |c| c == winner }
           new_pairs = winner_loser_pairs(winner, losers)
           lang_new.add_all(new_pairs)
           rcd_result = Rcd.new(lang_new)
@@ -86,8 +88,11 @@ class FactorialTypology
     end
     # Assign numbered language labels
     lang_label = 0
-    lang_list.each{|lang| lang_label+=1; lang.label = "L#{lang_label}"}
-    return lang_list
+    lang_list.each do |lang|
+      lang_label += 1
+      lang.label = "L#{lang_label}"
+    end
+    lang_list
   end
 
   # Returns true if the candidate labeled +clabel+ is harmonically bounded;
@@ -109,10 +114,9 @@ class FactorialTypology
     comp_list_new = []
     @original_comp_list.each do |comp|
       comp_new = []
-      comp.each {|cand| comp_new.push(cand) unless hbound?(cand.label)}
+      comp.each { |cand| comp_new.push(cand) unless hbound?(cand.label) }
       comp_list_new << comp_new
     end
     comp_list_new
   end
-
 end
