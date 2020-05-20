@@ -1,6 +1,5 @@
 # Author: Bruce Tesar
  
-require_relative 'competition'
 require_relative 'erc_list'
 require_relative 'win_lose_pair'
 require_relative 'rcd'
@@ -44,10 +43,8 @@ class FactorialTypology
   end
   private :check_harmonic_boundedness
 
-  # Returns an Erc_list of winner-loser pairs for the competition.
-  #
-  # Raises a RuntimeError if no candidate is indicated as an optimum.
-  # Raises a RuntimeError if multiple candidates are indicated as optima.
+  # Returns an Erc_list of winner-loser pairs for +winner+ paired with
+  # each candidate in +losers+.
   def winner_loser_pairs(winner, losers)
     # Construct a list of winner-loser pairs, one per loser
     wl_list = Erc_list.new
@@ -112,7 +109,7 @@ class FactorialTypology
   def non_hb_competition_list
     comp_list_new = []
     @original_comp_list.each do |comp|
-      comp_new = Competition.new
+      comp_new = []
       comp.each {|cand| comp_new.push(cand) unless hbound?(cand.label)}
       comp_list_new << comp_new
     end
