@@ -3,9 +3,7 @@
 # Author: Bruce Tesar
 
 # A candidate has an input, an output, and a violation count for each
-# constraint. Finally,
-# a candidate has a list of the constraints in the system, a label, and
-# a remarks string.
+# constraint. It also has a list of the constraints in the system, and a label.
 class Candidate
   # The input form
   attr_accessor :input
@@ -16,11 +14,7 @@ class Candidate
   # The label of the candidate (often the candidate number)
   attr_accessor :label
 
-  # An optional string for incidental comments on the candidate
-  attr_accessor :remark
-
-  # Create a candidate from the given parameters.
-  # The candidate is initialized with no label, no remark, no violation
+  # The candidate is initialized with no label, no violation
   # counts assigned for any of the constraints,
   # and it is not a merged candidate. At the least, violation counts
   # must be subsequently assigned to each constraint via set_viols().
@@ -32,13 +26,14 @@ class Candidate
   # * +constraints+ - a list of the constraint objects for the system; must
   #   be convertible to Array via +constraints.to_a+.
   #
+  # :call-seq:
+  #   Candidate.new(input, output, constraints) -> candidate
   def initialize(input, output, constraints)
     @input = input
     @output = output
     @constraints = constraints.to_a # make sure the list is an array.
     @violations = {}
     @label = nil
-    @remark = nil
     # Initially, a candidate has no merged candidates
     # (ones with identical violations).
     @merged = false
@@ -46,14 +41,13 @@ class Candidate
   end
 
   # Returns a copy of the candidate, containing duplicates of the
-  # input, the output, label, remark, and the list of merged candidates
+  # input, the output, label, and the list of merged candidates
   # (the merged candidates themselves are not duplicated).
   # The copy candidate also gets a duplicate of the constraint violations.
   def dup
     copy = Candidate.new(@input.dup, @output.dup, @constraints)
     @constraints.each { |con| copy.set_viols(con, get_viols(con)) }
     copy.label = @label.dup unless @label.nil? # cannot call nil.dup()
-    copy.remark = @remark.dup unless @remark.nil?
     # set @merged of the copy to match @merged of the current candidate.
     copy.instance_variable_set(:@merged, @merged)
     # set @merged_candidates of the copy to be A DUPLICATE of
@@ -134,8 +128,8 @@ class Candidate
   end
 
   # Compares this candidate with +other+ for value equality, with respect
-  # to their inputs and their outputs. It ignores the label
-  # and remark, as well as the violations (these should automatically be
+  # to their inputs and their outputs. It ignores the label,
+  # as well as the violations (these should automatically be
   # identical if the inputs have the same value and the outputs have the
   # same value).
   def ==(other)
@@ -155,7 +149,6 @@ class Candidate
   # * The input and output strings, separated by " --> "
   # * A list of constraints and the number of violations of each.
   #   If a constraint hasn't been assigned a violation count, display '?'.
-  # * The remark, if any.
   # * If this is a merged candidate, the outputs of the individual
   #   merge candidates are listed, one per line.
   def to_s
@@ -173,15 +166,10 @@ class Candidate
       end
       viol_s += " #{c}:#{viols_c}"
     end
-    if @remark
-      remark_s = "  #{@remark}"
-    else
-      remark_s = ''
-    end
     output_s = @output.to_s
     merge_s = ''
     @merge_candidates.each { |c| merge_s += "\n --> #{c.output}" }
-    "#{label_s}#{@input} --> #{output_s} #{viol_s}#{remark_s}#{merge_s}"
+    "#{label_s}#{@input} --> #{output_s} #{viol_s}#{merge_s}"
   end
 
   # Returns a string with the +to_s+ of the output of each merged candidate,
@@ -200,7 +188,6 @@ class Candidate
   # * a[1] - input
   # * a[2] - output
   # * a[3 thru 3+con_count-1] - violations of each constraint
-  # * a[3+con_count] - remark
   def to_a
     ca = []
     ca[0] = @label.to_s
@@ -211,7 +198,6 @@ class Candidate
       ca[col] = @violations[c]
       col += 1
     end
-    ca[3 + @constraints.size] = @remark
     ca
   end
 end
