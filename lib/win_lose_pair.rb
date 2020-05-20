@@ -51,7 +51,7 @@ class Win_lose_pair
   #
   #   label input winner_output loser_output constraint_preferences
   def to_s
-    "#{label} #{@winner.input} #{@winner.merged_outputs_to_s} #{@loser.output} #{prefs_to_s}"
+    "#{label} #{@winner.input} #{@winner.output} #{@loser.output} #{prefs_to_s}"
   end
 
 private # the following methods are private, and can only be called from 

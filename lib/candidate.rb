@@ -14,9 +14,8 @@ class Candidate
   # The label of the candidate (often the candidate number)
   attr_accessor :label
 
-  # The candidate is initialized with no label, no violation
-  # counts assigned for any of the constraints,
-  # and it is not a merged candidate. At the least, violation counts
+  # The candidate is initialized with no label, and no violation
+  # counts assigned for any of the constraints. At the least, violation counts
   # must be subsequently assigned to each constraint via set_viols().
   #
   # ==== Parameters
@@ -34,37 +33,26 @@ class Candidate
     @constraints = constraints.to_a # make sure the list is an array.
     @violations = {}
     @label = nil
-    # Initially, a candidate has no merged candidates
-    # (ones with identical violations).
-    @merged = false
-    @merge_candidates = []
   end
 
   # Returns a copy of the candidate, containing duplicates of the
-  # input, the output, label, and the list of merged candidates
-  # (the merged candidates themselves are not duplicated).
+  # input, the output, and the label.
   # The copy candidate also gets a duplicate of the constraint violations.
   def dup
     copy = Candidate.new(@input.dup, @output.dup, @constraints)
     @constraints.each { |con| copy.set_viols(con, get_viols(con)) }
     copy.label = @label.dup unless @label.nil? # cannot call nil.dup()
-    # set @merged of the copy to match @merged of the current candidate.
-    copy.instance_variable_set(:@merged, @merged)
-    # set @merged_candidates of the copy to be A DUPLICATE of
-    # @merged_candidates of the current candidate.
-    copy.instance_variable_set(:@merge_candidates, @merge_candidates.dup)
     copy
   end
 
   # Freezes the candidate, and also freeze's the candidates input, output,
-  # violation counts, and merged candidate list.
+  # and violation counts.
   # Returns a reference to self.
   def freeze
     super
     @input.freeze
     @output.freeze
     @violations.freeze
-    @merge_candidates.freeze
     self
   end
 
@@ -149,8 +137,6 @@ class Candidate
   # * The input and output strings, separated by " --> "
   # * A list of constraints and the number of violations of each.
   #   If a constraint hasn't been assigned a violation count, display '?'.
-  # * If this is a merged candidate, the outputs of the individual
-  #   merge candidates are listed, one per line.
   def to_s
     if @label
       label_s = "#{@label}: "
@@ -167,18 +153,7 @@ class Candidate
       viol_s += " #{c}:#{viols_c}"
     end
     output_s = @output.to_s
-    merge_s = ''
-    @merge_candidates.each { |c| merge_s += "\n --> #{c.output}" }
-    "#{label_s}#{@input} --> #{output_s} #{viol_s}#{merge_s}"
-  end
-
-  # Returns a string with the +to_s+ of the output of each merged candidate,
-  # separated by " MER ". If there are no merge candidates, simply returns
-  # the to_s() of the (single) output.
-  def merged_outputs_to_s
-    full_s = @output.to_s
-    @merge_candidates.each { |c| full_s += " MER #{c.output}" }
-    full_s
+    "#{label_s}#{@input} --> #{output_s} #{viol_s}"
   end
 
   # Returns an array a of the elements of the candidate, all
