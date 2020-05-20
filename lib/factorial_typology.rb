@@ -95,21 +95,6 @@ class FactorialTypology
     return lang_list
   end
 
-  # Returns a copy of the competition +competition+, altered so that the
-  # candidate +candidate_winner+ is the winner.
-  # A duplicate is made of each of the candidates so that the altered
-  # opt field doesn't affect objects referenced elsewhere.
-  def construct_competition_with_winner(candidate_winner, competition)
-    winner = candidate_winner.dup
-    losers = competition.reject{|c| c==candidate_winner}
-    losers = losers.map{|c| c.dup}
-    winner.assert_opt; losers.each{|c| c.option_opt}
-    new_comp = Competition.new
-    new_comp.push(winner)
-    losers.each{|loser| new_comp.push(loser)}
-    return new_comp
-  end
-
   # Returns true if the candidate labeled +clabel+ is harmonically bounded;
   # returns false otherwise.
   def hbound?(clabel)
