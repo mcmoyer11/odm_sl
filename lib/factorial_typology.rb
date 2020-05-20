@@ -22,7 +22,6 @@ class FactorialTypology
   # computed and returned by the method +factorial_typology+.
   def initialize(comp_list)
     @original_comp_list = comp_list
-    @constraint_list = comp_list.constraint_list
     @hb_flags = {}
     check_harmonic_boundedness
   end
@@ -68,7 +67,7 @@ class FactorialTypology
     # start with competitions containing only possible optima (non-HB)
     comp_list = non_hb_competition_list
     # Construct initial language list with a single empty language
-    lang_list = [Erc_list.new(constraint_list: @constraint_list)]
+    lang_list = [Erc_list.new]
     # Iterate over the competitions
     comp_list.each do |comp|
       lang_list_new = [] # will receive languages with winners from comp added
