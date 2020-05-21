@@ -337,7 +337,7 @@ RSpec.describe SL::System do
       @competition = @system.gen(@input)
     end
     it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
+      expect(@competition[0].constraint_list.size).to eq(6)
     end
     it "generates 2 candidates" do
       expect(@competition.size).to eq(2)
@@ -384,7 +384,7 @@ RSpec.describe SL::System do
 
   RSpec.shared_examples "2-syllable outputs" do
     it "gen generates a competition with 6 constraints" do
-      expect(@competition.constraint_list.size).to eq(6)
+      expect(@competition[0].constraint_list.size).to eq(6)
     end
     it "generates 8 candidates" do
       expect(@competition.size).to eq(8)

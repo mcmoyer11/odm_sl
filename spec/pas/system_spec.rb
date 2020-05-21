@@ -453,7 +453,7 @@ RSpec.describe PAS::System do
       @competition = @system.gen(@input)
     end
     it "gen generates a competition with 7 constraints" do
-      expect(@competition.constraint_list.size).to eq(7)
+      expect(@competition[0].constraint_list.size).to eq(7)
     end
     it "generates 4 candidates" do
       expect(@competition.size).to eq(4)
@@ -500,7 +500,7 @@ RSpec.describe PAS::System do
 
   RSpec.shared_examples "PAS 2-syllable outputs" do
     it "gen generates a competition with 7 constraints" do
-      expect(@competition.constraint_list.size).to eq(7)
+      expect(@competition[0].constraint_list.size).to eq(7)
     end
     it "generates 12 candidates" do
       expect(@competition.size).to eq(12)
