@@ -11,9 +11,6 @@ class Candidate
   # The output form
   attr_accessor :output
 
-  # The label of the candidate (often the candidate number)
-  attr_accessor :label
-
   # The candidate is initialized with violation counts assigned for any of
   # the constraints. At the least, violation counts must be
   # subsequently assigned to each constraint via set_viols().

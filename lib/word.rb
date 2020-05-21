@@ -190,7 +190,6 @@ class Word
   # IO correspondences.
   def dup
     copy = Word.new(@system)
-    copy.label = label
     # Make local references to reduce number of method calls
     c_input = copy.input
     c_output = copy.output
@@ -231,7 +230,7 @@ class Word
   # Returns a copy of the word with the same input object, a cloned output
   # containing the same syllable objects, and a new IO correspondence
   # containing the same [input,output] pairs.
-  # No copy is made of the label, remark, or constraint violations; those
+  # No copy is made of the constraint violations; those
   # will be as initialized by new(). Thus, constraint violations should be
   # assessed via eval() after competitors are complete. The copied word
   # is set to non-optimal by new().
