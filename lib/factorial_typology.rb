@@ -88,7 +88,15 @@ class FactorialTypology
       end
       lang_list = lang_list_new
     end
-    # Assign numbered language labels
+    label_languages(lang_list)
+    lang_list
+  end
+
+  # Assign numbered labels to the languages, by the order in which they
+  # appear in the language list. Each label is stored as the label
+  # attribute of the corresponding language.
+  # Returns a reference to the list of languages.
+  def label_languages(lang_list)
     lang_label = 0
     lang_list.each do |lang|
       lang_label += 1
@@ -96,4 +104,5 @@ class FactorialTypology
     end
     lang_list
   end
+  protected :label_languages
 end
