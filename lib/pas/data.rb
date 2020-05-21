@@ -12,7 +12,6 @@ require_relative '../underlying'
 require_relative '../lexical_entry'
 require_relative '../most_harmonic'
 require_relative '../otlearn/data_manip'
-require_relative '../competition'
 
 module PAS
 

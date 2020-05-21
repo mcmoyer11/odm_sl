@@ -7,7 +7,6 @@ require_relative '../constraint'
 require_relative '../input'
 require_relative '../ui_correspondence'
 require_relative '../word'
-require_relative '../competition'
 require_relative '../underlying'
 require_relative '../lexical_entry'
 
@@ -33,7 +32,6 @@ module SL
   # * Input
   # * UICorrespondence
   # * Word
-  # * Competition
   class System
     include Singleton
 
@@ -96,11 +94,9 @@ module SL
       return input
     end
 
-    # gen takes an input, generates all candidate words for that input, and returns
-    # them in the form of a Competition. All candidates are marked
-    # as not optimal.
-    # All candidates in the competition share the same input object. The outputs
-    # for candidates may also share some of their syllable objects.
+    # gen takes an input, generates all candidate words for that input, and
+    # returns the candidates in an array. All candidates share the same input
+    # object. The outputs may also share some of their syllable objects.
     def gen(input)
       start_rep = Word.new(self,input) # full input, but empty output, io_corr
       start_rep.output.morphword = input.morphword
@@ -132,11 +128,11 @@ module SL
         end
       end
 
-      # Put actual candidates into competition, calling eval on each to set
+      # Put actual candidates into an array, calling eval on each to set
       # the constraint violations.
-      competition = Competition.new
-      main_stress_assigned.each{|c| c.eval; competition.push(c)}
-      return competition
+      candidates = []
+      main_stress_assigned.each{|c| c.eval; candidates.push(c)}
+      return candidates
     end
 
     # Constructs a full structural description for the given output using the
