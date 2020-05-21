@@ -17,7 +17,7 @@ RSpec.describe 'FactorialTypology' do
       @factyp = FactorialTypology.new(comp_list)
     end
     it 'provides the original competition list' do
-      expect(@factyp.competition_list).to eq comp_list
+      expect(@factyp.original_comp_list).to eq comp_list
     end
   end
 end

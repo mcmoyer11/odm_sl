@@ -11,36 +11,38 @@ require_relative 'rcd'
 # * Determining which candidates are harmonically bound, and which are
 #   possibly optimal.
 # * Determining the typology of possible languages.
-# The harmonic boundedness of a candidate is obtained via +hbound?+.
 # The language typology is obtained via method +factorial_typology+.
-#
-# Candidates are identified by their labels; the user has the responsibility
-# of ensuring that all candidate labels are unique.
 class FactorialTypology
+  # The list of competitions with all the candidates
+  attr_reader :original_comp_list
+
+  # The list of competitions with only contenders (non-harmonically bound)
+  attr_reader :contender_comp_list
+
   # Returns an object summarizing the factorial typology of the competition
   # list +comp_list+. The harmonic boundedness status of each candidate
   # is computed upon creation of the object. The language typology is
   # computed and returned by the method +factorial_typology+.
   def initialize(comp_list)
     @original_comp_list = comp_list
-    @hb_flags = {}
+    @contender_comp_list = []
     check_harmonic_boundedness
   end
 
-  # Private method, called by +initialize+, to check and record the harmonic
-  # boundedness status of each candidate.
-  #--
-  # @hb_flags[cand.label] is true if cand is harmonically bound;
-  # false otherwise.
+  # Private method, called by +initialize+, to check the harmonic boundedness
+  # of each candidate, and store the contenders (non-harmonically bound
+  # candidates) as a contender competition.
   def check_harmonic_boundedness
     @original_comp_list.each do |comp|
+      contenders = []
       comp.each do |winner|
         # if WL pairs with cand are inconsistent,
         # then cand is harmonically bound
         losers = comp.reject { |c| c == winner }
         erc_list = winner_loser_pairs(winner, losers)
-        @hb_flags[winner.label] = !erc_list.consistent?
+        contenders << winner if erc_list.consistent?
       end
+      @contender_comp_list << contenders
     end
   end
   private :check_harmonic_boundedness
@@ -56,19 +58,19 @@ class FactorialTypology
     end
     wl_list
   end
-  protected :winner_loser_pairs
+  private :winner_loser_pairs
 
   # Computes the factorial typology of the list of competitions stored in this
   # object. Each language is represented as a list of winner-loser pairs,
-  # one for each combination of a winner and a possibly optimal
-  # competitor. The languages are assigned numeric labels, in the order in
+  # one for each combination of a winner and a contending competitor.
+  # The languages are assigned numeric labels, in the order in
   # which they are generated. An array of the languages is returned.
   #
   # To get a list of the optimal candidates for a particular language,
   # call OTLearn::wlp_winners(+language+).
   def factorial_typology
     # start with competitions containing only possible optima (non-HB)
-    comp_list = non_hb_competition_list
+    comp_list = contender_comp_list
     # Construct initial language list with a single empty language
     lang_list = [Erc_list.new]
     # Iterate over the competitions
@@ -94,30 +96,5 @@ class FactorialTypology
       lang.label = "L#{lang_label}"
     end
     lang_list
-  end
-
-  # Returns true if the candidate labeled +clabel+ is harmonically bounded;
-  # returns false otherwise.
-  def hbound?(clabel)
-    @hb_flags[clabel]
-  end
-
-  # Returns the competition list extensionally defining the system that is
-  # the basis for the typology.
-  def competition_list
-    @original_comp_list
-  end
-
-  # Returns an array of the competitions of this factorial
-  # typology object, but with all of the harmonically bound candidates
-  # removed.
-  def non_hb_competition_list
-    comp_list_new = []
-    @original_comp_list.each do |comp|
-      comp_new = []
-      comp.each { |cand| comp_new.push(cand) unless hbound?(cand.label) }
-      comp_list_new << comp_new
-    end
-    comp_list_new
   end
 end
