@@ -36,10 +36,9 @@ class FactorialTypology
     @original_comp_list.each do |comp|
       contenders = []
       comp.each do |winner|
-        # if WL pairs with cand are inconsistent,
-        # then cand is harmonically bound
-        losers = comp.reject { |c| c == winner }
-        erc_list = winner_loser_pairs(winner, losers)
+        # if the WL pairs for the winner are consistent, then the winner is
+        # a contender.
+        erc_list = winner_loser_pairs(winner, comp)
         contenders << winner if erc_list.consistent?
       end
       @contender_comp_list << contenders
@@ -48,8 +47,10 @@ class FactorialTypology
   private :check_harmonic_boundedness
 
   # Returns an Erc_list of winner-loser pairs for +winner+ paired with
-  # each candidate in +losers+.
-  def winner_loser_pairs(winner, losers)
+  # each competing candidate in +competition+.
+  def winner_loser_pairs(winner, competition)
+    # Exclude the winner from the list of loser candidates
+    losers = competition.reject { |candidate| candidate == winner }
     # Construct a list of winner-loser pairs, one per loser
     wl_list = Erc_list.new
     losers.each do |loser|
@@ -69,18 +70,16 @@ class FactorialTypology
   # To get a list of the optimal candidates for a particular language,
   # call OTLearn::wlp_winners(+language+).
   def factorial_typology
-    # start with competitions containing only possible optima (non-HB)
-    comp_list = contender_comp_list
     # Construct initial language list with a single empty language
     lang_list = [Erc_list.new]
     # Iterate over the competitions
-    comp_list.each do |comp|
+    contender_comp_list.each do |competition|
       lang_list_new = [] # will receive languages with winners from comp added
       lang_list.each do |lang| # for each prior language
-        comp.each do |winner| # test each candidate as a winner
+        # test each candidate as a possible winner with the existing language.
+        competition.each do |winner| # test each candidate as a winner
           lang_new = lang.dup
-          losers = comp.reject { |c| c == winner }
-          new_pairs = winner_loser_pairs(winner, losers)
+          new_pairs = winner_loser_pairs(winner, competition)
           lang_new.add_all(new_pairs)
           rcd_result = Rcd.new(lang_new)
           # If the new language is consistent, add it to the new language list.
