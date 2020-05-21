@@ -87,9 +87,9 @@ class MostHarmonic < Array
         # If one of the candidates harmonically bounds the other, it is
         # more harmonic. Otherwise, compare the two on the stratum.
         # TODO: is testing for simple harmonic bounding necessary here? Is it justified?
-        if curr.harmonically_bounds?(cand) then
+        if harmonically_bounds?(curr, cand) then
           eval = P2
-        elsif cand.harmonically_bounds?(curr) then
+        elsif harmonically_bounds?(cand, curr) then
           eval = P1
         else
           eval = compare_on_stratum(cand,curr,stratum)
@@ -109,7 +109,29 @@ class MostHarmonic < Array
     conflict_flag = mh_list.any? { |c| conflict_cands.member?(c) }    
     return mh_list, conflict_flag
   end
-  
+
+  # Returns true if candidate +cand1+ harmonically bounds +cand2+.
+  # Returns false if +cand2+ harmonically bounds +cand1+, or if
+  # neither harmonically bounds the other.
+  #
+  # One candidate harmonically bounds another if the first
+  # candidate is preferred (has fewer violations) by at least one constraint,
+  # and the other candidate is not preferred by any constraint.
+  def harmonically_bounds?(cand1, cand2)
+    cand1_better_on_a_constraint = false
+    cand1_worse_on_a_constraint = false
+    cand1.constraint_list.each do |con|
+      if cand1.get_viols(con) < cand2.get_viols(con)
+        cand1_better_on_a_constraint = true
+      end
+      if cand1.get_viols(con) > cand2.get_viols(con)
+        cand1_worse_on_a_constraint = true
+      end
+    end
+    cand1_better_on_a_constraint && !cand1_worse_on_a_constraint
+  end
+
+
   # Returns a list of most harmonic candidates and a boolean conflict flag.
   # The list contains the candidates of the given competition that are
   # most harmonic on the given hierarchy. The conflict flag is true if

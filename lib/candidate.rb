@@ -94,27 +94,6 @@ class Candidate
     end
   end
 
-  # Returns true if the candidate harmonically bounds +other+.
-  # Returns false if +other+ harmonically
-  # bounds this candidate, or if neither harmonically bounds the other.
-  #
-  # One candidate harmonically bounds another if the first
-  # candidate is preferred (has fewer violations) by at least one constraint,
-  # and the other candidate is not preferred by any constraint.
-  def harmonically_bounds?(other)
-    better_on_a_constraint = false
-    worse_on_a_constraint = false
-    @constraints.each do |con|
-      if self.get_viols(con) < other.get_viols(con)
-        better_on_a_constraint = true
-      end
-      if self.get_viols(con) > other.get_viols(con)
-        worse_on_a_constraint = true
-      end
-    end
-    better_on_a_constraint && !worse_on_a_constraint
-  end
-
   # Compares this candidate with +other+ for value equality, with respect
   # to their inputs and their outputs. It ignores the label,
   # as well as the violations (these should automatically be
