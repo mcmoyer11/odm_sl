@@ -11,7 +11,7 @@ RSpec.describe LoserSelector_by_ranking do
     @loser = instance_double(Candidate, "loser")
     @sys = double("system")
     @erc_list = double("erc list")
-    competition = instance_double(Competition, "competition")
+    competition = double("competition")
     # Mock: compute the competition for the input
     expect(@sys).to receive(:gen).with(@input).and_return(competition)
     @rcd_class = double("rcd class")
