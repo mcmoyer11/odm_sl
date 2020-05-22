@@ -3,15 +3,14 @@
 # Author: Bruce Tesar
 
 require_relative 'erc_list'
-require_relative 'win_lose_pair'
 require_relative 'rcd'
 
 # FactorialTypology objects summarize typologies of competition lists
 # in two ways:
-# * Determining which candidates are harmonically bound, and which are
-#   possibly optimal.
+# * Determining which candidates are contenders (possibly optimal).
+#   The contenders are obtained via the method #contender_comp_list.
 # * Determining the typology of possible languages.
-# The language typology is obtained via method +factorial_typology+.
+#   The language typology is obtained via method #factorial_typology.
 class FactorialTypology
   # The list of competitions with all the candidates
   attr_reader :original_comp_list
@@ -38,28 +37,13 @@ class FactorialTypology
       comp.each do |winner|
         # if the WL pairs for the winner are consistent, then the winner is
         # a contender.
-        erc_list = winner_loser_pairs(winner, comp)
+        erc_list = Erc_list.new_from_competition(winner, comp)
         contenders << winner if erc_list.consistent?
       end
       @contender_comp_list << contenders
     end
   end
   private :check_harmonic_boundedness
-
-  # Returns an Erc_list of winner-loser pairs for +winner+ paired with
-  # each competing candidate in +competition+.
-  def winner_loser_pairs(winner, competition)
-    # Exclude the winner from the list of loser candidates
-    losers = competition.reject { |candidate| candidate == winner }
-    # Construct a list of winner-loser pairs, one per loser
-    wl_list = Erc_list.new
-    losers.each do |loser|
-      pair = Win_lose_pair.new(winner, loser)
-      wl_list.add(pair)
-    end
-    wl_list
-  end
-  private :winner_loser_pairs
 
   # Computes the factorial typology of the list of competitions stored in this
   # object. Each language is represented as a list of winner-loser pairs,
@@ -79,7 +63,7 @@ class FactorialTypology
         # test each candidate as a possible winner with the existing language.
         competition.each do |winner| # test each candidate as a winner
           lang_new = lang.dup
-          new_pairs = winner_loser_pairs(winner, competition)
+          new_pairs = Erc_list.new_from_competition(winner, competition)
           lang_new.add_all(new_pairs)
           rcd_result = Rcd.new(lang_new)
           # If the new language is consistent, add it to the new language list.
