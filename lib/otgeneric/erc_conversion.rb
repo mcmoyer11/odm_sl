@@ -6,11 +6,11 @@
 module OTGeneric
   
   # Contains various module methods for converting between "array of string"
-  # representations of ERC lists, and Erc_list / Erc object representations.
+  # representations of ERC lists, and ErcList / Erc object representations.
   module Erc_conversion
     
     # Takes an array of column headers +headers+, and an array of arrays
-    # +data+, and returns an equivalent Erc_list of ERCs.
+    # +data+, and returns an equivalent ErcList of ERCs.
     def Erc_conversion.arrays_to_erc_list(headers, data)
       constraints = []
       con_headers = headers[1..-1]
@@ -18,7 +18,7 @@ module OTGeneric
         con = Constraint.new(head, i, Constraint::MARK)
         constraints << con
       end
-      erc_list = Erc_list.new(constraint_list: constraints)
+      erc_list = ErcList.new(constraint_list: constraints)
       #
       data.each do |row|
         erc = Erc.new(constraints)

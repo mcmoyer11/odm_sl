@@ -25,7 +25,7 @@ class LoserSelectorExhaustive
   #   LoserSelectorExhaustive.new(system) -> obj
   #   LoserSelectorExhaustive.new(system, erc_list_class: class, win_lose_pair_class: class) -> obj
   def initialize(system,
-      erc_list_class: Erc_list, win_lose_pair_class: Win_lose_pair)
+                 erc_list_class: ErcList, win_lose_pair_class: Win_lose_pair)
     @system = system
     @erc_list_class = erc_list_class
     @win_lose_pair_class = win_lose_pair_class
@@ -43,8 +43,8 @@ class LoserSelectorExhaustive
     competition.each do |cand|
       # a candidate with an identical violation profile won't be informative
       unless cand.ident_viols?(winner)
-        # Construct an internal Erc_list, and copy ranking_info into it.
-        # Better than #dup: don't assume ranking_info is class Erc_list.
+        # Construct an internal ErcList, and copy ranking_info into it.
+        # Better than #dup: don't assume ranking_info is class ErcList.
         ercs = @erc_list_class.new.add_all(ranking_info)
         # Construct a negated WL-pair, with cand as the winner,
         # and winner as the loser

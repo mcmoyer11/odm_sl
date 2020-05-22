@@ -6,12 +6,12 @@ require 'forwardable'
 require_relative 'rcd'
 require_relative 'win_lose_pair'
 
-# An Erc_list is a list of ERC-like objects. All ERCs in the list must respond
+# An ErcList is a list of ERC-like objects. All ERCs in the list must respond
 # to #constraint_list with a list of the very same constraints.
 # ---
 # === Methods delegated to object of class Array
 # #empty?, #size, #any?, #each, #each_with_index
-class Erc_list
+class ErcList
   extend Forwardable
 
   # Methods delegated to object (@list) of class Array.
@@ -20,18 +20,18 @@ class Erc_list
   # An optional label. Defaults to the empty string "".
   attr_accessor :label
 
-  # Returns an empty Erc_list. It can optionally be passed a list of
+  # Returns an empty ErcList. It can optionally be passed a list of
   # constraints. If a constraint list is not provided at object construction,
   # then the constraints of the first ERC added will determine
   # the constraint list.
   #
   # Providing a list of constraints at construction time:
   # * Allows added ERCs to be checked to make sure their constraints match.
-  # * Makes it easy to apply RCD to an empty Erc_list.
+  # * Makes it easy to apply RCD to an empty ErcList.
   #
   # :call-seq:
-  #   Erc_list.new() -> Erc_list
-  #   Erc_list.new(constraint_list: my_constraints) -> Erc_list
+  #   ErcList.new() -> ErcList
+  #   ErcList.new(constraint_list: my_constraints) -> ErcList
   #--
   # The default RCD class is Rcd. The +rcd_class+ parameter is
   # primarily for testing purposes (dependency injection).
@@ -48,7 +48,7 @@ class Erc_list
   # each loser of the +competition+.
   #
   # :call-seq:
-  #   Erc_list.new_from_competition(winner, competition) -> Erc_list
+  #   ErcList.new_from_competition(winner, competition) -> ErcList
   #--
   # The +wlpair_class+ is a dependency injection for testing.
   def self.new_from_competition(winner, competition,
@@ -75,13 +75,13 @@ class Erc_list
     # if constraints haven't been provided, then nothing to check
     unless constraint_list.empty?
       unless erc.constraint_list.size == constraint_list.size
-        raise 'Erc_list#add: cannot add an ERC with a different number of constraints'
+        raise 'ErcList#add: cannot add an ERC with a different number of constraints'
       end
       unless erc.constraint_list.all? { |con| constraint_list.include?(con) }
-        raise 'Erc_list#add: cannot add an ERC with different constraints'
+        raise 'ErcList#add: cannot add an ERC with different constraints'
       end
     end
-    # append the new ERC to the list, and return self (the Erc_list).
+    # append the new ERC to the list, and return self (the ErcList).
     @list << erc
     # program has not yet checked if the new erc is consistent
     @consistency_test = nil
@@ -99,40 +99,40 @@ class Erc_list
     self
   end
 
-  # Returns an Erc_list containing all ERCs for which the block
+  # Returns an ErcList containing all ERCs for which the block
   # returns <em>true</em>.
   #
   # :call-seq:
-  #   find_all{|obj| block} -> Erc_list
+  #   find_all{|obj| block} -> ErcList
   def find_all(&block)
     satisfies = @list.find_all(&block)
-    new_el = Erc_list.new
+    new_el = ErcList.new
     satisfies.each { |e| new_el.add(e) }
     new_el
   end
 
-  # Returns an Erc_list containing all ERCs for which the block
+  # Returns an ErcList containing all ERCs for which the block
   # returns <em>false</em>.
   #
   # :call-seq:
-  #   reject{|obj| block} -> Erc_list
+  #   reject{|obj| block} -> ErcList
   def reject(&block)
     not_satisfies = @list.reject(&block)
-    new_el = Erc_list.new
+    new_el = ErcList.new
     not_satisfies.each { |e| new_el.add(e) }
     new_el
   end
 
   # Partitions the members of the ERC list based on whether they satisfy
-  # the provided block. Returns two Erc_list objects, the first containing
+  # the provided block. Returns two ErcList objects, the first containing
   # the ERCs for which the block returns true, and the second containing
   # those for which the block returns false.
   #
   # :call-seq:
-  #   partition{|obj| block} -> [true-Erc_list, false-Erc_list]
+  #   partition{|obj| block} -> [true-ErcList, false-ErcList]
   def partition(&block)
     true_list, false_list = @list.partition(&block)
-    [Erc_list.new.add_all(true_list), Erc_list.new.add_all(false_list)]
+    [ErcList.new.add_all(true_list), ErcList.new.add_all(false_list)]
   end
 
   # Returns an array containing the ERCs of the ERC list.
@@ -144,7 +144,7 @@ class Erc_list
 
   # Returns an array containing the ERCs of the ERC list. #to_ary is called on
   # an object whenever the Ruby interpreter needs a parameter passed to
-  # a method to be an array, such as when an Erc_list is compared to an array
+  # a method to be an array, such as when an ErcList is compared to an array
   # for content equivalence using Array#==. The conversion method #to_a
   # produces the same output, but is called by Ruby (and users) in other
   # circumstances. These conventions are built into Ruby's standard library;
@@ -154,11 +154,11 @@ class Erc_list
     to_a
   end
 
-  # Returns a duplicate Erc_list with an independent list, meaning that
+  # Returns a duplicate ErcList with an independent list, meaning that
   # adding or removing ERCs from the duplicate will not affect the original.
   # The ERC objects themselves are <em>not</em> duplicated.
   def dup
-    Erc_list.new(constraint_list: @constraint_list, rcd_class: @rcd_class) \
+    ErcList.new(constraint_list: @constraint_list, rcd_class: @rcd_class) \
             .add_all(self)
   end
 

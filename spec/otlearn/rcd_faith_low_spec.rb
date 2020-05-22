@@ -23,7 +23,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
         @erc2 = Test.quick_erc([MW,FL,ME])
-        @erc_list = instance_double(Erc_list, "ERC list")
+        @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
         @rcd = OTLearn::RcdFaithLow.new(@erc_list)
@@ -43,7 +43,7 @@ module Test
     context "RcdFaithLow with ERC list [[ML,FW,MW]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ML,FW,MW])
-        @erc_list = instance_double(Erc_list, "ERC list")
+        @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1)
         @rcd = OTLearn::RcdFaithLow.new(@erc_list, label: "FaithLow Label")
@@ -63,7 +63,7 @@ module Test
     context "RcdFaithLow with ERC list [[ME,FW,ML,FE]]" do
       before(:each) do
         @erc1 = Test.quick_erc([ME,FW,ML,FE])
-        @erc_list = instance_double(Erc_list, "ERC list")
+        @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1)
         @rcd = OTLearn::RcdFaithLow.new(@erc_list)
@@ -81,7 +81,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([FE,FW,ML,FE])
         @erc2 = Test.quick_erc([FE,FE,ML,FW])
-        @erc_list = instance_double(Erc_list, "ERC list")
+        @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
         @rcd = OTLearn::RcdFaithLow.new(@erc_list)
@@ -98,7 +98,7 @@ module Test
     context "RcdFaithLow with ERC list [[FW,FW,ML,FE]]" do
       before(:each) do
         @erc1 = Test.quick_erc([FW,FW,ML,FE])
-        @erc_list = instance_double(Erc_list, "ERC list")
+        @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1)
         @rcd = OTLearn::RcdFaithLow.new(@erc_list)
@@ -116,7 +116,7 @@ module Test
       before(:each) do
         @erc1 = Test.quick_erc([FW,FW,ML,FE])
         @erc2 = Test.quick_erc([FE,FE,ML,FW])
-        @erc_list = instance_double(Erc_list, "ERC list")
+        @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1).and_yield(@erc2)
         @rcd = OTLearn::RcdFaithLow.new(@erc_list)

@@ -15,7 +15,7 @@ RSpec.describe LoserSelectorExhaustive do
   let(:sys){instance_double(SL::System, "system")}
   # Dependency Injections (and related)
   let(:erc_list_class){double('erc_list_class')}
-  let(:erc_list){instance_double(Erc_list, 'erc_list')}
+  let(:erc_list){instance_double(ErcList, 'erc_list')}
   let(:win_lose_pair_class){double('win_lose_pair_class')}
   let(:wl_pair){instance_double(Win_lose_pair, 'wl_pair')}
   before(:example) do

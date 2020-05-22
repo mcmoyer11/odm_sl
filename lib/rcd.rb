@@ -40,9 +40,9 @@ class Rcd
     run_rcd
   end
 
-  # Returns a list of all the ERCs, as an Erc_list object.
+  # Returns a list of all the ERCs, as an ErcList object.
   def erc_list
-    new_erc_list = Erc_list.new
+    new_erc_list = ErcList.new
     new_erc_list.add_all(@ercs)
     return new_erc_list
   end

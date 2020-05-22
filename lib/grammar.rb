@@ -34,7 +34,7 @@ class Grammar
     end
     @system = system
     @erc_list = erc_list
-    @erc_list ||= Erc_list.new(constraint_list: @system.constraints)
+    @erc_list ||= ErcList.new(constraint_list: @system.constraints)
     self.label = "Grammar"
     @lexicon = lexicon
   end

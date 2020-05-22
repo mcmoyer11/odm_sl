@@ -37,7 +37,7 @@ class FactorialTypology
       comp.each do |winner|
         # if the WL pairs for the winner are consistent, then the winner is
         # a contender.
-        erc_list = Erc_list.new_from_competition(winner, comp)
+        erc_list = ErcList.new_from_competition(winner, comp)
         contenders << winner if erc_list.consistent?
       end
       @contender_comp_list << contenders
@@ -55,7 +55,7 @@ class FactorialTypology
   # call OTLearn::wlp_winners(+language+).
   def factorial_typology
     # Construct initial language list with a single empty language
-    lang_list = [Erc_list.new]
+    lang_list = [ErcList.new]
     # Iterate over the competitions
     contender_comp_list.each do |competition|
       lang_list_new = [] # will receive languages with winners from comp added
@@ -63,7 +63,7 @@ class FactorialTypology
         # test each candidate as a possible winner with the existing language.
         competition.each do |winner| # test each candidate as a winner
           lang_new = lang.dup
-          new_pairs = Erc_list.new_from_competition(winner, competition)
+          new_pairs = ErcList.new_from_competition(winner, competition)
           lang_new.add_all(new_pairs)
           rcd_result = Rcd.new(lang_new)
           # If the new language is consistent, add it to the new language list.

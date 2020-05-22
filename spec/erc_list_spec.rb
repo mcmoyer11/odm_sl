@@ -5,10 +5,10 @@
 require_relative '../lib/erc'
 require_relative '../lib/erc_list'
 
-RSpec.describe Erc_list do
-  context 'A newly created Erc_list' do
+RSpec.describe ErcList do
+  context 'A newly created ErcList' do
     before(:example) do
-      @erc_list = Erc_list.new
+      @erc_list = ErcList.new
     end
 
     it 'is empty' do
@@ -59,9 +59,9 @@ RSpec.describe Erc_list do
     end
   end
 
-  context 'An Erc_list provided with a list of constraints' do
+  context 'An ErcList provided with a list of constraints' do
     before(:example) do
-      @erc_list = Erc_list.new(constraint_list: ['C1', 'C2'])
+      @erc_list = ErcList.new(constraint_list: ['C1', 'C2'])
     end
     it 'returns a list of the same constraints' do
       expect(@erc_list.constraint_list).to contain_exactly('C1', 'C2')
@@ -73,9 +73,9 @@ RSpec.describe Erc_list do
     end
   end
 
-  context 'An Erc_list with one added erc' do
+  context 'An ErcList with one added erc' do
     before(:example) do
-      @erc_list = Erc_list.new
+      @erc_list = ErcList.new
       @erc1 = double('erc1')
       allow(@erc1).to receive(:constraint_list).and_return(['C1', 'C2'])
       allow(@erc1).to receive(:test_cond).and_return(true)
@@ -101,27 +101,27 @@ RSpec.describe Erc_list do
       found = @erc_list.find_all { |e| e.test_cond }
       expect(found.to_a).to contain_exactly(@erc1)
     end
-    it 'returns an Erc_list for #find_all' do
+    it 'returns an ErcList for #find_all' do
       found = @erc_list.find_all { |e| e.test_cond }
-      expect(found).to be_an_instance_of(Erc_list)
+      expect(found).to be_an_instance_of(ErcList)
     end
     it 'returns block-violating members for #reject' do
       found = @erc_list.reject { |e| e.test_cond }
       expect(found.to_a).to be_empty
     end
-    it 'returns an Erc_list for #reject' do
+    it 'returns an ErcList for #reject' do
       found = @erc_list.reject { |e| e.test_cond }
-      expect(found).to be_an_instance_of(Erc_list)
+      expect(found).to be_an_instance_of(ErcList)
     end
     it 'partitions into one satisfying ERC and no other ERCs' do
       true_list, false_list = @erc_list.partition { |e| e.test_cond }
       expect(true_list.to_a).to contain_exactly(@erc1)
       expect(false_list.to_a).to be_empty
     end
-    it 'partitions into two Erc_list objects' do
+    it 'partitions into two ErcList objects' do
       true_list, false_list = @erc_list.partition { |e| e.test_cond }
-      expect(true_list).to be_an_instance_of(Erc_list)
-      expect(false_list).to be_an_instance_of(Erc_list)
+      expect(true_list).to be_an_instance_of(ErcList)
+      expect(false_list).to be_an_instance_of(ErcList)
     end
     it 'returns a duplicate with a list independent of the original' do
       dup_list = @erc_list.dup
@@ -186,7 +186,7 @@ RSpec.describe Erc_list do
     end
   end
 
-  context 'An empty Erc_list, when ERCS are added from a list' do
+  context 'An empty ErcList, when ERCS are added from a list' do
     before(:example) do
       @erc_orig = instance_double(Erc)
       @erc_same = instance_double(Erc)
@@ -202,7 +202,7 @@ RSpec.describe Erc_list do
       before(:example) do
         allow(@generic_list).to receive(:each).and_yield(@erc_orig)
                                               .and_yield(@erc_same)
-        @new_erc_list = Erc_list.new.add_all(@generic_list)
+        @new_erc_list = ErcList.new.add_all(@generic_list)
       end
       it 'contains the same number of ercs' do
         expect(@new_erc_list.size).to eq(2)
@@ -222,7 +222,7 @@ RSpec.describe Erc_list do
                                               .and_yield(@erc_diff)
       end
       it 'raises a RuntimeError' do
-        expect { Erc_list.new.add_all(@generic_list) }.to \
+        expect { ErcList.new.add_all(@generic_list) }.to \
           raise_error(RuntimeError)
       end
     end
@@ -232,7 +232,7 @@ RSpec.describe Erc_list do
 
   context 'with no ERCs added' do
     before(:example) do
-      @erc_list = Erc_list.new
+      @erc_list = ErcList.new
     end
     it 'responds that it is consistent' do
       expect(@erc_list.consistent?).to be true
@@ -246,7 +246,7 @@ RSpec.describe Erc_list do
       @rcd_class = double('RCD class')
       rcd_result = instance_double(Rcd)
       allow(rcd_result).to receive(:consistent?).and_return(true)
-      @erc_list = Erc_list.new(rcd_class: @rcd_class).add(@erc_consistent)
+      @erc_list = ErcList.new(rcd_class: @rcd_class).add(@erc_consistent)
       allow(@rcd_class).to receive(:new).with(@erc_list).and_return(rcd_result)
     end
     it 'responds that is is consistent' do
@@ -261,7 +261,7 @@ RSpec.describe Erc_list do
       @rcd_class = double('RCD class')
       rcd_result = instance_double(Rcd)
       allow(rcd_result).to receive(:consistent?).and_return(false)
-      @erc_list = Erc_list.new(rcd_class: @rcd_class).add(@erc_consistent)
+      @erc_list = ErcList.new(rcd_class: @rcd_class).add(@erc_consistent)
       allow(@rcd_class).to receive(:new).with(@erc_list).and_return(rcd_result)
     end
     it 'responds that it is not consistent' do
@@ -270,7 +270,7 @@ RSpec.describe Erc_list do
   end
 end
 
-RSpec.describe 'Erc_list.new_from_competition' do
+RSpec.describe 'ErcList.new_from_competition' do
   # A helper method for setting up winner-loser pair doubles.
   def set_up_wlpair_double(winner, loser, pair, wlpair_class, clist)
     allow(wlpair_class).to receive(:new).with(winner, loser) \
@@ -295,8 +295,8 @@ RSpec.describe 'Erc_list.new_from_competition' do
     before(:example) do
       competition = [winner, loser1]
       set_up_wlpair_double(winner, loser1, pair1, wlpair_class, con_list)
-      @erc_list = Erc_list.new_from_competition(winner, competition,
-                                                wlpair_class: wlpair_class)
+      @erc_list = ErcList.new_from_competition(winner, competition,
+                                               wlpair_class: wlpair_class)
     end
     it 'returns a list of 1 erc' do
       expect(@erc_list.size).to eq 1
@@ -312,8 +312,8 @@ RSpec.describe 'Erc_list.new_from_competition' do
   context 'given an empty competition' do
     before(:example) do
       competition = []
-      @erc_list = Erc_list.new_from_competition(winner, competition,
-                                                wlpair_class: wlpair_class)
+      @erc_list = ErcList.new_from_competition(winner, competition,
+                                               wlpair_class: wlpair_class)
     end
     it 'returns an empty erc list' do
       expect(@erc_list.empty?).to be(true)
@@ -322,8 +322,8 @@ RSpec.describe 'Erc_list.new_from_competition' do
   context 'given a competition with only the winner' do
     before(:example) do
       competition = [winner]
-      @erc_list = Erc_list.new_from_competition(winner, competition,
-                                                wlpair_class: wlpair_class)
+      @erc_list = ErcList.new_from_competition(winner, competition,
+                                               wlpair_class: wlpair_class)
     end
     it 'returns an empty erc list' do
       expect(@erc_list.empty?).to be(true)
@@ -338,8 +338,8 @@ RSpec.describe 'Erc_list.new_from_competition' do
       competition = [loser1, winner, loser2]
       set_up_wlpair_double(winner, loser1, pair1, wlpair_class, con_list)
       set_up_wlpair_double(winner, loser2, pair2, wlpair_class, con_list)
-      @erc_list = Erc_list.new_from_competition(winner, competition,
-                                                wlpair_class: wlpair_class)
+      @erc_list = ErcList.new_from_competition(winner, competition,
+                                               wlpair_class: wlpair_class)
     end
     it 'returns a list of 2 ercs' do
       expect(@erc_list.size).to eq 2

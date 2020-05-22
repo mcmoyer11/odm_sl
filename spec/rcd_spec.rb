@@ -10,7 +10,7 @@ require_relative '../lib/erc_list'
 require_relative '../test/helpers/quick_erc'
 
 RSpec.describe Rcd do
-  let(:erc_list){instance_double(Erc_list, "ERC list")}
+  let(:erc_list){instance_double(ErcList, "ERC list")}
   before(:each) do
     stub_const 'ML', Test::ML
     stub_const 'ME', Test::ME
@@ -50,8 +50,8 @@ RSpec.describe Rcd do
     it "has an empty list of the ERCs passed in" do
       expect(@rcd.erc_list).to be_empty
     end
-    it "returns an Erc_list of ERCs passed in" do
-      expect(@rcd.erc_list).to be_a_kind_of(Erc_list)
+    it "returns an ErcList of ERCs passed in" do
+      expect(@rcd.erc_list).to be_a_kind_of(ErcList)
     end
     it "has no explained ERCs" do
       expect(@rcd.ex_ercs).to eq [[]]
@@ -90,7 +90,7 @@ RSpec.describe Rcd do
       expect(@rcd.unranked).to be_empty
     end
     it "has a list of the ERCs passed in" do
-      # Rcd#erc_list returns an Erc_list, convert to Array to compare.
+      # Rcd#erc_list returns an ErcList, convert to Array to compare.
       expect(@rcd.erc_list.to_ary).to eq [erc1]
     end
     it "has explained ERCs [[erc1],[]]" do
