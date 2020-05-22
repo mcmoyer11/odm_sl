@@ -11,6 +11,13 @@ require_relative 'harmonic_bound_filter'
 #   The contenders are obtained via the method #contender_comp_list.
 # * Determining the typology of possible languages.
 #   The language typology is obtained via method #factorial_typology.
+# Each language is represented as a list of winner-loser pairs,
+# one for each combination of a winner and a contending competitor.
+# # The languages are assigned numeric labels, in the order in
+# which they are generated.
+#
+# To get a list of the optimal candidates for a particular language,
+# call OTLearn::wlp_winners(+language+).
 class FactorialTypology
   # The list of competitions with all the candidates
   attr_reader :original_comp_list
@@ -18,10 +25,13 @@ class FactorialTypology
   # The list of competitions with only contenders (non-harmonically bound)
   attr_reader :contender_comp_list
 
+  # The factorial typology of the list of competitions.
+  # Each language is represented as a list of winner-loser pairs,
+  # one for each combination of a winner and a contending competitor.
+  attr_reader :factorial_typology
+
   # Returns an object summarizing the factorial typology of the competition
-  # list +comp_list+. The harmonic boundedness status of each candidate
-  # is computed upon creation of the object. The language typology is
-  # computed and returned by the method +factorial_typology+.
+  # list +comp_list+.
   def initialize(comp_list, erc_list_class: ErcList,
                  hbound_filter: HarmonicBoundFilter.new)
     @erc_list_class = erc_list_class
@@ -29,6 +39,7 @@ class FactorialTypology
     @original_comp_list = comp_list
     @contender_comp_list = []
     filter_harmonically_bounded
+    @factorial_typology = compute_typology
   end
 
   # Private method, called by #initialize, to filter out collectively
@@ -42,15 +53,7 @@ class FactorialTypology
   end
   private :filter_harmonically_bounded
 
-  # Computes the factorial typology of the list of competitions stored in this
-  # object. Each language is represented as a list of winner-loser pairs,
-  # one for each combination of a winner and a contending competitor.
-  # The languages are assigned numeric labels, in the order in
-  # which they are generated. An array of the languages is returned.
-  #
-  # To get a list of the optimal candidates for a particular language,
-  # call OTLearn::wlp_winners(+language+).
-  def factorial_typology
+  def compute_typology
     # Construct initial language list with a single empty language
     lang_list = [@erc_list_class.new]
     # Iterate over the competitions
@@ -71,6 +74,7 @@ class FactorialTypology
     label_languages(lang_list)
     lang_list
   end
+  private :compute_typology
 
   # Assign numbered labels to the languages, by the order in which they
   # appear in the language list. Each label is stored as the label
@@ -84,5 +88,5 @@ class FactorialTypology
     end
     lang_list
   end
-  protected :label_languages
+  private :label_languages
 end
