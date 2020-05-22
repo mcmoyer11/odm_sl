@@ -3,7 +3,6 @@
 # Author: Bruce Tesar
 
 require_relative 'erc_list'
-require_relative 'rcd'
 
 # FactorialTypology objects summarize typologies of competition lists
 # in two ways:
@@ -22,11 +21,10 @@ class FactorialTypology
   # list +comp_list+. The harmonic boundedness status of each candidate
   # is computed upon creation of the object. The language typology is
   # computed and returned by the method +factorial_typology+.
-  def initialize(comp_list, erc_list_class: ErcList, rcd_class: Rcd)
+  def initialize(comp_list, erc_list_class: ErcList)
     @original_comp_list = comp_list
     @contender_comp_list = []
     @erc_list_class = erc_list_class
-    @rcd_class = rcd_class
     check_harmonic_boundedness
   end
 
@@ -67,9 +65,8 @@ class FactorialTypology
           lang_new = lang.dup
           new_pairs = @erc_list_class.new_from_competition(winner, competition)
           lang_new.add_all(new_pairs)
-          rcd_result = @rcd_class.new(lang_new)
           # If the new language is consistent, add it to the new language list.
-          lang_list_new << lang_new if rcd_result.consistent?
+          lang_list_new << lang_new if lang_new.consistent?
         end
       end
       lang_list = lang_list_new
