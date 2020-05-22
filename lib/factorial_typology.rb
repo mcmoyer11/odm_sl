@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require_relative 'erc_list'
+require_relative 'harmonic_bound_filter'
 
 # FactorialTypology objects summarize typologies of competition lists
 # in two ways:
@@ -21,29 +22,25 @@ class FactorialTypology
   # list +comp_list+. The harmonic boundedness status of each candidate
   # is computed upon creation of the object. The language typology is
   # computed and returned by the method +factorial_typology+.
-  def initialize(comp_list, erc_list_class: ErcList)
+  def initialize(comp_list, erc_list_class: ErcList,
+                 hbound_filter: HarmonicBoundFilter.new)
+    @erc_list_class = erc_list_class
+    @harmonic_bound_filter = hbound_filter
     @original_comp_list = comp_list
     @contender_comp_list = []
-    @erc_list_class = erc_list_class
-    check_harmonic_boundedness
+    filter_harmonically_bounded
   end
 
-  # Private method, called by #initialize, to check the harmonic boundedness
-  # of each candidate, and store the contenders (non-harmonically bound
-  # candidates) as a contender competition.
-  def check_harmonic_boundedness
+  # Private method, called by #initialize, to filter out collectively
+  # harmonically bound candidates, creating a list of competitions consisting
+  # only of contenders.
+  def filter_harmonically_bounded
     @original_comp_list.each do |comp|
-      contenders = []
-      comp.each do |winner|
-        # if the WL pairs for the winner are consistent, then the winner is
-        # a contender.
-        erc_list = @erc_list_class.new_from_competition(winner, comp)
-        contenders << winner if erc_list.consistent?
-      end
+      contenders = @harmonic_bound_filter.remove_collectively_bound(comp)
       @contender_comp_list << contenders
     end
   end
-  private :check_harmonic_boundedness
+  private :filter_harmonically_bounded
 
   # Computes the factorial typology of the list of competitions stored in this
   # object. Each language is represented as a list of winner-loser pairs,
