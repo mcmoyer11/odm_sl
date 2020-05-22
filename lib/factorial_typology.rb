@@ -22,13 +22,15 @@ class FactorialTypology
   # list +comp_list+. The harmonic boundedness status of each candidate
   # is computed upon creation of the object. The language typology is
   # computed and returned by the method +factorial_typology+.
-  def initialize(comp_list)
+  def initialize(comp_list, erc_list_class: ErcList, rcd_class: Rcd)
     @original_comp_list = comp_list
     @contender_comp_list = []
+    @erc_list_class = erc_list_class
+    @rcd_class = rcd_class
     check_harmonic_boundedness
   end
 
-  # Private method, called by +initialize+, to check the harmonic boundedness
+  # Private method, called by #initialize, to check the harmonic boundedness
   # of each candidate, and store the contenders (non-harmonically bound
   # candidates) as a contender competition.
   def check_harmonic_boundedness
@@ -37,7 +39,7 @@ class FactorialTypology
       comp.each do |winner|
         # if the WL pairs for the winner are consistent, then the winner is
         # a contender.
-        erc_list = ErcList.new_from_competition(winner, comp)
+        erc_list = @erc_list_class.new_from_competition(winner, comp)
         contenders << winner if erc_list.consistent?
       end
       @contender_comp_list << contenders
@@ -55,7 +57,7 @@ class FactorialTypology
   # call OTLearn::wlp_winners(+language+).
   def factorial_typology
     # Construct initial language list with a single empty language
-    lang_list = [ErcList.new]
+    lang_list = [@erc_list_class.new]
     # Iterate over the competitions
     contender_comp_list.each do |competition|
       lang_list_new = [] # will receive languages with winners from comp added
@@ -63,9 +65,9 @@ class FactorialTypology
         # test each candidate as a possible winner with the existing language.
         competition.each do |winner| # test each candidate as a winner
           lang_new = lang.dup
-          new_pairs = ErcList.new_from_competition(winner, competition)
+          new_pairs = @erc_list_class.new_from_competition(winner, competition)
           lang_new.add_all(new_pairs)
-          rcd_result = Rcd.new(lang_new)
+          rcd_result = @rcd_class.new(lang_new)
           # If the new language is consistent, add it to the new language list.
           lang_list_new << lang_new if rcd_result.consistent?
         end

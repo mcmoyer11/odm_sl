@@ -159,7 +159,7 @@ class ErcList
   # The ERC objects themselves are <em>not</em> duplicated.
   def dup
     ErcList.new(constraint_list: @constraint_list, rcd_class: @rcd_class) \
-            .add_all(self)
+           .add_all(self)
   end
 
   # Returns a list of the constraints used in the list. If no constraints were
