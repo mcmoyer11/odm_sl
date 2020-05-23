@@ -13,7 +13,7 @@ require_relative 'harmonic_bound_filter'
 #   The language typology is obtained via method #factorial_typology.
 # Each language is represented as a list of winner-loser pairs,
 # one for each combination of a winner and a contending competitor.
-# # The languages are assigned numeric labels, in the order in
+# The languages are assigned numbered labels, in the order in
 # which they are generated.
 #
 # To get a list of the optimal candidates for a particular language,
@@ -30,13 +30,20 @@ class FactorialTypology
   # one for each combination of a winner and a contending competitor.
   attr_reader :factorial_typology
 
-  # Returns an object summarizing the factorial typology of the competition
-  # list +comp_list+.
-  def initialize(comp_list, erc_list_class: ErcList,
+  # Returns an object summarizing the factorial typology of the parameter
+  # +competition_list+. The parameter +competition_list+ must respond to
+  # the method #each.
+  #
+  # :call-seq:
+  #   FactorialTypology.new(competition_list) -> FactorialTypology
+  #--
+  # erc_list_class and hbound_filter are dependency injections, mostly
+  # for testing.
+  def initialize(competition_list, erc_list_class: ErcList,
                  hbound_filter: HarmonicBoundFilter.new)
     @erc_list_class = erc_list_class
     @harmonic_bound_filter = hbound_filter
-    @original_comp_list = comp_list
+    @original_comp_list = competition_list
     @contender_comp_list = []
     filter_harmonically_bounded
     @factorial_typology = compute_typology
@@ -80,6 +87,8 @@ class FactorialTypology
   # appear in the language list. Each label is stored as the label
   # attribute of the corresponding language.
   # Returns a reference to the list of languages.
+  #
+  # Example: The label for the first language is L1.
   def label_languages(lang_list)
     lang_label = 0
     lang_list.each do |lang|
