@@ -89,20 +89,26 @@ class Candidate
     end
   end
 
-  # Compares this candidate with +other+ for value equality, with respect
-  # to their inputs and their outputs. It ignores the violations, as
-  # these should automatically be identical if the input and output are
-  # the same.
+  # Compares this candidate with +other+ for value equality using #==
+  # with respect to their inputs and their outputs. Also checks that
+  # the violation counts are identical.
   def ==(other)
     return false unless input == other.input
     return false unless output == other.output
+    return false unless ident_viols?(other)
 
     true
   end
 
-  # The same as ==
+  # Compares this candidate with +other+ for value equality using #eql?
+  # with respect to their inputs and their outputs. Also checks that
+  # the violation counts are identical.
   def eql?(other)
-    self == other
+    return false unless input.eql? other.input
+    return false unless output.eql? other.output
+    return false unless ident_viols?(other)
+
+    true
   end
 
   # Represent the candidate with a string.
