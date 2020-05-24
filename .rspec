@@ -2,6 +2,10 @@
 #
 # RSpec default options
 # ./.rspec is loaded automatically by RSpec
+#
+# RSpec automatically adds to $LOAD_PATH:
+#   <project>/spec
+#   <project>/lib  # at least in RubyMine
 
 # load the contents of spec/spec_helper.rb
 --require spec_helper

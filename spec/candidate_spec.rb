@@ -3,10 +3,10 @@
 # Author: Bruce Tesar
 
 require 'rspec'
-require_relative '../lib/candidate'
-require_relative '../lib/input'
-require_relative '../lib/output'
-require_relative '../lib/constraint'
+require 'candidate'
+require 'input'
+require 'output'
+require 'constraint'
 
 RSpec.describe Candidate do
   let(:input) { instance_double(Input, 'input') }
