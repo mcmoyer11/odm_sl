@@ -4,6 +4,7 @@
 
 require_relative 'erc_list'
 require_relative 'harmonic_bound_filter'
+require_relative 'ident_violation_analyzer'
 
 # FactorialTypology objects summarize typologies of competition lists
 # in two ways:
@@ -40,12 +41,15 @@ class FactorialTypology
   # erc_list_class and hbound_filter are dependency injections, mostly
   # for testing.
   def initialize(competition_list, erc_list_class: ErcList,
-                 hbound_filter: HarmonicBoundFilter.new)
+                 hbound_filter: HarmonicBoundFilter.new,
+                 viol_analyzer_class: IdentViolationAnalyzer)
     @erc_list_class = erc_list_class
     @harmonic_bound_filter = hbound_filter
+    @viol_analyzer_class = viol_analyzer_class
     @original_comp_list = competition_list
     @contender_comp_list = []
     filter_harmonically_bounded
+    ident_viol_candidates_check
     @factorial_typology = compute_typology
   end
 
@@ -60,6 +64,19 @@ class FactorialTypology
   end
   private :filter_harmonically_bounded
 
+  # Checks the competitions of contenders, raises an exception if two or more
+  # competing contenders are found with identical constraint violation
+  # profiles.
+  def ident_viol_candidates_check
+    msg = 'competing contenders with identical violation profiles'
+    @contender_comp_list.each do |comp|
+      analysis = @viol_analyzer_class.new(comp)
+      raise "FactorialTypology: #{msg}" if analysis.ident_viol_candidates?
+    end
+  end
+  private :ident_viol_candidates_check
+
+  # Computes the factorial typology, returning an array of Erc lists.
   def compute_typology
     # Construct initial language list with a single empty language
     lang_list = [@erc_list_class.new]

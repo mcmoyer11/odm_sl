@@ -28,11 +28,16 @@ require_relative '../lib/factorial_typology'
 RSpec.describe 'FactorialTypology' do
   let(:hbound_filter) { double('HBound Filter') }
   let(:erc_list_class) { double('erc_list_class') }
+  let(:analyzer_class) { double('analyzer_class') }
+  let(:viol_analyzer) { double('viol_analyzer') }
   class MockErcList < Array
     attr_accessor :label
     def add_all(new_ones)
       concat(new_ones)
     end
+  end
+  before(:each) do
+    allow(analyzer_class).to receive(:new).and_return(viol_analyzer)
   end
 
   context 'given 1 competition with two non-HB candidates' do
@@ -42,6 +47,7 @@ RSpec.describe 'FactorialTypology' do
         def consistent?
           return true if self == [:erc1]
           return true if self == [:erc2]
+
           false
         end
       end
@@ -50,6 +56,8 @@ RSpec.describe 'FactorialTypology' do
       comp1 = [:cand1, :cand2]
       contenders1 = [:cand1, :cand2]
       @comp_list = [comp1]
+      allow(viol_analyzer).to receive(:ident_viol_candidates?) \
+        .and_return(false)
       @contenders_list = [contenders1]
       allow(hbound_filter).to receive(:remove_collectively_bound) \
         .with(comp1).and_return(contenders1)
@@ -59,7 +67,8 @@ RSpec.describe 'FactorialTypology' do
         .with(:cand2, contenders1).and_return([:erc2])
       @factyp = FactorialTypology.new(@comp_list,
                                       erc_list_class: erc_list_class,
-                                      hbound_filter: hbound_filter)
+                                      hbound_filter: hbound_filter,
+                                      viol_analyzer_class: analyzer_class)
     end
     it 'provides the original competition list' do
       expect(@factyp.original_comp_list).to eq @comp_list
@@ -79,6 +88,7 @@ RSpec.describe 'FactorialTypology' do
         def consistent?
           return true if self == [:erc1]
           return true if self == [:erc2]
+
           false
         end
       end
@@ -87,6 +97,8 @@ RSpec.describe 'FactorialTypology' do
       comp1 = [:cand1, :cand2]
       contenders1 = [:cand2]
       @comp_list = [comp1]
+      allow(viol_analyzer).to receive(:ident_viol_candidates?) \
+        .and_return(false)
       @contenders_list = [contenders1]
       allow(hbound_filter).to receive(:remove_collectively_bound) \
         .with(comp1).and_return(contenders1)
@@ -94,7 +106,8 @@ RSpec.describe 'FactorialTypology' do
         .with(:cand2, contenders1).and_return([:erc2])
       @factyp = FactorialTypology.new(@comp_list,
                                       erc_list_class: erc_list_class,
-                                      hbound_filter: hbound_filter)
+                                      hbound_filter: hbound_filter,
+                                      viol_analyzer_class: analyzer_class)
     end
     it 'provides the original competition list' do
       expect(@factyp.original_comp_list).to eq @comp_list
@@ -119,6 +132,7 @@ RSpec.describe 'FactorialTypology' do
           return true if self == [:erc11, :erc21]
           return true if self == [:erc11, :erc22]
           return true if self == [:erc12, :erc21]
+
           false
         end
       end
@@ -129,6 +143,8 @@ RSpec.describe 'FactorialTypology' do
       comp2 = [:cand21, :cand22]
       contenders2 = [:cand21, :cand22]
       @comp_list = [comp1, comp2]
+      allow(viol_analyzer).to receive(:ident_viol_candidates?) \
+        .and_return(false)
       @contenders_list = [contenders1, contenders2]
       allow(hbound_filter).to receive(:remove_collectively_bound) \
         .with(comp1).and_return(contenders1)
@@ -144,7 +160,8 @@ RSpec.describe 'FactorialTypology' do
         .with(:cand22, contenders2).and_return([:erc22])
       @factyp = FactorialTypology.new(@comp_list,
                                       erc_list_class: erc_list_class,
-                                      hbound_filter: hbound_filter)
+                                      hbound_filter: hbound_filter,
+                                      viol_analyzer_class: analyzer_class)
     end
     it 'provides the original competition list' do
       expect(@factyp.original_comp_list).to eq @comp_list
@@ -155,6 +172,42 @@ RSpec.describe 'FactorialTypology' do
     it 'provides the correct typology' do
       expect(@factyp.factorial_typology).to eq \
         [[:erc11, :erc21], [:erc11, :erc22], [:erc12, :erc21]]
+    end
+  end
+
+  context 'given 1 competition with two identical violation candidates' do
+    before(:each) do
+      class MockErcList
+        # determine what erc lists are consistent in this context
+        def consistent?
+          return true if self == [:erc1]
+          return true if self == [:erc2]
+
+          false
+        end
+      end
+      allow(erc_list_class).to receive(:new).with(no_args) \
+                                            .and_return(MockErcList.new)
+      comp1 = [:cand1, :cand2]
+      contenders1 = [:cand1, :cand2]
+      @comp_list = [comp1]
+      allow(viol_analyzer).to receive(:ident_viol_candidates?) \
+        .and_return(true)
+      @contenders_list = [contenders1]
+      allow(hbound_filter).to receive(:remove_collectively_bound) \
+        .with(comp1).and_return(contenders1)
+      allow(erc_list_class).to receive(:new_from_competition) \
+        .with(:cand1, contenders1).and_return([:erc1])
+      allow(erc_list_class).to receive(:new_from_competition) \
+        .with(:cand2, contenders1).and_return([:erc2])
+    end
+    it 'raises an exception' do
+      expect {
+        FactorialTypology.new(@comp_list,
+                              erc_list_class: erc_list_class,
+                              hbound_filter: hbound_filter,
+                              viol_analyzer_class: analyzer_class)
+      }.to raise_error(RuntimeError)
     end
   end
 end
