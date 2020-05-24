@@ -5,7 +5,7 @@
 # This file resolves file references for the project by adding the root
 # directory for /lib to the load path.
 # To work properly, this file should itself reside in the top /lib directory.
-# It can be accessed relatively from /bin scripts, and from spec testing.
+# It can be accessed relatively from /bin scripts.
 
 # The parent ('..') of the current file is the directory in which the file
 # resides.

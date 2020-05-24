@@ -3,12 +3,15 @@
 # Tests learning on language L20 of the SL system.
 # The output is written to CSV file.
 
-require_relative '../../lib/grammar'
-require_relative '../../lib/sl/system'
-require_relative '../../lib/sl/data'
-require_relative '../../lib/csv_output'
-require_relative '../../lib/otlearn/language_learning'
-require_relative '../../lib/otlearn/language_learning_image'
+# The resolver adds <project>/lib to the $LOAD_PATH.
+require_relative '../../lib/resolver'
+
+require 'grammar'
+require 'sl/system'
+require 'sl/data'
+require 'csv_output'
+require 'otlearn/language_learning'
+require 'otlearn/language_learning_image'
 
 # Set the target language label.
 target_label = "LgL20"
