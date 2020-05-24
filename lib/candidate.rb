@@ -33,7 +33,6 @@ class Candidate
 
   # Returns a copy of the candidate, containing duplicates of the
   # input and the output.
-  # The copy candidate also gets a duplicate of the constraint violations.
   def dup
     copy = Candidate.new(@input.dup, @output.dup, @constraints)
     @constraints.each { |con| copy.set_viols(con, get_viols(con)) }
@@ -41,8 +40,7 @@ class Candidate
   end
 
   # Freezes the candidate, and also freeze's the candidates input, output,
-  # and violation counts.
-  # Returns a reference to self.
+  # and violation counts. Returns a reference to self.
   def freeze
     super
     @input.freeze
@@ -85,7 +83,7 @@ class Candidate
   # +other+; returns false otherwise.
   def ident_viols?(other)
     @constraints.all? do |con|
-      self.get_viols(con) == other.get_viols(con)
+      get_viols(con) == other.get_viols(con)
     end
   end
 
@@ -118,32 +116,14 @@ class Candidate
   def to_s
     viol_s = ' '
     @constraints.each do |c|
-      if @violations.key?(c) # if c has been assigned a violation count
-        viols_c = get_viols(c)
-      else
-        viols_c = '?'
-      end
+      viols_c = if @violations.key?(c) # if c has a violation count
+                  get_viols(c)
+                else
+                  '?'
+                end
       viol_s += " #{c}:#{viols_c}"
     end
     output_s = @output.to_s
     "#{@input} --> #{output_s} #{viol_s}"
-  end
-
-  # Returns an array a of the elements of the candidate, all
-  # represented as strings. This is used when presenting the
-  # candidate in a sequence of cells.
-  # * a[0] - input
-  # * a[1] - output
-  # * a[2 thru 2+con_count-1] - violations of each constraint
-  def to_a
-    ca = []
-    ca[0] = @input.to_s
-    ca[1] = @output.to_s
-    col = 2
-    @constraints.each do |c|
-      ca[col] = @violations[c]
-      col += 1
-    end
-    ca
   end
 end
