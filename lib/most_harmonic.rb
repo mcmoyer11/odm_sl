@@ -11,18 +11,6 @@ require 'set'
 # of the most harmonic candidates conflict on the constraints of a single
 # stratum in the hierarchy.
 class MostHarmonic < Array
-  # comparsion prefers candidate 1
-  P1 = :P1
-
-  # comparsion prefers candidate 2
-  P2 = :P2
-
-  # comparsion does not have preference between two candidates
-  TIE = :TIE
-
-  # two candidates conflict on constraints in the comparison
-  CONFLICT = :CONFLICT
-
   # Returns a new MostHarmonic object containing the most harmonic candidates
   # of the competition _comp_ with respect to the stratified constraint
   # hierarchy _hier_.
@@ -37,10 +25,10 @@ class MostHarmonic < Array
   # Compares two candidates on a stratum, using the CTie criterion
   # for comparison.
   # Return codes:
-  # P1  stratum prefers cand1
-  # P2  stratum prefers cand2
-  # TIE  the candidates tie on every constraint in the stratum
-  # CONFLICT  each candidate is preferred by at least one constraint
+  # :P1  stratum prefers cand1
+  # :P2  stratum prefers cand2
+  # :TIE  the candidates tie on every constraint in the stratum
+  # :CONFLICT  each candidate is preferred by at least one constraint
   def compare_on_stratum(cand1, cand2, stratum)
     prefer_1 = false
     prefer_2 = false
@@ -52,11 +40,11 @@ class MostHarmonic < Array
       end
     end
     # Return the constant indicating the state of the comparison
-    return TIE unless prefer_1 || prefer_2
-    return CONFLICT if prefer_1 && prefer_2
-    return P1 if prefer_1
+    return :TIE unless prefer_1 || prefer_2
+    return :CONFLICT if prefer_1 && prefer_2
+    return :P1 if prefer_1
 
-    P2
+    :P2
   end
   protected :compare_on_stratum
 
@@ -67,8 +55,8 @@ class MostHarmonic < Array
   # The CTie comparison criterion is employed such that a candidate
   # is not most harmonic if it is harmonically bound by another candidate
   # on the stratum. If more than one candidate is most harmonic, it can
-  # either be because they TIE (identical violations on the stratum)
-  # or because they CONFLICT on the stratum (each candidate is preferred
+  # either be because they :TIE (identical violations on the stratum)
+  # or because they :CONFLICT on the stratum (each candidate is preferred
   # by at least one constraint in the stratum).
   def most_harmonic_on_stratum(comp, stratum)
     mh_list = []
@@ -82,17 +70,17 @@ class MostHarmonic < Array
         # more harmonic. Otherwise, compare the two on the stratum.
         # TODO: is testing for simple harmonic bounding necessary here? Is it justified?
         if harmonically_bounds?(curr, cand)
-          eval = P2
+          eval = :P2
         elsif harmonically_bounds?(cand, curr)
-          eval = P1
+          eval = :P1
         else
           eval = compare_on_stratum(cand,curr,stratum)
         end
-        if eval == P2
+        if eval == :P2
           keep = false # If curr is more harmonic, don't keep cand.
-        elsif eval == P1
+        elsif eval == :P1
           remove_list << curr # If cand is more harmonic, remove curr from most harmonic list.
-        elsif eval == CONFLICT
+        elsif eval == :CONFLICT
           conflict_cands << cand << curr
         end
       end
@@ -150,16 +138,16 @@ class MostHarmonic < Array
   # Compares two candidates on a hierarchy, using the CTie criterion
   # for comparison.
   # Return codes:
-  # P1  hierarchy prefers cand1
-  # P2  hierarchy prefers cand2
-  # TIE  the candidates tie on every constraint in the hierarchy
-  # CONFLICT  the candidates conflict on a stratum
+  # :P1  hierarchy prefers cand1
+  # :P2  hierarchy prefers cand2
+  # :TIE  the candidates tie on every constraint in the hierarchy
+  # :CONFLICT  the candidates conflict on a stratum
   def compare_on_hierarchy(cand1, cand2, hierarchy)
     hierarchy.each do |stratum|
       eval = compare_on_stratum(cand1, cand2, stratum)
-      return eval unless eval == TIE
+      return eval unless eval == :TIE
     end
-    TIE
+    :TIE
   end
   protected :compare_on_hierarchy
 
@@ -167,6 +155,6 @@ class MostHarmonic < Array
   # with respect to _hierarchy_, using the CTie comparison criterion.
   # Returns false otherwise.
   def more_harmonic?(cand1, cand2, hierarchy)
-    P1 == compare_on_hierarchy(cand1, cand2, hierarchy)
+    compare_on_hierarchy(cand1, cand2, hierarchy) == :P1
   end
 end
