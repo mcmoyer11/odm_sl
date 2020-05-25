@@ -34,23 +34,6 @@ class MostHarmonic < Array
     concat(mh_list)
   end
 
-  # Returns true if two or more of the most harmonic candidates conflict
-  # on a stratum of the constraint hierarchy.
-  def unresolved_conflict?
-    @conflict_flag
-  end
-
-  # Returns the complete competition that was evaluated.
-  def competition
-    @competition
-  end
-
-  # Returns the stratified constraint hierarchy that was the basis
-  # for the harmonic evaluation.
-  def hierarchy
-    @hierarchy
-  end
-
   # Compares two candidates on a stratum, using the CTie criterion
   # for comparison.
   # Return codes:
@@ -75,6 +58,7 @@ class MostHarmonic < Array
 
     P2
   end
+  protected :compare_on_stratum
 
   # Returns a list of those members of the given competition
   # that are most harmonic on the given stratum, using CTie. It also
@@ -118,6 +102,7 @@ class MostHarmonic < Array
     conflict_flag = mh_list.any? { |c| conflict_cands.member?(c) }
     return mh_list, conflict_flag
   end
+  protected :most_harmonic_on_stratum
 
   # Returns true if candidate +cand1+ harmonically bounds +cand2+.
   # Returns false if +cand2+ harmonically bounds +cand1+, or if
@@ -139,6 +124,7 @@ class MostHarmonic < Array
     end
     cand1_better_on_a_constraint && !cand1_worse_on_a_constraint
   end
+  protected :harmonically_bounds?
 
   # Returns a list of most harmonic candidates and a boolean conflict flag.
   # The list contains the candidates of the given competition that are
@@ -159,6 +145,7 @@ class MostHarmonic < Array
     end
     return mh_list, conflict_flag
   end
+  protected :most_harmonic_on_hierarchy
 
   # Compares two candidates on a hierarchy, using the CTie criterion
   # for comparison.
@@ -174,6 +161,7 @@ class MostHarmonic < Array
     end
     TIE
   end
+  protected :compare_on_hierarchy
 
   # Returns *true* if _cand1_ is more harmonic than _cand2_
   # with respect to _hierarchy_, using the CTie comparison criterion.
