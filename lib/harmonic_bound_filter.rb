@@ -2,7 +2,7 @@
 
 # Author: Bruce Tesar
 
-require_relative '../lib/erc_list'
+require 'erc_list'
 
 # Provides a method for filtering out harmonically bound candidates.
 class HarmonicBoundFilter

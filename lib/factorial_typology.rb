@@ -2,9 +2,9 @@
 
 # Author: Bruce Tesar
 
-require_relative 'erc_list'
-require_relative 'harmonic_bound_filter'
-require_relative 'ident_violation_analyzer'
+require 'erc_list'
+require 'harmonic_bound_filter'
+require 'ident_violation_analyzer'
 
 # FactorialTypology objects summarize typologies of competition lists
 # in two ways:
