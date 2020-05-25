@@ -5,15 +5,18 @@
 # Tests learning on every language in the typology.
 # All output is written to CSV files, one file for each language.
 
-require_relative '../../lib/grammar'
-require_relative '../../lib/csv_output'
-require_relative '../../lib/factorial_typology'
-require_relative '../../lib/pas/system'
-require_relative '../../lib/pas/data'
-require_relative '../../lib/otlearn/rcd_bias_low'
-require_relative '../../lib/otlearn/data_manip'
-require_relative '../../lib/otlearn/language_learning'
-require_relative '../../lib/otlearn/language_learning_image'
+# The resolver adds <project>/lib to the $LOAD_PATH.
+require_relative '../../lib/resolver'
+
+require 'grammar'
+require 'csv_output'
+require 'factorial_typology'
+require 'pas/system'
+require 'pas/data'
+require 'otlearn/rcd_bias_low'
+require 'otlearn/data_manip'
+require 'otlearn/language_learning'
+require 'otlearn/language_learning_image'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix

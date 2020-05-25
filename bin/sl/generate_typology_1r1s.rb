@@ -5,9 +5,12 @@
 # Generates the entire topology for the SL system with
 # monosyllabic morphemes and root+suffix words (1r1s).
 
-require_relative '../../lib/sl/data'
-require_relative '../../lib/factorial_typology'
-require_relative '../../lib/otlearn/data_manip'
+# The resolver adds <project>/lib to the $LOAD_PATH.
+require_relative '../../lib/resolver'
+
+require 'sl/data'
+require 'factorial_typology'
+require 'otlearn/data_manip'
 
 # Generate the language typology data:
 # a list of sets of language data, one for each language in

@@ -5,12 +5,15 @@
 # Tests learning on every language in the typology.
 # All output is written to CSV files, one file for each language.
 
-require_relative '../../lib/grammar'
-require_relative '../../lib/sl/system'
-require_relative '../../lib/sl/data'
-require_relative '../../lib/csv_output'
-require_relative '../../lib/otlearn/language_learning'
-require_relative '../../lib/otlearn/language_learning_image'
+# The resolver adds <project>/lib to the $LOAD_PATH.
+require_relative '../../lib/resolver'
+
+require 'grammar'
+require 'sl/system'
+require 'sl/data'
+require 'csv_output'
+require 'otlearn/language_learning'
+require 'otlearn/language_learning_image'
 
 # Read languages from a Marshal-format file, successively yielding
 # the label and outputs of each language.

@@ -2,11 +2,14 @@
 #
 # Generates output data for Language A (ranking 2 from term paper), and learns from the
 # generated outputs, storing results of learning in a CSV file.
- 
-require_relative '../../lib/otlearn/data_manip'
-require_relative '../../lib/otlearn/language_learning'
-require_relative '../../lib/pas/data'
-require_relative '../../lib/csv_output'
+
+# The resolver adds <project>/lib to the $LOAD_PATH.
+require_relative '../../lib/resolver'
+
+require 'otlearn/data_manip'
+require 'otlearn/language_learning'
+require 'pas/data'
+require 'csv_output'
 
 # For each language, take a look at the competition for each input.
 

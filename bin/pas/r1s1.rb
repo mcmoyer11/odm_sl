@@ -2,14 +2,17 @@
 #
 # Generates output data for Language A (ranking 2 from term paper), and learns from the
 # generated outputs, storing results of learning in a CSV file.
- 
-require_relative '../../lib/grammar'
-require_relative '../../lib/pas/system'
-require_relative '../../lib/pas/data'
-require_relative '../../lib/csv_output'
-require_relative '../../lib/otlearn/data_manip'
-require_relative '../../lib/otlearn/language_learning'
-require_relative '../../lib/otlearn/language_learning_image'
+
+# The resolver adds <project>/lib to the $LOAD_PATH.
+require_relative '../../lib/resolver'
+
+require 'grammar'
+require 'pas/system'
+require 'pas/data'
+require 'csv_output'
+require 'otlearn/data_manip'
+require 'otlearn/language_learning'
+require 'otlearn/language_learning_image'
 
 # Set up the language label and the output file_pathname.
 lang_label = "LgA_PAS"
