@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/fewest_set_features_image'
+require 'otlearn/fewest_set_features_image'
 
 RSpec.describe OTLearn::FewestSetFeaturesImage do
   let(:fsf_step){double('fsf_step')}

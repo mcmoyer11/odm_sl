@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/max_mismatch_ranking_image'
+require 'otlearn/max_mismatch_ranking_image'
 
 RSpec.describe OTLearn::MaxMismatchRankingImage do
   let(:mmr_step){double('mmr_step')}

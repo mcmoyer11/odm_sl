@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otgeneric/erc_conversion'
+require 'otgeneric/erc_conversion'
 
 RSpec.describe(OTGeneric::Erc_conversion,"OTGeneric::Erc_conversion.arrays_to_erc_list") do
   context "given a header array and an array with 2 ERCs" do

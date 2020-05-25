@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/input'
+require 'input'
 
 RSpec.describe Input, :wip do
   let(:morphword){double('morphword')}

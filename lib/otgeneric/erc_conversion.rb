@@ -1,5 +1,8 @@
 # Author: Bruce Tesar
 
+require 'constraint'
+require 'erc_list'
+
 # Contains classes for a linguistic system read in entirely from a table-like
 # file, where all constraint names and candidate contents are listed out as
 # strings.

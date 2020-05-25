@@ -1,4 +1,3 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/uf_learning'
-
+require 'otlearn/uf_learning'

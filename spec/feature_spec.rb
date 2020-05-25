@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/feature'
+require 'feature'
 
 RSpec.describe Feature do
   context "A new Feature of type GROG" do

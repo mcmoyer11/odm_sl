@@ -1,9 +1,9 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/loser_selector_exhaustive'
-require_relative '../lib/sl/system'
-require_relative '../lib/word'
-require_relative '../lib/erc_list'
+require 'loser_selector_exhaustive'
+require 'sl/system'
+require 'word'
+require 'erc_list'
 
 RSpec.describe LoserSelectorExhaustive do
   let(:input){instance_double(Input, "Input")}

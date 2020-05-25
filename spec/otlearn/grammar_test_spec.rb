@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/grammar_test'
+require 'otlearn/grammar_test'
 
 RSpec.describe OTLearn::GrammarTest do
   let(:grammar){double{'grammar'}}

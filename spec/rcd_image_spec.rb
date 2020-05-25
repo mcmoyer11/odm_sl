@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/rcd_image'
-require_relative '../lib/sheet'
+require 'rcd_image'
+require 'sheet'
 require_relative '../test/helpers/quick_erc'
 
 RSpec.describe RcdImage do  

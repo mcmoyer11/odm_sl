@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/sheet'
+require 'sheet'
 
 RSpec.describe Sheet do
   context "A newly created sheet" do

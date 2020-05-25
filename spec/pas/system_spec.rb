@@ -1,8 +1,11 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/pas/system'
-require_relative '../../lib/lexical_entry'
-require_relative '../../lib/output'
+require 'pas/system'
+require 'lexical_entry'
+require 'lexicon'
+require 'input'
+require 'output'
+require 'io_correspondence'
 
 RSpec.describe PAS::System do
   before(:each) do
@@ -600,7 +603,7 @@ RSpec.describe PAS::System do
   context "with a lexicon containing only r1 /s./" do
     before(:each) do
       # the input *after* the new lexical entry for s1 is created
-      @in_sylr1 = SL::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
+      @in_sylr1 = PAS::Syllable.new.set_unstressed.set_short.set_morpheme("r1")
       @lex_entry_r1 = instance_double(Lexical_Entry, "lex_entry_r1")
       allow(@lex_entry_r1).to receive(:nil?).and_return(false)
       allow(@lex_entry_r1).to receive(:morpheme).and_return("r1")
@@ -610,7 +613,7 @@ RSpec.describe PAS::System do
       allow(@lex).to receive(:any?).and_return(true,false) # only r1 is in the lexicon
       allow(@lex).to receive(:find).and_return(@lex_entry_r1,nil) # only r1 is in the lexicon
 
-      @in_syls1 = SL::Syllable.new.set_morpheme("s1")
+      @in_syls1 = PAS::Syllable.new.set_morpheme("s1")
       @lex_entry_s1 = instance_double(Lexical_Entry, "lex_entry_s1")
       allow(@lex_entry_s1).to receive(:nil?).and_return(false)
       allow(@lex_entry_s1).to receive(:morpheme).and_return("s1")

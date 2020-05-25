@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/cell'
+require 'cell'
 
 RSpec.describe Cell do
   context "A cell constructed for (2,3)" do

@@ -23,7 +23,7 @@
 # at the time the method is defined.
 
 require 'rspec'
-require_relative '../lib/factorial_typology'
+require 'factorial_typology'
 
 RSpec.describe 'FactorialTypology' do
   let(:hbound_filter) { double('HBound Filter') }

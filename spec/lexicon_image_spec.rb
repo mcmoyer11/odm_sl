@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/lexicon_image'
+require 'lexicon_image'
 
 RSpec.describe LexiconImage do
   let(:lexicon){instance_double("Lexicon")}

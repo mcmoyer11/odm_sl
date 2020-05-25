@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/mrcd_single'
+require 'otlearn/mrcd_single'
 
 RSpec.describe OTLearn::MrcdSingle do
   let(:winner){double('winner')}

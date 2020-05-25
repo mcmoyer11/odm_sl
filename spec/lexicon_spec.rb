@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/lexicon'
-require_relative '../lib/lexical_entry'
+require 'lexicon'
+require 'lexical_entry'
 
 RSpec.describe Lexicon do
   context "with an entry for morpheme M1" do

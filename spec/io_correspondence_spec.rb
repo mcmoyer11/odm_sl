@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/io_correspondence'
+require 'io_correspondence'
 
 RSpec.describe IOCorrespondence do
     let(:in1){double('in1')}

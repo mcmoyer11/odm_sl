@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/comparative_tableau_image'
-require_relative '../lib/sheet'
+require 'comparative_tableau_image'
+require 'sheet'
 
 RSpec.describe ComparativeTableauImage do
   context "with one constraint" do

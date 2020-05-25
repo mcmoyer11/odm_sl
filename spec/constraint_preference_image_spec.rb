@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/constraint_preference_image'
+require 'constraint_preference_image'
 
 RSpec.describe ConstraintPreferenceImage do
   context "with 2 constraints" do

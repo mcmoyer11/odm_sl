@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/ranking_learning'
+require 'otlearn/ranking_learning'
 
 RSpec.describe "OTLearn.ranking_learning()" do
   let(:word_list){double('word_list')}

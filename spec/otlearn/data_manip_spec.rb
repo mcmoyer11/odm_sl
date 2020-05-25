@@ -3,8 +3,10 @@
 # Specs for the module methods in OTLearn for data manipulation.
 # They module methods are defined in the file otlearn/data_manip.rb.
 
-require_relative '../../lib/otlearn/data_manip.rb'
-require_relative '../../lib/win_lose_pair'
+require 'otlearn/data_manip.rb'
+require 'win_lose_pair'
+require 'candidate'
+require 'erc_list'
 
 RSpec.describe "OTLearn::wlp_winners()" do
   context "given a single WL pair" do

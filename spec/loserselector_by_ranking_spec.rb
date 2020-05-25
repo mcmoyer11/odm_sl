@@ -1,6 +1,9 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/loserselector_by_ranking'
+require 'loserselector_by_ranking'
+require 'candidate'
+require 'hierarchy'
+require 'most_harmonic'
 
 RSpec.describe LoserSelector_by_ranking do
   before(:each) do

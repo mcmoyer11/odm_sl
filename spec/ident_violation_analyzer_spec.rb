@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 
 require 'rspec'
-require_relative '../lib/ident_violation_analyzer'
+require 'ident_violation_analyzer'
 
 RSpec.describe IdentViolationAnalyzer do
 

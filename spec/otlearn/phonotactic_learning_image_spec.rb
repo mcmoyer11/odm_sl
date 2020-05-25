@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/phonotactic_learning_image'
+require 'otlearn/phonotactic_learning_image'
 
 RSpec.describe OTLearn::PhonotacticLearningImage do
   let(:phonotactic_learning){double('phonotactic_learning')}

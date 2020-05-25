@@ -5,8 +5,8 @@
 # * Erc
 # * Constraint
 
-require_relative '../lib/rcd'
-require_relative '../lib/erc_list'
+require 'rcd'
+require 'erc_list'
 require_relative '../test/helpers/quick_erc'
 
 RSpec.describe Rcd do

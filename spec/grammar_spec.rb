@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/grammar'
+require 'grammar'
 
 RSpec.describe Grammar do
   context "Grammar.new, when no system specified," do

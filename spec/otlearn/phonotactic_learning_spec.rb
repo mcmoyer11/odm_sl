@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/phonotactic_learning'
-require_relative '../../lib/otlearn/language_learning'
+require 'otlearn/phonotactic_learning'
+require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::PhonotacticLearning do
   let(:winner_list){double('winner_list')}

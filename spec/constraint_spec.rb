@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/constraint'
+require 'constraint'
 
 RSpec.describe Constraint do
   context "A new markedness Constraint with name Constraint1 and ID Con1" do

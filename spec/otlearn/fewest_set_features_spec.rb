@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/fewest_set_features'
+require 'otlearn/fewest_set_features'
 
 RSpec.describe OTLearn::FewestSetFeatures do
   # mock the parameters

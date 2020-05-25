@@ -1,7 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/sl/syllable'
-require_relative '../../lib/feature'
+require 'sl/syllable'
+require 'feature'
 
 RSpec.describe SL::Syllable do
   context "A new Syllable" do

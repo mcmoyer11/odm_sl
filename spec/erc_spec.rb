@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/erc'
+require 'erc'
 
 RSpec.describe "An Erc" do
   before(:each) do

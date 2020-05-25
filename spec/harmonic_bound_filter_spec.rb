@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 
 require 'rspec'
-require_relative '../lib/harmonic_bound_filter'
+require 'harmonic_bound_filter'
 
 RSpec.describe HarmonicBoundFilter do
   let(:erc_list_class) { double('erc_list_class') }

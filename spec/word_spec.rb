@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/word'
+require 'word'
 
 RSpec.describe Word do
   let(:system) { double('system') }

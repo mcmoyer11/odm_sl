@@ -1,33 +1,33 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/mrcd'
-require_relative '../../lib/loserselector_by_ranking'
+require 'otlearn/mrcd'
+require 'loserselector_by_ranking'
 
-RSpec.describe "MRCD" do
+RSpec.describe 'MRCD' do
   let(:grammar){double('grammar')}
   let(:dup_grammar){double('dup_grammar')}
   let(:selector){double('selector')}
   let(:single_mrcd_class){double('single MRCD class')}
   before(:each) do
-    allow(grammar).to receive(:dup_same_lexicon).and_return(dup_grammar)    
+    allow(grammar).to receive(:dup_same_lexicon).and_return(dup_grammar)
   end
-  
-  context "with an empty word list" do
+
+  context 'with an empty word list' do
     before(:each) do
       @word_list = []
       allow(dup_grammar).to receive(:consistent?).and_return(true)
       @mrcd = OTLearn::Mrcd.new(@word_list, grammar, selector,
         single_mrcd_class: single_mrcd_class)
     end
-    it "should not have any changes to the ranking information" do
+    it 'should not have any changes to the ranking information' do
       expect(@mrcd.any_change?).not_to be true
     end
-    it "returns no new pairs" do
+    it 'returns no new pairs' do
       expect(@mrcd.added_pairs).to be_empty
     end
   end
 
-  context "with a single winner producing no new pairs" do
+  context 'with a single winner producing no new pairs' do
     let(:winner){double('winner')}
     let(:mrcd_single){double('mrcd_single')}
     before(:each) do
@@ -38,18 +38,18 @@ RSpec.describe "MRCD" do
       @mrcd = OTLearn::Mrcd.new(@word_list, grammar, selector,
         single_mrcd_class: single_mrcd_class)
     end
-    it "should not have any changes to the ranking information" do
+    it 'should not have any changes to the ranking information' do
       expect(@mrcd.any_change?).not_to be true
     end
-    it "returns no new pairs" do
+    it 'returns no new pairs' do
       expect(@mrcd.added_pairs).to be_empty
     end
-    it "creates one mrcd_single object" do
+    it 'creates one mrcd_single object' do
       expect(single_mrcd_class).to have_received(:new).exactly(1).times
     end
   end
 
-  context "with a single winner producing one new pair" do
+  context 'with a single winner producing one new pair' do
     let(:winner){double('winner')}
     let(:mrcd_single1){double('mrcd_single1')}
     let(:mrcd_single2){double('mrcd_single2')}
@@ -64,21 +64,21 @@ RSpec.describe "MRCD" do
       @mrcd = OTLearn::Mrcd.new(@word_list, grammar, selector,
         single_mrcd_class: single_mrcd_class)
     end
-    it "has changes to the ranking information" do
+    it 'has changes to the ranking information' do
       expect(@mrcd.any_change?).to be true
     end
-    it "returns one new pair" do
+    it 'returns one new pair' do
       expect(@mrcd.added_pairs.size).to eq 1
     end
     # Two mrcd objects, one for each pass through the word list (with 1 winner)
-    it "creates two mrcd_single objects" do
+    it 'creates two mrcd_single objects' do
       expect(single_mrcd_class).to have_received(:new).exactly(2).times
     end
   end
 
   # If any changes occur on the first pass, it should make a second
   # pass through all of the winners.
-  context "with 3 winners producing 2 new pairs" do
+  context 'with 3 winners producing 2 new pairs' do
     let(:winner1){double('winner1')}
     let(:winner2){double('winner2')}
     let(:winner3){double('winner3')}
@@ -106,24 +106,24 @@ RSpec.describe "MRCD" do
       @mrcd = OTLearn::Mrcd.new(@word_list, grammar, selector,
         single_mrcd_class: single_mrcd_class)
     end
-    it "has changes to the ranking information" do
+    it 'has changes to the ranking information' do
       expect(@mrcd.any_change?).to be true
     end
-    it "has a consistent grammar" do
+    it 'has a consistent grammar' do
       expect(@mrcd.grammar.consistent?).to be true
     end
-    it "returns 2 new pairs" do
+    it 'returns 2 new pairs' do
       expect(@mrcd.added_pairs.size).to eq 2
     end
     # 6 mrcd objects, 3 for each pass through the word list (with 3 winners)
-    it "creates 6 mrcd_single objects" do
+    it 'creates 6 mrcd_single objects' do
       expect(single_mrcd_class).to have_received(:new).exactly(6).times
     end
   end
 
   # When a winner leads to inconsistency, MRCD should halt immediately,
   # without processing the rest of the winners, or making another pass.
-  context "with 3 winners, the second yielding inconsistency" do
+  context 'with 3 winners, the second yielding inconsistency' do
     let(:winner1){double('winner1')}
     let(:winner2){double('winner2')}
     let(:winner3){double('winner3')}
@@ -141,18 +141,18 @@ RSpec.describe "MRCD" do
       @mrcd = OTLearn::Mrcd.new(@word_list, grammar, selector,
         single_mrcd_class: single_mrcd_class)
     end
-    it "has changes to the ranking information" do
+    it 'has changes to the ranking information' do
       expect(@mrcd.any_change?).to be true
     end
-    it "has an inconsistent grammar" do
+    it 'has an inconsistent grammar' do
       expect(@mrcd.grammar.consistent?).to be false
     end
-    it "returns 1 new pair" do
+    it 'returns 1 new pair' do
       expect(@mrcd.added_pairs.size).to eq 1
     end
     # 2 mrcd objects, for first two winners of one pass
     # Verifies that MRCD terminates as soon as inconsistency occurs.
-    it "creates 2 mrcd_single objects" do
+    it 'creates 2 mrcd_single objects' do
       expect(single_mrcd_class).to have_received(:new).exactly(2).times
     end
   end

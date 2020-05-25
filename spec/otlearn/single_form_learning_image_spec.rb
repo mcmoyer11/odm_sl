@@ -1,6 +1,7 @@
 # Author: Bruce Tesar
 
-require_relative '../../lib/otlearn/single_form_learning_image'
+require 'otlearn/single_form_learning_image'
+require 'sheet'
 
 RSpec.describe OTLearn::SingleFormLearningImage do
   let(:single_form_learning){double('single_form_learning')}

@@ -1,6 +1,6 @@
 # Author: Bruce Tesar
 
-require_relative '../lib/win_lose_pair'
+require 'win_lose_pair'
 
 RSpec.describe Win_lose_pair do
   before(:each) do
