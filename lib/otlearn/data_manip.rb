@@ -5,6 +5,7 @@
 
 require 'set'
 require_relative '../loserselector_by_ranking'
+require_relative '../loser_selector_exhaustive'
 
 module OTLearn
   
@@ -28,7 +29,7 @@ module OTLearn
       word.mismatch_input_to_output!
     end
     # Run MRCD to see if the mismatched candidates are consistent.
-    selector = LoserSelector_by_ranking.new(grammar.system)
+    selector = LoserSelectorExhaustive.new(grammar.system)
     mrcd = Mrcd.new(mismatch_list, grammar, selector)
     return mrcd
   end

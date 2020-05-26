@@ -2,6 +2,7 @@
 
 require_relative 'data_manip'
 require_relative '../loserselector_by_ranking'
+require_relative '../loser_selector_exhaustive'
 require_relative '../feature_instance'
 require_relative '../feature_value_pair'
 
@@ -111,7 +112,7 @@ module OTLearn
   # mrcd, and returns the result (consistency: true/false).
   def OTLearn.eval_over_conflict_features(c_features, contrast_set, grammar)
     # Create a loser selector for Mrcd; the same object can be used for all passes
-    selector = LoserSelector_by_ranking.new(grammar.system)
+    selector = LoserSelectorExhaustive.new(grammar.system)
     # Generate a list of feature-value pairs, one for each possible value of
     # each conflict feature.
     feat_values_list = FeatureValuePair.all_values_pairs(c_features)
