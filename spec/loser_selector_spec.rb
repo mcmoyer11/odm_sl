@@ -35,7 +35,7 @@ RSpec.describe 'LoserSelector' do
         .and_return(:IDENT_VIOLATIONS)
       allow(comparer).to receive(:more_harmonic) \
         .with(winner, moreh, ranking_info) \
-        .and_return(:COMPETITOR)
+        .and_return(:SECOND)
       @loser = @selector.select_loser(winner, competition, ranking_info)
     end
     it 'returns the competitor' do
@@ -52,7 +52,7 @@ RSpec.describe 'LoserSelector' do
         .and_return(:IDENT_VIOLATIONS)
       allow(comparer).to receive(:more_harmonic) \
         .with(winner, lessh, ranking_info) \
-        .and_return(:WINNER)
+        .and_return(:FIRST)
       @loser = @selector.select_loser(winner, competition, ranking_info)
     end
     it 'returns nil' do
@@ -88,13 +88,13 @@ RSpec.describe 'LoserSelector' do
         .and_return(:IDENT_VIOLATIONS)
       allow(comparer).to receive(:more_harmonic) \
         .with(winner, moreh1, ranking_info) \
-        .and_return(:COMPETITOR)
+        .and_return(:SECOND)
       allow(comparer).to receive(:more_harmonic) \
         .with(winner, moreh2, ranking_info) \
-        .and_return(:COMPETITOR)
+        .and_return(:SECOND)
       allow(comparer).to receive(:more_harmonic) \
         .with(winner, lessh, ranking_info) \
-        .and_return(:WINNER)
+        .and_return(:FIRST)
       @loser = @selector.select_loser(winner, competition, ranking_info)
     end
     it 'returns the competitor' do
