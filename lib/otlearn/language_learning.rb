@@ -49,22 +49,23 @@ module OTLearn
     # the simulation upon objection construction.
     # * +output_list+ - the winners considered to form contrast pairs
     # * +grammar+ - the current grammar (learning may alter it).
+    # * +loser_selector+ - object used for loser selection; defaults to
+    #   a loser selector using CompareConsistency.
     #--
-    # The four labeled parameters are the classes of the major learning steps,
-    # and are used for testing (dependency injection).
+    # The following labeled parameters are the classes of the major learning
+    # steps, and are used for testing (dependency injection).
     # * +phonotactic_learning_class+
     # * +single_form_learning_class+
     # * +contrast_pair_learning_class+
     # * +induction_learning_class+
     #++
     # :call-seq:
-    #   LanguageLearning.new(output_list, grammar) -> obj
-    def initialize(output_list, grammar,
+    #   LanguageLearning.new(output_list, grammar) -> languagelearning
+    def initialize(output_list, grammar, loser_selector: nil,
           phonotactic_learning_class: OTLearn::PhonotacticLearning,
           single_form_learning_class: OTLearn::SingleFormLearning,
           contrast_pair_learning_class: OTLearn::ContrastPairLearning,
-          induction_learning_class: OTLearn::InductionLearning,
-          loser_selector: nil)
+          induction_learning_class: OTLearn::InductionLearning)
       @output_list = output_list
       @grammar = grammar
       @phonotactic_learning_class = phonotactic_learning_class
@@ -74,8 +75,8 @@ module OTLearn
       @loser_selector = loser_selector
       # the default value of @loser_selector
       if @loser_selector.nil?
-        selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system, selector)
+        basic_selector = LoserSelector.new(CompareConsistency.new)
+        @loser_selector = LoserSelectorFromGen.new(grammar.system, basic_selector)
       end
       @step_list = []
       @learning_successful = execute_learning
@@ -153,6 +154,5 @@ module OTLearn
       false # learning failed
     end
     protected :execute_learning
-
   end
 end
