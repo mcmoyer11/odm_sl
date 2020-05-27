@@ -1,22 +1,26 @@
-# Author: Bruce Tesar
-#
+# frozen_string_literal: true
 
-require_relative 'mrcd'
+# Author: Bruce Tesar
+
+require 'otlearn/mrcd'
+require 'compare_consistency'
+require 'loser_selector'
+require 'loser_selector_from_gen'
 
 module OTLearn
-  
+
   # Performs ranking learning on the +word list+, using the
   # +grammar+. Loser selection is done via the +selector+.
   # The +grammar+ is directly updated with the additional winner-loser
   # pairs obtained. The class of object used to implement multi-recursive
   # constraint demotion is optionally passed via the named parameter
   # +mrcd_class+ (defaults to class Mrcd).
-  # 
+  #
   # Returns the mrcd_class object representing the results of ranking learning.
   def OTLearn.ranking_learning(word_list, grammar, selector, mrcd_class: Mrcd)
     mrcd_result = mrcd_class.new(word_list, grammar, selector)
     mrcd_result.added_pairs.each { |pair| grammar.add_erc(pair) }
-    return mrcd_result
+    mrcd_result
   end
 
   # Looks for new ranking information from nonfaithful mappings of the given
@@ -24,16 +28,19 @@ module OTLearn
   # Any new ranking information is added to the grammar.
   # Returns true if any new ranking information was obtained; false otherwise.
   def OTLearn.new_rank_info_from_feature(grammar, word_list, uf_feat_inst,
-      learning_module: OTLearn, loser_selector: nil)
+                                         learning_module: OTLearn,
+                                         loser_selector: nil)
     # Assign the default value for loser_selector
-    if loser_selector.nil? then
-      loser_selector = LoserSelectorExhaustive.new(grammar.system)
+    if loser_selector.nil?
+      basic_selector = LoserSelector.new(CompareConsistency.new)
+      loser_selector = LoserSelectorFromGen.new(grammar.system, basic_selector)
     end
     # find words containing the same morpheme as the set feature
     containing_words = word_list.find_all do |w|
       w.morphword.include?(uf_feat_inst.morpheme)
     end
-    # find words with output value of set feature that differs from the uf set value.
+    # find words with output value of set feature that differs from
+    # the uf set value.
     uo_conflict_words = containing_words.inject([]) do |cwords, word|
       out_feat_inst = word.out_feat_corr_of_uf(uf_feat_inst)
       unless out_feat_inst.nil?
@@ -48,8 +55,7 @@ module OTLearn
       dup
     end
     # Run each such word through MRCD, searching for new ranking info
-    return learning_module.
-      ranking_learning(dup_conflict_words, grammar, loser_selector)
+    learning_module\
+      .ranking_learning(dup_conflict_words, grammar, loser_selector)
   end
-  
-end # module OTLearn
+end

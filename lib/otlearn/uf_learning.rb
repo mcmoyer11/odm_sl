@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 
-require_relative 'data_manip'
-require_relative '../loserselector_by_ranking'
-require_relative '../loser_selector_exhaustive'
-require_relative '../feature_instance'
-require_relative '../feature_value_pair'
+require 'otlearn/data_manip'
+require 'feature_instance'
+require 'feature_value_pair'
+require 'compare_consistency'
+require 'loser_selector'
+require 'loser_selector_from_gen'
 
 module OTLearn
 
@@ -47,7 +50,7 @@ module OTLearn
         set_feature_list << f_uf_instance
       end
     end
-    return set_feature_list
+    set_feature_list
   end
 
   # Tests the given unset feature to see if it can be set relative to the
@@ -61,17 +64,17 @@ module OTLearn
     consistent_values = OTLearn.consistent_feature_values(f_uf_instance,
       word_list, conflict_list, grammar)
     if (consistent_values.size>1) then # feature cannot be set
-      return false
+      false
     elsif (consistent_values.size==1) then
       # Set the uf value, and reset all inputs with that feature.
       f_uf_instance.value = consistent_values.first
       set_input_features(f_uf_instance, consistent_values.first, word_list)
-      return true
+      true
     else # There must be at least one consistent value.
       raise "No feature value for #{f_uf_instance.to_s} is consistent."
-    end    
+    end
   end
-  
+
   # Tests all possible values of the given underlying feature for consistency
   # with respect to the given word list, using the given grammar.
   # Conflict_features is a list of unset features which conflict in their
@@ -100,9 +103,9 @@ module OTLearn
       out_f_inst = word.out_feat_corr_of_in(in_f_inst)
       in_f_inst.value = out_f_inst.value
     end
-    return consistent_values
+    consistent_values
   end
-  
+
   # Given: contrast_set, grammar, conflict_features
   # Call Mrcd for successive combinations of conflict feature values.
   # If a consistent combination is found, return true, otherwise continue
@@ -111,8 +114,9 @@ module OTLearn
   # tests the word list as is (with all input features already set) using
   # mrcd, and returns the result (consistency: true/false).
   def OTLearn.eval_over_conflict_features(c_features, contrast_set, grammar)
-    # Create a loser selector for Mrcd; the same object can be used for all passes
-    selector = LoserSelectorExhaustive.new(grammar.system)
+    # Create a loser selector for Mrcd; the same object works for all passes
+    basic_selector = LoserSelector.new(CompareConsistency.new)
+    loser_selector = LoserSelectorFromGen.new(grammar.system, basic_selector)
     # Generate a list of feature-value pairs, one for each possible value of
     # each conflict feature.
     feat_values_list = FeatureValuePair.all_values_pairs(c_features)
@@ -121,20 +125,23 @@ module OTLearn
     conflicting_feature_combinations = [[]]
     # Create the cartesian product of the sets of possible feature values.
     unless feat_values_list.empty?
-      conflicting_feature_combinations = feat_values_list[0].product(*feat_values_list[1..-1])
+      conflicting_feature_combinations =
+        feat_values_list[0].product(*feat_values_list[1..-1])
     end
     # Test each combination, returning _true_ on the first consistent one.
     conflicting_feature_combinations.each do |feat_comb|
       # Set conflict input features to the feature values in the combination
       feat_comb.each do |feat_pair|
-        # Set every occurrence of the feature in the contrast set to the alt value.
-        OTLearn::set_input_features(feat_pair.feature_instance, feat_pair.alt_value, contrast_set)
+        # Set every occurrence of the feature in the contrast set to
+        # the alternative value.
+        OTLearn.set_input_features(feat_pair.feature_instance,
+                                   feat_pair.alt_value, contrast_set)
       end
       # Test the contrast set, using the conflicting feature combination
-      mrcd_result = Mrcd.new(contrast_set, grammar, selector)
+      mrcd_result = Mrcd.new(contrast_set, grammar, loser_selector)
       return true if mrcd_result.grammar.consistent?
     end
-    return false # none of the combinations were consistent.    
+    false # none of the combinations were consistent.
   end
 
   # Sets, for each word in the given word list, the input feature
@@ -150,7 +157,7 @@ module OTLearn
       f_in.value = value  # set to the given value
       word.eval # reassess constraint violations in light of modified input
     end
-    return value # can't think of anything better to return at the moment
+    value # can't think of anything better to return at the moment
   end
 
   # Checks all of the output correspondents, within the given word list, of
@@ -164,7 +171,7 @@ module OTLearn
     out_feature_list = out_feature_list.reject { |feat| feat.nil? }
     conflict_flag = false
     out_feature_list.inject{|first_f,f| conflict_flag=true if first_f.value!=f.value; f}
-    return conflict_flag
+    conflict_flag
   end
 
   # Checks, for each word in the given list, whether the input correspondent
@@ -189,7 +196,7 @@ module OTLearn
       end
     end
     return nil if in_feat_inst_list.empty?
-    return in_feat_inst_list
+    in_feat_inst_list
   end
 
   # Returns a list of the input feature instances in _word_list_
@@ -209,7 +216,7 @@ module OTLearn
         end
       end
     end
-    return conflicting_feature_list
+    conflicting_feature_list
   end
 
   def OTLearn.find_unset_features_in_words(word_list, grammar)
@@ -218,7 +225,7 @@ module OTLearn
     # Extract a list of the morphemes in the words (the keys of the hash)
     morpheme_list = morph_in_words.keys
     # Return a list of the unset features for the morphemes
-    return find_unset_features(morpheme_list,grammar)
+    find_unset_features(morpheme_list,grammar)
   end
 
   # Returns a list of all the uf features in each of the morphemes in
@@ -234,9 +241,9 @@ module OTLearn
         end
       end
     end
-    return unset_features
+    unset_features
   end
-  
+
   # Given a list of words, returns a hash mapping each morpheme that
   # occurs in the word list to an array of the words (in the list) in which
   # they occur.
@@ -251,7 +258,7 @@ module OTLearn
         end
       end
     end
-    return morph_in_words
+    morph_in_words
   end
-  
+
 end # module OTLearn

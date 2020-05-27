@@ -1,14 +1,17 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 #
 # This file contains a collection of methods for generating and
 # manipulating data.
 
 require 'set'
-require_relative '../loserselector_by_ranking'
-require_relative '../loser_selector_exhaustive'
+require 'compare_consistency'
+require 'loser_selector'
+require 'loser_selector_from_gen'
 
 module OTLearn
-  
+
   # Given a list of words and a grammar, check the word list for
   # consistency with the grammar using MRCD. Any features unset
   # in the lexicon of the grammar are set in the input of a word
@@ -24,14 +27,15 @@ module OTLearn
   def OTLearn.mismatch_consistency_check(grammar, word_list)
     # Parse the outputs of the word_list to create test copies matching
     # the lexicon, and mismatch the unset features to the output.
-    mismatch_list = word_list.map do |winner| 
+    mismatch_list = word_list.map do |winner|
       word = grammar.parse_output(winner.output)
       word.mismatch_input_to_output!
     end
     # Run MRCD to see if the mismatched candidates are consistent.
-    selector = LoserSelectorExhaustive.new(grammar.system)
-    mrcd = Mrcd.new(mismatch_list, grammar, selector)
-    return mrcd
+    basic_selector = LoserSelector.new(CompareConsistency.new)
+    loser_selector = LoserSelectorFromGen.new(grammar.system, basic_selector)
+    mrcd = Mrcd.new(mismatch_list, grammar, loser_selector)
+    mrcd
   end
 
   # Takes a competition list and a hierarchy, and returns a list of
@@ -43,7 +47,7 @@ module OTLearn
     comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,hier)}
     # each competition returns a list of winners; collapse to one-level list.
     lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
-    return lang
+    lang
   end
 
   # Given a list of winner_loser pairs +wlp_list+, returns a set of
@@ -53,16 +57,15 @@ module OTLearn
     wlp_list.each do |wlp|
       winners.add(wlp.winner)
     end
-    return winners
+    winners
   end
-  
+
   # Takes a language in the form of a list of WL pairs (with
   # each represented form of the language appearing as a winner in at least
   # one pair), and returns a list of the winner outputs.
   def OTLearn::convert_wl_pairs_to_learning_data(wl_pairs)
     # Extract the outputs of the grammatical candidates of the language.
     outputs = wlp_winners(wl_pairs).map{|winner| winner.output}
-    return outputs
+    outputs
   end
-  
-end # module OTLearn
+end
