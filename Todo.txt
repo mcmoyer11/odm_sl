@@ -31,14 +31,6 @@ Implement a ranking information (erc list) only linguistic system and
 grammar class. Use it to set up basic bin scripts for experimenting with
 different ranking biases.
 
-Either find some reasonable way to unit-test LoserSelector_by_ranking,
-or delete the specs for it.
-
-Investigate the effects of using, in GrammarTest, LoserSelectorExhaustive
-instead of LoserSelector_by_ranking(FaithLow). That would mean that a word
-only succeeds evaluation if its max mismatch form is the sole optimum for
-every support-consistent ranking.
-
 Spin off OTLearn.mismatch_consistency_check(), in data_manip.rb, as a
 separate class dedicated to (in)consistency checking. See if there are
 other parts of the code doing such checking that should be added into
