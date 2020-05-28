@@ -11,7 +11,6 @@ require 'loser_selector'
 require 'loser_selector_from_gen'
 
 module OTLearn
-
   # This processes all of the outputs in the grammatical output list, one at a
   # time in order, with respect to a grammar. Any results of learning are
   # realized as side effect changes to the grammar.
