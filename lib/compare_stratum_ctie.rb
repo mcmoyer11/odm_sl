@@ -2,36 +2,28 @@
 
 # Author: Bruce Tesar
 
-require 'win_lose_pair'
-
-# CompareStratumCtie objects compare two candidates with respect to a stratum
+# CompareStratumCtie objects evaluate an erc with respect to a stratum
 # of a constraint hierarchy, using the Ctie (conflicts tie) criterion.
-# Comparisons are made via calls to #more_harmonic.
+# Comparisons are made via calls to #more_harmonic. The comparison is
+# between the winner and the loser of the erc.
 class CompareStratumCtie
   # Returns a new comparer.
-  #--
-  # win_lose_pair_class is a dependency injection for testing.
-  #++
   #
   # :call-seq:
   #   CompareStratumCtie.new -> comparer
-  def initialize(win_lose_pair_class: Win_lose_pair)
-    @win_lose_pair_class = win_lose_pair_class
-  end
+  def initialize; end
 
-  # Returns a code indicating how the candidates compare on the stratum,
-  # using Ctie.
+  # Returns a code indicating how the stratum evaluates the erc, using Ctie.
   # Returns one of: :FIRST, :SECOND, :IDENT_VIOLATIONS, :CONFLICT
-  def more_harmonic(first, second, stratum)
-    wl_pair = @win_lose_pair_class.new(first, second)
-    prefer1 = prefer2 = false
+  def more_harmonic(erc, stratum)
+    prefer_w = prefer_l = false
     stratum.each do |con|
-      prefer1 = true if wl_pair.w?(con)
-      prefer2 = true if wl_pair.l?(con)
+      prefer_w = true if erc.w?(con) # set if a constraint prefers the winner
+      prefer_l = true if erc.l?(con) # set if a constraint prefers the loser
     end
-    return :CONFLICT if prefer1 && prefer2
-    return :FIRST if prefer1
-    return :SECOND if prefer2
+    return :CONFLICT if prefer_w && prefer_l
+    return :FIRST if prefer_w
+    return :SECOND if prefer_l
 
     :IDENT_VIOLATIONS
   end
