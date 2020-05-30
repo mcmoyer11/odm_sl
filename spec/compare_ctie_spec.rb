@@ -36,7 +36,7 @@ RSpec.describe 'CompareCtie' do
       allow(stratum_comparer).to receive(:more_harmonic)\
         .with(erc, stratum1).and_return(:IDENT_VIOLATIONS)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(erc, stratum2).and_return(:FIRST)
+        .with(erc, stratum2).and_return(:WINNER)
       @code = @comparer.more_harmonic(winner, competitor, param_ercs)
     end
     it 'generates a ranking with the ranker' do
@@ -58,7 +58,7 @@ RSpec.describe 'CompareCtie' do
     before(:each) do
       allow(winner).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(erc, stratum1).and_return(:SECOND)
+        .with(erc, stratum1).and_return(:LOSER)
       @code = @comparer.more_harmonic(winner, competitor, param_ercs)
     end
     it 'returns :SECOND' do

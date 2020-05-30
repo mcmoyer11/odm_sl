@@ -18,6 +18,8 @@
 # * :IDENT_VIOLATIONS - the candidates have identical violation profiles,
 #   and thus the competitor is *not* an informative loser.
 class LoserSelector
+  # Returns a LoserSelector object.
+  #
   # :call-seq:
   #   LoserSelector.new(comparer) -> LoserSelector
   def initialize(comparer)

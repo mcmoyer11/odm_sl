@@ -34,8 +34,8 @@ RSpec.describe 'CompareStratumCtie' do
       allow(erc).to receive(:w?).with(con2).and_return(true)
       @code = @comparer.more_harmonic(erc, stratum)
     end
-    it 'returns :FIRST' do
-      expect(@code).to eq :FIRST
+    it 'returns :WINNER' do
+      expect(@code).to eq :WINNER
     end
   end
   context 'when con1 prefers the loser, con2 and con3 no preference' do
@@ -48,8 +48,8 @@ RSpec.describe 'CompareStratumCtie' do
       allow(erc).to receive(:w?).and_return(false)
       @code = @comparer.more_harmonic(erc, stratum)
     end
-    it 'returns :SECOND' do
-      expect(@code).to eq :SECOND
+    it 'returns :LOSER' do
+      expect(@code).to eq :LOSER
     end
   end
   context 'when con1 prefers the winner, con2 and con3 prefer the loser' do
