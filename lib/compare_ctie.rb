@@ -30,8 +30,8 @@ class CompareCtie
   # Returns one of: :FIRST, :SECOND, :CONFLICT
   def compare_on_hierarchy(first, second, hierarchy)
     hierarchy.each do |stratum|
-      eval = @stratum_comparer.compare(first, second, stratum)
-      return eval unless eval == :TIE
+      eval = @stratum_comparer.more_harmonic(first, second, stratum)
+      return eval unless eval == :IDENT_VIOLATIONS
     end
     # given that this method should not be called when the candidates have
     # identical violation profiles, this point in the method should not be
