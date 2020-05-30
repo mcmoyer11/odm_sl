@@ -4,6 +4,7 @@
 
 require 'rspec'
 require 'compare_ctie'
+require 'erc'
 
 RSpec.describe 'CompareCtie' do
   let(:winner) { double('winner') }
@@ -15,22 +16,27 @@ RSpec.describe 'CompareCtie' do
   let(:stratum3) { double('stratum3') }
   let(:hierarchy) { double('hierarchy') }
   let(:stratum_comparer) { double('stratum_comparer') }
+  let(:wl_pair_class) { double('wl_pair_class') }
+  let(:erc) { instance_double(Erc, 'erc') }
   before do
     allow(ranker).to receive(:get_hierarchy).with(param_ercs)\
                                             .and_return(hierarchy)
     allow(hierarchy).to receive(:each).and_yield(stratum1)\
                                       .and_yield(stratum2)\
                                       .and_yield(stratum3)
-    @comparer = CompareCtie.new(ranker, stratum_comparer: stratum_comparer)
+    allow(wl_pair_class).to receive(:new).and_return(erc)
+    @comparer = CompareCtie.new(ranker,
+                                stratum_comparer: stratum_comparer,
+                                win_lose_pair_class: wl_pair_class)
   end
 
   context 'given a competitor less harmonic on the 2nd stratum' do
     before(:each) do
       allow(winner).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum1).and_return(:IDENT_VIOLATIONS)
+        .with(erc, stratum1).and_return(:IDENT_VIOLATIONS)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum2).and_return(:FIRST)
+        .with(erc, stratum2).and_return(:FIRST)
       @code = @comparer.more_harmonic(winner, competitor, param_ercs)
     end
     it 'generates a ranking with the ranker' do
@@ -38,11 +44,11 @@ RSpec.describe 'CompareCtie' do
     end
     it 'calls the stratum_comparer with the first stratum' do
       expect(stratum_comparer).to have_received(:more_harmonic)\
-        .with(winner, competitor, stratum1)
+        .with(erc, stratum1)
     end
     it 'calls the stratum_comparer with the second stratum' do
       expect(stratum_comparer).to have_received(:more_harmonic)\
-        .with(winner, competitor, stratum2)
+        .with(erc, stratum2)
     end
     it 'returns :FIRST' do
       expect(@code).to eq :FIRST
@@ -52,7 +58,7 @@ RSpec.describe 'CompareCtie' do
     before(:each) do
       allow(winner).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum1).and_return(:SECOND)
+        .with(erc, stratum1).and_return(:SECOND)
       @code = @comparer.more_harmonic(winner, competitor, param_ercs)
     end
     it 'returns :SECOND' do
@@ -63,7 +69,7 @@ RSpec.describe 'CompareCtie' do
     before(:each) do
       allow(winner).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum1).and_return(:CONFLICT)
+        .with(erc, stratum1).and_return(:CONFLICT)
       @code = @comparer.more_harmonic(winner, competitor, param_ercs)
     end
     it 'returns :TIE' do
@@ -84,11 +90,11 @@ RSpec.describe 'CompareCtie' do
     before(:each) do
       allow(winner).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum1).and_return(:IDENT_VIOLATIONS)
+        .with(erc, stratum1).and_return(:IDENT_VIOLATIONS)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum2).and_return(:IDENT_VIOLATIONS)
+        .with(erc, stratum2).and_return(:IDENT_VIOLATIONS)
       allow(stratum_comparer).to receive(:more_harmonic)\
-        .with(winner, competitor, stratum3).and_return(:IDENT_VIOLATIONS)
+        .with(erc, stratum3).and_return(:IDENT_VIOLATIONS)
     end
     it 'raises an exception' do
       expect { @comparer.more_harmonic(winner, competitor, param_ercs) }\
