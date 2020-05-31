@@ -62,9 +62,9 @@ RSpec.describe 'loser selection', :integration do
       erc2 = construct_erc(@constraint_list, [:e, :W, :L, :e])
       erc3 = construct_erc(@constraint_list, [:e, :e, :W, :L])
       @erc_list = ErcList.new.add_all([erc1, erc2, erc3])
-      assign_violations(@winner, @constraint_list, [0,2,1,0])
-      assign_violations(@cand1, @constraint_list, [0,1,0,2])
-      assign_violations(@cand2, @constraint_list, [1,1,1,1])
+      assign_violations(@winner, @constraint_list, [0, 2, 1, 0])
+      assign_violations(@cand1, @constraint_list, [0, 1, 0, 2])
+      assign_violations(@cand2, @constraint_list, [1, 1, 1, 1])
       @competition = [@cand2, @winner, @cand1]
     end
     it 'Pool selects cand1' do
@@ -87,9 +87,9 @@ RSpec.describe 'loser selection', :integration do
       erc2 = construct_erc(@constraint_list, [:e, :W, :L, :e])
       erc3 = construct_erc(@constraint_list, [:e, :e, :W, :L])
       @erc_list = ErcList.new.add_all([erc1, erc2, erc3])
-      assign_violations(@winner, @constraint_list, [0,2,1,0])
-      assign_violations(@cand1, @constraint_list, [2,1,0,0])
-      assign_violations(@cand2, @constraint_list, [1,1,1,1])
+      assign_violations(@winner, @constraint_list, [0, 2, 1, 0])
+      assign_violations(@cand1, @constraint_list, [2, 1, 0, 0])
+      assign_violations(@cand2, @constraint_list, [1, 1, 1, 1])
       @competition = [@cand2, @winner, @cand1]
     end
     it 'Pool selects no loser' do
@@ -114,8 +114,8 @@ RSpec.describe 'loser selection', :integration do
       erc2 = construct_erc(@constraint_list, [:e, :e, :W, :L])
       @erc_list = ErcList.new.add_all([erc1, erc2])
       # winner has fewer violations of {c1,c2}, but more of {c2}
-      assign_violations(@winner, @constraint_list, [0,1,1,0])
-      assign_violations(@cand1, @constraint_list, [2,0,1,0])
+      assign_violations(@winner, @constraint_list, [0, 1, 1, 0])
+      assign_violations(@cand1, @constraint_list, [2, 0, 1, 0])
       @competition = [@winner, @cand1]
     end
     it 'Pool selects no loser' do
@@ -130,6 +130,58 @@ RSpec.describe 'loser selection', :integration do
       loser =
         @consistency_selector.select_loser(@winner, @competition, @erc_list)
       expect(loser).to eq @cand1
+    end
+  end
+  context 'one competitor ident viols, the other more harmonic' do
+    before(:example) do
+      # Rcd will give {c1,c2} >> {c3} >> {c4}
+      # c1 is only high-ranked by default
+      erc1 = construct_erc(@constraint_list, [:e, :W, :L, :e])
+      erc2 = construct_erc(@constraint_list, [:e, :e, :W, :L])
+      @erc_list = ErcList.new.add_all([erc1, erc2])
+      # winner has fewer violations of {c1,c2}, but more of {c2}
+      assign_violations(@winner, @constraint_list, [0, 1, 1, 0])
+      assign_violations(@cand1, @constraint_list, [0, 1, 1, 0])
+      assign_violations(@cand2, @constraint_list, [0, 1, 0, 0])
+      @competition = [@cand1, @winner, @cand2]
+    end
+    it 'Pool selects cand2' do
+      loser = @pool_selector.select_loser(@winner, @competition, @erc_list)
+      expect(loser).to eq @cand2
+    end
+    it 'Ctie selects cand2' do
+      loser = @ctie_selector.select_loser(@winner, @competition, @erc_list)
+      expect(loser).to eq @cand2
+    end
+    it 'Consistency selects cand2' do
+      loser =
+        @consistency_selector.select_loser(@winner, @competition, @erc_list)
+      expect(loser).to eq @cand2
+    end
+  end
+  context 'winner harmonically bounds the competitor' do
+    before(:example) do
+      # Rcd will give {c1,c2,c3} >> {c4}
+      # c1 is only high-ranked by default
+      erc1 = construct_erc(@constraint_list, [:e, :e, :W, :L])
+      @erc_list = ErcList.new.add_all([erc1])
+      # winner has fewer violations of {c1,c2}, but more of {c2}
+      assign_violations(@winner, @constraint_list, [0, 1, 1, 0])
+      assign_violations(@cand1, @constraint_list, [0, 1, 1, 1])
+      @competition = [@cand1, @winner]
+    end
+    it 'Pool selects no loser' do
+      loser = @pool_selector.select_loser(@winner, @competition, @erc_list)
+      expect(loser).to be nil
+    end
+    it 'Ctie selects no loser' do
+      loser = @ctie_selector.select_loser(@winner, @competition, @erc_list)
+      expect(loser).to be nil
+    end
+    it 'Consistency selects no loser' do
+      loser =
+        @consistency_selector.select_loser(@winner, @competition, @erc_list)
+      expect(loser).to be nil
     end
   end
 end
