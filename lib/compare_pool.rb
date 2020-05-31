@@ -34,7 +34,7 @@ class ComparePool
   #++
   # :call-seq:
   #   ComparePool.new(ranker) -> comparer
-  def initialize(ranker, stratum_comparer: CompareStratumPool)
+  def initialize(ranker, stratum_comparer: CompareStratumPool.new)
     @ranker = ranker
     @stratum_comparer = stratum_comparer
   end
