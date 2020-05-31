@@ -2,6 +2,8 @@
 
 # Author: Bruce Tesar
 
+require 'compare_stratum_pool'
+
 # ComparePool objects compare two candidates with respect to a constraint
 # hierarchy, using the Pool criterion. At construction time,
 # ComparePool is provided with a ranker, which converts a list of Ercs

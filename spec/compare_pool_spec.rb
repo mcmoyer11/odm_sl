@@ -60,7 +60,7 @@ RSpec.describe 'ComparePool' do
       expect(@code).to eq :SECOND
     end
   end
-  context 'when the candidates have distinct violations but tie on all strata' do
+  context 'when candidates have distinct violations but tie on all strata' do
     before(:example) do
       allow(first).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
