@@ -30,7 +30,6 @@ class ComparePool
   #--
   # stratum_comparer is a dependency injection used for testing.
   #++
-  #
   # :call-seq:
   #   ComparePool.new(ranker) -> comparer
   def initialize(ranker, stratum_comparer: CompareStratumPool)

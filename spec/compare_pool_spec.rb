@@ -25,7 +25,7 @@ RSpec.describe 'ComparePool' do
                                 stratum_comparer: stratum_comparer)
   end
 
-  context 'given the first candidate is more harmonic on the second stratum' do
+  context 'when the first candidate is more harmonic on the second stratum' do
     before(:example) do
       allow(first).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
@@ -49,7 +49,7 @@ RSpec.describe 'ComparePool' do
       expect(@code).to eq :FIRST
     end
   end
-  context 'given the second candidate is more harmonic on the first stratum' do
+  context 'when the second candidate is more harmonic on the first stratum' do
     before(:example) do
       allow(first).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
@@ -60,7 +60,7 @@ RSpec.describe 'ComparePool' do
       expect(@code).to eq :SECOND
     end
   end
-  context 'given candidates with distinct violations that tie on all strata' do
+  context 'when the candidates have distinct violations but tie on all strata' do
     before(:example) do
       allow(first).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
@@ -75,7 +75,7 @@ RSpec.describe 'ComparePool' do
       expect(@code).to eq :TIE
     end
   end
-  context 'given candidates with identical violation profiles' do
+  context 'when the candidates have identical violation profiles' do
     before(:example) do
       allow(first).to receive(:ident_viols?).and_return(true)
       @code = @comparer.more_harmonic(first, second, param_ercs)

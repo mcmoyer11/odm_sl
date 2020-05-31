@@ -15,14 +15,13 @@ require 'win_lose_pair'
 # the same deciding stratum. The four possible return codes (implemented
 # as symbols) represent the four relevant possibilities for the comparison
 # of two candidates on the overall hierarchy:
-# * :WINNER - the highest stratum with a preferring constraint has a
-#   winner-preferring constraint and no loser-preferring constraint.
-# * :LOSER - the highest stratum with a preferring constraint has a
-#   loser-preferring constraint and no winner-preferring constraint.
-# * :CONFLICT - the highest stratum with a preferring constraint has both
-#   a winner-preferring constraint and a loser-preferring constraint.
-# * :IDENT_VIOLATIONS - none of the constraints in the hierarchy has
-#   a preference.
+# * :FIRST - the highest stratum with a preferring constraint has a
+#   first-preferring constraint and no second-preferring constraint.
+# * :SECOND - the highest stratum with a preferring constraint has a
+#   second-preferring constraint and no first-preferring constraint.
+# * :TIE - the highest stratum with a preferring constraint has both
+#   a first-preferring constraint and a second-preferring constraint.
+# * :IDENT_VIOLATIONS - the candidates have identical violation profiles.
 class CompareCtie
   # Returns a new CompareCtie object.
   #
@@ -35,7 +34,6 @@ class CompareCtie
   # stratum_comparer and win_loser_pair_class are dependency injections
   # used for testing.
   #++
-  #
   # :call-seq:
   #   CompareCtie.new(ranker) -> comparer
   def initialize(ranker, stratum_comparer: CompareStratumCtie,
@@ -66,7 +64,7 @@ class CompareCtie
   end
 
   # Compares the two candidates with respect to the hierarchy.
-  # Returns one of: :FIRST, :SECOND, :CONFLICT
+  # Returns one of: :FIRST, :SECOND, :TIE
   def compare_on_hierarchy(erc, hierarchy)
     hierarchy.each do |stratum|
       code = @stratum_comparer.more_harmonic(erc, stratum)
