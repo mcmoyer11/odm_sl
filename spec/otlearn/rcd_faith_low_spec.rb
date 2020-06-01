@@ -30,9 +30,6 @@ module Test
         @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
-      it "returns the label 'RcdBiasLow'" do
-        expect(@rcd.label).to eq("RcdBiasLow")
-      end
       it "returns the forced total ranking [3:M3] [1:M1] [2:F2]" do
         expect(@rcd.hierarchy.to_s).to eq("[3:M3] [1:M1] [2:F2]")
       end
@@ -47,12 +44,9 @@ module Test
         @erc_list = instance_double(ErcList, "ERC list")
         allow(@erc_list).to receive(:constraint_list).and_return(@erc1.constraint_list)
         allow(@erc_list).to receive(:each).and_yield(@erc1)
-        @rcd = OTLearn::RcdFaithLow.new(@erc_list, label: "FaithLow Label")
+        @rcd = OTLearn::RcdFaithLow.new(@erc_list)
       end
       include_examples "consistent scenarios"
-      it "returns the label 'FaithLow Label'" do
-        expect(@rcd.label).to eq('FaithLow Label')
-      end
       it "ranks the markedness W constraint first, not the faithfulness W constraint" do
         expect(@rcd.hierarchy.to_s).to eq("[3:M3] [1:M1] [2:F2]")
       end
