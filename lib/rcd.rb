@@ -21,6 +21,29 @@ require 'hierarchy'
 #
 # Tesar & Smolensky 2000. <em>Learnability in Optimality Theory</em>. MIT Press.
 class Rcd
+  # A list of the constraints.
+  attr_reader :constraint_list
+
+  # The hierarchy of constraints ranked by RCD. If the set of
+  # Ercs is inconsistent, this will not include all of the constraints;
+  # the rest of the constraints will be returned by #unranked.
+  attr_reader :ranked
+
+  # An array of constraints that remain unranked after the
+  # completion of RCD. This list will be empty unless the set of Ercs
+  # is inconsistent.
+  attr_reader :unranked
+
+  # A "stratified" list of explained ERCs, as an array of arrays.
+  # The first "stratum" contains the ERCs explained by the constraints in
+  # the first stratum of the constraint hierarchy, and so forth.
+  attr_reader :ex_ercs
+
+  # A list of unexplained ERCs, as an array.
+  # When the original list of ERCs is consistent, this array
+  # will either be empty or contain only trivial ERCs (all e).
+  attr_reader :unex_ercs
+
   # Returns an object containing the results of running Recursive
   # Constraint Demotion on the ERC list +erc_list+.
   #--
@@ -34,7 +57,7 @@ class Rcd
   def initialize(erc_list)
     @ercs = [] # an array, no matter the class of erc_list
     erc_list.each { |erc| @ercs << erc }
-    @constraints = erc_list.constraint_list
+    @constraint_list = erc_list.constraint_list
     run_rcd
   end
 
@@ -43,11 +66,6 @@ class Rcd
     new_erc_list = ErcList.new
     new_erc_list.add_all(@ercs)
     new_erc_list
-  end
-
-  # Returns a list of the constraints.
-  def constraint_list
-    @constraints
   end
 
   # Returns true if the set of ERCs is consistent; returns false otherwise.
@@ -65,41 +83,13 @@ class Rcd
     hierarchy
   end
 
-  # Returns the hierarchy of constraints ranked by RCD. If the set of
-  # ERCs is inconsistent, this will not include all of the constraints;
-  # the rest of the constraints will be returned by #unranked().
-  def ranked
-    @ranked
-  end
-
-  # Returns an array of constraints that remain unranked after the
-  # completion of RCD. This list will be empty unless the set of ERCs
-  # is inconsistent.
-  def unranked
-    @unranked
-  end
-
-  # Returns a "stratified" list of explained ERCs, as an array of arrays.
-  # The first "stratum" contains the ERCs explained by the constraints in
-  # the first stratum of the constraint hierarchy, and so forth.
-  def ex_ercs
-    @ex_ercs
-  end
-
-  # Returns a list of unexplained ERCs, as an array.
-  # When the original list of ERCs is consistent, this array
-  # will either be empty or contain only trivial ERCs (all e).
-  def unex_ercs
-    @unex_ercs
-  end
-
   # A constraint is rankable with respect to a set of ERCs if the constraint
   # does not prefer the loser in any of the ERCs.
   #
   # :call-seq:
   #   rankable?(constraint, erc_list) -> boolean
   def rankable?(con, ercs)
-    not ercs.any? { |erc| erc.l?(con) }
+    ercs.none? { |erc| erc.l?(con) }
   end
   protected :rankable?
 
@@ -122,7 +112,7 @@ class Rcd
   # The first stratum will contain the ERCs explained by the constraints in
   # the first stratum, and so forth.
   def run_rcd
-    # Initialize the instance variables that are computed/altered within run_rcd.
+    # Initialize the instance variables that are altered within run_rcd.
     # Initially, all ERCs are unexplained and all constraints are unranked.
     @consistent = true # innocent until proven guilty
     @ranked = Hierarchy.new
@@ -130,16 +120,19 @@ class Rcd
     @ex_ercs = []
     @unranked = constraint_list
     # Find the initially rankable constraints
-    rankable, @unranked = @unranked.partition{ |con| rankable?(con, @unex_ercs) }
+    rankable, @unranked =
+      @unranked.partition { |con| rankable?(con, @unex_ercs) }
     until rankable.empty? # repeat until no more constraints are rankable
       stratum = choose_cons_to_rank(rankable)
       @unranked.concat(rankable - stratum)
       @ranked << stratum # put the current stratum in the hierarchy
       # Move the ERCs explained by the current stratum
-      explained, @unex_ercs = @unex_ercs.partition{ |e| explained?(e, stratum) }
+      explained, @unex_ercs =
+        @unex_ercs.partition { |e| explained?(e, stratum) }
       @ex_ercs << explained # store the explained ERCs as the next "erc stratum"
       # Find newly rankable constraints
-      rankable, @unranked = @unranked.partition{ |con| rankable?(con, @unex_ercs) }
+      rankable, @unranked =
+        @unranked.partition { |con| rankable?(con, @unex_ercs) }
     end
     # If unranked constraints remain, then the ERCs are inconsistent.
     @consistent = false unless @unranked.empty?
