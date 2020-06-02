@@ -145,8 +145,8 @@ RSpec.describe Rcd do
     let(:con3) { constraint_list[2] }
     before(:each) do
       allow(erc_list).to receive(:constraint_list).and_return(constraint_list)
-      allow(erc_list).to receive(:each).and_yield(erc1).and_yield(erc2).
-        and_yield(erc3)
+      allow(erc_list).to receive(:each).and_yield(erc1).and_yield(erc2)\
+                                       .and_yield(erc3)
       @rcd = Rcd.new(erc_list)
     end
     it 'is inconsistent' do

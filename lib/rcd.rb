@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require 'hierarchy'
+require 'ranking_bias_all_high'
 
 # Implements Recursive Constraint Demotion (RCD).
 # An Rcd object takes a list of ERCs, runs RCD, and stores the
@@ -51,11 +52,15 @@ class Rcd
   # array @ercs. Thus, it shouldn't matter if the parameter list
   # subsequently changes state, so long as the constraint list
   # and ERC objects are not themselves directly altered.
+  #
+  # +constraint_chooser+ is a dependency injection used for testing.
   #++
   # :call-seq:
   #   Rcd.new(erc_list) -> rcd
-  def initialize(erc_list)
+  def initialize(erc_list, constraint_chooser: RankingBiasAllHigh.new)
     @ercs = [] # an array, no matter the class of erc_list
+    # Set the ranking bias
+    @constraint_chooser = constraint_chooser
     erc_list.each { |erc| @ercs << erc }
     @constraint_list = erc_list.constraint_list
     # Initialize the instance variables that are altered within run_rcd.
@@ -155,17 +160,15 @@ class Rcd
   end
   protected :move_newly_explained_ercs
 
-  # This method defines the ranking bias. The default here is to rank all
-  # constraints as high as possible, as per original RCD. This method can
-  # be overridden in subclasses to define other biases (like faithfulness
-  # as low as possible, as in BCD).
+  # This method calls the ranking bias, to choose which constraints to be
+  # placed into the next stratum of the hierarchy.
   # It is given an array of rankable constraints, and returns an array of
   # constraints to actually be placed into the hierarchy.
   #
   # :call-seq:
   #   choose_cons_to_rank(rankable_constraint_list) -> array
   def choose_cons_to_rank(rankable)
-    rankable
+    @constraint_chooser.choose_cons_to_rank(rankable, self)
   end
   protected :choose_cons_to_rank
 end
