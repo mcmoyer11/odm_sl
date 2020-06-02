@@ -6,7 +6,7 @@ require 'hierarchy'
 
 # Implements Recursive Constraint Demotion (RCD).
 # An Rcd object takes a list of ERCs, runs RCD, and stores the
-# constructed hierarchy along with a flag indicating consistency.
+# constructed hierarchy.
 #
 # In the case of inconsistency, the unranked constraints and the remaining
 # unexplained ERCs are also stored. The stored hierarchy contains the
@@ -60,7 +60,6 @@ class Rcd
     @constraint_list = erc_list.constraint_list
     # Initialize the instance variables that are altered within run_rcd.
     # Initially, all ERCs are unexplained and all constraints are unranked.
-    @consistent = true # innocent until proven guilty
     @unranked = constraint_list
     @ranked = Hierarchy.new # initially empty
     @unex_ercs = @ercs
@@ -78,7 +77,7 @@ class Rcd
 
   # Returns true if the set of ERCs is consistent; returns false otherwise.
   def consistent?
-    @consistent
+    @unranked.empty?
   end
 
   # Returns a full constraint hierarchy. If the ERCs are inconsistent,
@@ -112,39 +111,49 @@ class Rcd
   protected :explained?
 
   # Executes Recursive Constraint Demotion (RCD) on the list of ERCs.
-  # If the ERCs are consistent, @consistent will be true, @ranked will
-  # contain the computed hierarchy, and @unranked and @unex_ercs will be empty.
-  # At the end, @unranked will contain any unrankable constraints, and
-  # @unex_ercs will contain any unexplainable, collectively inconsistent ERCs.
-  # @ex_ercs will contain a "stratified" representation of the explained ERCs:
-  # The first stratum will contain the ERCs explained by the constraints in
-  # the first stratum, and so forth.
+  # If the ERCs are consistent, @ranked will contain the computed hierarchy,
+  # and @unranked and @unex_ercs will be empty.
+  # If the ERCs are inconsistent, @unranked will contain the unrankable
+  # constraints, and @unex_ercs will contain the unexplainable, collectively
+  # inconsistent ERCs.
   def run_rcd
     # Find the initially rankable constraints
-    rankable, @unranked =
-      @unranked.partition { |con| rankable?(con, @unex_ercs) }
+    rankable = @unranked.find_all { |con| rankable?(con, @unex_ercs) }
     until rankable.empty? # repeat until no more constraints are rankable
       stratum = choose_cons_to_rank(rankable)
-      rank_next_stratum(rankable, stratum)
+      rank_next_stratum(stratum)
+      move_newly_explained_ercs(stratum)
       # Find newly rankable constraints
-      rankable, @unranked =
-        @unranked.partition { |con| rankable?(con, @unex_ercs) }
+      rankable = @unranked.find_all { |con| rankable?(con, @unex_ercs) }
     end
-    # If unranked constraints remain, then the ERCs are inconsistent.
-    @consistent = false unless @unranked.empty?
   end
   protected :run_rcd
 
-  def rank_next_stratum(rankable, stratum)
-    @ranked << stratum # put the current stratum in the hierarchy
-    @unranked.concat(rankable - stratum) # return the rest to unranked
-    # Move the ERCs explained by the current stratum
-    explained, @unex_ercs =
-      @unex_ercs.partition { |e| explained?(e, stratum) }
-    @ex_ercs << explained # store the explained ERCs as the next "erc stratum"
-    true # meaningless return value
+  # Places the next stratum of constraints into the developing hierarchy,
+  # and removes them from the list of unranked constraints.
+  def rank_next_stratum(stratum)
+    @ranked << stratum
+    @unranked -= stratum
   end
   protected :rank_next_stratum
+
+  # Identifies the ERCs explained by the newly ranked constraints, and
+  # moves those ERCs from the unexplained list to the explained list.
+  def move_newly_explained_ercs(stratum)
+    # NOTE: resist the temptation to identify the newly explained ERCs,
+    # and then remove them from unexplained ERC list. That kind of
+    # removal involves comparing for equality, and a list of ERCs can
+    # end up containing ERC objects and Win_lose_pair objects, making
+    # equality tests complicated. Partitioning on the basis of
+    # #explained? avoids #eql? comparisons.
+    #
+    # Separate out the newly explained ERCs
+    explained, @unex_ercs =
+      @unex_ercs.partition { |e| explained?(e, stratum) }
+    # Store the newly explained ERCs as the next "ERC stratum"
+    @ex_ercs << explained
+  end
+  protected :move_newly_explained_ercs
 
   # This method defines the ranking bias. The default here is to rank all
   # constraints as high as possible, as per original RCD. This method can
