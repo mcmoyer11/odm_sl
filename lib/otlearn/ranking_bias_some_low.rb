@@ -75,6 +75,7 @@ module OTLearn
 
       [best_pair[0]] # return a list with the constraint of the best pair
     end
+    protected :max_freed_high
 
     # Counts the number of high-kind constraints freed up by ranking
     # +target_con+ next, and returns that number.
@@ -97,5 +98,6 @@ module OTLearn
       end
       total_freed_high
     end
+    protected :count_freed_high
   end
 end
