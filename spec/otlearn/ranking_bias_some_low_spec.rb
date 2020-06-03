@@ -30,6 +30,8 @@ RSpec.describe 'OTLearn::RankingBiasSomeLow' do
       allow(low_kind).to receive(:member?).with(con2).and_return(false)
       allow(low_kind).to receive(:member?).with(con3).and_return(false)
       @rankable = [con2, con3]
+      allow(rcd).to receive(:unranked)
+      allow(rcd).to receive(:unex_ercs)
       @chosen = @bias.choose_cons_to_rank(@rankable, rcd)
     end
     it 'returns all of the rankable constraints' do
@@ -43,6 +45,8 @@ RSpec.describe 'OTLearn::RankingBiasSomeLow' do
       allow(low_kind).to receive(:member?).with(con2).and_return(true)
       allow(low_kind).to receive(:member?).with(con3).and_return(false)
       @rankable = [con2, con3]
+      allow(rcd).to receive(:unranked)
+      allow(rcd).to receive(:unex_ercs)
       @chosen = @bias.choose_cons_to_rank(@rankable, rcd)
     end
     it 'returns only the high kind ones' do
@@ -60,6 +64,7 @@ RSpec.describe 'OTLearn::RankingBiasSomeLow' do
       allow(low_kind).to receive(:member?).with(con1).and_return(true)
       allow(low_kind).to receive(:member?).with(con2).and_return(true)
       @rankable = [con1, con2]
+      allow(rcd).to receive(:unranked)
       @chosen = @bias.choose_cons_to_rank(@rankable, rcd)
     end
     it 'returns all the inactive ones' do

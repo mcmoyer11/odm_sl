@@ -20,17 +20,21 @@ module OTLearn
     end
 
     def choose_cons_to_rank(rankable, rcd)
+      # Get the current unranked constraints and unexplained ercs
+      unranked = rcd.unranked
+      unex_ercs = rcd.unex_ercs
+
       low, high = rankable.partition { |con| low_constraint_type?(con) }
       # if any high kind are rankable, return all of them
       return high unless high.empty?
 
-      low_active = low.find_all { |con| active?(con, rcd.unex_ercs) }
+      low_active = low.find_all { |con| active?(con, unex_ercs) }
       # if no low kind are active, they can't free anything up, so
       # return all of the low kind.
       return low if low_active.empty?
 
       # return the low kind constraint that frees up the most high kind
-      max_freed_high(low_active, rcd.unranked, rcd.unex_ercs)
+      max_freed_high(low_active, unranked, unex_ercs)
     end
 
     def max_freed_high(low_active, unranked, unex_ercs)
