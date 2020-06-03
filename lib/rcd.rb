@@ -126,8 +126,9 @@ class Rcd
     rankable = @unranked.find_all { |con| rankable?(con, @unex_ercs) }
     until rankable.empty? # repeat until no more constraints are rankable
       stratum = choose_cons_to_rank(rankable)
-      rank_next_stratum(stratum)
-      move_newly_explained_ercs(stratum)
+      @ranked, @unranked = rank_next_stratum(stratum, @ranked, @unranked)
+      @ex_ercs, @unex_ercs =
+        move_newly_explained_ercs(stratum, @ex_ercs, @unex_ercs)
       # Find newly rankable constraints
       rankable = @unranked.find_all { |con| rankable?(con, @unex_ercs) }
     end
@@ -136,15 +137,16 @@ class Rcd
 
   # Places the next stratum of constraints into the developing hierarchy,
   # and removes them from the list of unranked constraints.
-  def rank_next_stratum(stratum)
-    @ranked << stratum
-    @unranked -= stratum
+  # Returns an array of the updated lists: [ranked_cons, unranked_cons]
+  def rank_next_stratum(stratum, ranked, unranked)
+    ranked << stratum
+    unranked -= stratum
+    [ranked, unranked]
   end
-  protected :rank_next_stratum
 
   # Identifies the ERCs explained by the newly ranked constraints, and
   # moves those ERCs from the unexplained list to the explained list.
-  def move_newly_explained_ercs(stratum)
+  def move_newly_explained_ercs(stratum, ex_ercs, unex_ercs)
     # NOTE: resist the temptation to identify the newly explained ERCs,
     # and then remove them from unexplained ERC list. That kind of
     # removal involves comparing for equality, and a list of ERCs can
@@ -153,12 +155,12 @@ class Rcd
     # #explained? avoids #eql? comparisons.
     #
     # Separate out the newly explained ERCs
-    explained, @unex_ercs =
-      @unex_ercs.partition { |e| explained?(e, stratum) }
+    explained, unex_ercs =
+      unex_ercs.partition { |e| explained?(e, stratum) }
     # Store the newly explained ERCs as the next "ERC stratum"
-    @ex_ercs << explained
+    ex_ercs << explained
+    [ex_ercs, unex_ercs]
   end
-  protected :move_newly_explained_ercs
 
   # This method calls the ranking bias, to choose which constraints to be
   # placed into the next stratum of the hierarchy.
