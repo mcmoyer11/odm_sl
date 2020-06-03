@@ -73,8 +73,8 @@ module OTLearn
       total_high_con_count = 0
       # Remove ercs explained by low_con, and see if any high-bias
       # constraints are freed up.
-      explained, unexplained = unexplained.partition { |e| explained?(e, stratum) }
-      rankable, unranked = unranked.partition { |con| rankable?(con, unexplained) }
+      explained, unexplained = unexplained.partition { |e| Rcd.explained?(e, stratum) }
+      rankable, unranked = unranked.partition { |con| Rcd.rankable?(con, unexplained) }
       low_rankable, high_rankable = rankable.partition { |con| low_constraint_type?(con) }
       total_high_con_count += high_rankable.size # add to the count of the high-bias cascade.
       # If some high-bias constraints were freed up, see if, once those
@@ -85,9 +85,9 @@ module OTLearn
       until high_rankable.empty?
         stratum = high_rankable # "rank" only the high-bias constraints
         unranked.concat(rankable - stratum)
-        explained, unexplained = unexplained.partition { |e| explained?(e, stratum) }
+        explained, unexplained = unexplained.partition { |e| Rcd.explained?(e, stratum) }
         # See if more high-bias constraints have been freed up
-        rankable, unranked = unranked.partition { |con| rankable?(con, unexplained) }
+        rankable, unranked = unranked.partition { |con| Rcd.rankable?(con, unexplained) }
         low_rankable, high_rankable = rankable.partition { |con| low_constraint_type?(con) }
         total_high_con_count += high_rankable.size
       end
