@@ -1,7 +1,9 @@
 # Author: Bruce Tesar
 
 require_relative '../sheet'
-require_relative 'rcd_bias_low'
+require 'otlearn/faith_low'
+require 'otlearn/ranking_bias_some_low'
+require 'rcd'
 require_relative '../rcd_image'
 require_relative '../lexicon_image'
 
@@ -29,10 +31,12 @@ module OTLearn
     # :call-seq:
     #   GrammarTestImage.new(grammar_test) -> img
     def initialize(grammar_test,
-      rcd_class: OTLearn::RcdFaithLow, rcd_image_class: RcdImage,
+      rcd_class: Rcd, rcd_image_class: RcdImage,
       lexicon_image_class: LexiconImage)
       @grammar_test = grammar_test
       @rcd_class = rcd_class
+      # Constraint chooser for Rcd, biased to low faithfulness
+      @chooser = OTLearn::RankingBiasSomeLow.new(OTLearn::FaithLow.new)
       @rcd_image_class = rcd_image_class
       @lexicon_image_class = lexicon_image_class
       @sheet = Sheet.new
@@ -49,7 +53,8 @@ module OTLearn
     def construct_image
       # Compute the faith-low bias ranking, to provide the display
       # order of the constraints.
-      rcd_result = @rcd_class.new(@grammar_test.grammar.erc_list)
+      rcd_result = @rcd_class.new(@grammar_test.grammar.erc_list,
+                                  constraint_chooser: @chooser)
       # Build the image of the support, and write it
       # to the page starting in column 2.
       rcd_image = @rcd_image_class.new(rcd_result)
