@@ -83,17 +83,6 @@ module SL
     return syl_list
   end
   
-  # Generates the optimal candidates with respect to constraint
-  # hierarchy _hier_ for each input in _inputs_.
-  # Returns a list of the optimal candidates of the language.
-  def SL.generate_language(hier, inputs)
-    competitions = inputs.map{|i| SYSTEM.gen(i)}
-    comp_mh = competitions.map{|comp| MostHarmonic.new(comp,hier)}
-    # each competition returns a list of winners; collapse to one-level list.
-    lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
-    return lang
-  end
-
   # Given a list of morphwords _words_ and a grammar _gram_, this constructs
   # the input for each morphword, generates the competition for each input,
   # and returns the list of competitions.
@@ -185,16 +174,4 @@ module SL
       comp_list = competitions_from_morphwords(words, gram)
       return comp_list
   end
-
-#--
-# Hierarchies
-#++
-
-  # The hierarchy for Language L20.
-  def SL.hier_l20
-    hier = Hierarchy.new
-    hier << [SYSTEM.wsp] << [SYSTEM.idstress] << [SYSTEM.ml] <<
-      [SYSTEM.mr] << [SYSTEM.idlength] << [SYSTEM.nolong]
-    return hier
-  end
-end # module SL
+end

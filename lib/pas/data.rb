@@ -83,21 +83,6 @@ module PAS
     return syl_list
   end
   
-  # Generates the optimal candidates with respect to constraint
-  # hierarchy _hier_ for each input in _inputs_, using the lexicon
-  # in grammar _gram_. The hierarchy in _gram_ is set to _hier_.
-  # _gram_ needs to already contain a lexicon with entries for all
-  # of the morphemes appearing in the inputs.
-  # Returns a list of the optimal candidates of the language.
-  def PAS.generate_language(hier, inputs, gram)
-    competitions = inputs.map{|i| SYSTEM.gen(i)}
-    gram.hierarchy = hier
-    comp_mh = competitions.map{|comp| MostHarmonic.new(comp,gram.hierarchy)}
-    # each competition returns a list of winners; collapse to one-level list.
-    lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
-    return lang
-  end
-
   # Given a list of morphwords _words_ and a grammar _gram_, this constructs
   # the input for each morphword, generates the competition for each input,
   # and returns the list of competitions.
