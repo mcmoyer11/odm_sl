@@ -11,6 +11,17 @@ module OTLearn
   # Execution of this method will invoke several class methods of
   # the class Rcd, and an rcd object is one of the parameters to
   # the method.
+  #
+  # This is related to Biased Constraint Demotion (BCD). BCD as
+  # originally defined employs a faithfulness-low ranking bias, to enforce
+  # restrictiveness. However, RankingBiasSomeLow does not fully pursue
+  # f-gangs, as proposed by Prince & Tesar for BCD: if no single low-kind
+  # constraint frees up any high-kind constraints, then all active
+  # low-kind constraints are returned to be ranked, instead of a minimal
+  # subset of the active low-kind constraints. This is to keep the
+  # computational complexity down.
+  #
+  # Reference: Prince & Tesar 2004, "Learning phonotactic distributions".
   class RankingBiasSomeLow
     # Returns a new ranking bias object.
     # The parameter +low_constraint_type+ should respond to the method

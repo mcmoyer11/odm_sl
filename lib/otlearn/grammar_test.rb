@@ -2,7 +2,6 @@
 
 # Author: Bruce Tesar
 
-require 'otlearn/rcd_bias_low'
 require 'compare_consistency'
 require 'loser_selector'
 require 'loser_selector_from_gen'
