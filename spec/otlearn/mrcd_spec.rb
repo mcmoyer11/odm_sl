@@ -1,7 +1,6 @@
 # Author: Bruce Tesar
 
 require 'otlearn/mrcd'
-require 'loserselector_by_ranking'
 
 RSpec.describe 'MRCD' do
   let(:grammar){double('grammar')}
