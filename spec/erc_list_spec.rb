@@ -81,7 +81,6 @@ RSpec.describe ErcList do
       allow(@erc1).to receive(:test_cond).and_return(true)
       @erc_list.add(@erc1)
     end
-
     it 'is not empty' do
       expect(@erc_list.empty?).not_to be true
     end
@@ -178,7 +177,8 @@ RSpec.describe ErcList do
     context 'and a second erc with a different number of constraints is added' do
       before do
         @erc_diff = instance_double(Erc)
-        allow(@erc_diff).to receive(:constraint_list).and_return(['C1', 'C2', 'C3'])
+        allow(@erc_diff).to receive(:constraint_list)\
+          .and_return(['C1', 'C2', 'C3'])
       end
       it 'raises a RuntimeError' do
         expect { @erc_list.add(@erc_diff) }.to raise_exception(RuntimeError)
@@ -242,12 +242,14 @@ RSpec.describe ErcList do
   context 'with one consistent ERC added' do
     before(:example) do
       @erc_consistent = instance_double(Erc)
-      allow(@erc_consistent).to receive(:constraint_list).and_return(['C1', 'C2'])
-      @rcd_class = double('RCD class')
+      allow(@erc_consistent).to receive(:constraint_list)\
+        .and_return(['C1', 'C2'])
+      @rcd_runner = double('RCD runner')
       rcd_result = instance_double(Rcd)
       allow(rcd_result).to receive(:consistent?).and_return(true)
-      @erc_list = ErcList.new(rcd_class: @rcd_class).add(@erc_consistent)
-      allow(@rcd_class).to receive(:new).with(@erc_list).and_return(rcd_result)
+      @erc_list = ErcList.new(rcd_runner: @rcd_runner).add(@erc_consistent)
+      allow(@rcd_runner).to receive(:run_rcd).with(@erc_list)\
+                                             .and_return(rcd_result)
     end
     it 'responds that is is consistent' do
       expect(@erc_list.consistent?).to be true
@@ -257,12 +259,14 @@ RSpec.describe ErcList do
   context 'with one inconsistent ERC added' do
     before(:example) do
       @erc_consistent = instance_double(Erc)
-      allow(@erc_consistent).to receive(:constraint_list).and_return(['C1', 'C2'])
-      @rcd_class = double('RCD class')
+      allow(@erc_consistent).to receive(:constraint_list)\
+        .and_return(['C1', 'C2'])
+      @rcd_runner = double('RCD runner')
       rcd_result = instance_double(Rcd)
       allow(rcd_result).to receive(:consistent?).and_return(false)
-      @erc_list = ErcList.new(rcd_class: @rcd_class).add(@erc_consistent)
-      allow(@rcd_class).to receive(:new).with(@erc_list).and_return(rcd_result)
+      @erc_list = ErcList.new(rcd_runner: @rcd_runner).add(@erc_consistent)
+      allow(@rcd_runner).to receive(:run_rcd).with(@erc_list)\
+                                             .and_return(rcd_result)
     end
     it 'responds that it is not consistent' do
       expect(@erc_list.consistent?).to be false
@@ -274,7 +278,7 @@ RSpec.describe 'ErcList.new_from_competition' do
   # A helper method for setting up winner-loser pair doubles.
   def set_up_wlpair_double(winner, loser, pair, wlpair_class, clist)
     allow(wlpair_class).to receive(:new).with(winner, loser) \
-                                      .and_return(pair)
+                                        .and_return(pair)
     allow(pair).to receive(:winner).and_return(winner)
     allow(pair).to receive(:loser).and_return(loser)
     allow(pair).to receive(:constraint_list).and_return(clist)

@@ -8,7 +8,7 @@ require 'sheet'
 RSpec.describe 'OTLearn::GrammarTestImage' do
   let(:grammar_test) { double('grammar_test') }
   let(:grammar) { double('grammar') }
-  let(:rcd_class) { double('rcd_class') }
+  let(:rcd_runner) { double('rcd_runner') }
   let(:rcd_image_class) { double('rcd_image_class') }
   let(:result_image) { Sheet.new }
   let(:lexicon_image_class) { double('lexicon_image_class') }
@@ -18,7 +18,7 @@ RSpec.describe 'OTLearn::GrammarTestImage' do
       allow(grammar_test).to receive(:grammar).and_return(grammar)
       allow(grammar).to receive(:erc_list).and_return('ercs')
       allow(grammar).to receive(:lexicon).and_return('lexicon')
-      allow(rcd_class).to receive(:new).and_return('rcd_result')
+      allow(rcd_runner).to receive(:run_rcd).and_return('rcd_result')
       allow(rcd_image_class).to receive(:new).and_return(result_image)
       allow(lexicon_image_class).to receive(:new).and_return(lex_image)
       # mock each component image with a single cell
@@ -26,7 +26,7 @@ RSpec.describe 'OTLearn::GrammarTestImage' do
       lex_image[1, 1] = 'Lexicon Image'
       @gt_image =
         OTLearn::GrammarTestImage.new(grammar_test,
-                                      rcd_class: rcd_class,
+                                      rcd_runner: rcd_runner,
                                       rcd_image_class: rcd_image_class,
                                       lexicon_image_class: lexicon_image_class)
     end

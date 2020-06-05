@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 
 require 'forwardable'
-require 'rcd'
+require 'rcd_runner'
 require 'win_lose_pair'
 
 # An ErcList is a list of ERC-like objects. All ERCs in the list must respond
@@ -17,7 +17,7 @@ class ErcList
   # Methods delegated to object (@list) of class Array.
   def_delegators :@list, :empty?, :size, :any?, :each, :each_with_index
 
-  # An optional label. Defaults to the empty string "".
+  # An optional label. Defaults to the empty string ''.
   attr_accessor :label
 
   # Returns an empty ErcList. It can optionally be passed a list of
@@ -33,12 +33,13 @@ class ErcList
   #   ErcList.new() -> ErcList
   #   ErcList.new(constraint_list: my_constraints) -> ErcList
   #--
-  # The default RCD class is Rcd. The +rcd_class+ parameter is
-  # primarily for testing purposes (dependency injection).
-  def initialize(constraint_list: nil, rcd_class: Rcd)
+  # The +rcd_runner+ parameter is a dependency injection for testing.
+  # The runner is only used for testing consistency, so the default with
+  # a bias towards all constraints ranked as high as possible used.
+  def initialize(constraint_list: nil, rcd_runner: RcdRunner.new)
     @list = []
     @constraint_list = constraint_list
-    @rcd_class = rcd_class
+    @rcd_runner = rcd_runner
     @label = ''
     # consistency is initially unknown (RCD has not been run).
     @consistency_test = nil
@@ -158,7 +159,7 @@ class ErcList
   # adding or removing ERCs from the duplicate will not affect the original.
   # The ERC objects themselves are <em>not</em> duplicated.
   def dup
-    ErcList.new(constraint_list: @constraint_list, rcd_class: @rcd_class) \
+    ErcList.new(constraint_list: @constraint_list, rcd_runner: @rcd_runner) \
            .add_all(self)
   end
 
@@ -175,9 +176,9 @@ class ErcList
   # Returns true if the list of ERCs is consistent; false otherwise.
   #--
   # If consistency status is currently unknown, calculates and stores it
-  # with a new Rcd_class object.
+  # with a new Rcd object.
   def consistent?
-    @consistency_test = @rcd_class.new(self) if @consistency_test.nil?
+    @consistency_test = @rcd_runner.run_rcd(self) if @consistency_test.nil?
     @consistency_test.consistent?
   end
 end

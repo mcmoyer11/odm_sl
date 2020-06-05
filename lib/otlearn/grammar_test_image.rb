@@ -5,7 +5,7 @@
 require 'sheet'
 require 'otlearn/faith_low'
 require 'otlearn/ranking_bias_some_low'
-require 'rcd'
+require 'rcd_runner'
 require 'rcd_image'
 require 'lexicon_image'
 
@@ -19,7 +19,7 @@ module OTLearn
   class GrammarTestImage
     # Constructs a grammar test image from a +grammar_test+ result.
     #--
-    # * +rcd_class+ - the class implementing the version of RCD
+    # * +rcd_runner+ - the object providing the version of RCD
     #   used to order the constraints for display purposes.
     # * +rcd_image_class+ - the class of object that will represent
     #   the results of RCD (erc tableau) image. Used for testing (dependency
@@ -29,12 +29,15 @@ module OTLearn
     #++
     # :call-seq:
     #   GrammarTestImage.new(grammar_test) -> img
-    def initialize(grammar_test, rcd_class: Rcd, rcd_image_class: RcdImage,
+    def initialize(grammar_test, rcd_runner: nil, rcd_image_class: RcdImage,
                    lexicon_image_class: LexiconImage)
       @grammar_test = grammar_test
-      @rcd_class = rcd_class
-      # Constraint chooser for Rcd, biased to low faithfulness
-      @chooser = OTLearn::RankingBiasSomeLow.new(OTLearn::FaithLow.new)
+      @rcd_runner = rcd_runner
+      # The default rcd_runner uses RCD biased to low faithfulness
+      if @rcd_runner.nil?
+        @chooser = RankingBiasSomeLow.new(FaithLow.new)
+        @rcd_runner = RcdRunner.new(@chooser)
+      end
       @rcd_image_class = rcd_image_class
       @lexicon_image_class = lexicon_image_class
       @sheet = Sheet.new
@@ -51,8 +54,7 @@ module OTLearn
     def construct_image
       # Compute the faith-low bias ranking, to provide the display
       # order of the constraints.
-      rcd_result = @rcd_class.new(@grammar_test.grammar.erc_list,
-                                  constraint_chooser: @chooser)
+      rcd_result = @rcd_runner.run_rcd(@grammar_test.grammar.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
       rcd_image = @rcd_image_class.new(rcd_result)

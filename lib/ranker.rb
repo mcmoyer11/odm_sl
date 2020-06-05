@@ -2,26 +2,27 @@
 
 # Author: Bruce Tesar
 
-require 'rcd'
+require 'rcd_runner'
 
-# Takes a class +rcd_class+ for creating and representing RCD-style
-# executions, and returns an object that can take a list of ercs
-# and return a consistent constraint hierarchy in one call.
+# Objects of class Ranker respond to #get_hierarchy(ercs) by returning
+# a constraint hierarchy consistent with +ercs+.
 class Ranker
   # Returns a ranker object which will construct a constraint hierarchy
   # consistent with a list of ercs, in accordance with the ranking
-  # bias embedded in the +rcd_class+. The default value of the +rcd_class+
-  # is Rcd, which has a bias to rank all constraints as high as possible.
+  # bias embedded in the +rcd_runner+. By default, the runner has a bias
+  # to rank all constraints as high as possible.
   # :call-seq:
-  # Ranker.new(rcd_class) -> ranker
-  def initialize(rcd_class = Rcd)
-    @rcd_class = rcd_class
+  #   Ranker.new -> ranker
+  #   Ranker.new(rcd_runner) -> ranker
+  def initialize(rcd_runner = RcdRunner.new)
+    @rcd_runner = rcd_runner
   end
 
   # Returns a constraint hierarchy consistent with +ercs+, subject to
-  # the ranking bias of the embedded rcd_class.
+  # the ranking bias of the embedded RCD runner.
+  # TODO: raise an exception if the ercs are inconsistent.
   def get_hierarchy(ercs)
-    rcd = @rcd_class.new(ercs)
+    rcd = @rcd_runner.run_rcd(ercs)
     rcd.hierarchy
   end
 end

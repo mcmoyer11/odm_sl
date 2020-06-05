@@ -6,14 +6,14 @@ require 'rspec'
 require 'ranker'
 
 RSpec.describe 'Ranker' do
-  let(:rcd_class) { double('rcd_class') }
+  let(:rcd_runner) { double('rcd_runner') }
   let(:rcd_obj) { double('rcd_obj') }
   let(:rcd_hierarchy) { double('rcd_hierarchy') }
   let(:ercs) { double('ercs') }
   before(:example) do
-    allow(rcd_class).to receive(:new).with(ercs).and_return(rcd_obj)
+    allow(rcd_runner).to receive(:run_rcd).with(ercs).and_return(rcd_obj)
     allow(rcd_obj).to receive(:hierarchy).and_return(rcd_hierarchy)
-    @ranker = Ranker.new(rcd_class)
+    @ranker = Ranker.new(rcd_runner)
   end
 
   context 'when called with ercs' do
@@ -21,7 +21,7 @@ RSpec.describe 'Ranker' do
       @hierarchy = @ranker.get_hierarchy(ercs)
     end
     it 'creates a new RCD object with the ercs' do
-      expect(rcd_class).to have_received(:new).with(ercs)
+      expect(rcd_runner).to have_received(:run_rcd).with(ercs)
     end
     it 'returns the hierarchy produced by RCD' do
       expect(@hierarchy).to eq rcd_hierarchy
