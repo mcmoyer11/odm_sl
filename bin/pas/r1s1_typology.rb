@@ -13,7 +13,9 @@ require 'otlearn/data_manip'
 require 'otlearn/language_learning'
 require 'csv_output'
 require 'factorial_typology'
-require 'otlearn/rcd_bias_low'
+require 'otlearn/ranking_bias_some_low'
+require 'otlearn/faith_low'
+require 'rcd_runner'
 
 # Generate a list of sets of language data, one for each language
 # in the typology of the PAS system, with each root and each suffix
@@ -84,7 +86,9 @@ out_file = File.join(out_file_path,"pas_typology.csv")
 File.open("pas_typology.csv","w+") do |file|
     lang_list.each do |lang|
       file.write(lang.label.to_s + "\t")
-      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+      chooser = OTLearn::RankingBiasSomeLow.new(OTLearn::FaithLow.new)
+      rcd_runner = RcdRunner.new(chooser)
+      file.write(rcd_runner.run_rcd(lang).hierarchy.to_s + "\n")
       winner_set = Set.new
       lang.each do |pair|
         winner_set.add(pair.winner)
@@ -101,7 +105,9 @@ out_file = File.join(out_file_path,"pas_hierarchies.csv")
 File.open("pas_hierarchies.csv", "w+") do |file|
   lang_list.each do |lang|
     file.write(lang.label.to_s + "\t")
-    file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+    chooser = OTLearn::RankingBiasSomeLow.new(OTLearn::FaithLow.new)
+    rcd_runner = RcdRunner.new(chooser)
+    file.write(rcd_runner.run_rcd(lang).hierarchy.to_s + "\n")
   end
 end
 
@@ -131,7 +137,9 @@ fails = lang_list.keep_if { |lang|
 File.open("pas_learning_fails.csv","w+") do |file|
     fails.each do |lang|
       file.write(lang.label.to_s + "\t")
-      file.write(OTLearn::RcdFaithLow.new(lang).hierarchy.to_s + "\n")
+      chooser = OTLearn::RankingBiasSomeLow.new(OTLearn::FaithLow.new)
+      rcd_runner = RcdRunner.new(chooser)
+      file.write(rcd_runner.run_rcd(lang).hierarchy.to_s + "\n")
       winner_set = Set.new
       lang.each do |pair|
         winner_set.add(pair.winner)
