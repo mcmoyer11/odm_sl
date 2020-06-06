@@ -38,18 +38,6 @@ module OTLearn
     mrcd
   end
 
-  # Takes a competition list and a hierarchy, and returns a list of
-  # structural descriptions that are optimal with respect to the hierarchy.
-  # The returned structural description objects are the same objects as
-  # the matching ones in the competition list. Each optimal description has
-  # its optimal flag set to true.
-  def OTLearn::generate_language_from_competitions(comp_list, hier)
-    comp_mh = comp_list.map{|comp| MostHarmonic.new(comp,hier)}
-    # each competition returns a list of winners; collapse to one-level list.
-    lang = comp_mh.inject([]){|winners, mh_list| winners.concat(mh_list) }
-    lang
-  end
-
   # Given a list of winner_loser pairs +wlp_list+, returns a set of
   # the winners in the pairs of the list (with no duplicates).
   def OTLearn::wlp_winners(wlp_list)

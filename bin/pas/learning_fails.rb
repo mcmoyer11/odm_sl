@@ -7,12 +7,18 @@
 require_relative '../../lib/resolver'
 
 require 'otlearn/data_manip'
+require 'eval'
+require 'compare_ctie'
+require 'language_generator'
 require 'otlearn/language_learning'
 require 'pas/data'
 require 'csv_output'
 
-# For each language, take a look at the competition for each input.
+# set up the Eval object for use in generating languages later.
 
+eval = Eval.new(CompareCtie.new(nil))
+
+# For each language, take a look at the competition for each input.
 
 ###################
 # Language 32
@@ -33,7 +39,7 @@ hier << [PAS::SYSTEM.mr] << [PAS::SYSTEM.idlength] << [PAS::SYSTEM.nolong, PAS::
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-winners = OTLearn.generate_language_from_competitions(comp_list, hier)
+winners = LanguageGenerator.new(eval).generate_language(comp_list, hier)
 puts winners.each {|w| w.to_s + "\n"}
 
 # Take a look at all the competitions for L32
@@ -64,7 +70,7 @@ hier << [PAS::SYSTEM.wsp] << [PAS::SYSTEM.idstress] << [PAS::SYSTEM.culm] << [PA
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-winners = OTLearn.generate_language_from_competitions(comp_list, hier)
+winners = LanguageGenerator.new(eval).generate_language(comp_list, hier)
 puts winners.each {|w| w.to_s + "\n"}
 
 # Take a look at all the competitions for L46
@@ -94,7 +100,7 @@ hier << [PAS::SYSTEM.wsp] << [PAS::SYSTEM.idstress] << [PAS::SYSTEM.culm] <<
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-winners = OTLearn.generate_language_from_competitions(comp_list, hier)
+winners = LanguageGenerator.new(eval).generate_language(comp_list, hier)
 puts winners.each {|w| w.to_s + "\n"}
 
 # Take a look at all the competitions for L46
@@ -125,7 +131,7 @@ hier << [PAS::SYSTEM.ml] << [PAS::SYSTEM.idlength] << [PAS::SYSTEM.nolong, PAS::
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-winners = OTLearn.generate_language_from_competitions(comp_list, hier)
+winners = LanguageGenerator.new(eval).generate_language(comp_list, hier)
 puts winners.each {|w| w.to_s + "\n"}
 
 # Take a look at all the competitions for L46

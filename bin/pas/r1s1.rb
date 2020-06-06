@@ -10,6 +10,9 @@ require 'grammar'
 require 'pas/system'
 require 'pas/data'
 require 'csv_output'
+require 'eval'
+require 'language_generator'
+require 'compare_ctie'
 require 'otlearn/data_manip'
 require 'otlearn/language_learning'
 require 'otlearn/language_learning_image'
@@ -24,7 +27,8 @@ File.delete(out_file) if File.exist?(out_file)
 
 # Generate the output forms of the language.
 comp_list = PAS.generate_competitions_1r1s
-winners = OTLearn.generate_language_from_competitions(comp_list, PAS.hier_a)
+eval = Eval.new(CompareCtie.new(nil))
+winners = LanguageGenerator.new(eval).generate_language(comp_list, PAS.hier_a)
 outputs = winners.map{|win| win.output}
 
 # Create a new, blank grammar, and assign it the label of the language.
