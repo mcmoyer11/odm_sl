@@ -32,21 +32,44 @@ RSpec.describe 'ComparePool' do
         .with(first, second, stratum1).and_return(:TIE)
       allow(stratum_comparer).to receive(:more_harmonic)\
         .with(first, second, stratum2).and_return(:FIRST)
-      @code = @comparer.more_harmonic(first, second, param_ercs)
     end
-    it 'generates a ranking with the ranker' do
-      expect(ranker).to have_received(:get_hierarchy).with(param_ercs)
+    context 'with ercs' do
+      before(:example) do
+        @code = @comparer.more_harmonic(first, second, param_ercs)
+      end
+      it 'generates a ranking with the ranker' do
+        expect(ranker).to have_received(:get_hierarchy).with(param_ercs)
+      end
+      it 'calls the stratum_comparer with the first stratum' do
+        expect(stratum_comparer).to have_received(:more_harmonic)\
+          .with(first, second, stratum1)
+      end
+      it 'calls the stratum_comparer with the second stratum' do
+        expect(stratum_comparer).to have_received(:more_harmonic)\
+          .with(first, second, stratum2)
+      end
+      it 'returns :FIRST' do
+        expect(@code).to eq :FIRST
+      end
     end
-    it 'calls the stratum_comparer with the first stratum' do
-      expect(stratum_comparer).to have_received(:more_harmonic)\
-        .with(first, second, stratum1)
-    end
-    it 'calls the stratum_comparer with the second stratum' do
-      expect(stratum_comparer).to have_received(:more_harmonic)\
-        .with(first, second, stratum2)
-    end
-    it 'returns :FIRST' do
-      expect(@code).to eq :FIRST
+    context 'with a hierarchy' do
+      before(:example) do
+        @code = @comparer.more_harmonic_on_hierarchy(first, second, hierarchy)
+      end
+      it 'does not generates a ranking' do
+        expect(ranker).not_to have_received(:get_hierarchy)
+      end
+      it 'calls the stratum_comparer with the first stratum' do
+        expect(stratum_comparer).to have_received(:more_harmonic)\
+          .with(first, second, stratum1)
+      end
+      it 'calls the stratum_comparer with the second stratum' do
+        expect(stratum_comparer).to have_received(:more_harmonic)\
+          .with(first, second, stratum2)
+      end
+      it 'returns :FIRST' do
+        expect(@code).to eq :FIRST
+      end
     end
   end
   context 'when the second candidate is more harmonic on the first stratum' do
@@ -54,10 +77,22 @@ RSpec.describe 'ComparePool' do
       allow(first).to receive(:ident_viols?).and_return(false)
       allow(stratum_comparer).to receive(:more_harmonic)\
         .with(first, second, stratum1).and_return(:SECOND)
-      @code = @comparer.more_harmonic(first, second, param_ercs)
     end
-    it 'returns :SECOND' do
-      expect(@code).to eq :SECOND
+    context 'with ercs' do
+      before(:example) do
+        @code = @comparer.more_harmonic(first, second, param_ercs)
+      end
+      it 'returns :SECOND' do
+        expect(@code).to eq :SECOND
+      end
+    end
+    context 'with a hierarchy' do
+      before(:example) do
+        @code = @comparer.more_harmonic_on_hierarchy(first, second, hierarchy)
+      end
+      it 'returns :SECOND' do
+        expect(@code).to eq :SECOND
+      end
     end
   end
   context 'when candidates have distinct violations but tie on all strata' do
@@ -69,19 +104,43 @@ RSpec.describe 'ComparePool' do
         .with(first, second, stratum2).and_return(:TIE)
       allow(stratum_comparer).to receive(:more_harmonic)\
         .with(first, second, stratum3).and_return(:TIE)
-      @code = @comparer.more_harmonic(first, second, param_ercs)
     end
-    it 'returns :TIE' do
-      expect(@code).to eq :TIE
+    context 'with ercs' do
+      before(:example) do
+        @code = @comparer.more_harmonic(first, second, param_ercs)
+      end
+      it 'returns :TIE' do
+        expect(@code).to eq :TIE
+      end
+    end
+    context 'with a hierarchy' do
+      before(:example) do
+        @code = @comparer.more_harmonic_on_hierarchy(first, second, hierarchy)
+      end
+      it 'returns :TIE' do
+        expect(@code).to eq :TIE
+      end
     end
   end
   context 'when the candidates have identical violation profiles' do
     before(:example) do
       allow(first).to receive(:ident_viols?).and_return(true)
-      @code = @comparer.more_harmonic(first, second, param_ercs)
     end
-    it 'returns :IDENT_VIOLATIONS' do
-      expect(@code).to eq :IDENT_VIOLATIONS
+    context 'with ercs' do
+      before(:example) do
+        @code = @comparer.more_harmonic(first, second, param_ercs)
+      end
+      it 'returns :IDENT_VIOLATIONS' do
+        expect(@code).to eq :IDENT_VIOLATIONS
+      end
+    end
+    context 'with a hierarchy' do
+      before(:example) do
+        @code = @comparer.more_harmonic_on_hierarchy(first, second, hierarchy)
+      end
+      it 'returns :IDENT_VIOLATIONS' do
+        expect(@code).to eq :IDENT_VIOLATIONS
+      end
     end
   end
 end

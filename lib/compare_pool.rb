@@ -7,7 +7,9 @@ require 'compare_stratum_pool'
 # ComparePool objects compare two candidates with respect to a constraint
 # hierarchy, using the Pool criterion. At construction time,
 # ComparePool is provided with a ranker, which converts a list of Ercs
-# into a hierarchy. Comparisons are made via calls to #more_harmonic.
+# into a hierarchy. Comparisons with ercs are made via calls to
+# #more_harmonic. Comparisons with an externally provided provided hierarchy
+# are made via calls to #more_harmonic_on_hierarchy.
 #
 # Pool stands for "pooling the marks". It treats all the constraints of
 # a stratum as if they were one big constraint, by summing the violation
@@ -45,17 +47,20 @@ class ComparePool
   # :call-seq:
   #   more_harmonic(first, second, ranking_info) -> symbol
   def more_harmonic(first, second, ranking_info)
-    return :IDENT_VIOLATIONS if first.ident_viols?(second)
-
     # generate the reference hierarchy using the ranker
     hierarchy = @ranker.get_hierarchy(ranking_info)
     # return the code for the comparison on the hierarchy
-    compare_on_hierarchy(first, second, hierarchy)
+    more_harmonic_on_hierarchy(first, second, hierarchy)
   end
 
-  # Compares the two candidates with respect to the hierarchy.
-  # Returns one of: :FIRST, :SECOND, :TIE
-  def compare_on_hierarchy(first, second, hierarchy)
+  # Returns a code indicating how the candidates compare with
+  # respect to the hierarchy, using Pool.
+  # Returns one of: :FIRST, :SECOND, :IDENT_VIOLATIONS, :TIE
+  # :call-seq:
+  #   more_harmonic_on_hierarchy(first, second, hierarchy) -> symbol
+  def more_harmonic_on_hierarchy(first, second, hierarchy)
+    return :IDENT_VIOLATIONS if first.ident_viols?(second)
+
     hierarchy.each do |stratum|
       code = @stratum_comparer.more_harmonic(first, second, stratum)
       # if candidates have an equal number of stratum violations, go to
@@ -65,5 +70,4 @@ class ComparePool
     # tying on all strata means tying on the hierarchy
     :TIE
   end
-  protected :compare_on_hierarchy
 end
