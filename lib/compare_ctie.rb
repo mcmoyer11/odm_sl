@@ -61,7 +61,7 @@ class CompareCtie
   # respect to the constraint hierarchy, using Ctie.
   # Returns one of: :FIRST, :SECOND, :IDENT_VIOLATIONS, :TIE
   # :call-seq:
-  #   more_harmonic_on_hierarchy(first, second, ranking_info) -> symbol
+  #   more_harmonic_on_hierarchy(first, second, hierarchy) -> symbol
   def more_harmonic_on_hierarchy(first, second, hierarchy)
     return :IDENT_VIOLATIONS if first.ident_viols?(second)
 
