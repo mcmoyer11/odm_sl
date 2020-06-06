@@ -8,7 +8,9 @@ require 'win_lose_pair'
 # CompareCtie objects compare two candidates with respect to a constraint
 # hierarchy, using the Ctie (conflicts tie) criterion. At construction time,
 # a CompareCtie is provided with a ranker, which converts a list of Ercs
-# into a hierarchy. Comparisons are made via calls to #more_harmonic.
+# into a hierarchy. Comparisons with ercs are made via calls to
+# #more_harmonic. Comparisons with an externally provided provided hierarchy
+# are made via calls to #more_harmonic_on_hierarchy.
 #
 # Ctie, short for "conflicts tie", is a criterion that detects when
 # the candidates get conflicting evaluations from the constraints in
@@ -48,24 +50,23 @@ class CompareCtie
   # Returns one of: :FIRST, :SECOND, :IDENT_VIOLATIONS, :TIE
   # :call-seq:
   #   more_harmonic(first, second, ranking_info) -> symbol
-  #--
-  # CompareCtie takes two candidates as parameters, rather than an erc,
-  # in order to stay consistent with the general candidate comparer
-  # interface, shared with classes such as CompareConsistency.
   def more_harmonic(first, second, ranking_info)
+    # generate the reference hierarchy using the ranker
+    hierarchy = @ranker.get_hierarchy(ranking_info)
+    # return the code for the comparison on the hierarchy
+    more_harmonic_on_hierarchy(first, second, hierarchy)
+  end
+
+  # Returns a code indicating how the candidates compare with
+  # respect to the constraint hierarchy, using Ctie.
+  # Returns one of: :FIRST, :SECOND, :IDENT_VIOLATIONS, :TIE
+  # :call-seq:
+  #   more_harmonic_on_hierarchy(first, second, ranking_info) -> symbol
+  def more_harmonic_on_hierarchy(first, second, hierarchy)
     return :IDENT_VIOLATIONS if first.ident_viols?(second)
 
     # adopt first as the winner, second as the loser
     erc = @win_lose_pair_class.new(first, second)
-    # generate the reference hierarchy using the ranker
-    hierarchy = @ranker.get_hierarchy(ranking_info)
-    # return the code for the comparison on the hierarchy
-    compare_on_hierarchy(erc, hierarchy)
-  end
-
-  # Compares the two candidates with respect to the hierarchy.
-  # Returns one of: :FIRST, :SECOND, :TIE
-  def compare_on_hierarchy(erc, hierarchy)
     hierarchy.each do |stratum|
       code = @stratum_comparer.more_harmonic(erc, stratum)
       translated_code = translate_code(code)
@@ -79,7 +80,6 @@ class CompareCtie
     msg2 = 'should not have a tie on all strata.'
     raise "#{msg1} #{msg2}"
   end
-  protected :compare_on_hierarchy
 
   # Translates the return codes of CompareStratumCtie#more_harmonic, which
   # are erc-oriented (:WINNER, :LOSER), to the corresponding codes for
