@@ -50,7 +50,7 @@ sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
 
 # Write the results to a CSV file, with the language label as the filename.
 out_file = File.join(out_filepath,"#{label}.csv")
-csv = CSV_Output.new(sim_image)
+csv = CsvOutput.new(sim_image)
 csv.write_to_file(out_file)
 # Report to STDOUT if language was not successfully learned
 unless lang_sim.learning_successful?

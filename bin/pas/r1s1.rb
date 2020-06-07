@@ -41,7 +41,7 @@ lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
 sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
 
 # Write the learning results to the CSV file.
-csv = CSV_Output.new(sim_image)
+csv = CsvOutput.new(sim_image)
 csv.write_to_file(out_file)
 
 # Report to STDOUT if language was not successfully learned

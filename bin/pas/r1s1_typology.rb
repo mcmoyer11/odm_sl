@@ -52,7 +52,7 @@ end
 # Formats the language simulation results +lang_sim+ as CSV, and writes
 # the formatted results to +csv_filename+.
 def write_learning_results_to_csv(lang_sim, csv_file)
-  csv = CSV_Output.new(lang_sim)
+  csv = CsvOutput.new(lang_sim)
   csv.write_to_file(csv_file)  
 end
 

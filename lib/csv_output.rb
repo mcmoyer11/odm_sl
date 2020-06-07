@@ -9,7 +9,7 @@ require 'csv'
 # the constructor. A separate method, #write_to_file, can be
 # used to write the CSV formatted output to a file.
 # Uses the CSV library.
-class CSV_Output
+class CsvOutput
   # Takes a page image, and automatically constructs a CSV image of it.
   def initialize(page_image)
     @page_image = page_image
