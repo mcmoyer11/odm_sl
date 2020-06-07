@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
-#
 
 # A basic OT constraint, consisting of a name, an id, a type, and an
 # evaluation procedure for assigning violations to candidates.
-# Only the name is considered when constraints are compared for equality.
+# Only the name is compared when constraints are compared for equality.
 # The id is an abbreviated label used for constructing labels for
-# complex objects, e.g., residues in *FRed*.
+# complex objects.
+#
 # Constraints are used as keys for hashes (e.g., in ercs), so they should
 # not be altered once constructed. It is a good idea to freeze the
 # constraint objects once they have been created.
@@ -15,51 +17,56 @@
 class Constraint
   # the markedness constraint type constant
   MARK  = :markedness
-  
+
   # the faithfulness constraint type constant
   FAITH = :faithfulness
-  
-  # Returns a constraint.
-  # The parameter _id_ is an abbreviated label used for constructing labels for
-  # complex objects, e.g., residues in *FRed*.
-  # The parameter _type_ must be one of the constants, or an exception will
+
+  # The name of the constraint.
+  attr_reader :name
+
+  # The symbol version of the constraint's name.
+  attr_reader :symbol
+
+  # The id (an abbreviated label) of the constraint.
+  attr_reader :id
+
+  # _name_ is the name of the constraint, ideally a short string.
+  # _id_ is an abbreviated label used for constructing labels for
+  # complex objects.
+  # _type_ must be one of the type constants, or an exception will
   # be raised.
   # * Constraint::MARK     markedness constraint
   # * Constraint::FAITH    faithfulness constraint
-  # The block parameter _eval_ is the violation evaluation function; it should
+  # The block parameter is the violation evaluation function; it should
   # take, as a parameter, a candidate, and return the number of times
   # that candidate violates this constraint.
+  # :call-seq:
+  #   Constraint.new(name, id, type) {|constraint| ... } -> constraint
   def initialize(name, id, type, &eval)
     @name = name
-    # Store the symbol version of the name; faster for purposes of #==().
     @symbol = name.to_sym
     # The name should never change, so calculate the hash value of the
     # name once and store it.
     @hash_value = @name.hash
     @id = id.to_s
-    # Make sure the parametric type is a correct value, and store a
-    # corresponding boolean value in the instance variable @markedness.
-    if type == MARK then
-      @markedness = true
-    elsif type == FAITH then
-      @markedness = false
-    else
-      raise "Type must be either ::MARK or ::FAITH, cannot be #{type}"
-    end
+    check_constraint_type(type)
     # store the evaluation function (passed as a code block)
     @eval_function = eval
   end
 
-  # Returns the name of the constraint.
-  def name() @name end
-
-  # Returns the id of the constraint. The id is an abbreviated label.
-  def id() @id end
-
-  # Returns the symbol version of the constraint's name. Only for internal
-  # purposes (see #==()).
-  def symbol() @symbol end
-  protected :symbol
+  # Makes sure the parametric type is a correct value, and stores a
+  # corresponding boolean value in the instance variable @markedness.
+  # Raises an exception if the specified _type_ is neither MARK nor
+  # FAITH.
+  def check_constraint_type(type)
+    if type == MARK
+      @markedness = true
+    elsif type == FAITH
+      @markedness = false
+    else
+      raise "Type must be either MARK or FAITH, cannot be #{type}"
+    end
+  end
 
   # Two constraints are equivalent if their names are equivalent.
   def ==(other)
@@ -71,7 +78,7 @@ class Constraint
   def eql?(other)
     self == other
   end
-  
+
   # Returns the hash number of the constraint. The hash number
   # for a constraint is the hash number of its name. If two
   # constraints have the same name, they will have the same hash number.
@@ -81,12 +88,12 @@ class Constraint
 
   # Returns true if this is a markedness constraint, and false otherwise.
   def markedness?
-    return @markedness
+    @markedness
   end
 
   # Returns true if this is a faithfulness constraint, and false otherwise.
   def faithfulness?
-    return !@markedness
+    !@markedness
   end
 
   # Returns the number of times this constraint is violated by the
@@ -95,15 +102,17 @@ class Constraint
   # the time the constraint was constructed.
   def eval_candidate(cand)
     if @eval_function.nil?
-      raise "Constraint: no evaluation function was provided, and then #eval_candidate was called."
+      msg1 = 'Constraint#eval_candidate: no evaluation function was provided'
+      msg2 = 'but #eval_candidate was called.'
+      raise "#{msg1} #{msg2}"
     end
+
     @eval_function.call(cand) # call the stored code block.
   end
-  
+
   # Returns a string consisting of the constraint's id, followed
   # by a colon, followed by the constraint's name.
-  def to_s()
-    @id + ":" + @name.to_s
+  def to_s
+    "#{@id}:#{@name}"
   end
-  
-end  # class Constraint
+end
