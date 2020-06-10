@@ -11,6 +11,9 @@ require_relative '../../lib/resolver'
 require 'pas/data'
 require 'factorial_typology'
 require 'otlearn/data_manip'
+require 'otlearn/ranking_bias_some_low'
+require 'otlearn/faith_low'
+require 'rcd_runner'
 
 # Generate the language typology data:
 # a list of sets of language data, one for each language in
@@ -33,5 +36,21 @@ File.open(out_file, 'wb') do |f|
   lang_list.each do |lang|
     outputs = OTLearn.convert_wl_pairs_to_learning_data(lang)
     Marshal.dump(["Lg#{lang.label}", outputs], f)
+  end
+end
+
+# Write a human-readable form of each language of the typology to a textfile.
+temp_path = File.join(File.dirname(__FILE__), '..', '..', 'temp')
+Dir.mkdir(temp_path) unless Dir.exist?(temp_path)
+txt_path = File.join(temp_path, 'pas_languages')
+Dir.mkdir(txt_path) unless Dir.exist?(txt_path)
+chooser = OTLearn::RankingBiasSomeLow.new(OTLearn::FaithLow.new)
+rcd_runner = RcdRunner.new(chooser)
+lang_list.each do |lang|
+  lang_file = File.join(txt_path, "#{lang.label}.txt")
+  File.open(lang_file, 'w') do |file|
+    file.puts lang.label
+    file.puts rcd_runner.run_rcd(lang).hierarchy.to_s
+    lang.each { |pair| file.puts "#{pair.winner.output.morphword} #{pair}" }
   end
 end
