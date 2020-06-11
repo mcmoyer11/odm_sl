@@ -11,7 +11,7 @@
 #    @pas_fixture_dir = File.join(project_dir,'test','fixtures','pas_learning')
 #    @generated_dir = File.join(project_dir,'temp','pas_learning')
 #    executable_dir = File.join('bin','pas')
-#    load "#{executable_dir}/r1s1_typology_learning_mmr.rb"
+#    load "#{executable_dir}/learn_typology_1r1s.rb"
 #  end
 #  
 #  (1..62).each do |num|

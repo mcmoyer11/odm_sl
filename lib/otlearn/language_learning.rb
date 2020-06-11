@@ -105,6 +105,17 @@ module OTLearn
         # TODO: add a learning step to the list containing info about the
         #       raised exception, so it can appear in the output file.
         warn "Error with #{@grammar.label}: " + e.to_s
+      rescue LearnEx => e
+        msg1 = 'more than one single matching feature passes error testing.'
+        warn "#{@grammar.label} FSF: #{msg1}"
+        # Output to the STDERR window the feature-value-pairs which are
+        # causing the learning to crash.
+        msg2 = 'the following feature-value pairs pass'
+        warn "#{@grammar.label}: #{msg2}"
+        warn "#{@grammar.label}: #{e.consistent_feature_value_list}"
+      rescue MMREx => e
+        warn "#{@grammar.label} MMR: #{e.message}"
+        warn "#{@grammar.label}: Failed Winner: #{e.failed_winner}"
       end
       success_boolean
     end
