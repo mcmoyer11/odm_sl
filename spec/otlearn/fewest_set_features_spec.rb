@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require 'otlearn/fewest_set_features'
+require 'otlearn/learning_exceptions'
 
 RSpec.describe OTLearn::FewestSetFeatures do
   # mock the parameters
@@ -212,7 +213,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
             learning_module: learning_module,
             feature_value_pair_class: feature_value_pair_class,
             loser_selector: loser_selector)
-        end.to raise_error(LearnEx)
+        end.to raise_error(OTLearn::LearnEx)
       end
     end
   end
