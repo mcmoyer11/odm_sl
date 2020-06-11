@@ -3,7 +3,6 @@
 # Author: Morgan Moyer / Bruce Tesar
 
 require 'word'
-require 'otlearn/learning_exceptions'
 require 'otlearn/mmr_exceptions'
 require 'otlearn/ranking_learning'
 require 'compare_consistency'
@@ -46,7 +45,6 @@ module OTLearn
     # * +failed_winner_output_list+ is the list of outputs of *consistent*
     #    failed winners that are candidates for use in MMR.
     # * +grammar+ is the current grammar of the learner.
-    # * +language_learner+ included in an exception that is raised.
     # * +loser_selector+ - selects losers for ranking learning; defaults to
     #   a loser selector using CompareConsistency.
     #--
@@ -55,13 +53,12 @@ module OTLearn
     #++
     #
     # :call-seq:
-    #   MaxMismatchRanking.new(output_list, grammar, language_learner) -> mmrlearner
-    #   MaxMismatchRanking.new(output_list, grammar, language_learner, loser_selector: selector) -> mmrlearner
-    def initialize(failed_winner_output_list, grammar, language_learner,
+    #   MaxMismatchRanking.new(output_list, grammar) -> mmrlearner
+    #   MaxMismatchRanking.new(output_list, grammar, loser_selector: selector) -> mmrlearner
+    def initialize(failed_winner_output_list, grammar,
                    loser_selector: nil, learning_module: OTLearn)
       @grammar = grammar
       @failed_winner_output_list = failed_winner_output_list
-      @language_learner = language_learner
       @learning_module = learning_module
       @loser_selector = loser_selector
       # Cannot put the default in the parameter list because of the call
@@ -103,7 +100,7 @@ module OTLearn
       unless @changed
         msg1 = 'A failed consistent winner'
         msg2 = 'did not provide new ranking information.'
-        raise MMREx.new(@failed_winner, @language_learner), "#{msg1} #{msg2}"
+        raise MMREx.new(@failed_winner), "#{msg1} #{msg2}"
       end
       @newly_added_wl_pairs = mrcd_result.added_pairs
       @changed

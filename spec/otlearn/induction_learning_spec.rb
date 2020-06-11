@@ -10,7 +10,6 @@ RSpec.describe OTLearn::InductionLearning do
   let(:output_list) { double('output_list') }
   let(:grammar) { double('grammar') }
   let(:prior_result) { double('prior_result') }
-  let(:language_learner) { double('language_learner') }
   let(:fsf) { double('fsf') }
   let(:fsf_class) { double('FSF_class') }
   let(:mmr_class) { double('MMR_class') }
@@ -32,7 +31,6 @@ RSpec.describe OTLearn::InductionLearning do
     it 'raises a RuntimeError' do
       expect do
         OTLearn::InductionLearning.new(output_list, grammar,
-          language_learner,
           grammar_test_class: grammar_test_class)
       end.to raise_error(RuntimeError)
     end
@@ -66,7 +64,6 @@ RSpec.describe OTLearn::InductionLearning do
         allow(fsf).to receive(:changed?).and_return(true)
         @induction_learning =
           OTLearn::InductionLearning.new(output_list, grammar,
-          language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class)
@@ -104,7 +101,6 @@ RSpec.describe OTLearn::InductionLearning do
         allow(fsf).to receive(:changed?).and_return(false)
         @induction_learning =
           OTLearn::InductionLearning.new(output_list, grammar,
-          language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class)
@@ -142,7 +138,7 @@ RSpec.describe OTLearn::InductionLearning do
       allow(mrcd_gram).to receive(:consistent?).and_return(true)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
       allow(mmr_class).to receive(:new).
-        with([failed_output_1], grammar, language_learner, loser_selector: loser_selector).
+        with([failed_output_1], grammar, loser_selector: loser_selector).
         and_return(mmr)
       allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
@@ -157,7 +153,6 @@ RSpec.describe OTLearn::InductionLearning do
         allow(mmr).to receive(:changed?).and_return(true)
         @induction_learning =
           OTLearn::InductionLearning.new(output_list, grammar,
-          language_learner,
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class,

@@ -9,7 +9,6 @@ RSpec.describe OTLearn::MaxMismatchRanking do
   let(:failed_winner_list) { [failed_winner] }
   let(:mismatch) { double('mismatch') }
   let(:grammar) { double('grammar') }
-  let(:language_learner) { double('language_learner').as_null_object }
   let(:learning_module) { double('learning_module') }
   let(:loser_selector) { double('loser_selector') }
   let(:mrcd_result) { double('mrcd_result') }
@@ -28,7 +27,7 @@ RSpec.describe OTLearn::MaxMismatchRanking do
       allow(mrcd_result).to receive(:added_pairs).and_return([new_pair])
       @max_mismatch_rankings =
         OTLearn::MaxMismatchRanking\
-        .new(failed_winner_list, grammar, language_learner,
+        .new(failed_winner_list, grammar,
              loser_selector: loser_selector,
              learning_module: learning_module)
     end
@@ -54,7 +53,7 @@ RSpec.describe OTLearn::MaxMismatchRanking do
       expect do
         @max_mismatch_rankings =
           OTLearn::MaxMismatchRanking\
-          .new(failed_winner_list, grammar, language_learner,
+          .new(failed_winner_list, grammar,
                loser_selector: loser_selector,
                learning_module: learning_module)
       end.to raise_error(RuntimeError)

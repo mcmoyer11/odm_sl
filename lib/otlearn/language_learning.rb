@@ -128,8 +128,8 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning
       # Phonotactic learning
-      pl = @phonotactic_learning_class.new(@output_list, @grammar,
-                                           loser_selector: @loser_selector)
+      pl = @phonotactic_learning_class\
+           .new(@output_list, @grammar, loser_selector: @loser_selector)
       @step_list << pl
       return true if pl.all_correct?
 
@@ -137,8 +137,8 @@ module OTLearn
       # If learning succeeds, the method will return from inside the loop.
       loop do
         # Single form learning
-        sfl = @single_form_learning_class.new(@output_list, @grammar,
-                                              loser_selector: @loser_selector)
+        sfl = @single_form_learning_class\
+              .new(@output_list, @grammar, loser_selector: @loser_selector)
         @step_list << sfl
         break if sfl.all_correct?
 
@@ -152,8 +152,7 @@ module OTLearn
 
         # No suitable contrast pair, so pursue a step of Induction learning
         il = @induction_learning_class\
-             .new(@output_list, @grammar, self,
-                  loser_selector: @loser_selector)
+             .new(@output_list, @grammar, loser_selector: @loser_selector)
         @step_list << il
         break if il.all_correct?
 

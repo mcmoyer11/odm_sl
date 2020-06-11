@@ -41,7 +41,6 @@ module OTLearn
     # induction learning.
     # * +output_list+ - the list of grammatical outputs.
     # * +grammar+ - the grammar that learning will use/modify.
-    # * +language_learner+ - passed on to +fewest_set_features_class+.new
     # * +loser_selector+ - selects losers for ranking learning; defaults to
     #   a loser selector using CompareConsistency.
     #--
@@ -59,16 +58,15 @@ module OTLearn
     #++
     #
     # :call-seq:
-    #   InductionLearning.new(output_list, grammar, language_learner) -> inductionlearner
-    #   InductionLearning.new(output_list, grammar, language_learner, loser_selector: selector) -> inductionlearner
-    def initialize(output_list, grammar, language_learner, loser_selector: nil,
+    #   InductionLearning.new(output_list, grammar) -> inductionlearner
+    #   InductionLearning.new(output_list, grammar, loser_selector: selector) -> inductionlearner
+    def initialize(output_list, grammar, loser_selector: nil,
                    learning_module: OTLearn,
                    grammar_test_class: OTLearn::GrammarTest,
                    fewest_set_features_class: OTLearn::FewestSetFeatures,
                    max_mismatch_ranking_class: OTLearn::MaxMismatchRanking)
       @output_list = output_list
       @grammar = grammar
-      @language_learner = language_learner
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @fewest_set_features_class = fewest_set_features_class
@@ -134,7 +132,7 @@ module OTLearn
           word.output
         end
         @mmr_step = @max_mismatch_ranking_class.new(consistent_output_list,
-          @grammar, @language_learner, loser_selector: @loser_selector)
+          @grammar, loser_selector: @loser_selector)
         @changed = @mmr_step.changed?
       end
       @test_result = @grammar_test_class.new(@output_list, @grammar)

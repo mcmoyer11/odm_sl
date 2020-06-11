@@ -1,23 +1,17 @@
+# frozen_string_literal: true
 
 # Author: Morgan Moyer
-#
-#
-# This class of exceptions holds the +languge_learning+ object
-# for languages which fail MMR learning. It is used in the language_learning and 
-# r1s1_typology_learning_mmr files. 
-#
 
-#TODO: this should be contained in the module OTLearn.
+# TODO: this should be contained in the module OTLearn.
 
+# This class of exceptions holds the failed winner at issue when
+# MMR learning fails.
 class MMREx < RuntimeError
-  
-  attr_reader :lang_learn
+  # The winner that failed during MMR learning.
   attr_reader :failed_winner
-  
-  def initialize(failed_winner, lang_learn)
-    @failed_winner = failed_winner
-    @lang_learn = lang_learn
-  end
-  
-end
 
+  # Returns an MMREx exception object.
+  def initialize(failed_winner)
+    @failed_winner = failed_winner
+  end
+end
