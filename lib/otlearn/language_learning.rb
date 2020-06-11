@@ -44,6 +44,12 @@ module OTLearn
     # indicates induction learning stage
     INDUCTION = :induction
 
+    # The final grammar that was the result of learning.
+    attr_reader :grammar
+
+    # The list of major learning steps taken during learning.
+    attr_reader :step_list
+
     # Constructs a language learning simulation object, and automatically runs
     # the simulation upon objection construction.
     # * +output_list+ - the winners considered to form contrast pairs
@@ -75,31 +81,34 @@ module OTLearn
       # the default value of @loser_selector
       if @loser_selector.nil?
         basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system, basic_selector)
+        @loser_selector = LoserSelectorFromGen.new(grammar.system,
+                                                   basic_selector)
       end
       @step_list = []
-      @learning_successful = execute_learning
-    end
-
-    # Returns the outputs that were the data for learning.
-    def data_outputs
-      @output_list
-    end
-
-    # Returns the final grammar that was the result of learning.
-    def grammar
-      @grammar
-    end
-
-    # Returns the list of major learning steps taken during learning.
-    def step_list
-      @step_list
+      @learning_successful = error_protected_execution
     end
 
     # Returns a boolean indicating if learning was successful.
     def learning_successful?
       @learning_successful
     end
+
+    # Calls the main learning procedure, #execute_learning, within
+    # a block so that it can rescue a RuntimeError if it arises.
+    # Returns true if learning was successful, false otherwise.
+    # If a RuntimeError was raised, learning was not successful.
+    def error_protected_execution
+      success_boolean = false
+      begin
+        success_boolean = execute_learning
+      rescue RuntimeError => e
+        # TODO: add a learning step to the list containing info about the
+        #       raised exception, so it can appear in the output file.
+        warn "Error with #{@grammar.label}: " + e.to_s
+      end
+      success_boolean
+    end
+    private :error_protected_execution
 
     # The main, top-level method for executing learning. This method is
     # protected, and called by the constructor #initialize, so learning
@@ -115,43 +124,35 @@ module OTLearn
 
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
-      begin
-        learning_change = false
+      loop do
         # Single form learning
-        begin
-          sfl = @single_form_learning_class.new(@output_list, @grammar,
-                                                loser_selector: @loser_selector)
-        rescue RuntimeError => ex
-          # TODO: add a learning step to the list containing info about the
-          # raised exception, so it can appear in the output file.
-          STDERR.puts "Error with #{@grammar.label}: " + ex.to_s
-          return
-        end
+        sfl = @single_form_learning_class.new(@output_list, @grammar,
+                                              loser_selector: @loser_selector)
         @step_list << sfl
-        return true if sfl.all_correct?
+        break if sfl.all_correct?
 
         # Contrast pair learning
-        cpl = @contrast_pair_learning_class.new(@output_list, @grammar,
-                                                loser_selector: @loser_selector)
+        cpl = @contrast_pair_learning_class\
+              .new(@output_list, @grammar, loser_selector: @loser_selector)
         @step_list << cpl
-        if cpl.changed?
-          return true if cpl.all_correct?
+        break if cpl.all_correct?
 
-          learning_change = true
-        else
-          # No suitable contrast pair, so pursue a step of Induction learning
-          il = @induction_learning_class.
-            new(@output_list, @grammar, self, loser_selector: @loser_selector)
-          @step_list << il
-          if il.changed? then
-            return true if il.all_correct?
+        next if cpl.changed?
 
-            learning_change = true
-          end
-        end
-      end while learning_change
-      false # learning failed
+        # No suitable contrast pair, so pursue a step of Induction learning
+        il = @induction_learning_class\
+             .new(@output_list, @grammar, self,
+                  loser_selector: @loser_selector)
+        @step_list << il
+        break if il.all_correct?
+
+        # if no change has occurred on this iteration, then learning
+        # has failed.
+        break unless il.changed?
+      end
+      # the last step indicates if learning was ultimately successful
+      @step_list[-1].all_correct?
     end
-    protected :execute_learning
+    private :execute_learning
   end
 end
