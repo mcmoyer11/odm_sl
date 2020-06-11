@@ -9,7 +9,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
   let(:word_list) { double('word_list').as_null_object }
   let(:grammar) { double('grammar') }
   let(:prior_result) { double('prior_result') }
-  let(:language_learner) { double('language_learner') }
   let(:learning_module) { double('learning_module') }
   let(:loser_selector) { double('loser_selector') }
   let(:feature_value_pair_class) { double('FeatureValuePair class') }
@@ -52,13 +51,17 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(unset_feat2).to receive(:value=).with(nil)
       # mock the parse of failed_winner's output used to test a feature
       allow(failed_winner).to receive(:output).and_return(fw_output)
-      allow(grammar).to receive(:parse_output).with(fw_output).and_return(failed_winner_dup)
+      allow(grammar).to receive(:parse_output).with(fw_output)\
+                                              .and_return(failed_winner_dup)
       allow(learning_module).to \
-        receive(:mismatch_consistency_check).with(grammar, [failed_winner_dup]).and_return(mrcd_result)
+        receive(:mismatch_consistency_check)\
+        .with(grammar, [failed_winner_dup]).and_return(mrcd_result)
       allow(failed_winner_dup).to \
-        receive(:out_feat_corr_of_uf).with(unset_feat1).and_return(out_feat_instance1)
+        receive(:out_feat_corr_of_uf)\
+        .with(unset_feat1).and_return(out_feat_instance1)
       allow(failed_winner_dup).to \
-        receive(:out_feat_corr_of_uf).with(unset_feat2).and_return(out_feat_instance2)
+        receive(:out_feat_corr_of_uf)\
+        .with(unset_feat2).and_return(out_feat_instance2)
       # a test double of FeatureValuePair for dependency injection
       allow(feature_value_pair_class).to \
         receive(:new).with(unset_feat1, out_feat_value1).and_return(fv_pair1)
@@ -73,11 +76,12 @@ RSpec.describe OTLearn::FewestSetFeatures do
     context 'with one consistent unset feature' do
       before(:example) do
         allow(learning_module).to \
-          receive(:find_unset_features_in_words).with([failed_winner_dup], grammar).and_return([unset_feat1])
+          receive(:find_unset_features_in_words)\
+          .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
         @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result, language_learner,
+          grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           loser_selector: loser_selector)
@@ -96,18 +100,20 @@ RSpec.describe OTLearn::FewestSetFeatures do
       end
       it 'checks for new ranking information for the unset feature' do
         expect(learning_module).to \
-          have_received(:new_rank_info_from_feature).with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
+          have_received(:new_rank_info_from_feature)\
+          .with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
       end
     end
 
     context 'with one inconsistent unset feature' do
       before(:example) do
         allow(learning_module).to \
-          receive(:find_unset_features_in_words).with([failed_winner_dup], grammar).and_return([unset_feat1])
+          receive(:find_unset_features_in_words)\
+          .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false)
         # actually construct the test object, and inject the test dependencies
         @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result, language_learner,
+          grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           loser_selector: loser_selector)
@@ -130,11 +136,12 @@ RSpec.describe OTLearn::FewestSetFeatures do
     context 'with one consistent and one inconsistent unset feature' do
       before(:example) do
         allow(learning_module).to \
-          receive(:find_unset_features_in_words).with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
+          receive(:find_unset_features_in_words)\
+          .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, false)
         # actually construct the test object, and inject the test dependencies
         @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result, language_learner,
+          grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           loser_selector: loser_selector)
@@ -153,18 +160,20 @@ RSpec.describe OTLearn::FewestSetFeatures do
       end
       it 'checks for new ranking information for the consistent unset feature' do
         expect(learning_module).to \
-          have_received(:new_rank_info_from_feature).with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
+          have_received(:new_rank_info_from_feature)\
+          .with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
       end
     end
 
     context 'with one inconsistent and one consistent unset feature' do
       before(:example) do
         allow(learning_module).to \
-          receive(:find_unset_features_in_words).with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
+          receive(:find_unset_features_in_words)\
+          .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false, true)
         # actually construct the test object, and inject the test dependencies
         @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result, language_learner,
+          grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           loser_selector: loser_selector)
@@ -183,21 +192,23 @@ RSpec.describe OTLearn::FewestSetFeatures do
       end
       it 'checks for new ranking information for the consistent unset feature' do
         expect(learning_module).to \
-          have_received(:new_rank_info_from_feature).with(grammar, word_list, unset_feat2, loser_selector: loser_selector)
+          have_received(:new_rank_info_from_feature)\
+          .with(grammar, word_list, unset_feat2, loser_selector: loser_selector)
       end
     end
 
     context 'with two consistent features' do
       before(:example) do
         allow(learning_module).to \
-          receive(:find_unset_features_in_words).with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
+          receive(:find_unset_features_in_words)\
+          .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, true)
       end
       it 'raises a LearnEx exception' do
         expect do
           # actually construct the test object, and inject the test dependencies
           @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-            grammar, prior_result, language_learner,
+            grammar, prior_result,
             learning_module: learning_module,
             feature_value_pair_class: feature_value_pair_class,
             loser_selector: loser_selector)
@@ -233,26 +244,30 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
       # Failed winner 1
       allow(failed_winner_1).to receive(:output).and_return(fw_output_1)
-      allow(grammar).to receive(:parse_output).with(fw_output_1).and_return(failed_winner_1_dup)
-      allow(learning_module).to receive(:mismatch_consistency_check).
-        with(grammar, [failed_winner_1_dup]).and_return(mrcd_result_1)
+      allow(grammar).to receive(:parse_output)\
+        .with(fw_output_1).and_return(failed_winner_1_dup)
+      allow(learning_module).to receive(:mismatch_consistency_check)\
+        .with(grammar, [failed_winner_1_dup]).and_return(mrcd_result_1)
       allow(mrcd_result_1).to receive(:grammar).and_return(mrcd_grammar_1)
-      allow(learning_module).to receive(:find_unset_features_in_words).
-        with([failed_winner_1_dup], grammar).and_return([unset_feat1])
+      allow(learning_module).to receive(:find_unset_features_in_words)\
+        .with([failed_winner_1_dup], grammar).and_return([unset_feat1])
       allow(failed_winner_1_dup).to \
-        receive(:out_feat_corr_of_uf).with(unset_feat1).and_return(out_feat_instance1)
+        receive(:out_feat_corr_of_uf)\
+        .with(unset_feat1).and_return(out_feat_instance1)
       allow(out_feat_instance1).to receive(:value).and_return(out_feat_value1)
 
       # Failed winner 2
       allow(failed_winner_2).to receive(:output).and_return(fw_output_2)
-      allow(grammar).to receive(:parse_output).with(fw_output_2).and_return(failed_winner_2_dup)
+      allow(grammar).to receive(:parse_output).with(fw_output_2)\
+        .and_return(failed_winner_2_dup)
       allow(learning_module).to receive(:mismatch_consistency_check).
         with(grammar, [failed_winner_2_dup]).and_return(mrcd_result_2)
       allow(mrcd_result_2).to receive(:grammar).and_return(mrcd_grammar_2)
       allow(learning_module).to receive(:find_unset_features_in_words).
         with([failed_winner_2_dup], grammar).and_return([unset_feat2])
       allow(failed_winner_2_dup).to \
-        receive(:out_feat_corr_of_uf).with(unset_feat2).and_return(out_feat_instance2)
+        receive(:out_feat_corr_of_uf).with(unset_feat2)\
+        .and_return(out_feat_instance2)
       allow(out_feat_instance2).to receive(:value).and_return(out_feat_value2)
 
       # arguments for new_rank_info_from_feature specified in expectations
@@ -280,7 +295,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
         @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result, language_learner,
+          grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           loser_selector: loser_selector)
@@ -299,7 +314,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
       end
       it 'checks for new ranking information for the unset feature' do
         expect(learning_module).to \
-          have_received(:new_rank_info_from_feature).with(grammar, word_list, unset_feat2, loser_selector: loser_selector)
+          have_received(:new_rank_info_from_feature)\
+          .with(grammar, word_list, unset_feat2, loser_selector: loser_selector)
       end
     end
     context 'with the first failed winner consistent' do
@@ -308,7 +324,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
         @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result, language_learner,
+          grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           loser_selector: loser_selector)
@@ -327,7 +343,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
       end
       it 'checks for new ranking information for the unset feature' do
         expect(learning_module).to \
-          have_received(:new_rank_info_from_feature).with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
+          have_received(:new_rank_info_from_feature)\
+          .with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
       end
     end
   end

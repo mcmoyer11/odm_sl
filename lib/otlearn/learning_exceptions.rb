@@ -1,21 +1,18 @@
+# frozen_string_literal: true
+
 # Author: Morgan Moyer
-#
-#
-# This class of exceptions holds the +languge_learning+ object and the +feature_value_list+
-# for languages which fail learning. It is used in the +language_learning+ and 
-# +r1s1_typology_learning+ files.
-#
 
-#TODO: this should be contained in the module OTLearn.
+# TODO: this should be contained in the module OTLearn.
 
+# This class of exceptions holds the +feature_value_list+
+# for languages which fail learning.
 class LearnEx < RuntimeError
-  
-  attr_reader :lang_learn
+  # List of consistent features that Fewest Set Features
+  # cannot choose between.
   attr_reader :consistent_feature_value_list
-  
-  def initialize(lang_learn, consistent_feature_value_list)
-    @lang_learn = lang_learn
+
+  # Returns a new LearnEx exception object.
+  def initialize(consistent_feature_value_list)
     @consistent_feature_value_list = consistent_feature_value_list
   end
-  
 end

@@ -37,7 +37,6 @@ module OTLearn
     # * +prior_result+ is the most recent result of grammar testing, and
     #   provides a list of the winners failing word evaluation.
     # * +grammar+ is the current grammar of the learner.
-    # * +language_learner+ included in an exception that is raised.
     # * +word_list+ is a list of all the winners (words) currently stored by
     #   the learner. It is used when searching for non-phonotactic ranking
     #   information when a feature has been set.
@@ -47,15 +46,12 @@ module OTLearn
     # * +feature_value_pair_class+ - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
     # * +loser_selector+ - object used to select informative losers.
-    def initialize(word_list, grammar, prior_result, language_learner,
+    def initialize(word_list, grammar, prior_result,
                    loser_selector: nil, learning_module: OTLearn,
                    feature_value_pair_class: FeatureValuePair)
       @word_list = word_list
       @grammar = grammar
       @prior_result = prior_result
-      # TODO: catch the exception in LanguageLearner, so that this arg doesn't
-      #       need to be passed in just so it can be passed back in rare cases.
-      @language_learner = language_learner
       @failed_winner = nil
       @newly_set_features = []
       # dependency injection defaults
@@ -103,8 +99,8 @@ module OTLearn
     #
     # If more than one individual unset feature is found that will succeed
     # for the selected failed winner, then a LearnEx exception is raised,
-    # containing references to the language_learner object and the list
-    # of (more than one) successful features.
+    # containing a reference to the list of (more than one) successful
+    # features.
     def run_fewest_set_features
       # Check the failed winners until one is found that can succeed by
       # setting one feature.
@@ -187,7 +183,7 @@ module OTLearn
       when 1
         return consistent_feature_val_list[0] # the single element of the list.
       else
-        raise LearnEx.new(@language_learner, consistent_feature_val_list),
+        raise LearnEx.new(consistent_feature_val_list),
               'More than one single matching feature passes error testing.'
       end
     end

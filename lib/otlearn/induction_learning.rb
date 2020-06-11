@@ -125,7 +125,7 @@ module OTLearn
           @grammar.parse_output(out)
         end
         @fsf_step = @fewest_set_features_class.new(winner_list, @grammar,
-          prior_result, @language_learner, loser_selector: @loser_selector)
+          prior_result, loser_selector: @loser_selector)
         @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING
