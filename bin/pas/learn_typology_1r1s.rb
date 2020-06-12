@@ -6,7 +6,7 @@
 # All output is written to CSV files, one file for each language.
 
 # The resolver adds <project>/lib to the $LOAD_PATH.
-require_relative '../../lib/resolver'
+require_relative '../../lib/odl/resolver'
 
 require 'grammar'
 require 'pas/system'
@@ -32,16 +32,14 @@ end
 
 puts "\nLearning the PAS typology."
 
-# Set the source of learning data (input file name)
-data_path = File.join(File.dirname(__FILE__), '..', '..', 'data', 'pas')
-data_file = File.join(data_path, 'outputs_typology_1r1s.mar')
+# Set the source of learning data.
+data_dir = File.expand_path('pas', ODL::DATA_DIR)
+data_file = File.join(data_dir, 'outputs_typology_1r1s.mar')
 
 # Set the target directory of learning results: temp/pas_learning.
-# If the temp or pas_learning directories don't already exist, create them.
-temp_filepath = File.join(File.dirname(__FILE__), '..', '..', 'temp')
-Dir.mkdir temp_filepath unless Dir.exist? temp_filepath
-out_filepath = File.join(temp_filepath, 'pas_learning')
-Dir.mkdir out_filepath unless Dir.exist? out_filepath
+# If the directory doesn't already exist, create it.
+out_dir = File.expand_path('pas_learning', ODL::TEMP_DIR)
+Dir.mkdir out_dir unless Dir.exist? out_dir
 
 # Learn the languages, writing output for each to a separate file.
 read_languages_from_file(data_file) do |label, outputs|
@@ -52,7 +50,7 @@ read_languages_from_file(data_file) do |label, outputs|
   lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
   sim_image = OTLearn::LanguageLearningImage.new(lang_sim)
   # Write the results to a CSV file, with the language label as the filename.
-  out_file = File.join(out_filepath, "#{label}.csv")
+  out_file = File.join(out_dir, "#{label}.csv")
   csv = CsvOutput.new(sim_image)
   csv.write_to_file(out_file)
   # Report to STDOUT if language was not successfully learned

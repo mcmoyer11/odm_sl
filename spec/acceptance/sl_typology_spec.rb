@@ -5,6 +5,8 @@
 # This is an acceptance test for the typology generation for SL.
 # It tests the output created by bin/generate_typology_1r1s.rb.
 
+require_relative '../../lib/odl/resolver'
+
 def read_languages_from_file(data_file)
   File.open(data_file, 'rb') do |fin|
     until fin.eof
@@ -16,9 +18,7 @@ end
 
 RSpec.describe 'Generating the 1r1s typology for SL', :acceptance do
   before(:context) do
-    # TODO: define project root directory accessible everywhere,
-    #       maybe a resolver class? config.rb? environments.rb?
-    project_dir = File.join(__dir__, '..', '..')
+    project_dir = ODL::PROJECT_DIR
     @sl_fixture_dir = File.join(project_dir, 'test', 'fixtures', 'sl')
     @generated_dir = File.join(project_dir, 'data', 'sl')
     Dir.mkdir(@generated_dir) unless Dir.exist?(@generated_dir)

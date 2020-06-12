@@ -7,7 +7,7 @@
 # culminative.
 
 # The resolver adds <project>/lib to the $LOAD_PATH.
-require_relative '../../lib/resolver'
+require_relative '../../lib/odl/resolver'
 
 # Requires for classes needed in loading data from marshal file.
 require 'output'
@@ -25,17 +25,18 @@ def read_languages_from_file(data_file)
 end
 
 # Set up filenames and paths
-data_path = File.join(File.dirname(__FILE__), '..', '..', 'data', 'pas')
-data_filename = File.join(data_path, 'outputs_typology_1r1s.mar')
-out_path = File.join(File.dirname(__FILE__), '..', '..', 'temp', 'pas')
-Dir.mkdir(out_path) unless Dir.exist?(out_path)
-out_filename = File.join(out_path, 'non_culminative_outputs.txt')
+data_dir = File.expand_path('pas', ODL::DATA_DIR)
+data_file = File.join(data_dir, 'outputs_typology_1r1s.mar')
+
+out_dir = File.expand_path('pas', ODL::TEMP_DIR)
+Dir.mkdir out_dir unless Dir.exist? out_dir
+out_file = File.join(out_dir, 'non_culminative_outputs.txt')
 
 # List the non-culminative outputs
-File.open(out_filename, 'w') do |outfile|
-  read_languages_from_file(data_filename) do |label, outputs|
+File.open(out_file, 'w') do |fout|
+  read_languages_from_file(data_file) do |label, outputs|
     outputs.each do |o|
-      outfile.puts "#{label} #{o.morphword} #{o}" unless o.main_stress?
+      fout.puts "#{label} #{o.morphword} #{o}" unless o.main_stress?
     end
   end
 end

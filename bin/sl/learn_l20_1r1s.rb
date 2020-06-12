@@ -4,7 +4,7 @@
 # The output is written to CSV file.
 
 # The resolver adds <project>/lib to the $LOAD_PATH.
-require_relative '../../lib/resolver'
+require_relative '../../lib/odl/resolver'
 
 require 'grammar'
 require 'sl/system'
@@ -14,10 +14,10 @@ require 'otlearn/language_learning'
 require 'otlearn/language_learning_image'
 
 # Set the target language label.
-target_label = "LgL20"
+target_label = 'LgL20'
 
 # Set the source of learning data (input file name)
-data_path = File.join(File.dirname(__FILE__),'..','..','data','sl')
+data_path = File.expand_path('sl', ODL::DATA_DIR)
 data_file = File.join(data_path,'outputs_typology_1r1s.mar')
 # Read L20 (label and outputs) from the SL languages data file.
 label = nil
@@ -32,13 +32,13 @@ end
 # If the correct language wasn't found, write an error message and exit.
 unless (label == target_label) then
   puts "Language #{target_label} not found in file #{data_file}."
-  puts "No learning performed; the program will now exit."
+  puts 'No learning performed; the program will now exit.'
   exit
 end
 
-# Set the target directory of learning results to temp.
-# If the temp directory doesn't already exist, create it.
-out_filepath = File.join(File.dirname(__FILE__),'..','..','temp')
+# Set the target directory of learning results to temp/sl.
+# If the temp/sl directory doesn't already exist, create it.
+out_filepath = File.expand_path('sl', ODL::TEMP_DIR)
 Dir.mkdir out_filepath unless Dir.exist? out_filepath
 
 # Create a new, blank grammar, and assign it the label of the language.
