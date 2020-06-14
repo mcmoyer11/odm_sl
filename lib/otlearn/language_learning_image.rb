@@ -13,55 +13,45 @@ require 'otlearn/language_learning'
 module OTLearn
   # A 2-dimensional sheet representation of a LanguageLearning object,
   # which contains a synopsis of a language learning simulation.
-  #
-  # This class delegates many methods to a Sheet object.
   class LanguageLearningImage
     # Constructs a language learning image from a language learning object.
     #
-    # * +language_learning+ - the language learning object
     # * +grammar_test_image_class+ - the class of object used to represent
     #   a grammar test results for a given point in learning.
     #   Used for testing (dependency injection).
     #
     # :call-seq:
-    #   LanguageLearningImage.new(language_learning) -> img
-    #   LanguageLearningImage.new(language_learning, grammar_test_image_class: class) -> img
-    def initialize(language_learning,
+    #   LanguageLearningImage.new -> img
+    def initialize(
         phonotactic_image_class: OTLearn::PhonotacticLearningImage,
         single_form_image_class: OTLearn::SingleFormLearningImage,
         contrast_pair_image_class: OTLearn::ContrastPairLearningImage,
         induction_image_class: OTLearn::InductionLearningImage,
         grammar_test_image_class: OTLearn::GrammarTestImage)
-      @language_learning = language_learning
       @phonotactic_image_class = phonotactic_image_class
       @single_form_image_class = single_form_image_class
       @contrast_pair_image_class = contrast_pair_image_class
       @induction_image_class = induction_image_class
       @grammar_test_image_class = grammar_test_image_class
-      @sheet = Sheet.new
-      construct_language_learning_image
     end
 
-    # Delegate all method calls not explicitly defined here to the sheet object.
-    def method_missing(name, *args, &block)
-      @sheet.send(name, *args, &block)
-    end
-    protected :method_missing
-
-    # Constructs the image from the language learning object.
-    def construct_language_learning_image
+    # Returns a sheet containing the image of the learning simulation.
+    # :call-seq:
+    #   LanguageLearningImage#get_sheet(language_learning) -> sheet
+    def get_sheet(language_learning)
+      sheet = Sheet.new
       # Put the language label first
-      @sheet[1,1] = @language_learning.grammar.label
+      sheet[1, 1] = language_learning.grammar.label
       # Indicate if learning succeeded.
-      @sheet[2,1] = "Learned: #{@language_learning.learning_successful?}"
+      sheet[2, 1] = "Learned: #{language_learning.learning_successful?}"
       # Add each step result to the sheet
-      @language_learning.step_list.each do |step|
+      language_learning.step_list.each do |step|
         step_image = construct_step_image(step)
-        @sheet.add_empty_row
-        @sheet.append(step_image)
+        sheet.add_empty_row
+        sheet.append(step_image)
       end
+      sheet
     end
-    private :construct_language_learning_image
 
     def construct_step_image(step)
       case step.step_type

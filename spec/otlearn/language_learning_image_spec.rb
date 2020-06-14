@@ -34,9 +34,10 @@ RSpec.describe OTLearn::LanguageLearningImage do
       allow(step1).to receive(:test_result).and_return(result1)
       allow(grammar_test_image_class).to \
         receive(:new).with(result1).and_return(result_image1)
-      @ll_image =
-        OTLearn::LanguageLearningImage.new(language_learning,
-        grammar_test_image_class: grammar_test_image_class)
+      ll_image_object =
+        OTLearn::LanguageLearningImage.new(
+            grammar_test_image_class: grammar_test_image_class)
+      @ll_image = ll_image_object.get_sheet(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
@@ -69,9 +70,10 @@ RSpec.describe OTLearn::LanguageLearningImage do
       allow(step2).to receive(:step_type).and_return(:test_type)
       allow(grammar_test_image_class).to \
         receive(:new).and_return(result_image1, result_image2)
-      @ll_image =
-        OTLearn::LanguageLearningImage.new(language_learning,
-        grammar_test_image_class: grammar_test_image_class)
+      ll_image_object =
+          OTLearn::LanguageLearningImage.new(
+              grammar_test_image_class: grammar_test_image_class)
+      @ll_image = ll_image_object.get_sheet(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
@@ -109,11 +111,12 @@ RSpec.describe OTLearn::LanguageLearningImage do
         receive(:new).and_return(result_image1, result_image2)
       allow(phonotactic_image_class).to receive(:new).and_return(result_image1)
       allow(single_form_image_class).to receive(:new).and_return(result_image2)
-      @ll_image =
-        OTLearn::LanguageLearningImage.new(language_learning,
+      ll_image_object =
+        OTLearn::LanguageLearningImage.new(
         phonotactic_image_class: phonotactic_image_class,
         single_form_image_class: single_form_image_class,
         grammar_test_image_class: grammar_test_image_class)
+      @ll_image = ll_image_object.get_sheet(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
@@ -150,10 +153,11 @@ RSpec.describe OTLearn::LanguageLearningImage do
         receive(:new).with(step1).and_return(induction_image)
       allow(grammar_test_image_class).to \
         receive(:new).with(result1).and_return(result_image1)
-      @ll_image =
-        OTLearn::LanguageLearningImage.new(language_learning,
+      ll_image_object =
+        OTLearn::LanguageLearningImage.new(
         induction_image_class: induction_image_class,
         grammar_test_image_class: grammar_test_image_class)
+      @ll_image = ll_image_object.get_sheet(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
