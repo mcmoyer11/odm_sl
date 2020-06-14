@@ -1,21 +1,21 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 
-require_relative '../sheet'
-require_relative 'phonotactic_learning_image'
-require_relative 'single_form_learning_image'
-require_relative 'contrast_pair_learning_image'
-require_relative 'induction_learning_image'
-require_relative 'grammar_test_image'
-require_relative 'language_learning'
+require 'sheet'
+require 'otlearn/phonotactic_learning_image'
+require 'otlearn/single_form_learning_image'
+require 'otlearn/contrast_pair_learning_image'
+require 'otlearn/induction_learning_image'
+require 'otlearn/grammar_test_image'
+require 'otlearn/language_learning'
 
 module OTLearn
-  
   # A 2-dimensional sheet representation of a LanguageLearning object,
   # which contains a synopsis of a language learning simulation.
   #
   # This class delegates many methods to a Sheet object.
   class LanguageLearningImage
-    
     # Constructs a language learning image from a language learning object.
     #
     # * +language_learning+ - the language learning object
@@ -47,7 +47,7 @@ module OTLearn
       @sheet.send(name, *args, &block)
     end
     protected :method_missing
-  
+
     # Constructs the image from the language learning object.
     def construct_language_learning_image
       # Put the language label first
@@ -61,8 +61,8 @@ module OTLearn
         @sheet.append(step_image)
       end
     end
-    protected :construct_language_learning_image
-    
+    private :construct_language_learning_image
+
     def construct_step_image(step)
       case step.step_type
       when LanguageLearning::PHONOTACTIC
@@ -77,8 +77,8 @@ module OTLearn
         # TODO: should an exception be raised here instead?
         step_image = @grammar_test_image_class.new(step.test_result)
       end
-      return step_image
+      step_image
     end
-    protected :construct_step_image
-  end # class LanguageLearningImage
-end # module OTLearn
+    private :construct_step_image
+  end
+end
