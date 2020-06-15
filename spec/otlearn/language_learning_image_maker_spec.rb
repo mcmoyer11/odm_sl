@@ -37,7 +37,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
       ll_image_object =
         OTLearn::LanguageLearningImageMaker.new(
             grammar_test_image_class: grammar_test_image_class)
-      @ll_image = ll_image_object.get_sheet(language_learning)
+      @ll_image = ll_image_object.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
@@ -73,7 +73,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
       ll_image_object =
           OTLearn::LanguageLearningImageMaker.new(
               grammar_test_image_class: grammar_test_image_class)
-      @ll_image = ll_image_object.get_sheet(language_learning)
+      @ll_image = ll_image_object.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
@@ -116,7 +116,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
         phonotactic_image_class: phonotactic_image_class,
         single_form_image_class: single_form_image_class,
         grammar_test_image_class: grammar_test_image_class)
-      @ll_image = ll_image_object.get_sheet(language_learning)
+      @ll_image = ll_image_object.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label
@@ -157,7 +157,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
         OTLearn::LanguageLearningImageMaker.new(
         induction_image_class: induction_image_class,
         grammar_test_image_class: grammar_test_image_class)
-      @ll_image = ll_image_object.get_sheet(language_learning)
+      @ll_image = ll_image_object.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image[1, 1]).to eq grammar_label

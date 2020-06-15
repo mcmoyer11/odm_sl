@@ -37,8 +37,8 @@ module OTLearn
 
     # Returns a sheet containing the image of the learning simulation.
     # :call-seq:
-    #   LanguageLearningImageMaker#get_sheet(language_learning) -> sheet
-    def get_sheet(language_learning)
+    #   LanguageLearningImageMaker#get_image(language_learning) -> sheet
+    def get_image(language_learning)
       sheet = Sheet.new
       # Put the language label first
       sheet[1, 1] = language_learning.grammar.label
