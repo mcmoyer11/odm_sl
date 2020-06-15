@@ -2,6 +2,7 @@
 
 # Author: Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/grammar_test'
 require 'otlearn/data_manip'
 require 'otlearn/language_learning'
@@ -61,7 +62,7 @@ module OTLearn
       else
         @loser_selector = loser_selector
       end
-      @step_type = LanguageLearning::SINGLE_FORM
+      @step_type = SINGLE_FORM
       @changed = false
       run_single_form_learning
     end

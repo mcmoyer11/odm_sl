@@ -2,6 +2,7 @@
 
 require 'rspec'
 require 'otlearn/language_learning'
+require 'otlearn/otlearn'
 
 RSpec.describe OTLearn::LanguageLearning do
   let(:output_list) { double('output_list') }
@@ -23,16 +24,16 @@ RSpec.describe OTLearn::LanguageLearning do
   end
 
   it 'defines a phonotactic step type constant' do
-    expect(defined?(OTLearn::LanguageLearning::PHONOTACTIC)).to be_truthy
+    expect(defined?(OTLearn::PHONOTACTIC)).to be_truthy
   end
   it 'defines a single form step type constant' do
-    expect(defined?(OTLearn::LanguageLearning::SINGLE_FORM)).to be_truthy
+    expect(defined?(OTLearn::SINGLE_FORM)).to be_truthy
   end
   it 'defines a contrast pair step type constant' do
-    expect(defined?(OTLearn::LanguageLearning::CONTRAST_PAIR)).to be_truthy
+    expect(defined?(OTLearn::CONTRAST_PAIR)).to be_truthy
   end
   it 'defines an induction step type constant' do
-    expect(defined?(OTLearn::LanguageLearning::INDUCTION)).to be_truthy
+    expect(defined?(OTLearn::INDUCTION)).to be_truthy
   end
 
   context 'given phontactically learnable data' do

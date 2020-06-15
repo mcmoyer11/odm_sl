@@ -2,6 +2,7 @@
 
 # Author: Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/contrast_pair'
 require 'otlearn/uf_learning'
 require 'otlearn/grammar_test'
@@ -59,7 +60,7 @@ module OTLearn
         @loser_selector = LoserSelectorFromGen.new(grammar.system,
                                                    basic_selector)
       end
-      @step_type = LanguageLearning::CONTRAST_PAIR
+      @step_type = CONTRAST_PAIR
       run_contrast_pair_learning
       @test_result = @grammar_test_class.new(@output_list, @grammar)
     end

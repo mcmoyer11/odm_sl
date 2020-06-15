@@ -2,6 +2,7 @@
 
 # Author: Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/single_form_learning'
 require 'otlearn/language_learning'
 require 'otlearn/grammar_test'
@@ -59,7 +60,7 @@ RSpec.describe OTLearn::SingleFormLearning do
     end
     it 'has step type SINGLE_FORM' do
       expect(@single_form_learning.step_type).to \
-        eq OTLearn::LanguageLearning::SINGLE_FORM
+        eq OTLearn::SINGLE_FORM
     end
   end
 

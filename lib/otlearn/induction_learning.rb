@@ -2,6 +2,7 @@
 
 # Author: Morgan Moyer / Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/fewest_set_features'
 require 'otlearn/max_mismatch_ranking'
 require 'otlearn/grammar_test'
@@ -80,7 +81,7 @@ module OTLearn
                                                    basic_selector)
       end
       @changed = false
-      @step_type = LanguageLearning::INDUCTION
+      @step_type = INDUCTION
       @step_subtype = nil
       @fsf_step = nil
       run_induction_learning

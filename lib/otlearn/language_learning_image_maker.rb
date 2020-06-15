@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require 'sheet'
+require 'otlearn/otlearn'
 require 'otlearn/phonotactic_learning_image'
 require 'otlearn/single_form_learning_image'
 require 'otlearn/contrast_pair_learning_image'
@@ -13,27 +14,16 @@ module OTLearn
   # A 2-dimensional sheet representation of a LanguageLearning object,
   # which contains a synopsis of a language learning simulation.
   class LanguageLearningImageMaker
-    # The phonotactic learning step type.
-    PHONOTACTIC = LanguageLearning::PHONOTACTIC
-
-    # The single form learning step type.
-    SINGLE_FORM = LanguageLearning::SINGLE_FORM
-
-    # The contrast pair learning step type.
-    CONTRAST_PAIR = LanguageLearning::CONTRAST_PAIR
-
-    # The induction learning step type.
-    INDUCTION = LanguageLearning::INDUCTION
-
     # Constructs a language learning image from a language learning object.
     # :call-seq:
     #   LanguageLearningImageMaker.new -> image_maker
     def initialize
       @image_makers = {}
-      @image_makers[PHONOTACTIC] = OTLearn::PhonotacticLearningImage
-      @image_makers[SINGLE_FORM] = OTLearn::SingleFormLearningImage
-      @image_makers[CONTRAST_PAIR] = OTLearn::ContrastPairLearningImage
-      @image_makers[INDUCTION] = OTLearn::InductionLearningImage
+      # The step type constants are defined in OTLearn.
+      @image_makers[PHONOTACTIC] = PhonotacticLearningImage
+      @image_makers[SINGLE_FORM] = SingleFormLearningImage
+      @image_makers[CONTRAST_PAIR] = ContrastPairLearningImage
+      @image_makers[INDUCTION] = InductionLearningImage
     end
 
     # Set (change or add) the image maker object for +step_type+.

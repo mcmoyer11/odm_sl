@@ -33,17 +33,6 @@ module OTLearn
   #
   # Tesar 2014. <em>Output-Driven Phonology</em>.
   class LanguageLearning
-    # Pre-defined type constants
-
-    # Indicates phontactic learning stage
-    PHONOTACTIC = :phonotactic
-    # Indicates single form learning stage
-    SINGLE_FORM = :single_form
-    # indicates contrast pair learning stage
-    CONTRAST_PAIR = :contrast_pair
-    # indicates induction learning stage
-    INDUCTION = :induction
-
     # The final grammar that was the result of learning.
     attr_reader :grammar
 

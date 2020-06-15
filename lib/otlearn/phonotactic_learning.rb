@@ -2,6 +2,7 @@
 
 # Author: Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/ranking_learning'
 require 'otlearn/grammar_test'
 require 'otlearn/language_learning'
@@ -53,7 +54,7 @@ module OTLearn
                                                    basic_selector)
       end
       @changed = false # default value
-      @step_type = LanguageLearning::PHONOTACTIC
+      @step_type = PHONOTACTIC
       run_phonotactic_learning
     end
 

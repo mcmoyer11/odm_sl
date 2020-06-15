@@ -2,6 +2,7 @@
 
 # Author: Morgan Moyer / Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/induction_learning'
 require 'otlearn/language_learning'
 
@@ -88,7 +89,7 @@ RSpec.describe OTLearn::InductionLearning do
       end
       it 'has step type INDUCTION' do
         expect(@induction_learning.step_type).to \
-          eq OTLearn::LanguageLearning::INDUCTION
+          eq OTLearn::INDUCTION
       end
       it 'has step subtype FEWEST_SET_FEATURES' do
         expect(@induction_learning.step_subtype).to \
@@ -179,7 +180,7 @@ RSpec.describe OTLearn::InductionLearning do
       end
       it 'has step type INDUCTION' do
         expect(@induction_learning.step_type).to \
-          eq OTLearn::LanguageLearning::INDUCTION
+          eq OTLearn::INDUCTION
       end
       it 'has step subtype MAX_MISMATCH_RANKING' do
         expect(@induction_learning.step_subtype).to \

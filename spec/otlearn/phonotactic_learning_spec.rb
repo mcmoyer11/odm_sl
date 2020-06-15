@@ -2,6 +2,7 @@
 
 # Author: Bruce Tesar
 
+require 'otlearn/otlearn'
 require 'otlearn/phonotactic_learning'
 require 'otlearn/language_learning'
 
@@ -46,7 +47,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
     end
     it 'has step type PHONOTACTIC' do
       expect(@phonotactic_learning.step_type).to \
-        eq OTLearn::LanguageLearning::PHONOTACTIC
+        eq OTLearn::PHONOTACTIC
     end
   end
 
@@ -82,7 +83,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
     end
     it 'has step type PHONOTACTIC' do
       expect(@phonotactic_learning.step_type).to \
-        eq OTLearn::LanguageLearning::PHONOTACTIC
+        eq OTLearn::PHONOTACTIC
     end
   end
 end
