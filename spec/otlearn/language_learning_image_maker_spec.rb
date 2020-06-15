@@ -2,10 +2,10 @@
 
 # Author: Bruce Tesar
 
-require 'otlearn/language_learning_image'
+require 'otlearn/language_learning_image_maker'
 require 'otlearn/language_learning'
 
-RSpec.describe OTLearn::LanguageLearningImage do
+RSpec.describe OTLearn::LanguageLearningImageMaker do
   let(:language_learning) { double('language_learning') }
   let(:grammar) { double('grammar') }
   let(:grammar_label) { double('grammar_label') }
@@ -35,7 +35,7 @@ RSpec.describe OTLearn::LanguageLearningImage do
       allow(grammar_test_image_class).to \
         receive(:new).with(result1).and_return(result_image1)
       ll_image_object =
-        OTLearn::LanguageLearningImage.new(
+        OTLearn::LanguageLearningImageMaker.new(
             grammar_test_image_class: grammar_test_image_class)
       @ll_image = ll_image_object.get_sheet(language_learning)
     end
@@ -71,7 +71,7 @@ RSpec.describe OTLearn::LanguageLearningImage do
       allow(grammar_test_image_class).to \
         receive(:new).and_return(result_image1, result_image2)
       ll_image_object =
-          OTLearn::LanguageLearningImage.new(
+          OTLearn::LanguageLearningImageMaker.new(
               grammar_test_image_class: grammar_test_image_class)
       @ll_image = ll_image_object.get_sheet(language_learning)
     end
@@ -112,7 +112,7 @@ RSpec.describe OTLearn::LanguageLearningImage do
       allow(phonotactic_image_class).to receive(:new).and_return(result_image1)
       allow(single_form_image_class).to receive(:new).and_return(result_image2)
       ll_image_object =
-        OTLearn::LanguageLearningImage.new(
+        OTLearn::LanguageLearningImageMaker.new(
         phonotactic_image_class: phonotactic_image_class,
         single_form_image_class: single_form_image_class,
         grammar_test_image_class: grammar_test_image_class)
@@ -154,7 +154,7 @@ RSpec.describe OTLearn::LanguageLearningImage do
       allow(grammar_test_image_class).to \
         receive(:new).with(result1).and_return(result_image1)
       ll_image_object =
-        OTLearn::LanguageLearningImage.new(
+        OTLearn::LanguageLearningImageMaker.new(
         induction_image_class: induction_image_class,
         grammar_test_image_class: grammar_test_image_class)
       @ll_image = ll_image_object.get_sheet(language_learning)

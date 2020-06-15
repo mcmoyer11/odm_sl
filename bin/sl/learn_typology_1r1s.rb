@@ -13,7 +13,7 @@ require 'sl/system'
 require 'sl/data'
 require 'csv_output'
 require 'otlearn/language_learning'
-require 'otlearn/language_learning_image'
+require 'otlearn/language_learning_image_maker'
 
 # Read languages from a Marshal-format file, successively yielding
 # the label and outputs of each language.
@@ -48,7 +48,7 @@ read_languages_from_file(data_file) do |label, outputs|
   grammar.label = label
   # Run learning on the language
   lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
-  sim_image = OTLearn::LanguageLearningImage.new.get_sheet(lang_sim)
+  sim_image = OTLearn::LanguageLearningImageMaker.new.get_sheet(lang_sim)
   # Write the results to a CSV file, with the language label as the filename.
   out_file = File.join(out_dir, "#{label}.csv")
   csv = CsvOutput.new(sim_image)

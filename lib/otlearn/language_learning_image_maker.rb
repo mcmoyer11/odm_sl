@@ -13,7 +13,7 @@ require 'otlearn/language_learning'
 module OTLearn
   # A 2-dimensional sheet representation of a LanguageLearning object,
   # which contains a synopsis of a language learning simulation.
-  class LanguageLearningImage
+  class LanguageLearningImageMaker
     # Constructs a language learning image from a language learning object.
     #
     # * +grammar_test_image_class+ - the class of object used to represent
@@ -21,7 +21,7 @@ module OTLearn
     #   Used for testing (dependency injection).
     #
     # :call-seq:
-    #   LanguageLearningImage.new -> img
+    #   LanguageLearningImageMaker.new -> image_maker
     def initialize(
         phonotactic_image_class: OTLearn::PhonotacticLearningImage,
         single_form_image_class: OTLearn::SingleFormLearningImage,
@@ -37,7 +37,7 @@ module OTLearn
 
     # Returns a sheet containing the image of the learning simulation.
     # :call-seq:
-    #   LanguageLearningImage#get_sheet(language_learning) -> sheet
+    #   LanguageLearningImageMaker#get_sheet(language_learning) -> sheet
     def get_sheet(language_learning)
       sheet = Sheet.new
       # Put the language label first
