@@ -7,7 +7,6 @@ require 'otlearn/phonotactic_learning_image'
 require 'otlearn/single_form_learning_image'
 require 'otlearn/contrast_pair_learning_image'
 require 'otlearn/induction_learning_image'
-require 'otlearn/grammar_test_image'
 require 'otlearn/language_learning'
 
 module OTLearn
@@ -27,20 +26,14 @@ module OTLearn
     INDUCTION = LanguageLearning::INDUCTION
 
     # Constructs a language learning image from a language learning object.
-    #
-    # * +grammar_test_image_class+ - the class of object used to represent
-    #   a grammar test results for a given point in learning.
-    #   Used for testing (dependency injection).
-    #
     # :call-seq:
     #   LanguageLearningImageMaker.new -> image_maker
-    def initialize(grammar_test_image_class: OTLearn::GrammarTestImage)
+    def initialize
       @image_makers = {}
       @image_makers[PHONOTACTIC] = OTLearn::PhonotacticLearningImage
       @image_makers[SINGLE_FORM] = OTLearn::SingleFormLearningImage
       @image_makers[CONTRAST_PAIR] = OTLearn::ContrastPairLearningImage
       @image_makers[INDUCTION] = OTLearn::InductionLearningImage
-      @grammar_test_image_class = grammar_test_image_class
     end
 
     # Set (change or add) the image maker object for +step_type+.
@@ -68,12 +61,12 @@ module OTLearn
 
     # Construct the image for a learning step.
     def construct_step_image(step)
-      if @image_makers.key?(step.step_type)
-        @image_makers[step.step_type].new(step)
-      else
-        # TODO: an exception should be raised here instead
-        @grammar_test_image_class.new(step.test_result)
+      step_type = step.step_type
+      unless @image_makers.key?(step_type)
+        raise "LanguageLearningImageMaker: unrecognized step type #{step_type}"
       end
+
+      @image_makers[step_type].new(step)
     end
     private :construct_step_image
   end
