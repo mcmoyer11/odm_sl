@@ -113,9 +113,11 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
       allow(single_form_image_class).to receive(:new).and_return(result_image2)
       ll_image_object =
         OTLearn::LanguageLearningImageMaker.new(
-        phonotactic_image_class: phonotactic_image_class,
-        single_form_image_class: single_form_image_class,
         grammar_test_image_class: grammar_test_image_class)
+      ll_image_object.set_image_maker(OTLearn::LanguageLearning::PHONOTACTIC,
+                                      phonotactic_image_class)
+      ll_image_object.set_image_maker(OTLearn::LanguageLearning::SINGLE_FORM,
+                                      single_form_image_class)
       @ll_image = ll_image_object.get_image(language_learning)
     end
     it 'adds the grammar label' do
@@ -155,8 +157,9 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
         receive(:new).with(result1).and_return(result_image1)
       ll_image_object =
         OTLearn::LanguageLearningImageMaker.new(
-        induction_image_class: induction_image_class,
         grammar_test_image_class: grammar_test_image_class)
+      ll_image_object.set_image_maker(OTLearn::LanguageLearning::INDUCTION,
+                                      induction_image_class)
       @ll_image = ll_image_object.get_image(language_learning)
     end
     it 'adds the grammar label' do
