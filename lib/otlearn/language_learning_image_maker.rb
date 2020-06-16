@@ -4,7 +4,7 @@
 
 require 'sheet'
 require 'otlearn/otlearn'
-require 'otlearn/phonotactic_learning_image'
+require 'otlearn/phonotactic_learning_image_maker'
 require 'otlearn/single_form_learning_image'
 require 'otlearn/contrast_pair_learning_image'
 require 'otlearn/induction_learning_image'
@@ -24,7 +24,7 @@ module OTLearn
       @sheet_class = sheet_class
       @image_makers = {}
       # The step type constants are defined in OTLearn.
-      @image_makers[PHONOTACTIC] = PhonotacticLearningImage
+      @image_makers[PHONOTACTIC] = PhonotacticLearningImageMaker
       @image_makers[SINGLE_FORM] = SingleFormLearningImage
       @image_makers[CONTRAST_PAIR] = ContrastPairLearningImage
       @image_makers[INDUCTION] = InductionLearningImage
@@ -37,7 +37,7 @@ module OTLearn
 
     # Returns a sheet containing the image of the learning simulation.
     # :call-seq:
-    #   LanguageLearningImageMaker#get_image(language_learning) -> sheet
+    #   get_image(language_learning) -> sheet
     def get_image(language_learning)
       sheet = @sheet_class.new
       # Put the language label first
