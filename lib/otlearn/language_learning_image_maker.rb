@@ -5,7 +5,7 @@
 require 'sheet'
 require 'otlearn/otlearn'
 require 'otlearn/phonotactic_learning_image_maker'
-require 'otlearn/single_form_learning_image'
+require 'otlearn/single_form_learning_image_maker'
 require 'otlearn/contrast_pair_learning_image'
 require 'otlearn/induction_learning_image'
 require 'otlearn/language_learning'
@@ -25,7 +25,7 @@ module OTLearn
       @image_makers = {}
       # The step type constants are defined in OTLearn.
       @image_makers[PHONOTACTIC] = PhonotacticLearningImageMaker
-      @image_makers[SINGLE_FORM] = SingleFormLearningImage
+      @image_makers[SINGLE_FORM] = SingleFormLearningImageMaker
       @image_makers[CONTRAST_PAIR] = ContrastPairLearningImage
       @image_makers[INDUCTION] = InductionLearningImage
     end
