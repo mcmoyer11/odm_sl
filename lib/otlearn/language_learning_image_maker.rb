@@ -22,12 +22,15 @@ module OTLearn
     #   LanguageLearningImageMaker.new -> image_maker
     def initialize(sheet_class: Sheet)
       @sheet_class = sheet_class
+      # Create a hash of image makers, one for each learning
+      # step type. An image maker creates a sheet with an image
+      # of information specific to the type of learning step.
       @image_makers = {}
       # The step type constants are defined in OTLearn.
-      @image_makers[PHONOTACTIC] = PhonotacticLearningImageMaker
-      @image_makers[SINGLE_FORM] = SingleFormLearningImageMaker
-      @image_makers[CONTRAST_PAIR] = ContrastPairLearningImageMaker
-      @image_makers[INDUCTION] = InductionLearningImageMaker
+      @image_makers[PHONOTACTIC] = PhonotacticLearningImageMaker.new
+      @image_makers[SINGLE_FORM] = SingleFormLearningImageMaker.new
+      @image_makers[CONTRAST_PAIR] = ContrastPairLearningImageMaker.new
+      @image_makers[INDUCTION] = InductionLearningImageMaker.new
     end
 
     # Set (change or add) the image maker object for +step_type+.
@@ -60,7 +63,7 @@ module OTLearn
         raise "LanguageLearningImageMaker: unrecognized step type #{step_type}"
       end
 
-      @image_makers[step_type].new(step)
+      @image_makers[step_type].get_image(step)
     end
     private :construct_step_image
   end

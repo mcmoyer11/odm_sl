@@ -10,10 +10,10 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
   let(:language_learning) { double('language_learning') }
   let(:grammar) { double('grammar') }
   let(:grammar_label) { double('grammar_label') }
-  let(:phonotactic_image_class) { double('phonotactic_image_class') }
-  let(:single_form_image_class) { double('single_form_image_class') }
-  let(:contrast_pair_image_class) { double('contrast_pair_image_class') }
-  let(:induction_image_class) { double('induction_image_class') }
+  let(:ph_image_maker) { double('ph_image_maker') }
+  let(:sf_image_maker) { double('sf_image_maker') }
+  let(:cp_image_maker) { double('cp_image_maker') }
+  let(:in_image_maker) { double('in_image_maker') }
   let(:sheet_class) { double('sheet_class') }
   let(:sheet) { double('sheet') }
   before(:each) do
@@ -25,7 +25,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
     allow(sheet).to receive(:[]=)
     allow(sheet).to receive(:add_empty_row)
     allow(sheet).to receive(:append)
-    @ll_image_object =
+    @ll_image_maker =
       OTLearn::LanguageLearningImageMaker.new(sheet_class: sheet_class)
   end
   context 'with one phonotactic step' do
@@ -36,11 +36,11 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
     before(:each) do
       allow(language_learning).to receive(:step_list).and_return(step_list)
       allow(step_ph).to receive(:step_type).and_return(OTLearn::PHONOTACTIC)
-      allow(phonotactic_image_class).to\
-        receive(:new).with(step_ph).and_return(image_ph)
-      @ll_image_object.set_image_maker(OTLearn::PHONOTACTIC,
-                                       phonotactic_image_class)
-      @ll_image = @ll_image_object.get_image(language_learning)
+      allow(ph_image_maker).to\
+        receive(:get_image).with(step_ph).and_return(image_ph)
+      @ll_image_maker.set_image_maker(OTLearn::PHONOTACTIC,
+                                      ph_image_maker)
+      @ll_image = @ll_image_maker.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image).to have_received(:[]=).with(1, 1, grammar_label)
@@ -50,7 +50,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
         have_received(:[]=).with(2, 1, 'Learned: success_value')
     end
     it 'creates a phonotactic image' do
-      expect(phonotactic_image_class).to have_received(:new).with(step_ph)
+      expect(ph_image_maker).to have_received(:get_image).with(step_ph)
     end
     it 'adds the result image' do
       expect(@ll_image).to have_received(:append).with(image_ph)
@@ -68,13 +68,13 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
       allow(language_learning).to receive(:step_list).and_return(step_list)
       allow(step_ph).to receive(:step_type).and_return(OTLearn::PHONOTACTIC)
       allow(step_sf).to receive(:step_type).and_return(OTLearn::SINGLE_FORM)
-      allow(phonotactic_image_class).to receive(:new).and_return(image_ph)
-      allow(single_form_image_class).to receive(:new).and_return(image_sf)
-      @ll_image_object.set_image_maker(OTLearn::PHONOTACTIC,
-                                       phonotactic_image_class)
-      @ll_image_object.set_image_maker(OTLearn::SINGLE_FORM,
-                                       single_form_image_class)
-      @ll_image = @ll_image_object.get_image(language_learning)
+      allow(ph_image_maker).to receive(:get_image).and_return(image_ph)
+      allow(sf_image_maker).to receive(:get_image).and_return(image_sf)
+      @ll_image_maker.set_image_maker(OTLearn::PHONOTACTIC,
+                                      ph_image_maker)
+      @ll_image_maker.set_image_maker(OTLearn::SINGLE_FORM,
+                                      sf_image_maker)
+      @ll_image = @ll_image_maker.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image).to have_received(:[]=).with(1, 1, grammar_label)
@@ -84,12 +84,12 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
         have_received(:[]=).with(2, 1, 'Learned: success_value')
     end
     it 'creates a phonotactic step image' do
-      expect(phonotactic_image_class).to\
-        have_received(:new).with(step_ph).exactly(1).times
+      expect(ph_image_maker).to\
+        have_received(:get_image).with(step_ph).exactly(1).times
     end
     it 'creates a single form step image' do
-      expect(single_form_image_class).to\
-        have_received(:new).with(step_sf).exactly(1).times
+      expect(sf_image_maker).to\
+        have_received(:get_image).with(step_sf).exactly(1).times
     end
     it 'adds the phonotactic image' do
       expect(@ll_image).to have_received(:append).with(image_ph)
@@ -107,11 +107,11 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
     before(:each) do
       allow(language_learning).to receive(:step_list).and_return(step_list)
       allow(step_in).to receive(:step_type).and_return(OTLearn::INDUCTION)
-      allow(induction_image_class).to\
-        receive(:new).with(step_in).and_return(image_in)
-      @ll_image_object.set_image_maker(OTLearn::INDUCTION,
-                                       induction_image_class)
-      @ll_image = @ll_image_object.get_image(language_learning)
+      allow(in_image_maker).to\
+        receive(:get_image).with(step_in).and_return(image_in)
+      @ll_image_maker.set_image_maker(OTLearn::INDUCTION,
+                                      in_image_maker)
+      @ll_image = @ll_image_maker.get_image(language_learning)
     end
     it 'adds the grammar label' do
       expect(@ll_image).to have_received(:[]=).with(1, 1, grammar_label)
@@ -121,7 +121,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
         have_received(:[]=).with(2, 1, 'Learned: success_value')
     end
     it 'creates an image for the induction learning step' do
-      expect(induction_image_class).to have_received(:new).with(step_in)
+      expect(in_image_maker).to have_received(:get_image).with(step_in)
     end
     it 'adds the induction step image' do
       expect(@ll_image).to have_received(:append).with(image_in)
@@ -137,7 +137,7 @@ RSpec.describe OTLearn::LanguageLearningImageMaker do
       allow(step_ur).to receive(:test_result).and_return(result_ur)
     end
     it 'raises a RuntimeError' do
-      expect { @ll_image_object.get_image(language_learning) }.to\
+      expect { @ll_image_maker.get_image(language_learning) }.to\
         raise_error RuntimeError
     end
   end
