@@ -15,9 +15,13 @@ module OTLearn
   # which contains a synopsis of a language learning simulation.
   class LanguageLearningImageMaker
     # Constructs a language learning image from a language learning object.
+    #--
+    # +sheet_class+ is a dependency injection used for testing.
+    #++
     # :call-seq:
     #   LanguageLearningImageMaker.new -> image_maker
-    def initialize
+    def initialize(sheet_class: Sheet)
+      @sheet_class = sheet_class
       @image_makers = {}
       # The step type constants are defined in OTLearn.
       @image_makers[PHONOTACTIC] = PhonotacticLearningImage
@@ -35,7 +39,7 @@ module OTLearn
     # :call-seq:
     #   LanguageLearningImageMaker#get_image(language_learning) -> sheet
     def get_image(language_learning)
-      sheet = Sheet.new
+      sheet = @sheet_class.new
       # Put the language label first
       sheet[1, 1] = language_learning.grammar.label
       # Indicate if learning succeeded.
