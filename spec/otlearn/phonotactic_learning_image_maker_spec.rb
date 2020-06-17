@@ -13,21 +13,21 @@ require 'otlearn/phonotactic_learning_image_maker'
 # messages writing values to the sheet.
 RSpec.describe OTLearn::PhonotacticLearningImageMaker do
   let(:pl_step) { double('phonotactic learning step') }
-  let(:grammar_test_image_class) { double('grammar_test_image_class') }
+  let(:grammar_test_image_maker) { double('grammar_test_image_maker') }
   let(:test_result) { double('test_result') }
   let(:test_image) { double('test_image') }
   let(:sheet_class) { double('sheet_class') }
   let(:sheet) { double('sheet') }
   before(:each) do
-    allow(grammar_test_image_class).to\
-      receive(:new).with(test_result).and_return(test_image)
+    allow(grammar_test_image_maker).to\
+      receive(:get_image).with(test_result).and_return(test_image)
     allow(pl_step).to receive(:test_result).and_return(test_result)
     allow(sheet_class).to receive(:new).and_return(sheet)
     allow(sheet).to receive(:[]=)
     allow(sheet).to receive(:append)
     @pl_image_maker =
       OTLearn::PhonotacticLearningImageMaker\
-      .new(grammar_test_image_class: grammar_test_image_class,
+      .new(grammar_test_image_maker: grammar_test_image_maker,
            sheet_class: sheet_class)
   end
 

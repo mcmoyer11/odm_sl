@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 
 require 'sheet'
-require 'otlearn/grammar_test_image'
+require 'otlearn/grammar_test_image_maker'
 require 'otlearn/fewest_set_features_image'
 require 'otlearn/max_mismatch_ranking_image'
 
@@ -20,11 +20,11 @@ module OTLearn
     #   InductionLearningImageMaker.new -> image_maker
     def initialize(fsf_image_class: FewestSetFeaturesImage,
                    mmr_image_class: MaxMismatchRankingImage,
-                   grammar_test_image_class: GrammarTestImage,
+                   grammar_test_image_maker: GrammarTestImageMaker.new,
                    sheet_class: Sheet)
       @fsf_image_class = fsf_image_class
       @mmr_image_class = mmr_image_class
-      @grammar_test_image_class = grammar_test_image_class
+      @grammar_test_image_maker = grammar_test_image_maker
       @sheet_class = sheet_class
     end
 
@@ -38,7 +38,7 @@ module OTLearn
       # Add the image for subtype-specific information
       sheet.append(get_subtype_image(in_step))
       # Construct and add Grammar Test information
-      test_image = @grammar_test_image_class.new(in_step.test_result)
+      test_image = @grammar_test_image_maker.get_image(in_step.test_result)
       sheet.add_empty_row
       sheet.append(test_image)
       sheet

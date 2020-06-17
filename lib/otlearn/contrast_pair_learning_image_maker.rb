@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 
 require 'sheet'
-require 'otlearn/grammar_test_image'
+require 'otlearn/grammar_test_image_maker'
 
 module OTLearn
   # A 2-dimensional sheet representation of a ContrastPairLearning object,
@@ -12,14 +12,14 @@ module OTLearn
     # Constructs a contrast pair learning image from a contrast pair learning
     # step.
     #--
-    # +grammar_test_image_class+ and +sheet_class+ are dependency injections
+    # +grammar_test_image_maker+ and +sheet_class+ are dependency injections
     # used for testing.
     #++
     # :call-seq:
     #   ContrastPairLearningImageMaker.new -> image_maker
-    def initialize(grammar_test_image_class: GrammarTestImage,
+    def initialize(grammar_test_image_maker: GrammarTestImageMaker.new,
                    sheet_class: Sheet)
-      @grammar_test_image_class = grammar_test_image_class
+      @grammar_test_image_maker = grammar_test_image_maker
       @sheet_class = sheet_class
     end
 
@@ -38,7 +38,7 @@ module OTLearn
       end
       # If the grammar changes, construct and add Grammar Test info.
       if cp_step.changed?
-        test_image = @grammar_test_image_class.new(cp_step.test_result)
+        test_image = @grammar_test_image_maker.get_image(cp_step.test_result)
         sheet.append(test_image)
       end
       sheet

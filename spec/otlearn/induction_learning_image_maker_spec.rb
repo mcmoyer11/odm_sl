@@ -18,14 +18,14 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
   let(:fsf_image) { double('fsf_image') }
   let(:mmr_image_class) { double('mmr_image_class') }
   let(:mmr_image) { double('mmr_image') }
-  let(:grammar_test_image_class) { double('grammar_test_image_class') }
+  let(:grammar_test_image_maker) { double('grammar_test_image_maker') }
   let(:test_result) { double('test_result') }
   let(:test_image) { double('test_image') }
   let(:sheet_class) { double('sheet_class') }
   let(:sheet) { double('sheet') }
   before(:each) do
-    allow(grammar_test_image_class).to\
-      receive(:new).with(test_result).and_return(test_image)
+    allow(grammar_test_image_maker).to\
+      receive(:get_image).with(test_result).and_return(test_image)
     allow(in_step).to receive(:test_result).and_return(test_result)
     allow(fsf_image_class).to receive(:new).and_return(fsf_image)
     allow(mmr_image_class).to receive(:new).and_return(mmr_image)
@@ -35,7 +35,7 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
     allow(sheet).to receive(:append)
     @in_image_maker =
       OTLearn::InductionLearningImageMaker\
-      .new(grammar_test_image_class: grammar_test_image_class,
+      .new(grammar_test_image_maker: grammar_test_image_maker,
            fsf_image_class: fsf_image_class,
            mmr_image_class: mmr_image_class,
            sheet_class: sheet_class)
