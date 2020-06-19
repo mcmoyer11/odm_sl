@@ -7,7 +7,7 @@ require_relative '../test/helpers/quick_erc'
 
 RSpec.describe RcdImageMaker do
   let(:rcd_result) { double('rcd_result') }
-  let(:ct_image_class) { double('ct_image_class') }
+  let(:ct_image_maker) { double('ct_image_maker') }
   let(:ct_image) { double('ct_image') }
   let(:sheet_class) { double('sheet class') }
   let(:sheet) { double('sheet') }
@@ -19,9 +19,9 @@ RSpec.describe RcdImageMaker do
     allow(sheet_class).to receive(:new).and_return(sheet)
     allow(sheet).to receive(:put_range).and_return(inner_class)
     allow(inner_class).to receive(:[]=)
-    allow(ct_image_class).to receive(:new).and_return(ct_image)
+    allow(ct_image_maker).to receive(:get_image).and_return(ct_image)
     @rcd_image_maker =
-      RcdImageMaker.new(comp_tableau_image_class: ct_image_class,
+      RcdImageMaker.new(ct_image_maker: ct_image_maker,
                         sheet_class: sheet_class)
   end
 
@@ -40,8 +40,8 @@ RSpec.describe RcdImageMaker do
       expect(@rcd_image).to have_received(:put_range).exactly(1).times
     end
     it 'constructs a CT image with one constraint and one erc' do
-      expect(ct_image_class).to\
-        have_received(:new).with(sorted_ercs, sorted_constraints)
+      expect(ct_image_maker).to\
+        have_received(:get_image).with(sorted_ercs, sorted_constraints)
     end
   end
 
@@ -65,8 +65,8 @@ RSpec.describe RcdImageMaker do
       expect(@rcd_image).to have_received(:put_range).exactly(1).times
     end
     it 'constructs a CT image with properly sorted ercs and constraints' do
-      expect(ct_image_class).to\
-        have_received(:new).with(sorted_ercs, sorted_constraints)
+      expect(ct_image_maker).to\
+        have_received(:get_image).with(sorted_ercs, sorted_constraints)
     end
   end
 end

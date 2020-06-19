@@ -2,7 +2,7 @@
 
 # Author: Bruce Tesar
 
-require 'comparative_tableau_image'
+require 'ct_image_maker'
 require 'sheet'
 
 # Creates a sheet representation of an RCD result object, i.e.,
@@ -13,14 +13,14 @@ require 'sheet'
 class RcdImageMaker
   # Returns a new RCD image maker.
   #--
-  # +comp_tableau_image_class+ and +sheet_class+ are dependency
+  # +ct_image_maker+ and +sheet_class+ are dependency
   # injections used in testing.
   #++
   # :call-seq:
   #   RcdImageMaker.new -> image_maker
-  def initialize(comp_tableau_image_class: ComparativeTableauImage,
+  def initialize(ct_image_maker: CtImageMaker.new,
                  sheet_class: Sheet)
-    @comp_tableau_image_class = comp_tableau_image_class
+    @ct_image_maker = ct_image_maker
     @sheet_class = sheet_class
   end
 
@@ -32,7 +32,7 @@ class RcdImageMaker
   def get_image(rcd_result)
     sheet = @sheet_class.new
     ercs, constraints = construct_ercs_and_constraints(rcd_result)
-    comp_tableau_image = @comp_tableau_image_class.new(ercs, constraints)
+    comp_tableau_image = @ct_image_maker.get_image(ercs, constraints)
     sheet.put_range[1, 1] = comp_tableau_image
     sheet
   end
