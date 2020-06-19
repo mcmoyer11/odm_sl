@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 
 require 'sheet'
-require 'constraint_preference_image'
+require 'preference_image_maker'
 
 # Creates a sheet representation of a comparative tableau, i.e.,
 # a list of ercs, typically winner-loser pairs, and the preference
@@ -21,13 +21,13 @@ class CtImageMaker
 
   # Returns a new comparative tableau image maker.
   #--
-  # +pref_image_class+ is a dependency injection used for testing.
+  # +pref_image_maker+ is a dependency injection used for testing.
   #++
   # :call-seq:
   #   CtImageMaker.new -> image_maker
-  def initialize(pref_image_class: ConstraintPreferenceImage,
+  def initialize(pref_image_maker: PreferenceImageMaker.new,
                  sheet_class: Sheet)
-    @pref_image_class = pref_image_class
+    @pref_image_maker = pref_image_maker
     @sheet_class = sheet_class
   end
 
@@ -85,7 +85,7 @@ class CtImageMaker
   # and adds it to the main CT image, starting from the cell
   # in the header row and the first constraint column.
   def add_preference_image(ercs, constraints, sheet)
-    pref_image = @pref_image_class.new(ercs, constraints)
+    pref_image = @pref_image_maker.get_image(ercs, constraints)
     sheet.put_range[HEADER_ROW, FIRST_CONSTRAINT_COL] = pref_image
   end
   private :add_preference_image

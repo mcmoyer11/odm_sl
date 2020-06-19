@@ -8,7 +8,7 @@ require 'sheet'
 RSpec.describe CtImageMaker do
   context 'with one constraint' do
     let(:clist) { double('clist') }
-    let(:pref_image_class) { double('pref_image_class') }
+    let(:pref_image_maker) { double('pref_image_maker') }
     let(:sheet_class) { double('sheet class') }
     let(:sheet) { double('sheet') }
     let(:inner_class) { double('inner_class') }
@@ -18,7 +18,7 @@ RSpec.describe CtImageMaker do
       allow(sheet).to receive(:put_range).and_return(inner_class)
       allow(inner_class).to receive(:[]=)
       @ct_image_maker =
-        CtImageMaker.new(pref_image_class: pref_image_class,
+        CtImageMaker.new(pref_image_maker: pref_image_maker,
                          sheet_class: sheet_class)
     end
     context 'with one erc' do
@@ -39,8 +39,8 @@ RSpec.describe CtImageMaker do
         allow(input1).to receive(:to_s).and_return('I1')
         allow(output_w1).to receive(:to_s).and_return('W1_output')
         allow(output_l1).to receive(:to_s).and_return('L1_output')
-        allow(pref_image_class).to\
-          receive(:new).with([erc1], clist).and_return(pref_sheet)
+        allow(pref_image_maker).to\
+          receive(:get_image).with([erc1], clist).and_return(pref_sheet)
         @ct_image = @ct_image_maker.get_image([erc1], clist)
       end
       it "puts the column heading 'ERC#'" do
