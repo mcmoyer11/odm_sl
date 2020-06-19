@@ -6,7 +6,7 @@ require 'sheet'
 require 'otlearn/faith_low'
 require 'otlearn/ranking_bias_some_low'
 require 'rcd_runner'
-require 'rcd_image'
+require 'rcd_image_maker'
 require 'lexicon_image_maker'
 
 module OTLearn
@@ -17,12 +17,12 @@ module OTLearn
   class GrammarTestImageMaker
     # Returns a new grammar test image maker.
     #--
-    # +rcd_runner+, +rcd_image_class+, +lexicon_image_maker+
+    # +rcd_runner+, +rcd_image_maker+, +lexicon_image_maker+
     # and +sheet_class+ are dependency injections used for testing.
     #++
     # :call-seq:
     #   GrammarTestImageMaker.new -> image_maker
-    def initialize(rcd_runner: nil, rcd_image_class: RcdImage,
+    def initialize(rcd_runner: nil, rcd_image_maker: RcdImageMaker.new,
                    lexicon_image_maker: LexiconImageMaker.new,
                    sheet_class: Sheet)
       @rcd_runner = rcd_runner
@@ -31,7 +31,7 @@ module OTLearn
         @chooser = RankingBiasSomeLow.new(FaithLow.new)
         @rcd_runner = RcdRunner.new(@chooser)
       end
-      @rcd_image_class = rcd_image_class
+      @rcd_image_maker = rcd_image_maker
       @lexicon_image_maker = lexicon_image_maker
       @sheet_class = sheet_class
     end
@@ -46,7 +46,7 @@ module OTLearn
       rcd_result = @rcd_runner.run_rcd(grammar_test.grammar.erc_list)
       # Build the image of the support, and write it
       # to the page starting in column 2.
-      rcd_image = @rcd_image_class.new(rcd_result)
+      rcd_image = @rcd_image_maker.get_image(rcd_result)
       sheet.put_range[1, 2] = rcd_image
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
