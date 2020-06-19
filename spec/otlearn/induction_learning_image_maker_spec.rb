@@ -14,9 +14,9 @@ require 'otlearn/induction_learning'
 # messages writing values to the sheet.
 RSpec.describe OTLearn::InductionLearningImageMaker do
   let(:in_step) { double('in_step') }
-  let(:fsf_image_class) { double('fsf_image_class') }
+  let(:fsf_image_maker) { double('fsf_image_maker') }
   let(:fsf_image) { double('fsf_image') }
-  let(:mmr_image_class) { double('mmr_image_class') }
+  let(:mmr_image_maker) { double('mmr_image_maker') }
   let(:mmr_image) { double('mmr_image') }
   let(:grammar_test_image_maker) { double('grammar_test_image_maker') }
   let(:test_result) { double('test_result') }
@@ -27,8 +27,10 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
     allow(grammar_test_image_maker).to\
       receive(:get_image).with(test_result).and_return(test_image)
     allow(in_step).to receive(:test_result).and_return(test_result)
-    allow(fsf_image_class).to receive(:new).and_return(fsf_image)
-    allow(mmr_image_class).to receive(:new).and_return(mmr_image)
+    allow(fsf_image_maker).to\
+      receive(:get_image).and_return(fsf_image)
+    allow(mmr_image_maker).to\
+      receive(:get_image).and_return(mmr_image)
     allow(sheet_class).to receive(:new).and_return(sheet)
     allow(sheet).to receive(:[]=)
     allow(sheet).to receive(:add_empty_row)
@@ -36,8 +38,8 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
     @in_image_maker =
       OTLearn::InductionLearningImageMaker\
       .new(grammar_test_image_maker: grammar_test_image_maker,
-           fsf_image_class: fsf_image_class,
-           mmr_image_class: mmr_image_class,
+           fsf_image_maker: fsf_image_maker,
+           mmr_image_maker: mmr_image_maker,
            sheet_class: sheet_class)
   end
 
@@ -54,10 +56,10 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
         have_received(:[]=).with(1, 1, 'Induction Learning')
     end
     it 'creates an FSF image' do
-      expect(fsf_image_class).to have_received(:new)
+      expect(fsf_image_maker).to have_received(:get_image)
     end
     it 'does not create an MMR image' do
-      expect(mmr_image_class).not_to have_received(:new)
+      expect(mmr_image_maker).not_to have_received(:get_image)
     end
     it 'adds the FSF image' do
       expect(@in_image).to have_received(:append).with(fsf_image)
@@ -80,10 +82,10 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
         have_received(:[]=).with(1, 1, 'Induction Learning')
     end
     it 'does not create an FSF image' do
-      expect(fsf_image_class).not_to have_received(:new)
+      expect(fsf_image_maker).not_to have_received(:get_image)
     end
     it 'creates an MMR image' do
-      expect(mmr_image_class).to have_received(:new)
+      expect(mmr_image_maker).to have_received(:get_image)
     end
     it 'adds the MMR image' do
       expect(@in_image).to have_received(:append).with(mmr_image)

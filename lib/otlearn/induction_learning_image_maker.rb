@@ -4,26 +4,26 @@
 
 require 'sheet'
 require 'otlearn/grammar_test_image_maker'
-require 'otlearn/fewest_set_features_image'
-require 'otlearn/max_mismatch_ranking_image'
+require 'otlearn/fsf_image_maker'
+require 'otlearn/mmr_image_maker'
 
 module OTLearn
-  # A 2-dimensional sheet representation of a InductionLearning object,
-  # which contains a synopsis of an induction learning step.
+  # An image maker that constructs a 2-dimensional sheet representation
+  # of an Induction learning step.
   class InductionLearningImageMaker
-    # Constructs an induction learning image from an induction learning step.
+    # Returns a new image maker for Induction Learning.
     #--
-    # +fsf_image_class+, +mmr_image_class+, +grammar_test_image_class+
+    # +fsf_image_maker+, +mmr_image_maker+, +grammar_test_image_maker+
     #  and +sheet_class+ are dependency injections used for testing.
     #++
     # :call-seq:
     #   InductionLearningImageMaker.new -> image_maker
-    def initialize(fsf_image_class: FewestSetFeaturesImage,
-                   mmr_image_class: MaxMismatchRankingImage,
+    def initialize(fsf_image_maker: FsfImageMaker.new,
+                   mmr_image_maker: MmrImageMaker.new,
                    grammar_test_image_maker: GrammarTestImageMaker.new,
                    sheet_class: Sheet)
-      @fsf_image_class = fsf_image_class
-      @mmr_image_class = mmr_image_class
+      @fsf_image_maker = fsf_image_maker
+      @mmr_image_maker = mmr_image_maker
       @grammar_test_image_maker = grammar_test_image_maker
       @sheet_class = sheet_class
     end
@@ -49,9 +49,9 @@ module OTLearn
     def get_subtype_image(in_step)
       case in_step.step_subtype
       when InductionLearning::FEWEST_SET_FEATURES
-        @fsf_image_class.new(in_step.fsf_step)
+        @fsf_image_maker.get_image(in_step.fsf_step)
       when InductionLearning::MAX_MISMATCH_RANKING
-        @mmr_image_class.new(in_step.mmr_step)
+        @mmr_image_maker.get_image(in_step.mmr_step)
       else
         msg1 = 'InductionLearningImageMaker'
         raise RuntimeError "#{msg1}: invalid step subtype #{in_step.subtype}"
