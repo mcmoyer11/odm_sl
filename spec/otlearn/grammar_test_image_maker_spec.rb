@@ -13,7 +13,7 @@ RSpec.describe 'OTLearn::GrammarTestImageMaker' do
   let(:rcd_result) { double('rcd_result') }
   let(:rcd_image_class) { double('rcd_image_class') }
   let(:rcd_image) { double('rcd_image') }
-  let(:lexicon_image_class) { double('lexicon_image_class') }
+  let(:lexicon_image_maker) { double('lexicon_image_maker') }
   let(:lex_image) { double('lex_image') }
   let(:sheet_class) { double('sheet_class') }
   let(:sheet) { double('sheet') }
@@ -25,7 +25,7 @@ RSpec.describe 'OTLearn::GrammarTestImageMaker' do
       allow(grammar).to receive(:lexicon).and_return(lexicon)
       allow(rcd_runner).to receive(:run_rcd).and_return(rcd_result)
       allow(rcd_image_class).to receive(:new).and_return(rcd_image)
-      allow(lexicon_image_class).to receive(:new).and_return(lex_image)
+      allow(lexicon_image_maker).to receive(:get_image).and_return(lex_image)
       allow(sheet_class).to receive(:new).and_return(sheet)
       allow(sheet).to receive(:put_range).and_return(inner_class)
       allow(inner_class).to receive(:[]=)
@@ -35,7 +35,7 @@ RSpec.describe 'OTLearn::GrammarTestImageMaker' do
         OTLearn::GrammarTestImageMaker\
         .new(rcd_runner: rcd_runner,
              rcd_image_class: rcd_image_class,
-             lexicon_image_class: lexicon_image_class,
+             lexicon_image_maker: lexicon_image_maker,
              sheet_class: sheet_class)
       @gt_image = @gt_image_maker.get_image(grammar_test)
     end

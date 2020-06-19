@@ -7,23 +7,23 @@ require 'otlearn/faith_low'
 require 'otlearn/ranking_bias_some_low'
 require 'rcd_runner'
 require 'rcd_image'
-require 'lexicon_image'
+require 'lexicon_image_maker'
 
 module OTLearn
-  # A 2-dimensional sheet representation of a GrammarTest object.
+  # Constructs a 2-dimensional sheet representation of a GrammarTest object.
   # The displayed results consist of:
   # * the ERCs of the grammar
   # * the lexicon of the grammar
   class GrammarTestImageMaker
-    # Constructs a grammar test image from a +grammar_test+ result.
+    # Returns a new grammar test image maker.
     #--
-    # +rcd_runner+, +rcd_image_class+, +lexicon_image_class+
+    # +rcd_runner+, +rcd_image_class+, +lexicon_image_maker+
     # and +sheet_class+ are dependency injections used for testing.
     #++
     # :call-seq:
-    #   GrammarTestImageMaker.new(grammar_test) -> image_maker
+    #   GrammarTestImageMaker.new -> image_maker
     def initialize(rcd_runner: nil, rcd_image_class: RcdImage,
-                   lexicon_image_class: LexiconImage,
+                   lexicon_image_maker: LexiconImageMaker.new,
                    sheet_class: Sheet)
       @rcd_runner = rcd_runner
       # The default rcd_runner uses RCD biased to low faithfulness
@@ -32,11 +32,11 @@ module OTLearn
         @rcd_runner = RcdRunner.new(@chooser)
       end
       @rcd_image_class = rcd_image_class
-      @lexicon_image_class = lexicon_image_class
+      @lexicon_image_maker = lexicon_image_maker
       @sheet_class = sheet_class
     end
 
-    # Returns a sheet containing the image of the grammar test.
+    # Returns a sheet containing the image of +grammar_test+.
     # :call-seq:
     #   get_image(grammar_test) -> sheet
     def get_image(grammar_test)
@@ -50,7 +50,7 @@ module OTLearn
       sheet.put_range[1, 2] = rcd_image
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
-      lex_image = @lexicon_image_class.new(grammar_test.grammar.lexicon)
+      lex_image = @lexicon_image_maker.get_image(grammar_test.grammar.lexicon)
       sheet.add_empty_row
       sheet.append(lex_image, start_col: 2)
       sheet
