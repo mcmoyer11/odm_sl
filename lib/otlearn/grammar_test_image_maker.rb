@@ -47,7 +47,7 @@ module OTLearn
       # Build the image of the support, and write it
       # to the page starting in column 2.
       rcd_image = @rcd_image_maker.get_image(rcd_result)
-      sheet.put_range[1, 2] = rcd_image
+      sheet.put_range(1, 2, rcd_image)
       # Build the image of the lexicon, and write it
       # to the page starting in column 2, 2 rows after the support.
       lex_image = @lexicon_image_maker.get_image(grammar_test.grammar.lexicon)

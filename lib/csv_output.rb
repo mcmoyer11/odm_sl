@@ -39,7 +39,7 @@ class CsvOutput
   # as a header row filled with blanks.
   def construct_csv_image
     # Put the image in row 2, leaving row 1 as a header row.
-    @csv_image.put_range[2, 1] = @page_image
+    @csv_image.put_range(2, 1, @page_image)
     headers_nil_to_blank
   end
   private :construct_csv_image

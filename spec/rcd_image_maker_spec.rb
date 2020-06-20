@@ -11,14 +11,12 @@ RSpec.describe RcdImageMaker do
   let(:ct_image) { double('ct_image') }
   let(:sheet_class) { double('sheet class') }
   let(:sheet) { double('sheet') }
-  let(:inner_class) { double('inner_class') }
   before(:each) do
     stub_const 'ML', Test::ML
     stub_const 'ME', Test::ME
     stub_const 'MW', Test::MW
     allow(sheet_class).to receive(:new).and_return(sheet)
-    allow(sheet).to receive(:put_range).and_return(inner_class)
-    allow(inner_class).to receive(:[]=)
+    allow(sheet).to receive(:put_range)
     allow(ct_image_maker).to receive(:get_image).and_return(ct_image)
     @rcd_image_maker =
       RcdImageMaker.new(ct_image_maker: ct_image_maker,

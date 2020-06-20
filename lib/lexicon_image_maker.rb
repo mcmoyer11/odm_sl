@@ -52,7 +52,7 @@ class LexiconImageMaker
     end
     # add to the bottom of the lex image.
     @last_row += 1
-    @sheet.put_range[@last_row, 1] = morph_image
+    @sheet.put_range(@last_row, 1, morph_image)
   end
   private :add_morphs
 end

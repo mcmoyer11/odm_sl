@@ -11,12 +11,10 @@ RSpec.describe CtImageMaker do
     let(:pref_image_maker) { double('pref_image_maker') }
     let(:sheet_class) { double('sheet class') }
     let(:sheet) { double('sheet') }
-    let(:inner_class) { double('inner_class') }
     before(:example) do
       allow(sheet_class).to receive(:new).and_return(sheet)
       allow(sheet).to receive(:[]=)
-      allow(sheet).to receive(:put_range).and_return(inner_class)
-      allow(inner_class).to receive(:[]=)
+      allow(sheet).to receive(:put_range)
       @ct_image_maker =
         CtImageMaker.new(pref_image_maker: pref_image_maker,
                          sheet_class: sheet_class)

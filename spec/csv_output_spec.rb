@@ -9,10 +9,8 @@ RSpec.describe 'CsvOutput' do
   let(:page) { double('page image') }
   let(:sheet) { double('sheet') }
   let(:csv) { double('CSV class') }
-  let(:inner_class) { double('inner class') }
   before(:example) do
-    allow(sheet).to receive(:put_range).and_return(inner_class)
-    allow(inner_class).to receive(:[]=)
+    allow(sheet).to receive(:put_range)
     allow(sheet).to receive(:col_count).and_return(1)
     allow(sheet).to receive(:[]=)
   end
@@ -23,8 +21,7 @@ RSpec.describe 'CsvOutput' do
       @csv_output = CsvOutput.new(page, sheet: sheet, csv_class: csv)
     end
     it 'puts the page image on the sheet' do
-      expect(sheet).to have_received(:put_range)
-      expect(inner_class).to have_received(:[]=).with(2, 1, page)
+      expect(sheet).to have_received(:put_range).with(2, 1, page)
     end
     it 'does not alter the headers' do
       expect(sheet).not_to have_received(:[]=)
@@ -36,8 +33,7 @@ RSpec.describe 'CsvOutput' do
       @csv_output = CsvOutput.new(page, sheet: sheet, csv_class: csv)
     end
     it 'puts the page image on the sheet' do
-      expect(sheet).to have_received(:put_range)
-      expect(inner_class).to have_received(:[]=).with(2, 1, page)
+      expect(sheet).to have_received(:put_range).with(2, 1, page)
     end
     it 'converts the headers to blanks' do
       expect(sheet).to have_received(:[]=).with(1, 1, ' ')

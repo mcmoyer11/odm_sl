@@ -17,7 +17,6 @@ RSpec.describe 'OTLearn::GrammarTestImageMaker' do
   let(:lex_image) { double('lex_image') }
   let(:sheet_class) { double('sheet_class') }
   let(:sheet) { double('sheet') }
-  let(:inner_class) { double('inner_class') }
   context 'given a GrammarTest' do
     before(:each) do
       allow(grammar_test).to receive(:grammar).and_return(grammar)
@@ -27,8 +26,7 @@ RSpec.describe 'OTLearn::GrammarTestImageMaker' do
       allow(rcd_image_maker).to receive(:get_image).and_return(rcd_image)
       allow(lexicon_image_maker).to receive(:get_image).and_return(lex_image)
       allow(sheet_class).to receive(:new).and_return(sheet)
-      allow(sheet).to receive(:put_range).and_return(inner_class)
-      allow(inner_class).to receive(:[]=)
+      allow(sheet).to receive(:put_range)
       allow(sheet).to receive(:add_empty_row)
       allow(sheet).to receive(:append)
       @gt_image_maker =
@@ -40,8 +38,7 @@ RSpec.describe 'OTLearn::GrammarTestImageMaker' do
       @gt_image = @gt_image_maker.get_image(grammar_test)
     end
     it 'adds the RCD image' do
-      expect(@gt_image).to have_received(:put_range)
-      expect(inner_class).to have_received(:[]=)\
+      expect(@gt_image).to have_received(:put_range)\
         .with(1, 2, rcd_image)
     end
     it 'has a blank line after the RCD image' do

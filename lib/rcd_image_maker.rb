@@ -33,7 +33,7 @@ class RcdImageMaker
     sheet = @sheet_class.new
     ercs, constraints = construct_ercs_and_constraints(rcd_result)
     comp_tableau_image = @ct_image_maker.get_image(ercs, constraints)
-    sheet.put_range[1, 1] = comp_tableau_image
+    sheet.put_range(1, 1, comp_tableau_image)
     sheet
   end
 

@@ -86,7 +86,7 @@ class CtImageMaker
   # in the header row and the first constraint column.
   def add_preference_image(ercs, constraints, sheet)
     pref_image = @pref_image_maker.get_image(ercs, constraints)
-    sheet.put_range[HEADER_ROW, FIRST_CONSTRAINT_COL] = pref_image
+    sheet.put_range(HEADER_ROW, FIRST_CONSTRAINT_COL, pref_image)
   end
   private :add_preference_image
 end

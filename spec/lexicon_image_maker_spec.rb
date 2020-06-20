@@ -13,12 +13,10 @@ RSpec.describe LexiconImageMaker do
   let(:sheet_class) { double('sheet class') }
   let(:sheet) { double('sheet') }
   let(:subsheet) { double('subsheet') }
-  let(:inner_class) { double('inner_class') }
   before(:example) do
     allow(sheet_class).to\
       receive(:new).and_return(sheet, subsheet, subsheet, subsheet)
-    allow(sheet).to receive(:put_range).and_return(inner_class)
-    allow(inner_class).to receive(:[]=)
+    allow(sheet).to receive(:put_range)
     allow(subsheet).to receive(:[]=)
     @lexicon_image_maker = LexiconImageMaker.new(sheet_class: sheet_class)
   end
