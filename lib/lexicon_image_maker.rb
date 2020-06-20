@@ -9,9 +9,9 @@ require 'sheet'
 # Given a lexicon of one prefix (a), three roots (p,q,r) and
 # two suffixes (y.z):
 #
-# | p1 | a |  |    |   |  |    |   |
-# | r1 | p |  | r2 | q |  | r3 | r |
-# | s1 | y |  | s2 | z |  |    |   |
+#   | p1 | a |  |    |   |  |    |   |
+#   | r1 | p |  | r2 | q |  | r3 | r |
+#   | s1 | y |  | s2 | z |  |    |   |
 class LexiconImageMaker
   # Returns a new lexicon image maker.
   #--
