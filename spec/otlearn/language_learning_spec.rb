@@ -23,19 +23,6 @@ RSpec.describe OTLearn::LanguageLearning do
     allow(induction_learning_class).to receive(:new)
   end
 
-  it 'defines a phonotactic step type constant' do
-    expect(defined?(OTLearn::PHONOTACTIC)).to be_truthy
-  end
-  it 'defines a single form step type constant' do
-    expect(defined?(OTLearn::SINGLE_FORM)).to be_truthy
-  end
-  it 'defines a contrast pair step type constant' do
-    expect(defined?(OTLearn::CONTRAST_PAIR)).to be_truthy
-  end
-  it 'defines an induction step type constant' do
-    expect(defined?(OTLearn::INDUCTION)).to be_truthy
-  end
-
   context 'given phontactically learnable data' do
     before(:each) do
       allow(phonotactic_learning_class).to \
@@ -195,6 +182,32 @@ RSpec.describe OTLearn::LanguageLearning do
     it 'calls induction learning one time' do
       expect(induction_learning_class).to have_received(:new)\
         .exactly(1).times
+    end
+  end
+
+  context 'when a RuntimeError is raised' do
+    before(:each) do
+      allow(grammar).to receive(:label).and_return('L#err')
+      allow(phonotactic_learning_class).to \
+        receive(:new).with(output_list, grammar, loser_selector: loser_selector)\
+                     .and_return(pl_obj)
+      allow(pl_obj).to receive(:all_correct?).and_return(false)
+      allow(single_form_learning_class).to \
+        receive(:new).with(output_list, grammar, loser_selector: loser_selector)\
+                     .and_raise(RuntimeError, 'test double error')
+      @language_learning = OTLearn::LanguageLearning.new(output_list, grammar,
+                                                         phonotactic_learning_class: phonotactic_learning_class,
+                                                         single_form_learning_class: single_form_learning_class,
+                                                         contrast_pair_learning_class: contrast_pair_learning_class,
+                                                         induction_learning_class: induction_learning_class,
+                                                         loser_selector: loser_selector)
+    end
+    it 'handles the error and constructs an error step' do
+      err_step = @language_learning.step_list[-1]
+      expect(err_step.msg).to eq 'Error with L#err: test double error'
+    end
+    it 'has a PL learning step' do
+      expect(@language_learning.step_list).to include(pl_obj)
     end
   end
 end

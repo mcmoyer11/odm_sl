@@ -6,12 +6,14 @@
 module OTLearn
   # Pre-defined type constants
 
-  # Indicates phontactic learning stage
+  # Indicates phontactic learning step
   PHONOTACTIC = :phonotactic
-  # Indicates single form learning stage
+  # Indicates single form learning step
   SINGLE_FORM = :single_form
-  # indicates contrast pair learning stage
+  # indicates contrast pair learning step
   CONTRAST_PAIR = :contrast_pair
-  # indicates induction learning stage
+  # indicates induction learning step
   INDUCTION = :induction
+  # indicates an error learning step
+  ERROR = :error
 end

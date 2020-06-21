@@ -6,6 +6,7 @@ require 'otlearn/phonotactic_learning'
 require 'otlearn/single_form_learning'
 require 'otlearn/contrast_pair_learning'
 require 'otlearn/induction_learning'
+require 'otlearn/error_step'
 require 'compare_consistency'
 require 'loser_selector'
 require 'loser_selector_from_gen'
@@ -56,10 +57,10 @@ module OTLearn
     # :call-seq:
     #   LanguageLearning.new(output_list, grammar) -> languagelearning
     def initialize(output_list, grammar, loser_selector: nil,
-          phonotactic_learning_class: OTLearn::PhonotacticLearning,
-          single_form_learning_class: OTLearn::SingleFormLearning,
-          contrast_pair_learning_class: OTLearn::ContrastPairLearning,
-          induction_learning_class: OTLearn::InductionLearning)
+          phonotactic_learning_class: PhonotacticLearning,
+          single_form_learning_class: SingleFormLearning,
+          contrast_pair_learning_class: ContrastPairLearning,
+          induction_learning_class: InductionLearning)
       @output_list = output_list
       @grammar = grammar
       @phonotactic_learning_class = phonotactic_learning_class
@@ -91,20 +92,26 @@ module OTLearn
       begin
         success_boolean = execute_learning
       rescue RuntimeError => e
-        # TODO: add a learning step to the list containing info about the
-        #       raised exception, so it can appear in the output file.
-        warn "Error with #{@grammar.label}: " + e.to_s
+        msg = "Error with #{@grammar.label}: #{e}"
+        @step_list << ErrorStep.new(msg)
+        warn msg
       rescue LearnEx => e
-        msg1 = 'more than one single matching feature passes error testing.'
-        warn "#{@grammar.label} FSF: #{msg1}"
-        # Output to the STDERR window the feature-value-pairs which are
-        # causing the learning to crash.
-        msg2 = 'the following feature-value pairs pass'
-        warn "#{@grammar.label}: #{msg2}"
-        warn "#{@grammar.label}: #{e.consistent_feature_value_list}"
+        msg1 = @grammar.label
+        msg2 = 'FSF: more than one matching feature passes error testing.'
+        # Report the feature-value-pairs which are causing learning
+        # to crash.
+        msg3 = 'The following feature-value pairs pass'
+        msg4 = e.consistent_feature_value_list.to_s
+        msg = "#{msg1}: #{msg2}\n#{msg3}:\n#{msg4}"
+        @step_list << ErrorStep.new(msg)
+        warn msg
       rescue MMREx => e
-        warn "#{@grammar.label} MMR: #{e.message}"
-        warn "#{@grammar.label}: Failed Winner: #{e.failed_winner}"
+        msg1 = @grammar.label
+        msg2 = "MMR: #{e.message}"
+        msg3 = "Failed Winner: #{e.failed_winner}"
+        msg = "#{msg1}: #{msg2}\n#{msg3}"
+        @step_list << ErrorStep.new(msg)
+        warn msg
       end
       success_boolean
     end

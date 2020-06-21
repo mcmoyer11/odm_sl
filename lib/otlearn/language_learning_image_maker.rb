@@ -8,6 +8,7 @@ require 'otlearn/phonotactic_learning_image_maker'
 require 'otlearn/single_form_learning_image_maker'
 require 'otlearn/contrast_pair_learning_image_maker'
 require 'otlearn/induction_learning_image_maker'
+require 'otlearn/error_image_maker'
 require 'otlearn/language_learning'
 
 module OTLearn
@@ -31,6 +32,7 @@ module OTLearn
       @image_makers[SINGLE_FORM] = SingleFormLearningImageMaker.new
       @image_makers[CONTRAST_PAIR] = ContrastPairLearningImageMaker.new
       @image_makers[INDUCTION] = InductionLearningImageMaker.new
+      @image_makers[ERROR] = ErrorImageMaker.new
     end
 
     # Set (change or add) the image maker object for +step_type+.
