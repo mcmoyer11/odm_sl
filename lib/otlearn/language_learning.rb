@@ -90,13 +90,13 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     # If a RuntimeError was raised, learning was not successful.
     def error_protected_execution
-      success_boolean = false
       begin
-        success_boolean = execute_learning
+        execute_learning # returns a boolean indicating success
       rescue RuntimeError => e
         msg = "Error with #{@grammar.label}: #{e}"
         @step_list << ErrorStep.new(msg)
         warn msg
+        false # exception means learning has failed
       rescue LearnEx => e
         msg1 = @grammar.label
         msg2 = 'FSF: more than one matching feature passes error testing.'
@@ -107,6 +107,7 @@ module OTLearn
         msg = "#{msg1}: #{msg2}\n#{msg3}:\n#{msg4}"
         @step_list << ErrorStep.new(msg)
         warn msg
+        false # exception means learning has failed
       rescue MMREx => e
         msg1 = @grammar.label
         msg2 = "MMR: #{e.message}"
@@ -114,8 +115,8 @@ module OTLearn
         msg = "#{msg1}: #{msg2}\n#{msg3}"
         @step_list << ErrorStep.new(msg)
         warn msg
+        false # exception means learning has failed
       end
-      success_boolean
     end
     private :error_protected_execution
 
