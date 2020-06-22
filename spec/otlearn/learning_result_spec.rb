@@ -25,7 +25,7 @@ RSpec.describe 'OTLearn::LearningResult' do
       expect(@result.grammar).to eq grammar
     end
     it 'indicates that learning was successful' do
-      expect(@result.all_correct?).to be true
+      expect(@result.learning_successful?).to be true
     end
   end
 end

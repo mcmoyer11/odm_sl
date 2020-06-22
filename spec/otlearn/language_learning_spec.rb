@@ -41,7 +41,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @language_learning.induction_learning_class =
           induction_learning_class
       @language_learning.loser_selector = loser_selector
-      @language_learning.learn(output_list, grammar)
+      @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
       expect(phonotactic_learning_class).to \
@@ -49,7 +49,7 @@ RSpec.describe OTLearn::LanguageLearning do
                                  loser_selector: loser_selector)
     end
     it 'has phonotactic learning as its only learning step' do
-      expect(@language_learning.step_list).to eq [pl_obj]
+      expect(@result.step_list).to eq [pl_obj]
     end
     it 'does not call single form learning' do
       expect(single_form_learning_class).not_to have_received(:new)
@@ -82,7 +82,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @language_learning.induction_learning_class =
           induction_learning_class
       @language_learning.loser_selector = loser_selector
-      @language_learning.learn(output_list, grammar)
+      @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
       expect(phonotactic_learning_class).to \
@@ -94,7 +94,7 @@ RSpec.describe OTLearn::LanguageLearning do
         .exactly(1).times
     end
     it 'has PL and SFL learning steps' do
-      expect(@language_learning.step_list).to eq [pl_obj, sfl_obj]
+      expect(@result.step_list).to eq [pl_obj, sfl_obj]
     end
     it 'does not call contrast pair learning' do
       expect(contrast_pair_learning_class).not_to have_received(:new)
@@ -129,7 +129,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @language_learning.induction_learning_class =
           induction_learning_class
       @language_learning.loser_selector = loser_selector
-      @language_learning.learn(output_list, grammar)
+      @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
       expect(phonotactic_learning_class).to \
@@ -141,7 +141,7 @@ RSpec.describe OTLearn::LanguageLearning do
         have_received(:new).exactly(2).times
     end
     it 'has PL, SFL, CPL, and SFL learning steps' do
-      expect(@language_learning.step_list).to\
+      expect(@result.step_list).to\
         eq [pl_obj, sfl_obj, cpl_obj, sfl_obj2]
     end
     it 'calls contrast pair learning one time' do
@@ -181,7 +181,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @language_learning.induction_learning_class =
           induction_learning_class
       @language_learning.loser_selector = loser_selector
-      @language_learning.learn(output_list, grammar)
+      @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
       expect(phonotactic_learning_class).to \
@@ -193,7 +193,7 @@ RSpec.describe OTLearn::LanguageLearning do
         .exactly(2).times
     end
     it 'has PL, SFL, CPL, IL, and SFL learning steps' do
-      expect(@language_learning.step_list).to\
+      expect(@result.step_list).to\
         eq [pl_obj, sfl_obj, cpl_obj, il_obj, sfl_obj2]
     end
     it 'calls contrast pair learning one time' do
@@ -228,14 +228,14 @@ RSpec.describe OTLearn::LanguageLearning do
       @language_learning.induction_learning_class =
           induction_learning_class
       @language_learning.loser_selector = loser_selector
-      @language_learning.learn(output_list, grammar)
+      @result = @language_learning.learn(output_list, grammar)
     end
     it 'handles the error and constructs an error step' do
-      err_step = @language_learning.step_list[-1]
+      err_step = @result.step_list[-1]
       expect(err_step.msg).to eq 'Error with L#err: test double error'
     end
     it 'has a PL learning step' do
-      expect(@language_learning.step_list).to include(pl_obj)
+      expect(@result.step_list).to include(pl_obj)
     end
   end
 end

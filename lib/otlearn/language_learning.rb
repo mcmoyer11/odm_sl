@@ -7,6 +7,7 @@ require 'otlearn/single_form_learning'
 require 'otlearn/contrast_pair_learning'
 require 'otlearn/induction_learning'
 require 'otlearn/error_step'
+require 'otlearn/learning_result'
 require 'compare_consistency'
 require 'loser_selector'
 require 'loser_selector_from_gen'
@@ -14,9 +15,10 @@ require 'loser_selector_from_gen'
 module OTLearn
   # A LanguageLearning object instantiates a particular instance of
   # language learning. Learning is executed via the method #learn,
-  #  given a set of outputs (the data to be learned from), and
+  # given a set of outputs (the data to be learned from), and
   # a starting grammar (which will likely be altered
   # during the course of learning).
+  # The method #learn returns a learning result object.
   #
   # The learning proceeds in the following stages, in order:
   # * Phonotactic learning.
@@ -27,7 +29,7 @@ module OTLearn
   #     run another round of single form learning.
   # After each major learning step in which grammar change occurs, an object
   # representing the step is stored. The list of major learning steps
-  # is obtainable via #step_list().
+  # is obtainable from the learning result via #step_list.
   #
   # ===References
   #
@@ -49,12 +51,6 @@ module OTLearn
     # an object of class CompareConsistency.
     attr_accessor :loser_selector
 
-    # The final grammar that was the result of learning.
-    attr_reader :grammar
-
-    # The list of major learning steps taken during learning.
-    attr_reader :step_list
-
     # Constructs a language learning simulation object.
     # :call-seq:
     #   LanguageLearning.new -> languagelearning
@@ -67,41 +63,40 @@ module OTLearn
       @loser_selector = nil # set in #learn
     end
 
+    # Runs the learning simulation, and returns a learning result object.
+    # :call-seq:
+    #   learn(output_list, grammar) -> learning_result
+    def learn(output_list, grammar)
+      # step_list is an instance variable so that it remains easily
+      # accessible if an exception is raised, and then caught by
+      # #error_protected_execution.
+      @step_list = []
+      default_loser_selector(grammar.system) if @loser_selector.nil?
+      error_protected_execution(output_list, grammar)
+      OTLearn::LearningResult.new(@step_list, grammar)
+    end
+
     # Constructs the default loser selector.
     def default_loser_selector(system)
       basic_selector = LoserSelector.new(CompareConsistency.new)
       @loser_selector = LoserSelectorFromGen.new(system,
                                                  basic_selector)
     end
-
-    # Returns a boolean indicating if learning was successful.
-    def learning_successful?
-      @learning_successful
-    end
-
-    # Runs the learning simulation.
-    def learn(output_list, grammar)
-      @output_list = output_list
-      @grammar = grammar
-      @step_list = []
-      default_loser_selector(grammar.system) if @loser_selector.nil?
-      error_protected_execution
-      @learning_successful = @step_list[-1].all_correct?
-    end
+    private :default_loser_selector
 
     # Calls the main learning procedure, #execute_learning, within
     # a block so that it can rescue a RuntimeError if it arises.
     # Returns true if learning was successful, false otherwise.
     # If a RuntimeError was raised, learning was not successful.
-    def error_protected_execution
-      execute_learning # returns a boolean indicating success
+    def error_protected_execution(output_list, grammar)
+      execute_learning(output_list, grammar)
     rescue RuntimeError => e
-      msg = "Error with #{@grammar.label}: #{e}"
+      msg = "Error with #{grammar.label}: #{e}"
       @step_list << ErrorStep.new(msg)
       warn msg
       false # exception means learning has failed
     rescue LearnEx => e
-      msg1 = @grammar.label
+      msg1 = grammar.label
       msg2 = 'FSF: more than one matching feature passes error testing.'
       # Report the feature-value-pairs which are causing learning
       # to crash.
@@ -112,7 +107,7 @@ module OTLearn
       warn msg
       false # exception means learning has failed
     rescue MMREx => e
-      msg1 = @grammar.label
+      msg1 = grammar.label
       msg2 = "MMR: #{e.message}"
       msg3 = "Failed Winner: #{e.failed_winner}"
       msg = "#{msg1}: #{msg2}\n#{msg3}"
@@ -127,10 +122,10 @@ module OTLearn
     # is automatically executed whenever a LanguageLearning object is
     # created.
     # Returns true if learning was successful, false otherwise.
-    def execute_learning
+    def execute_learning(output_list, grammar)
       # Phonotactic learning
       pl = @phonotactic_learning_class\
-           .new(@output_list, @grammar, loser_selector: @loser_selector)
+           .new(output_list, grammar, loser_selector: @loser_selector)
       @step_list << pl
       return true if pl.all_correct?
 
@@ -139,13 +134,13 @@ module OTLearn
       loop do
         # Single form learning
         sfl = @single_form_learning_class\
-              .new(@output_list, @grammar, loser_selector: @loser_selector)
+              .new(output_list, grammar, loser_selector: @loser_selector)
         @step_list << sfl
         break if sfl.all_correct?
 
         # Contrast pair learning
         cpl = @contrast_pair_learning_class\
-              .new(@output_list, @grammar, loser_selector: @loser_selector)
+              .new(output_list, grammar, loser_selector: @loser_selector)
         @step_list << cpl
         break if cpl.all_correct?
 
@@ -153,7 +148,7 @@ module OTLearn
 
         # No suitable contrast pair, so pursue a step of Induction learning
         il = @induction_learning_class\
-             .new(@output_list, @grammar, loser_selector: @loser_selector)
+             .new(output_list, grammar, loser_selector: @loser_selector)
         @step_list << il
         break if il.all_correct?
 

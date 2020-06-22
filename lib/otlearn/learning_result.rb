@@ -20,7 +20,7 @@ module OTLearn
     end
 
     # Returns true if learning succeeded, false otherwise.
-    def all_correct?
+    def learning_successful?
       @step_list[-1].all_correct?
     end
   end

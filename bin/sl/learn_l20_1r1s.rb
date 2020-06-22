@@ -46,14 +46,14 @@ grammar = Grammar.new(system: SL::System.instance)
 grammar.label = label
 # Run learning on the language
 lang_sim = OTLearn::LanguageLearning.new
-lang_sim.learn(outputs, grammar)
-sim_image = OTLearn::LanguageLearningImageMaker.new.get_image(lang_sim)
+result = lang_sim.learn(outputs, grammar)
+sim_image = OTLearn::LanguageLearningImageMaker.new.get_image(result)
 
 # Write the results to a CSV file, with the language label as the filename.
 out_file = File.join(out_filepath,"#{label}.csv")
 csv = CsvOutput.new(sim_image)
 csv.write_to_file(out_file)
 # Report to STDOUT if language was not successfully learned
-unless lang_sim.learning_successful?
+unless result.learning_successful?
   puts "#{label} not learned."
 end
