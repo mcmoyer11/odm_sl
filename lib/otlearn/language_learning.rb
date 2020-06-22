@@ -93,33 +93,31 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     # If a RuntimeError was raised, learning was not successful.
     def error_protected_execution
-      begin
-        execute_learning # returns a boolean indicating success
-      rescue RuntimeError => e
-        msg = "Error with #{@grammar.label}: #{e}"
-        @step_list << ErrorStep.new(msg)
-        warn msg
-        false # exception means learning has failed
-      rescue LearnEx => e
-        msg1 = @grammar.label
-        msg2 = 'FSF: more than one matching feature passes error testing.'
-        # Report the feature-value-pairs which are causing learning
-        # to crash.
-        msg3 = 'The following feature-value pairs pass'
-        msg4 = e.consistent_feature_value_list.to_s
-        msg = "#{msg1}: #{msg2}\n#{msg3}:\n#{msg4}"
-        @step_list << ErrorStep.new(msg)
-        warn msg
-        false # exception means learning has failed
-      rescue MMREx => e
-        msg1 = @grammar.label
-        msg2 = "MMR: #{e.message}"
-        msg3 = "Failed Winner: #{e.failed_winner}"
-        msg = "#{msg1}: #{msg2}\n#{msg3}"
-        @step_list << ErrorStep.new(msg)
-        warn msg
-        false # exception means learning has failed
-      end
+      execute_learning # returns a boolean indicating success
+    rescue RuntimeError => e
+      msg = "Error with #{@grammar.label}: #{e}"
+      @step_list << ErrorStep.new(msg)
+      warn msg
+      false # exception means learning has failed
+    rescue LearnEx => e
+      msg1 = @grammar.label
+      msg2 = 'FSF: more than one matching feature passes error testing.'
+      # Report the feature-value-pairs which are causing learning
+      # to crash.
+      msg3 = 'The following feature-value pairs pass'
+      msg4 = e.consistent_feature_value_list.to_s
+      msg = "#{msg1}: #{msg2}\n#{msg3}:\n#{msg4}"
+      @step_list << ErrorStep.new(msg)
+      warn msg
+      false # exception means learning has failed
+    rescue MMREx => e
+      msg1 = @grammar.label
+      msg2 = "MMR: #{e.message}"
+      msg3 = "Failed Winner: #{e.failed_winner}"
+      msg = "#{msg1}: #{msg2}\n#{msg3}"
+      @step_list << ErrorStep.new(msg)
+      warn msg
+      false # exception means learning has failed
     end
     private :error_protected_execution
 
