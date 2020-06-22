@@ -33,6 +33,22 @@ module OTLearn
   #
   # Tesar 2014. <em>Output-Driven Phonology</em>.
   class LanguageLearning
+    # Phonotactic learner
+    attr_accessor :phonotactic_learning_class
+
+    # Single-form learner
+    attr_accessor :single_form_learning_class
+
+    # Contrast pair learner
+    attr_accessor :contrast_pair_learning_class
+
+    # Induction learner
+    attr_accessor :induction_learning_class
+
+    # Loser selector for forming WL pairs; default value is
+    # an object of class CompareConsistency.
+    attr_accessor :loser_selector
+
     # The final grammar that was the result of learning.
     attr_reader :grammar
 
@@ -40,28 +56,15 @@ module OTLearn
     attr_reader :step_list
 
     # Constructs a language learning simulation object.
-    # * +loser_selector+ - object used for loser selection; defaults to
-    #   a loser selector using CompareConsistency.
-    #--
-    # The following labeled parameters are the classes of the major learning
-    # steps, and are used for testing (dependency injection).
-    # * +phonotactic_learning_class+
-    # * +single_form_learning_class+
-    # * +contrast_pair_learning_class+
-    # * +induction_learning_class+
-    #++
     # :call-seq:
     #   LanguageLearning.new -> languagelearning
-    def initialize(loser_selector: nil,
-          phonotactic_learning_class: PhonotacticLearning,
-          single_form_learning_class: SingleFormLearning,
-          contrast_pair_learning_class: ContrastPairLearning,
-          induction_learning_class: InductionLearning)
-      @phonotactic_learning_class = phonotactic_learning_class
-      @single_form_learning_class = single_form_learning_class
-      @contrast_pair_learning_class = contrast_pair_learning_class
-      @induction_learning_class = induction_learning_class
-      @loser_selector = loser_selector
+    def initialize
+      # Set the default values for the learning step objects
+      @phonotactic_learning_class = PhonotacticLearning
+      @single_form_learning_class = SingleFormLearning
+      @contrast_pair_learning_class = ContrastPairLearning
+      @induction_learning_class = InductionLearning
+      @loser_selector = nil # set in #learn
       @step_list = []
     end
 
