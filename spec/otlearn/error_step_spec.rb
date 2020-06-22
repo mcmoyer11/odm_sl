@@ -18,5 +18,8 @@ RSpec.describe 'OTLearn::ErrorStep' do
     it 'returns its step type' do
       expect(@err_step.step_type).to eq OTLearn::ERROR
     end
+    it 'indicates that learning failed' do
+      expect(@err_step.all_correct?).to be_falsey
+    end
   end
 end

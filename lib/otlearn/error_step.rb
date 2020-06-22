@@ -19,5 +19,11 @@ module OTLearn
       @msg = msg
       @step_type = ERROR
     end
+
+    # Returns false, indicating that, because an error has occurred,
+    # learning has failed.
+    def all_correct?
+      false
+    end
   end
 end

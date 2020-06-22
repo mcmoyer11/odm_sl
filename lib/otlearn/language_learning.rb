@@ -65,7 +65,6 @@ module OTLearn
       @contrast_pair_learning_class = ContrastPairLearning
       @induction_learning_class = InductionLearning
       @loser_selector = nil # set in #learn
-      @step_list = []
     end
 
     # Constructs the default loser selector.
@@ -84,8 +83,10 @@ module OTLearn
     def learn(output_list, grammar)
       @output_list = output_list
       @grammar = grammar
+      @step_list = []
       default_loser_selector(grammar.system) if @loser_selector.nil?
-      @learning_successful = error_protected_execution
+      error_protected_execution
+      @learning_successful = @step_list[-1].all_correct?
     end
 
     # Calls the main learning procedure, #execute_learning, within
