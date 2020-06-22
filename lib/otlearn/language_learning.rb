@@ -13,9 +13,10 @@ require 'loser_selector_from_gen'
 
 module OTLearn
   # A LanguageLearning object instantiates a particular instance of
-  # language learning. An instance is created with a set of outputs
-  # (the data to be learned from), and a starting grammar (which
-  # will likely be altered during the course of learning).
+  # language learning. Learning is executed via the method #learn,
+  #  given a set of outputs (the data to be learned from), and
+  # a starting grammar (which will likely be altered
+  # during the course of learning).
   #
   # The learning proceeds in the following stages, in order:
   # * Phonotactic learning.
@@ -28,8 +29,6 @@ module OTLearn
   # representing the step is stored. The list of major learning steps
   # is obtainable via #step_list().
   #
-  # Learning is initiated upon construction of the object.
-  #
   # ===References
   #
   # Tesar 2014. <em>Output-Driven Phonology</em>.
@@ -40,10 +39,7 @@ module OTLearn
     # The list of major learning steps taken during learning.
     attr_reader :step_list
 
-    # Constructs a language learning simulation object, and automatically runs
-    # the simulation upon objection construction.
-    # * +output_list+ - the winners considered to form contrast pairs
-    # * +grammar+ - the current grammar (learning may alter it).
+    # Constructs a language learning simulation object.
     # * +loser_selector+ - object used for loser selection; defaults to
     #   a loser selector using CompareConsistency.
     #--
@@ -55,32 +51,38 @@ module OTLearn
     # * +induction_learning_class+
     #++
     # :call-seq:
-    #   LanguageLearning.new(output_list, grammar) -> languagelearning
-    def initialize(output_list, grammar, loser_selector: nil,
+    #   LanguageLearning.new -> languagelearning
+    def initialize(loser_selector: nil,
           phonotactic_learning_class: PhonotacticLearning,
           single_form_learning_class: SingleFormLearning,
           contrast_pair_learning_class: ContrastPairLearning,
           induction_learning_class: InductionLearning)
-      @output_list = output_list
-      @grammar = grammar
       @phonotactic_learning_class = phonotactic_learning_class
       @single_form_learning_class = single_form_learning_class
       @contrast_pair_learning_class = contrast_pair_learning_class
       @induction_learning_class = induction_learning_class
       @loser_selector = loser_selector
-      # the default value of @loser_selector
-      if @loser_selector.nil?
-        basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                                   basic_selector)
-      end
       @step_list = []
-      @learning_successful = error_protected_execution
+    end
+
+    # Constructs the default loser selector.
+    def default_loser_selector(system)
+      basic_selector = LoserSelector.new(CompareConsistency.new)
+      @loser_selector = LoserSelectorFromGen.new(system,
+                                                 basic_selector)
     end
 
     # Returns a boolean indicating if learning was successful.
     def learning_successful?
       @learning_successful
+    end
+
+    # Runs the learning simulation.
+    def learn(output_list, grammar)
+      @output_list = output_list
+      @grammar = grammar
+      default_loser_selector(grammar.system) if @loser_selector.nil?
+      @learning_successful = error_protected_execution
     end
 
     # Calls the main learning procedure, #execute_learning, within

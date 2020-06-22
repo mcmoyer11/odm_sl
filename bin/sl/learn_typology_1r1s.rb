@@ -47,7 +47,8 @@ read_languages_from_file(data_file) do |label, outputs|
   grammar = Grammar.new(system: SL::System.instance)
   grammar.label = label
   # Run learning on the language
-  lang_sim = OTLearn::LanguageLearning.new(outputs, grammar)
+  lang_sim = OTLearn::LanguageLearning.new
+  lang_sim.learn(outputs, grammar)
   sim_image = OTLearn::LanguageLearningImageMaker.new.get_image(lang_sim)
   # Write the results to a CSV file, with the language label as the filename.
   out_file = File.join(out_dir, "#{label}.csv")
