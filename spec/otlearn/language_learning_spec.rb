@@ -5,6 +5,7 @@
 require 'rspec'
 require 'otlearn/language_learning'
 require 'otlearn/otlearn'
+require 'stringio'
 
 RSpec.describe OTLearn::LanguageLearning do
   let(:output_list) { double('output_list') }
@@ -207,6 +208,8 @@ RSpec.describe OTLearn::LanguageLearning do
   end
 
   context 'when a RuntimeError is raised' do
+    # Use StringIO as a test mock for $stderr.
+    let(:warn_output) { StringIO.new }
     before(:each) do
       allow(grammar).to receive(:label).and_return('L#err')
       allow(phonotactic_learning_class).to \
@@ -218,7 +221,8 @@ RSpec.describe OTLearn::LanguageLearning do
         receive(:new).with(output_list, grammar,
                            loser_selector: loser_selector)\
                      .and_raise(RuntimeError, 'test double error')
-      @language_learning = OTLearn::LanguageLearning.new
+      @language_learning =
+        OTLearn::LanguageLearning.new(warn_output: warn_output)
       @language_learning.phonotactic_learning_class =
           phonotactic_learning_class
       @language_learning.single_form_learning_class =
@@ -236,6 +240,10 @@ RSpec.describe OTLearn::LanguageLearning do
     end
     it 'has a PL learning step' do
       expect(@result.step_list).to include(pl_obj)
+    end
+    it 'writes a warning message' do
+      expect(warn_output.string).to eq\
+        "Error with L#err: test double error\n"
     end
   end
 end
