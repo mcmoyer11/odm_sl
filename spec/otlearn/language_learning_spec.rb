@@ -24,6 +24,7 @@ RSpec.describe OTLearn::LanguageLearning do
     allow(single_form_learning_class).to receive(:new)
     allow(contrast_pair_learning_class).to receive(:new)
     allow(induction_learning_class).to receive(:new)
+    allow(grammar).to receive(:label)
   end
 
   context 'given phontactically learnable data' do

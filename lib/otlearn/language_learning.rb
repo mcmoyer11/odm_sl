@@ -68,6 +68,14 @@ module OTLearn
       @warn_output = warn_output
     end
 
+    # Constructs the default loser selector.
+    def default_loser_selector(system)
+      basic_selector = LoserSelector.new(CompareConsistency.new)
+      @loser_selector =
+        LoserSelectorFromGen.new(system, basic_selector)
+    end
+    private :default_loser_selector
+
     # Runs the learning simulation, and returns a learning result object.
     # :call-seq:
     #   learn(output_list, grammar) -> learning_result
@@ -77,42 +85,11 @@ module OTLearn
       # #error_protected_execution.
       @step_list = []
       default_loser_selector(grammar.system) if @loser_selector.nil?
-      error_protected_execution(output_list, grammar)
+      error_protected_execution(grammar.label) do
+        execute_learning(output_list, grammar)
+      end
       OTLearn::LearningResult.new(@step_list, grammar)
     end
-
-    # Constructs the default loser selector.
-    def default_loser_selector(system)
-      basic_selector = LoserSelector.new(CompareConsistency.new)
-      @loser_selector =
-        LoserSelectorFromGen.new(system, basic_selector)
-    end
-    private :default_loser_selector
-
-    # Calls the main learning procedure, #execute_learning,
-    # and rescues an exception if it arises.
-    # Returns true if learning was successful, false otherwise.
-    # If an exception was raised, learning was not successful.
-    def error_protected_execution(output_list, grammar)
-      execute_learning(output_list, grammar)
-    rescue RuntimeError => e
-      handle_exception(rterror_msg(e, grammar))
-    rescue LearnEx => e
-      handle_exception(learnex_msg(e, grammar))
-    rescue MMREx => e
-      handle_exception(mmrex_msg(e, grammar))
-    end
-    private :error_protected_execution
-
-    # Handles an exception by creating a new error step, adding it
-    # to the step list, writing a warning to the warning output
-    # channel, and returning false (indicating learning failed).
-    def handle_exception(msg)
-      @step_list << ErrorStep.new(msg)
-      @warn_output.puts msg # write to the warning output channel
-      false # exception means learning has failed
-    end
-    private :handle_exception
 
     # The main, top-level method for executing learning. This method is
     # protected, and called by the constructor #initialize, so learning
@@ -158,10 +135,34 @@ module OTLearn
     end
     private :execute_learning
 
+    # Calls provided block, and rescues an exception if one arises.
+    # Returns the value returned by block if no exception is raised,
+    # otherwise it returns the value returned by the exception handler.
+    def error_protected_execution(label)
+      yield
+    rescue RuntimeError => e
+      handle_exception(rterror_msg(e, label))
+    rescue LearnEx => e
+      handle_exception(learnex_msg(e, label))
+    rescue MMREx => e
+      handle_exception(mmrex_msg(e, label))
+    end
+    private :error_protected_execution
+
+    # Handles an exception by creating a new error step, adding it
+    # to the step list, writing a warning to the warning output
+    # channel, and returning false (indicating learning failed).
+    def handle_exception(msg)
+      @step_list << ErrorStep.new(msg)
+      @warn_output.puts msg # write to the warning output channel
+      false # exception means learning has failed
+    end
+    private :handle_exception
+
     # Returns the warning message for a RuntimeError exception
     # raised during learning.
-    def rterror_msg(exception, grammar)
-      "Error with #{grammar.label}: #{exception}"
+    def rterror_msg(exception, label)
+      "Error with #{label}: #{exception}"
     end
     private :rterror_msg
 
@@ -169,24 +170,22 @@ module OTLearn
     # raised by FewestSetFeatures (FSF) when more than one unset
     # feature can resolve inconsistency for a word on its own (the learner
     # currently doesn't know how to choose).
-    def learnex_msg(exception, grammar)
-      msg1 = grammar.label
-      msg2 = 'FSF: more than one matching feature passes error testing.'
+    def learnex_msg(exception, label)
+      msg1 = 'FSF: more than one matching feature passes error testing.'
       # Report the feature-value-pairs which are causing learning
       # to crash.
-      msg3 = 'The following feature-value pairs pass'
-      msg4 = exception.consistent_feature_value_list.to_s
-      "#{msg1}: #{msg2}\n#{msg3}:\n#{msg4}"
+      msg2 = 'The following feature-value pairs pass'
+      msg3 = exception.consistent_feature_value_list.to_s
+      "#{label}: #{msg1}\n#{msg2}:\n#{msg3}"
     end
     private :learnex_msg
 
     # Returns the warning message for a MMREx exception, which is
     # raised by MaxMismatchRanking (MMR).
-    def mmrex_msg(exception, grammar)
-      msg1 = grammar.label
-      msg2 = "MMR: #{exception.message}"
-      msg3 = "Failed Winner: #{exception.failed_winner}"
-      "#{msg1}: #{msg2}\n#{msg3}"
+    def mmrex_msg(exception, label)
+      msg1 = "MMR: #{exception.message}"
+      msg2 = "Failed Winner: #{exception.failed_winner}"
+      "#{label}: #{msg1}\n#{msg2}"
     end
     private :mmrex_msg
   end
