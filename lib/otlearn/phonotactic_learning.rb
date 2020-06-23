@@ -36,8 +36,7 @@ module OTLearn
     #++
     #
     # :call-seq:
-    #   PhonotacticLearning.new(output_list, grammar) -> phonotacticlearner
-    #   PhonotacticLearning.new(output_list, grammar, loser_selector: selector) -> phonotacticlearner
+    #   PhonotacticLearning.new(output_list, grammar) -> phonotactic_learner
     def initialize(output_list, grammar, loser_selector: nil,
                    learning_module: OTLearn,
                    grammar_test_class: OTLearn::GrammarTest)
@@ -79,19 +78,15 @@ module OTLearn
       @changed = true if mrcd_result.any_change?
       @test_result = @grammar_test_class.new(@output_list, @grammar)
     end
-    protected :run_phonotactic_learning
+    private :run_phonotactic_learning
 
-    # Parse the outputs into winners, with input features matching set
+    # Parse the outputs into winners, with set input features matching their
     # lexicon values, and unset features assigned values matching the output.
     def construct_winners
-      winner_list = @output_list.map do |out|
-        @grammar.parse_output(out)
+      @output_list.map do |out|
+        @grammar.parse_output(out).match_input_to_output!
       end
-      winner_list.each do |winner|
-        winner.match_input_to_output!
-      end
-      winner_list
     end
-    protected :construct_winners
+    private :construct_winners
   end
 end
