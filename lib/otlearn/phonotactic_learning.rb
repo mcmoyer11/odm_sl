@@ -6,6 +6,7 @@ require 'otlearn/otlearn'
 require 'otlearn/ranking_learning'
 require 'otlearn/grammar_test'
 require 'otlearn/language_learning'
+require 'otlearn/erc_learning'
 require 'compare_consistency'
 require 'loser_selector'
 require 'loser_selector_from_gen'
@@ -21,10 +22,10 @@ module OTLearn
     # Grammar test result after the completion of phonotactic learning.
     attr_reader :test_result
 
-    # Creates the phonotactic learning object, and automatically
-    # runs phonotactic learning.
-    # * +output_list+ - a list of grammatical outputs
-    # * +grammar+ - the grammar that learning will use/modify
+    # The learner for additional ERCs (ranking information)
+    attr_accessor :erc_learner
+
+    # Creates the phonotactic learning object.
     # * +loser_selector+ - selects losers for ranking learning; defaults to
     #   a loser selector using CompareConsistency.
     #--
@@ -37,24 +38,15 @@ module OTLearn
     #
     # :call-seq:
     #   PhonotacticLearning.new(output_list, grammar) -> phonotactic_learner
-    def initialize(output_list, grammar, loser_selector: nil,
+    def initialize(loser_selector: nil,
                    learning_module: OTLearn,
                    grammar_test_class: OTLearn::GrammarTest)
-      @output_list = output_list
-      @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @loser_selector = loser_selector
-      # Cannot put the default in the parameter list because of the call
-      # to grammar.system.
-      if @loser_selector.nil?
-        basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                                   basic_selector)
-      end
+      @erc_learner = nil
       @changed = false # default value
       @step_type = PHONOTACTIC
-      run_phonotactic_learning
     end
 
     # Returns true if phonotactic learning modified the grammar;
@@ -70,7 +62,17 @@ module OTLearn
     end
 
     # Actually executes phonotactic learning.
-    def run_phonotactic_learning
+    def run(output_list, grammar)
+      @output_list = output_list
+      @grammar = grammar
+      # Cannot put the default in the parameter list because of the call
+      # to grammar.system.
+      if @loser_selector.nil?
+        basic_selector = LoserSelector.new(CompareConsistency.new)
+        @loser_selector = LoserSelectorFromGen.new(@grammar.system,
+                                                   basic_selector)
+      end
+      @erc_learner ||= ErcLearning.new(@loser_selector)
       @winner_list = construct_winners
       mrcd_result =
         @learning_module.ranking_learning(@winner_list, @grammar,
@@ -78,7 +80,6 @@ module OTLearn
       @changed = true if mrcd_result.any_change?
       @test_result = @grammar_test_class.new(@output_list, @grammar)
     end
-    private :run_phonotactic_learning
 
     # Parse the outputs into winners, with set input features matching their
     # lexicon values, and unset features assigned values matching the output.
