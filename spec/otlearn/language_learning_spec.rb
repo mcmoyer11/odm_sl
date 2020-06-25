@@ -30,8 +30,7 @@ RSpec.describe OTLearn::LanguageLearning do
   context 'given phontactically learnable data' do
     before(:each) do
       allow(phonotactic_learning_class).to \
-        receive(:new).with(loser_selector: loser_selector)\
-                     .and_return(pl_obj)
+        receive(:new).and_return(pl_obj)
       allow(pl_obj).to receive(:run)
       allow(pl_obj).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new
@@ -47,8 +46,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
-      expect(phonotactic_learning_class).to \
-        have_received(:new).with(loser_selector: loser_selector)
+      expect(phonotactic_learning_class).to have_received(:new)
     end
     it 'has phonotactic learning as its only learning step' do
       expect(@result.step_list).to eq [pl_obj]
@@ -66,9 +64,7 @@ RSpec.describe OTLearn::LanguageLearning do
 
   context 'given single form learnable data' do
     before(:each) do
-      allow(phonotactic_learning_class).to \
-        receive(:new).with(loser_selector: loser_selector)\
-                     .and_return(pl_obj)
+      allow(phonotactic_learning_class).to receive(:new).and_return(pl_obj)
       allow(pl_obj).to receive(:run)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
@@ -88,8 +84,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
-      expect(phonotactic_learning_class).to \
-        have_received(:new).with(loser_selector: loser_selector)
+      expect(phonotactic_learning_class).to have_received(:new)
     end
     it 'calls single form learning one time' do
       expect(single_form_learning_class).to have_received(:new)\
@@ -135,9 +130,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
-      expect(phonotactic_learning_class).to \
-        have_received(:new)\
-        .with(loser_selector: loser_selector)
+      expect(phonotactic_learning_class).to have_received(:new)
     end
     it 'calls single form learning two times' do
       expect(single_form_learning_class).to\
@@ -188,9 +181,7 @@ RSpec.describe OTLearn::LanguageLearning do
       @result = @language_learning.learn(output_list, grammar)
     end
     it 'calls phonotactic learning' do
-      expect(phonotactic_learning_class).to \
-        have_received(:new)\
-        .with(loser_selector: loser_selector)
+      expect(phonotactic_learning_class).to have_received(:new)
     end
     it 'calls single form learning two times' do
       expect(single_form_learning_class).to have_received(:new)\
@@ -216,8 +207,7 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(grammar).to receive(:label).and_return('L#err')
       allow(phonotactic_learning_class).to \
-        receive(:new).with(loser_selector: loser_selector)\
-                     .and_return(pl_obj)
+        receive(:new).and_return(pl_obj)
       allow(pl_obj).to receive(:run)
       allow(pl_obj).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \

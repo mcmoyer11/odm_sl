@@ -10,14 +10,12 @@ RSpec.describe OTLearn::PhonotacticLearning do
   let(:winner_list) { double('winner_list') }
   let(:output_list) { double('output_list') }
   let(:grammar) { double('grammar') }
-  let(:otlearn_module) { double('otlearn_module') }
   let(:mrcd_result) { double('mrcd_result') }
   let(:grammar_test_class) { double('grammar_test_class') }
   let(:grammar_test) { double('grammar_test') }
-  let(:loser_selector) { double('loser_selector') }
   let(:erc_learner) { double('erc_learner') }
   context 'with a winner list and a grammar, sufficient to learn all the words' do
-    before(:each) do
+    before(:example) do
       allow(output_list).to receive(:map).and_return(winner_list)
       # winner_list.each() takes a block which assigns output-matching values
       # to unset features.
@@ -28,8 +26,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @phonotactic_learning =
         OTLearn::PhonotacticLearning\
-        .new(grammar_test_class: grammar_test_class,
-             loser_selector: loser_selector)
+        .new(grammar_test_class: grammar_test_class)
       @phonotactic_learning.erc_learner = erc_learner
       @phonotactic_learning.run(output_list, grammar)
     end
@@ -52,7 +49,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
   end
 
   context 'with a winner list causing no change, not all words learned' do
-    before(:each) do
+    before(:example) do
       allow(output_list).to receive(:map).and_return(winner_list)
       # winner_list.each() takes a block which assigns output-matching values
       # to unset features.
@@ -63,8 +60,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @phonotactic_learning =
         OTLearn::PhonotacticLearning\
-        .new(grammar_test_class: grammar_test_class,
-             loser_selector: loser_selector)
+        .new(grammar_test_class: grammar_test_class)
       @phonotactic_learning.erc_learner = erc_learner
       @phonotactic_learning.run(output_list, grammar)
     end

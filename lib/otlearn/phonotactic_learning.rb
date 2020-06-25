@@ -6,9 +6,6 @@ require 'otlearn/otlearn'
 require 'otlearn/grammar_test'
 require 'otlearn/language_learning'
 require 'otlearn/erc_learning'
-require 'compare_consistency'
-require 'loser_selector'
-require 'loser_selector_from_gen'
 
 module OTLearn
   # Executes phonotactic learning on a list of data outputs, using the
@@ -25,8 +22,6 @@ module OTLearn
     attr_accessor :erc_learner
 
     # Creates the phonotactic learning object.
-    # * +loser_selector+ - selects losers for ranking learning; defaults to
-    #   a loser selector using CompareConsistency.
     #--
     # grammar_test_class is a dependency injection used
     # for testing.
@@ -36,11 +31,9 @@ module OTLearn
     #
     # :call-seq:
     #   PhonotacticLearning.new -> phonotactic_learner
-    def initialize(loser_selector: nil,
-                   grammar_test_class: OTLearn::GrammarTest)
+    def initialize(grammar_test_class: OTLearn::GrammarTest)
       @grammar_test_class = grammar_test_class
-      @loser_selector = loser_selector
-      @erc_learner = nil
+      @erc_learner = ErcLearning.new(nil)
       @changed = false # default value
       @step_type = PHONOTACTIC
     end
@@ -59,12 +52,6 @@ module OTLearn
 
     # Actually executes phonotactic learning.
     def run(output_list, grammar)
-      if @loser_selector.nil?
-        basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                                   basic_selector)
-      end
-      @erc_learner ||= ErcLearning.new(@loser_selector)
       winner_list = construct_winners(output_list, grammar)
       mrcd_result = @erc_learner.run(winner_list, grammar)
       @changed = true if mrcd_result.any_change?

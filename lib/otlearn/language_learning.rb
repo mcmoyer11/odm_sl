@@ -98,7 +98,7 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning(output_list, grammar)
       # Phonotactic learning
-      pl = @phonotactic_learning_class.new(loser_selector: @loser_selector)
+      pl = @phonotactic_learning_class.new
       pl.run(output_list, grammar)
       @step_list << pl
       return true if pl.all_correct?
