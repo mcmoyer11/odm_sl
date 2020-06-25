@@ -22,23 +22,19 @@ RSpec.describe OTLearn::PhonotacticLearning do
       # winner_list.each() takes a block which assigns output-matching values
       # to unset features.
       allow(winner_list).to receive(:each)
-      allow(otlearn_module).to \
-        receive(:ranking_learning).and_return(mrcd_result)
       allow(erc_learner).to receive(:run).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(true)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @phonotactic_learning =
         OTLearn::PhonotacticLearning\
-        .new(learning_module: otlearn_module,
-                                   grammar_test_class: grammar_test_class,
-                                   loser_selector: loser_selector)
+        .new(grammar_test_class: grammar_test_class,
+             loser_selector: loser_selector)
       @phonotactic_learning.erc_learner = erc_learner
       @phonotactic_learning.run(output_list, grammar)
     end
-    it 'calls ranking learning' do
-      expect(otlearn_module).to have_received(:ranking_learning)\
-        .with(winner_list, grammar, loser_selector)
+    it 'calls the ERC learner' do
+      expect(erc_learner).to have_received(:run).with(winner_list, grammar)
     end
     it 'indicates if learning made any changes to the grammar' do
       expect(@phonotactic_learning).to be_changed
@@ -61,23 +57,19 @@ RSpec.describe OTLearn::PhonotacticLearning do
       # winner_list.each() takes a block which assigns output-matching values
       # to unset features.
       allow(winner_list).to receive(:each)
-      allow(otlearn_module).to \
-        receive(:ranking_learning).and_return(mrcd_result)
       allow(erc_learner).to receive(:run).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(false)
       allow(grammar_test_class).to receive(:new).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @phonotactic_learning =
         OTLearn::PhonotacticLearning\
-        .new(learning_module: otlearn_module,
-                                   grammar_test_class: grammar_test_class,
-                                   loser_selector: loser_selector)
+        .new(grammar_test_class: grammar_test_class,
+             loser_selector: loser_selector)
       @phonotactic_learning.erc_learner = erc_learner
       @phonotactic_learning.run(output_list, grammar)
     end
-    it 'calls ranking learning' do
-      expect(otlearn_module).to have_received(:ranking_learning)
-        .with(winner_list, grammar, loser_selector)
+    it 'calls the ERC learner' do
+      expect(erc_learner).to have_received(:run).with(winner_list, grammar)
     end
     it 'indicates if learning made any changes to the grammar' do
       expect(@phonotactic_learning).not_to be_changed
