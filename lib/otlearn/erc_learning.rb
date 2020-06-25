@@ -13,9 +13,12 @@ module OTLearn
   # is directly updated with any additional winner-loser pairs
   # produced by learning.
   class ErcLearning
-    # Returns a new ErcLearning object, using the provided loser selector.
-    def initialize(loser_selector, mrcd_class: Mrcd)
-      @loser_selector = loser_selector
+    # Selects informative losers for new ERCs
+    attr_accessor :loser_selector
+
+    # Returns a new ErcLearning object.
+    def initialize(mrcd_class: Mrcd)
+      @loser_selector = nil
       @mrcd_class = mrcd_class
     end
 
@@ -34,7 +37,7 @@ module OTLearn
     def default_loser_selector(system)
       basic_selector = LoserSelector.new(CompareConsistency.new)
       @loser_selector =
-          LoserSelectorFromGen.new(system, basic_selector)
+        LoserSelectorFromGen.new(system, basic_selector)
     end
     private :default_loser_selector
   end

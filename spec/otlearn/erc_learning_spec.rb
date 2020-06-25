@@ -11,8 +11,8 @@ RSpec.describe 'OTLearn::ErcLearning' do
   let(:mrcd_result) { double('mrcd_result') }
   before(:example) do
     allow(mrcd_class).to receive(:new).and_return(mrcd_result)
-    @learner =
-      OTLearn::ErcLearning.new(loser_selector, mrcd_class: mrcd_class)
+    @learner = OTLearn::ErcLearning.new(mrcd_class: mrcd_class)
+    @learner.loser_selector = loser_selector
   end
 
   context 'given a word list and a grammar' do

@@ -33,7 +33,7 @@ module OTLearn
     #   PhonotacticLearning.new -> phonotactic_learner
     def initialize(grammar_test_class: OTLearn::GrammarTest)
       @grammar_test_class = grammar_test_class
-      @erc_learner = ErcLearning.new(nil)
+      @erc_learner = ErcLearning.new
       @changed = false # default value
       @step_type = PHONOTACTIC
     end
