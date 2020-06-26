@@ -16,6 +16,7 @@ RSpec.describe OTLearn::LanguageLearning do
   let(:induction_learning_class) { double('induction_learning_class') }
   let(:loser_selector) { double('loser_selector') }
   let(:pl_obj) { double('pl_obj') }
+  let(:pl_step) { double('pl_step') }
   let(:sfl_obj) { double('sfl_obj') }
   let(:cpl_obj) { double('cpl_obj') }
   let(:il_obj) { double('il_obj') }
@@ -31,8 +32,8 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:run)
-      allow(pl_obj).to receive(:all_correct?).and_return(true)
+      allow(pl_obj).to receive(:run).and_return(pl_step)
+      allow(pl_step).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new
       @language_learning.phonotactic_learning_class =
         phonotactic_learning_class
@@ -49,7 +50,7 @@ RSpec.describe OTLearn::LanguageLearning do
       expect(phonotactic_learning_class).to have_received(:new)
     end
     it 'has phonotactic learning as its only learning step' do
-      expect(@result.step_list).to eq [pl_obj]
+      expect(@result.step_list).to eq [pl_step]
     end
     it 'does not call single form learning' do
       expect(single_form_learning_class).not_to have_received(:new)
@@ -65,8 +66,8 @@ RSpec.describe OTLearn::LanguageLearning do
   context 'given single form learnable data' do
     before(:each) do
       allow(phonotactic_learning_class).to receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:run)
-      allow(pl_obj).to receive(:all_correct?).and_return(false)
+      allow(pl_obj).to receive(:run).and_return(pl_step)
+      allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).with(output_list, grammar, loser_selector: loser_selector)\
                      .and_return(sfl_obj)
@@ -91,7 +92,7 @@ RSpec.describe OTLearn::LanguageLearning do
         .exactly(1).times
     end
     it 'has PL and SFL learning steps' do
-      expect(@result.step_list).to eq [pl_obj, sfl_obj]
+      expect(@result.step_list).to eq [pl_step, sfl_obj]
     end
     it 'does not call contrast pair learning' do
       expect(contrast_pair_learning_class).not_to have_received(:new)
@@ -106,8 +107,8 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:run)
-      allow(pl_obj).to receive(:all_correct?).and_return(false)
+      allow(pl_obj).to receive(:run).and_return(pl_step)
+      allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).and_return(sfl_obj, sfl_obj2)
       allow(sfl_obj).to receive(:all_correct?).and_return(false)
@@ -138,7 +139,7 @@ RSpec.describe OTLearn::LanguageLearning do
     end
     it 'has PL, SFL, CPL, and SFL learning steps' do
       expect(@result.step_list).to\
-        eq [pl_obj, sfl_obj, cpl_obj, sfl_obj2]
+        eq [pl_step, sfl_obj, cpl_obj, sfl_obj2]
     end
     it 'calls contrast pair learning one time' do
       expect(contrast_pair_learning_class).to\
@@ -154,8 +155,8 @@ RSpec.describe OTLearn::LanguageLearning do
     before(:each) do
       allow(phonotactic_learning_class).to \
         receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:run)
-      allow(pl_obj).to receive(:all_correct?).and_return(false)
+      allow(pl_obj).to receive(:run).and_return(pl_step)
+      allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).and_return(sfl_obj, sfl_obj2)
       allow(sfl_obj).to receive(:all_correct?).and_return(false)
@@ -189,7 +190,7 @@ RSpec.describe OTLearn::LanguageLearning do
     end
     it 'has PL, SFL, CPL, IL, and SFL learning steps' do
       expect(@result.step_list).to\
-        eq [pl_obj, sfl_obj, cpl_obj, il_obj, sfl_obj2]
+        eq [pl_step, sfl_obj, cpl_obj, il_obj, sfl_obj2]
     end
     it 'calls contrast pair learning one time' do
       expect(contrast_pair_learning_class).to have_received(:new)\
@@ -208,8 +209,8 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(grammar).to receive(:label).and_return('L#err')
       allow(phonotactic_learning_class).to \
         receive(:new).and_return(pl_obj)
-      allow(pl_obj).to receive(:run)
-      allow(pl_obj).to receive(:all_correct?).and_return(false)
+      allow(pl_obj).to receive(:run).and_return(pl_step)
+      allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).with(output_list, grammar,
                            loser_selector: loser_selector)\
@@ -232,7 +233,7 @@ RSpec.describe OTLearn::LanguageLearning do
       expect(err_step.msg).to eq 'Error with L#err: test double error'
     end
     it 'has a PL learning step' do
-      expect(@result.step_list).to include(pl_obj)
+      expect(@result.step_list).to include(pl_step)
     end
     it 'writes a warning message' do
       expect(warn_output.string).to eq\

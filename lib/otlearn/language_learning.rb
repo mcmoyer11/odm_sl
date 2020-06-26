@@ -99,9 +99,9 @@ module OTLearn
     def execute_learning(output_list, grammar)
       # Phonotactic learning
       pl = @phonotactic_learning_class.new
-      pl.run(output_list, grammar)
-      @step_list << pl
-      return true if pl.all_correct?
+      pl_step = pl.run(output_list, grammar)
+      @step_list << pl_step
+      return true if pl_step.all_correct?
 
       # Loop until there is no change.
       # If learning succeeds, the method will return from inside the loop.
