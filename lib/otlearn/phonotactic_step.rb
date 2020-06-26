@@ -24,13 +24,13 @@ module OTLearn
       @step_type = OTLearn::PHONOTACTIC
     end
 
-    # Returns true of the grammar was changed by the learning step;
+    # Returns true if the grammar was changed by the learning step;
     # returns false otherwise.
     def changed?
       @changed
     end
 
-    # Returns true of all data (words) pass grammar testing (indicating
+    # Returns true if all data (words) pass grammar testing (indicating
     # that learning is complete and successful).
     def all_correct?
       @test_result.all_correct?
