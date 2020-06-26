@@ -38,10 +38,10 @@ RSpec.describe OTLearn::SingleFormLearning do
         OTLearn::SingleFormLearning.new(learning_module: otlearn_module,
         grammar_test_class: grammar_test_class,
         loser_selector: loser_selector)
-      @single_form_learning.run(output_list, grammar)
+      @sf_step = @single_form_learning.run(output_list, grammar)
     end
     it 'does not change the grammar' do
-      expect(@single_form_learning).not_to be_changed
+      expect(@sf_step).not_to be_changed
     end
     it 'tests the winner once at the end of the step' do
       expect(grammar_test_class).to have_received(:new).exactly(1).time
@@ -50,13 +50,13 @@ RSpec.describe OTLearn::SingleFormLearning do
       expect(otlearn_module).to have_received(:mismatch_consistency_check)
     end
     it 'gives the grammar test result' do
-      expect(@single_form_learning.test_result).to eq grammar_test
+      expect(@sf_step.test_result).to eq grammar_test
     end
     it 'indicates that all words are handled correctly' do
-      expect(@single_form_learning.all_correct?).to be true
+      expect(@sf_step.all_correct?).to be true
     end
     it 'has step type SINGLE_FORM' do
-      expect(@single_form_learning.step_type).to \
+      expect(@sf_step.step_type).to \
         eq OTLearn::SINGLE_FORM
     end
   end
@@ -81,10 +81,10 @@ RSpec.describe OTLearn::SingleFormLearning do
         OTLearn::SingleFormLearning.new(learning_module: otlearn_module,
         grammar_test_class: grammar_test_class,
         loser_selector: loser_selector)
-      @single_form_learning.run(output_list, grammar)
+      @sf_step = @single_form_learning.run(output_list, grammar)
     end
     it 'changes the grammar' do
-      expect(@single_form_learning).to be_changed
+      expect(@sf_step).to be_changed
     end
     it 'performs two mismatch consistency checks' do
       expect(otlearn_module).to have_received(:mismatch_consistency_check).with(grammar, [win1]).exactly(2).times
@@ -99,10 +99,10 @@ RSpec.describe OTLearn::SingleFormLearning do
       expect(grammar_test_class).to have_received(:new).exactly(1).time
     end
     it 'gives the grammar test result' do
-      expect(@single_form_learning.test_result).to eq grammar_test
+      expect(@sf_step.test_result).to eq grammar_test
     end
     it 'indicates that not all words are handled correctly' do
-      expect(@single_form_learning.all_correct?).to be false
+      expect(@sf_step.all_correct?).to be false
     end
   end
 end

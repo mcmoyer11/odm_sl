@@ -6,6 +6,7 @@ require 'otlearn/otlearn'
 require 'otlearn/grammar_test'
 require 'otlearn/data_manip'
 require 'otlearn/language_learning'
+require 'otlearn/single_form_step'
 require 'otlearn/ranking_learning'
 require 'compare_consistency'
 require 'loser_selector'
@@ -16,12 +17,6 @@ module OTLearn
   # time in order, with respect to a grammar. Any results of learning are
   # realized as side effect changes to the grammar.
   class SingleFormLearning
-    # The type of learning step
-    attr_reader :step_type
-
-    # Grammar test result after the completion of single form learning.
-    attr_reader :test_result
-
     # Creates a new single form learner.
     #--
     # loser_selector, learning_module and grammar_test_class are
@@ -37,20 +32,6 @@ module OTLearn
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @loser_selector = loser_selector
-      @step_type = SINGLE_FORM
-      @changed = false
-    end
-
-    # Returns true if single form learning changed the grammar;
-    # false otherwise.
-    def changed?
-      @changed
-    end
-
-    # Returns true if all words are correctly processed by the grammar;
-    # returns false otherwise.
-    def all_correct?
-      @test_result.all_correct?
     end
 
     # Passes repeatedly through the list of outputs until a pass is made
@@ -59,6 +40,7 @@ module OTLearn
     # Returns true if the grammar was changed at all, false otherwise.
     def run(output_list, grammar)
       default_loser_selector(grammar) if @loser_selector.nil?
+      changed = false
       loop do
         grammar_changed_on_pass = false
         output_list.each do |output|
@@ -66,11 +48,11 @@ module OTLearn
                                                      grammar)
           grammar_changed_on_pass = true if grammar_changed_on_winner
         end
-        @changed = true if grammar_changed_on_pass
+        changed = true if grammar_changed_on_pass
         break unless grammar_changed_on_pass
       end
-      @test_result = @grammar_test_class.new(output_list, grammar)
-      @changed
+      test_result = @grammar_test_class.new(output_list, grammar)
+      SingleFormStep.new(test_result, changed)
     end
 
     # Processes a winner output for new information about the grammar.
