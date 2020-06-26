@@ -45,7 +45,6 @@ module OTLearn
     #
     # :call-seq:
     #   SingleFormLearning.new(output_list, grammar) -> singleformlearner
-    #   SingleFormLearning.new(output_list, grammar, loser_selector: selector) -> singleformlearner
     def initialize(output_list, grammar, loser_selector: nil,
                    learning_module: OTLearn,
                    grammar_test_class: OTLearn::GrammarTest)
@@ -78,44 +77,25 @@ module OTLearn
       @test_result.all_correct?
     end
 
-    # Processes the observed outputs for new grammatical information.
-    #
     # Passes repeatedly through the list of outputs until a pass is made
-    # with no changes to the grammar. For each output:
-    # * Parse the output into a winner candidate, with all input feature
-    #   values matching their counterparts in the lexicon.
-    # * Error test the winner: see if it is the sole optimum for the
-    #   mismatched input (all unset features assigned opposite their
-    #   surface values). If it is, don't bother
-    #   processing it (there is no learning error).
-    # * If a learning error is detected, process the winner for new information.
-    #
-    # A boolean is returned indicating if the grammar was changed at all
-    # during the execution of this method.
+    # with no changes to the grammar. On a given pass, each output is
+    # processed for new information.
+    # Returns true if the grammar was changed at all, false otherwise.
     def run_single_form_learning
       begin
         grammar_changed_on_pass = false
         @output_list.each do |output|
-          # Error test the output by checking to see if it is the sole
-          # optimum for the mismatched input.
-          grammar_test = @grammar_test_class.new([output], @grammar)
-          # Unless no error is detected, try learning with the winner.
-          unless grammar_test.all_correct?
-            grammar_changed_on_winner = process_winner(output)
-            grammar_changed_on_pass = true if grammar_changed_on_winner
-          end
+          grammar_changed_on_winner = process_winner(output)
+          grammar_changed_on_pass = true if grammar_changed_on_winner
         end
         @changed = true if grammar_changed_on_pass
       end while grammar_changed_on_pass
       @test_result = @grammar_test_class.new(@output_list, @grammar)
       changed?
     end
-    protected :run_single_form_learning
+    private :run_single_form_learning
 
     # Processes a winner output for new information about the grammar.
-    # * First, it checks the winner for ranking information with a matched
-    #   input, to see if any information was missed by phonotactic learning
-    #   but is visible now.
     # * It checks the winner with a mismatched input for consistency: if
     #   the mismatched winner is consistent, then inconsistency detection
     #   won't set any features, so don't bother. A mismatched input is one

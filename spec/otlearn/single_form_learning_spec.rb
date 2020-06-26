@@ -28,7 +28,9 @@ RSpec.describe OTLearn::SingleFormLearning do
     before(:example) do
       allow(output_list).to receive(:map).and_return(winner_list)
       allow(grammar).to receive(:parse_output).with(out1).and_return(win1)
-      allow(otlearn_module).to receive(:mismatch_consistency_check)
+      allow(otlearn_module).to receive(:mismatch_consistency_check).and_return(consistency_result)
+      allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
+      allow(cr_grammar).to receive(:consistent?).and_return(true)
       allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
       allow(grammar_test_class).to receive(:new).with(output_list, grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
@@ -46,11 +48,11 @@ RSpec.describe OTLearn::SingleFormLearning do
     it 'returns the grammar' do
       expect(@single_form_learning.grammar).to eq grammar
     end
-    it 'tests the winner once during learning, all winners afterward' do
-      expect(grammar_test_class).to have_received(:new).exactly(2).times
+    it 'tests the winner once at the end of the step' do
+      expect(grammar_test_class).to have_received(:new).exactly(1).time
     end
-    it 'does not perform a mismatch consistency check' do
-      expect(otlearn_module).not_to have_received(:mismatch_consistency_check)
+    it 'does performs a mismatch consistency check' do
+      expect(otlearn_module).to have_received(:mismatch_consistency_check)
     end
     it 'gives the grammar test result' do
       expect(@single_form_learning.test_result).to eq grammar_test
@@ -103,8 +105,8 @@ RSpec.describe OTLearn::SingleFormLearning do
     it 'checks for new ranking information on the set feature once' do
       expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar, winner_list, 'feature1', loser_selector:loser_selector).exactly(1).times
     end
-    it 'tests the winner twice during learning, all winners afterward' do
-      expect(grammar_test_class).to have_received(:new).exactly(3).times
+    it 'tests the winner once at the end' do
+      expect(grammar_test_class).to have_received(:new).exactly(1).time
     end
     it 'gives the grammar test result' do
       expect(@single_form_learning.test_result).to eq grammar_test
