@@ -69,8 +69,9 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(pl_obj).to receive(:run).and_return(pl_step)
       allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
-        receive(:new).with(output_list, grammar, loser_selector: loser_selector)\
+        receive(:new).with(loser_selector: loser_selector)\
                      .and_return(sfl_obj)
+      allow(sfl_obj).to receive(:run)
       allow(sfl_obj).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new
       @language_learning.phonotactic_learning_class =
@@ -111,7 +112,9 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).and_return(sfl_obj, sfl_obj2)
+      allow(sfl_obj).to receive(:run)
       allow(sfl_obj).to receive(:all_correct?).and_return(false)
+      allow(sfl_obj2).to receive(:run)
       allow(sfl_obj2).to receive(:test_result)
       allow(sfl_obj2).to receive(:all_correct?).and_return(true)
       allow(contrast_pair_learning_class).to \
@@ -159,7 +162,9 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
         receive(:new).and_return(sfl_obj, sfl_obj2)
+      allow(sfl_obj).to receive(:run)
       allow(sfl_obj).to receive(:all_correct?).and_return(false)
+      allow(sfl_obj2).to receive(:run)
       allow(sfl_obj2).to receive(:all_correct?).and_return(true)
       allow(contrast_pair_learning_class).to \
         receive(:new).and_return(cpl_obj)
@@ -212,8 +217,7 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(pl_obj).to receive(:run).and_return(pl_step)
       allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
-        receive(:new).with(output_list, grammar,
-                           loser_selector: loser_selector)\
+        receive(:new).with(loser_selector: loser_selector)\
                      .and_raise(RuntimeError, 'test double error')
       @language_learning =
         OTLearn::LanguageLearning.new(warn_output: warn_output)

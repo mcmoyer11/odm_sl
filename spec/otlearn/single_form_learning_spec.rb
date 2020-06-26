@@ -34,19 +34,14 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
       allow(grammar_test_class).to receive(:new).with(output_list, grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
-      @single_form_learning = OTLearn::SingleFormLearning.new(output_list,
-        grammar, learning_module: otlearn_module,
+      @single_form_learning =
+        OTLearn::SingleFormLearning.new(learning_module: otlearn_module,
         grammar_test_class: grammar_test_class,
         loser_selector: loser_selector)
+      @single_form_learning.run(output_list, grammar)
     end
     it 'does not change the grammar' do
       expect(@single_form_learning).not_to be_changed
-    end
-    it 'returns an output list with one output' do
-      expect(@single_form_learning.output_list).to eq output_list
-    end
-    it 'returns the grammar' do
-      expect(@single_form_learning.grammar).to eq grammar
     end
     it 'tests the winner once at the end of the step' do
       expect(grammar_test_class).to have_received(:new).exactly(1).time
@@ -82,19 +77,14 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
       allow(cr_grammar).to receive(:consistent?).and_return(false, false)
-      @single_form_learning = OTLearn::SingleFormLearning.new(output_list,
-        grammar, learning_module: otlearn_module,
+      @single_form_learning =
+        OTLearn::SingleFormLearning.new(learning_module: otlearn_module,
         grammar_test_class: grammar_test_class,
         loser_selector: loser_selector)
+      @single_form_learning.run(output_list, grammar)
     end
     it 'changes the grammar' do
       expect(@single_form_learning).to be_changed
-    end
-    it 'returns an output list with one output' do
-      expect(@single_form_learning.output_list).to eq output_list
-    end
-    it 'returns the grammar' do
-      expect(@single_form_learning.grammar).to eq grammar
     end
     it 'performs two mismatch consistency checks' do
       expect(otlearn_module).to have_received(:mismatch_consistency_check).with(grammar, [win1]).exactly(2).times
