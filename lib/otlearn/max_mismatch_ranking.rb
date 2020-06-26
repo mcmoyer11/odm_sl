@@ -4,10 +4,7 @@
 
 require 'word'
 require 'otlearn/mmr_exceptions'
-require 'otlearn/ranking_learning'
-require 'compare_consistency'
-require 'loser_selector'
-require 'loser_selector_from_gen'
+require 'otlearn/erc_learning'
 
 module OTLearn
   # MaxMismatchRanking takes a list of outputs of winners that are failing
@@ -42,32 +39,16 @@ module OTLearn
 
     # Initializes a new object, *and* automatically executes
     # the max mismatch ranking algorithm.
-    # * +failed_winner_output_list+ is the list of outputs of *consistent*
+    # * +output_list+ is the list of outputs of *consistent*
     #    failed winners that are candidates for use in MMR.
     # * +grammar+ is the current grammar of the learner.
-    # * +loser_selector+ - selects losers for ranking learning; defaults to
-    #   a loser selector using CompareConsistency.
-    #--
-    # learning_module is a dependency injection for testing.
-    # * +learning_module+ - the module containing #ranking_learning.
-    #++
-    #
     # :call-seq:
     #   MaxMismatchRanking.new(output_list, grammar) -> mmrlearner
-    #   MaxMismatchRanking.new(output_list, grammar, loser_selector: selector) -> mmrlearner
-    def initialize(failed_winner_output_list, grammar,
-                   loser_selector: nil, learning_module: OTLearn)
+    def initialize(output_list, grammar,
+                   erc_learner: ErcLearning.new)
       @grammar = grammar
-      @failed_winner_output_list = failed_winner_output_list
-      @learning_module = learning_module
-      @loser_selector = loser_selector
-      # Cannot put the default in the parameter list because of the call
-      # to grammar.system.
-      if @loser_selector.nil?
-        basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                                   basic_selector)
-      end
+      @output_list = output_list
+      @erc_learner = erc_learner
       @newly_added_wl_pairs = []
       @failed_winner = nil
       @changed = false
@@ -93,9 +74,7 @@ module OTLearn
     # ranking information.
     def run_max_mismatch_learning
       @failed_winner = choose_failed_winner
-      mrcd_result = @learning_module\
-                    .ranking_learning([@failed_winner], @grammar,
-                                      @loser_selector)
+      mrcd_result = @erc_learner.run([@failed_winner], @grammar)
       @changed = mrcd_result.any_change?
       unless @changed
         msg1 = 'A failed consistent winner'
@@ -105,17 +84,17 @@ module OTLearn
       @newly_added_wl_pairs = mrcd_result.added_pairs
       @changed
     end
-    protected :run_max_mismatch_learning
+    private :run_max_mismatch_learning
 
     # Choose, from among the consistent failed winners, the failed winner to
     # use with MMR. Returns a full word with the input initialized so that
     # set features match the lexicon and unset features mismatch the output.
     def choose_failed_winner
-      chosen_output = @failed_winner_output_list.first
+      chosen_output = @output_list.first
       chosen_winner = @grammar.parse_output(chosen_output)
       chosen_winner.mismatch_input_to_output!
       chosen_winner
     end
-    protected :choose_failed_winner
+    private :choose_failed_winner
   end
 end

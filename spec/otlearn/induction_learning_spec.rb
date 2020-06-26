@@ -138,9 +138,8 @@ RSpec.describe OTLearn::InductionLearning do
       allow(failed_winner_1).to receive(:output).and_return(failed_output_1)
       allow(mrcd_gram).to receive(:consistent?).and_return(true)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
-      allow(mmr_class).to receive(:new).
-        with([failed_output_1], grammar, loser_selector: loser_selector).
-        and_return(mmr)
+      allow(mmr_class).to\
+        receive(:new).with([failed_output_1], grammar).and_return(mmr)
       allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
           with(grammar, [failed_winner_1]).and_return(mrcd)

@@ -133,7 +133,7 @@ module OTLearn
           word.output
         end
         @mmr_step = @max_mismatch_ranking_class.new(consistent_output_list,
-          @grammar, loser_selector: @loser_selector)
+                                                    @grammar)
         @changed = @mmr_step.changed?
       end
       @test_result = @grammar_test_class.new(@output_list, @grammar)
