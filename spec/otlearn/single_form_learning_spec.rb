@@ -11,7 +11,7 @@ RSpec.describe OTLearn::SingleFormLearning do
   let(:win1) { double('winner 1') }
   let(:out1) { double('output 1') }
   let(:grammar) { double('grammar') }
-  let(:grammar_test_class) { double('grammar_test_class') }
+  let(:gtest_class) { double('gtest_class') }
   let(:grammar_test) { instance_double(OTLearn::GrammarTest) }
   let(:otlearn_module) { double('OTLearn module') }
   let(:consistency_result) { double('consistency_result') }
@@ -31,12 +31,12 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(otlearn_module).to receive(:mismatch_consistency_check).and_return(consistency_result)
       allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
       allow(cr_grammar).to receive(:consistent?).and_return(true)
-      allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
-      allow(grammar_test_class).to receive(:new).with(output_list, grammar).and_return(grammar_test)
+      allow(gtest_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
+      allow(gtest_class).to receive(:new).with(output_list, grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
       @single_form_learning =
         OTLearn::SingleFormLearning.new(learning_module: otlearn_module,
-        grammar_test_class: grammar_test_class,
+        gtest_class: gtest_class,
         loser_selector: loser_selector)
       @sf_step = @single_form_learning.run(output_list, grammar)
     end
@@ -44,7 +44,7 @@ RSpec.describe OTLearn::SingleFormLearning do
       expect(@sf_step).not_to be_changed
     end
     it 'tests the winner once at the end of the step' do
-      expect(grammar_test_class).to have_received(:new).exactly(1).time
+      expect(gtest_class).to have_received(:new).exactly(1).time
     end
     it 'does performs a mismatch consistency check' do
       expect(otlearn_module).to have_received(:mismatch_consistency_check)
@@ -72,14 +72,14 @@ RSpec.describe OTLearn::SingleFormLearning do
       allow(otlearn_module).to receive(:new_rank_info_from_feature).with(grammar, winner_list, 'feature1', loser_selector: loser_selector)
       allow(otlearn_module).to receive(:ranking_learning).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(false)
-      allow(grammar_test_class).to receive(:new).and_return(grammar_test)
-      allow(grammar_test_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
+      allow(gtest_class).to receive(:new).and_return(grammar_test)
+      allow(gtest_class).to receive(:new).with([out1], grammar).and_return(grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       allow(consistency_result).to receive(:grammar).and_return(cr_grammar)
       allow(cr_grammar).to receive(:consistent?).and_return(false, false)
       @single_form_learning =
         OTLearn::SingleFormLearning.new(learning_module: otlearn_module,
-        grammar_test_class: grammar_test_class,
+        gtest_class: gtest_class,
         loser_selector: loser_selector)
       @sf_step = @single_form_learning.run(output_list, grammar)
     end
@@ -96,7 +96,7 @@ RSpec.describe OTLearn::SingleFormLearning do
       expect(otlearn_module).to have_received(:new_rank_info_from_feature).with(grammar, winner_list, 'feature1', loser_selector:loser_selector).exactly(1).times
     end
     it 'tests the winner once at the end' do
-      expect(grammar_test_class).to have_received(:new).exactly(1).time
+      expect(gtest_class).to have_received(:new).exactly(1).time
     end
     it 'gives the grammar test result' do
       expect(@sf_step.test_result).to eq grammar_test

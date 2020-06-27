@@ -19,7 +19,7 @@ module OTLearn
   class SingleFormLearning
     # Creates a new single form learner.
     #--
-    # loser_selector, learning_module and grammar_test_class are
+    # loser_selector, learning_module and gtest_class are
     # dependency injections used for testing.
     # * learning_module - the module containing several methods used
     #   for learning: #mismatch_consistency_check,
@@ -28,16 +28,15 @@ module OTLearn
     # :call-seq:
     #   SingleFormLearning.new -> singleformlearner
     def initialize(loser_selector: nil, learning_module: OTLearn,
-                   grammar_test_class: OTLearn::GrammarTest)
+                   gtest_class: GrammarTest)
+      @gtest_class = gtest_class
       @learning_module = learning_module
-      @grammar_test_class = grammar_test_class
       @loser_selector = loser_selector
     end
 
-    # Passes repeatedly through the list of outputs until a pass is made
-    # with no changes to the grammar. On a given pass, each output is
-    # processed for new information.
-    # Returns true if the grammar was changed at all, false otherwise.
+    # Runs single form learning, and returns a single form learning step.
+    # :call-seq:
+    #   run(output_list, grammar) -> step
     def run(output_list, grammar)
       default_loser_selector(grammar) if @loser_selector.nil?
       changed = false
@@ -51,7 +50,7 @@ module OTLearn
         changed = true if grammar_changed_on_pass
         break unless grammar_changed_on_pass
       end
-      test_result = @grammar_test_class.new(output_list, grammar)
+      test_result = @gtest_class.new(output_list, grammar)
       SingleFormStep.new(test_result, changed)
     end
 
@@ -66,30 +65,30 @@ module OTLearn
     # Returns true if the grammar was changed by processing the winner,
     # false otherwise.
     def process_winner(output, output_list, grammar)
-      change_on_winner = false
       winner = grammar.parse_output(output)
       # Check the mismatched input for consistency. Only attempt to set
       # features in the winner if the mismatched winner is inconsistent.
       consistency_result =
         @learning_module.mismatch_consistency_check(grammar, [winner])
-      unless consistency_result.grammar.consistent?
-        # Attempt to set each unset feature of winner,
-        # returning a list of newly set features
-        set_feature_list = @learning_module.set_uf_values([winner], grammar)
-        # (re)construct the winner list (to reflect any just-set features)
-        winner_list = output_list.map do |out|
-          grammar.parse_output(out)
-        end
-        # For each newly set feature, check words unfaithfully mapping that
-        # feature for new ranking information.
-        set_feature_list.each do |set_f|
-          @learning_module\
-            .new_rank_info_from_feature(grammar, winner_list, set_f,
-                                        loser_selector: @loser_selector)
-        end
-        change_on_winner = true unless set_feature_list.empty?
+      return false if consistency_result.grammar.consistent?
+
+      # Attempt to set each unset feature of winner,
+      # returning a list of newly set features
+      set_feature_list = @learning_module.set_uf_values([winner], grammar)
+      # (re)construct the winner list (to reflect any just-set features)
+      winner_list = output_list.map do |out|
+        grammar.parse_output(out)
       end
-      change_on_winner
+      # For each newly set feature, check words unfaithfully mapping that
+      # feature for new ranking information.
+      set_feature_list.each do |set_f|
+        @learning_module\
+          .new_rank_info_from_feature(grammar, winner_list, set_f,
+                                      loser_selector: @loser_selector)
+      end
+      # If no features were set, then the grammar did not change.
+      # Otherwise, the grammar did change.
+      !set_feature_list.empty?
     end
     private :process_winner
 
