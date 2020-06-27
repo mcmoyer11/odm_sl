@@ -4,7 +4,6 @@
 
 require 'otlearn/otlearn'
 require 'otlearn/grammar_test'
-require 'otlearn/data_manip'
 require 'otlearn/language_learning'
 require 'otlearn/single_form_step'
 require 'otlearn/ranking_learning'
@@ -55,25 +54,14 @@ module OTLearn
     end
 
     # Processes a winner output for new information about the grammar.
-    # * It checks the winner with a mismatched input for consistency: if
-    #   the mismatched winner is consistent, then inconsistency detection
-    #   won't set any features, so don't bother.
-    # * If the mismatched input winner is inconsistent, attempt to set each
-    #   unset feature of the winner.
+    # * Attempt to set each unset feature of the winner.
     # * For each newly set feature, check for new non-phonotactic ranking
     #   information.
     # Returns true if the grammar was changed by processing the winner,
     # false otherwise.
     def process_winner(output, output_list, grammar)
+      # Attempt to set each unset feature of winner.
       winner = grammar.parse_output(output)
-      # Check the mismatched input for consistency. Only attempt to set
-      # features in the winner if the mismatched winner is inconsistent.
-      consistency_result =
-        @learning_module.mismatch_consistency_check(grammar, [winner])
-      return false if consistency_result.grammar.consistent?
-
-      # Attempt to set each unset feature of winner,
-      # returning a list of newly set features
       set_feature_list = @learning_module.set_uf_values([winner], grammar)
       # (re)construct the winner list (to reflect any just-set features)
       winner_list = output_list.map do |out|
