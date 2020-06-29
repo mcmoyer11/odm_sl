@@ -39,8 +39,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(prior_result).to receive(:success_winners).and_return([])
       # mrcd_result is returned when a feature is tested for consistency
       allow(mrcd_result).to receive(:grammar).and_return(mrcd_grammar)
-      # arguments for new_rank_info_from_feature specified in expectations
-      allow(learning_module).to receive(:new_rank_info_from_feature)
       # the value of the target features' output correspondents
       allow(out_feat_instance1).to receive(:value).and_return(out_feat_value1)
       allow(out_feat_instance2).to receive(:value).and_return(out_feat_value2)
@@ -129,8 +127,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         expect(@fewest_set_features.newly_set_features.size).to eq 0
       end
       it 'does not check for new ranking information' do
-        expect(learning_module).not_to \
-          have_received(:new_rank_info_from_feature)
+        expect(para_erc_learner).not_to have_received(:run)
       end
     end
 
@@ -269,8 +266,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
         .and_return(out_feat_instance2)
       allow(out_feat_instance2).to receive(:value).and_return(out_feat_value2)
 
-      # arguments for new_rank_info_from_feature specified in expectations
-      allow(learning_module).to receive(:new_rank_info_from_feature)
       # The possible unset features and their behavior
       allow(unset_feat1).to receive(:value=).with(out_feat_value1)
       allow(unset_feat1).to receive(:value).and_return(out_feat_value1)
