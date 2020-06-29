@@ -3,18 +3,17 @@
 # Author: Bruce Tesar
 
 require 'otlearn/erc_learning'
+require 'word_search'
 
 module OTLearn
   # Learns new ERCs (ranking information) for a grammar, based on
   # a set feature instance. It checks words that unfaithfully map
   # the feature instance.
   class ParadigmErcLearning
-    # The ERC learner.
-    # Default value: ErcLearning.new
+    # The ERC learner. Default: ErcLearning.new
     attr_accessor :erc_learner
 
-    # The object that searches the given word list.
-    # Default value:
+    # The object that searches the given word list. Default: WordSearch.new
     attr_accessor :word_searcher
 
     # Returns a new paradigm ERC learner.
@@ -22,7 +21,7 @@ module OTLearn
     #   ParadigmErcLearning.new -> learner
     def initialize
       @erc_learner = ErcLearning.new
-      # @word_searcher = WordSearch.new
+      @word_searcher = WordSearch.new
     end
 
     # Tries to obtain new ERCs from words that unfaithfully map

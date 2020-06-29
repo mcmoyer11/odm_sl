@@ -72,8 +72,7 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(pl_obj).to receive(:run).and_return(pl_step)
       allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
-        receive(:new).with(loser_selector: loser_selector)\
-                     .and_return(sfl_obj1)
+        receive(:new).and_return(sfl_obj1)
       allow(sfl_obj1).to receive(:run).and_return(sfl_step1)
       allow(sfl_step1).to receive(:all_correct?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new
@@ -217,8 +216,7 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(pl_obj).to receive(:run).and_return(pl_step)
       allow(pl_step).to receive(:all_correct?).and_return(false)
       allow(single_form_learning_class).to \
-        receive(:new).with(loser_selector: loser_selector)\
-                     .and_raise(RuntimeError, 'test double error')
+        receive(:new).and_raise(RuntimeError, 'test double error')
       @language_learning =
         OTLearn::LanguageLearning.new(warn_output: warn_output)
       @language_learning.phonotactic_learning_class =

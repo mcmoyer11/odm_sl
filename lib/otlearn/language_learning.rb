@@ -107,7 +107,7 @@ module OTLearn
       # If learning succeeds, the method will return from inside the loop.
       loop do
         # Single form learning
-        sfl = @single_form_learning_class.new(loser_selector: @loser_selector)
+        sfl = @single_form_learning_class.new
         sfl_step = sfl.run(output_list, grammar)
         @step_list << sfl_step
         break if sfl_step.all_correct?
