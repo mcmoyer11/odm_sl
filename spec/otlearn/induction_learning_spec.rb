@@ -4,7 +4,6 @@
 
 require 'otlearn/otlearn'
 require 'otlearn/induction_learning'
-require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::InductionLearning do
   let(:winner_list) { double('winner_list') }
@@ -15,7 +14,6 @@ RSpec.describe OTLearn::InductionLearning do
   let(:fsf_class) { double('FSF_class') }
   let(:mmr_class) { double('MMR_class') }
   let(:mmr) { double('mmr') }
-  let(:loser_selector) { double('loser_selector') }
   let(:otlearn_module) { double('otlearn_module') }
   let(:grammar_test_class) { double('grammar_test_class') }
   let(:grammar_test) { double('grammar_test') }
@@ -156,8 +154,7 @@ RSpec.describe OTLearn::InductionLearning do
           learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class,
-          max_mismatch_ranking_class: mmr_class,
-          loser_selector: loser_selector)
+          max_mismatch_ranking_class: mmr_class)
       end
       it 'reports that the grammar has changed' do
         expect(@induction_learning).to be_changed

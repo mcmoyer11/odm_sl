@@ -10,11 +10,12 @@ RSpec.describe OTLearn::FewestSetFeatures do
   let(:word_list) { double('word_list').as_null_object }
   let(:grammar) { double('grammar') }
   let(:prior_result) { double('prior_result') }
+  let(:para_erc_learner) { double('para_erc_learner') }
   let(:learning_module) { double('learning_module') }
-  let(:loser_selector) { double('loser_selector') }
   let(:feature_value_pair_class) { double('FeatureValuePair class') }
   before(:example) do
     allow(grammar).to receive(:parse_output)
+    allow(para_erc_learner).to receive(:run)
   end
 
   context 'given a failed winner' do
@@ -85,7 +86,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
           grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
-          loser_selector: loser_selector)
+          para_erc_learner: para_erc_learner)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -100,9 +101,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
         expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat1
       end
       it 'checks for new ranking information for the unset feature' do
-        expect(learning_module).to \
-          have_received(:new_rank_info_from_feature)\
-          .with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
+        expect(para_erc_learner).to\
+          have_received(:run).with(unset_feat1, grammar, word_list)
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
           grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
-          loser_selector: loser_selector)
+          para_erc_learner: para_erc_learner)
       end
       it 'does not set a feature' do
         expect(@fewest_set_features.changed?).to be false
@@ -145,7 +145,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
           grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
-          loser_selector: loser_selector)
+          para_erc_learner: para_erc_learner)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -160,9 +160,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
         expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat1
       end
       it 'checks for new ranking information for the consistent unset feature' do
-        expect(learning_module).to \
-          have_received(:new_rank_info_from_feature)\
-          .with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
+        expect(para_erc_learner).to \
+          have_received(:run).with(unset_feat1, grammar, word_list)
       end
     end
 
@@ -177,7 +176,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
           grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
-          loser_selector: loser_selector)
+          para_erc_learner: para_erc_learner)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -192,9 +191,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
         expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat2
       end
       it 'checks for new ranking information for the consistent unset feature' do
-        expect(learning_module).to \
-          have_received(:new_rank_info_from_feature)\
-          .with(grammar, word_list, unset_feat2, loser_selector: loser_selector)
+        expect(para_erc_learner).to\
+          have_received(:run).with(unset_feat2, grammar, word_list)
       end
     end
 
@@ -212,7 +210,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
             grammar, prior_result,
             learning_module: learning_module,
             feature_value_pair_class: feature_value_pair_class,
-            loser_selector: loser_selector)
+            para_erc_learner: para_erc_learner)
         end.to raise_error(OTLearn::LearnEx)
       end
     end
@@ -299,7 +297,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
           grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
-          loser_selector: loser_selector)
+          para_erc_learner: para_erc_learner)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -314,9 +312,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
         expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat2
       end
       it 'checks for new ranking information for the unset feature' do
-        expect(learning_module).to \
-          have_received(:new_rank_info_from_feature)\
-          .with(grammar, word_list, unset_feat2, loser_selector: loser_selector)
+        expect(para_erc_learner).to \
+          have_received(:run).with(unset_feat2, grammar, word_list)
       end
     end
     context 'with the first failed winner consistent' do
@@ -328,7 +325,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
           grammar, prior_result,
           learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
-          loser_selector: loser_selector)
+          para_erc_learner: para_erc_learner)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -343,9 +340,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
         expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat1
       end
       it 'checks for new ranking information for the unset feature' do
-        expect(learning_module).to \
-          have_received(:new_rank_info_from_feature)\
-          .with(grammar, word_list, unset_feat1, loser_selector: loser_selector)
+        expect(para_erc_learner).to\
+          have_received(:run).with(unset_feat1, grammar, word_list)
       end
     end
   end

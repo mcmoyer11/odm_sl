@@ -120,8 +120,7 @@ module OTLearn
         next if cpl.changed?
 
         # No suitable contrast pair, so pursue a step of Induction learning
-        il = @induction_learning_class\
-             .new(output_list, grammar, loser_selector: @loser_selector)
+        il = @induction_learning_class.new(output_list, grammar)
         @step_list << il
         break if il.all_correct?
 

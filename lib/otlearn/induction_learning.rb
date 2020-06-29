@@ -6,11 +6,7 @@ require 'otlearn/otlearn'
 require 'otlearn/fewest_set_features'
 require 'otlearn/max_mismatch_ranking'
 require 'otlearn/grammar_test'
-require 'otlearn/language_learning'
 require 'otlearn/data_manip'
-require 'compare_consistency'
-require 'loser_selector'
-require 'loser_selector_from_gen'
 
 module OTLearn
   # This performs certain inductive learning methods when contrast pair
@@ -42,8 +38,6 @@ module OTLearn
     # induction learning.
     # * +output_list+ - the list of grammatical outputs.
     # * +grammar+ - the grammar that learning will use/modify.
-    # * +loser_selector+ - selects losers for ranking learning; defaults to
-    #   a loser selector using CompareConsistency.
     #--
     # learning_module, grammar_test_class, fewest_set_features_class,
     # and max_mismatch_ranking_class are dependency injections used
@@ -60,8 +54,7 @@ module OTLearn
     #
     # :call-seq:
     #   InductionLearning.new(output_list, grammar) -> inductionlearner
-    #   InductionLearning.new(output_list, grammar, loser_selector: selector) -> inductionlearner
-    def initialize(output_list, grammar, loser_selector: nil,
+    def initialize(output_list, grammar,
                    learning_module: OTLearn,
                    grammar_test_class: OTLearn::GrammarTest,
                    fewest_set_features_class: OTLearn::FewestSetFeatures,
@@ -72,14 +65,6 @@ module OTLearn
       @grammar_test_class = grammar_test_class
       @fewest_set_features_class = fewest_set_features_class
       @max_mismatch_ranking_class = max_mismatch_ranking_class
-      @loser_selector = loser_selector
-      # Cannot put the default in the parameter list because of the call
-      # to grammar.system.
-      if @loser_selector.nil?
-        basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                                   basic_selector)
-      end
       @changed = false
       @step_type = INDUCTION
       @step_subtype = nil
@@ -124,7 +109,7 @@ module OTLearn
           @grammar.parse_output(out)
         end
         @fsf_step = @fewest_set_features_class.new(winner_list, @grammar,
-          prior_result, loser_selector: @loser_selector)
+                                                   prior_result)
         @changed = @fsf_step.changed?
       else
         @step_subtype = MAX_MISMATCH_RANKING

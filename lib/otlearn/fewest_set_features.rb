@@ -5,9 +5,7 @@
 require 'otlearn/data_manip'
 require 'feature_value_pair'
 require 'otlearn/learning_exceptions'
-require 'compare_consistency'
-require 'loser_selector'
-require 'loser_selector_from_gen'
+require 'otlearn/paradigm_erc_learning'
 
 module OTLearn
   # FewestSetFeatures searches for a single unset feature that, when set to
@@ -41,13 +39,13 @@ module OTLearn
     #   the learner. It is used when searching for non-phonotactic ranking
     #   information when a feature has been set.
     # * +learning_module+ - the module containing the methods
-    #   #new_rank_info_from_feature, #find_unset_features_in_words,
-    #   #mismatch_consistency_check. Used for testing (dependency injection).
+    #   #find_unset_features_in_words and #mismatch_consistency_check.
+    #   Used for testing (dependency injection).
     # * +feature_value_pair_class+ - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
-    # * +loser_selector+ - object used to select informative losers.
     def initialize(word_list, grammar, prior_result,
-                   loser_selector: nil, learning_module: OTLearn,
+                   para_erc_learner: ParadigmErcLearning.new,
+                   learning_module: OTLearn,
                    feature_value_pair_class: FeatureValuePair)
       @word_list = word_list
       @grammar = grammar
@@ -55,15 +53,8 @@ module OTLearn
       @failed_winner = nil
       @newly_set_features = []
       # dependency injection defaults
+      @para_erc_learner = para_erc_learner
       @learning_module = learning_module
-      @loser_selector = loser_selector
-      # Cannot put the default in the parameter list because of the call
-      # to grammar.system.
-      if @loser_selector.nil?
-        basic_selector = LoserSelector.new(CompareConsistency.new)
-        @loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                                   basic_selector)
-      end
       @feature_value_pair_class = feature_value_pair_class
       run_fewest_set_features
     end
@@ -111,9 +102,9 @@ module OTLearn
         # Check for any new ranking information based on the newly set features.
         # NOTE: currently, only one feature can be newly set, but it is stored
         # in the list newly_set_features.
+        output_list = @word_list.map { |word| word.output }
         newly_set_features.each do |feat|
-          @learning_module.new_rank_info_from_feature(@grammar, @word_list,
-            feat, loser_selector: @loser_selector)
+          @para_erc_learner.run(feat, @grammar, output_list)
         end
         break unless newly_set_features.empty?
       end
