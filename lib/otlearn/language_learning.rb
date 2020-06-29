@@ -113,8 +113,7 @@ module OTLearn
         break if sfl_step.all_correct?
 
         # Contrast pair learning
-        cpl = @contrast_pair_learning_class\
-              .new(output_list, grammar, loser_selector: @loser_selector)
+        cpl = @contrast_pair_learning_class.new(output_list, grammar)
         @step_list << cpl
         break if cpl.all_correct?
 
