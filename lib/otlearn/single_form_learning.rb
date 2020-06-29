@@ -4,7 +4,6 @@
 
 require 'otlearn/otlearn'
 require 'otlearn/grammar_test'
-require 'otlearn/language_learning'
 require 'otlearn/single_form_step'
 require 'otlearn/paradigm_erc_learning'
 

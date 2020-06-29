@@ -4,7 +4,6 @@
 
 require 'otlearn/otlearn'
 require 'otlearn/single_form_learning'
-require 'otlearn/language_learning'
 require 'otlearn/grammar_test'
 
 RSpec.describe OTLearn::SingleFormLearning do
