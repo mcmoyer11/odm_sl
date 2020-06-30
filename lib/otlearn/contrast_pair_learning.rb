@@ -25,10 +25,7 @@ module OTLearn
     # Grammar test result after the completion of contrast pair learning.
     attr_reader :test_result
 
-    # Constructs a contrast pair learning object, storing the parameters, and
-    # automatically runs contrast pair learning.
-    # * +output_list+ - the winners considered to form contrast pairs
-    # * +grammar+ - the current grammar (learning may alter it).
+    # Constructs a contrast pair learning object.
     #--
     # learning_module and grammar_test_class are dependency injections used
     # for testing.
@@ -39,19 +36,15 @@ module OTLearn
     #++
     #
     # :call-seq:
-    #   ContrastPairLearning.new(output_list, grammar) -> obj
-    def initialize(output_list, grammar, para_erc_learner: ParadigmErcLearning.new,
+    #   ContrastPairLearning.new -> obj
+    def initialize(para_erc_learner: ParadigmErcLearning.new,
                    grammar_test_class: OTLearn::GrammarTest,
                    learning_module: OTLearn)
-      @output_list = output_list
-      @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @para_erc_learner = para_erc_learner
       @contrast_pair = nil
       @step_type = CONTRAST_PAIR
-      run_contrast_pair_learning
-      @test_result = @grammar_test_class.new(@output_list, @grammar)
     end
 
     # Returns true if contrast pair learning changed the grammar
@@ -68,12 +61,11 @@ module OTLearn
 
     # Select a contrast pair, and process it, attempting to set underlying
     # features. If any features are set, check for any newly available
-    # ranking information.
-    #
-    # This method returns the first contrast pair that was able to set
-    # at least one underlying feature. If none of the constructed
-    # contrast pairs is able to set any features, nil is returned.
-    def run_contrast_pair_learning
+    # ranking information. Returns the contrast pair, if one was found,
+    # and returns nil otherwise.
+    def run(output_list, grammar)
+      @output_list = output_list
+      @grammar = grammar
       # Test the words to see which ones currently fail
       winner_list = @output_list.map do |out|
         @grammar.parse_output(out)
@@ -102,15 +94,16 @@ module OTLearn
         # Otherwise, keep processing contrast pairs.
         unless set_feature_list.empty?
           @contrast_pair = contrast_pair
+          @test_result = @grammar_test_class.new(@output_list, @grammar)
           return contrast_pair
         end
       end
+      @test_result = @grammar_test_class.new(@output_list, @grammar)
       # No contrast pairs were able to set any features; return nil.
       # NOTE: loop silently rescues StopIteration, so if cp_gen runs out
       #       of contrast pairs, loop simply terminates, and execution
       #       continues below it.
       nil
     end
-    protected :run_contrast_pair_learning
   end
 end

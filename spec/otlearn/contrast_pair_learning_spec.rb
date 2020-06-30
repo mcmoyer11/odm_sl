@@ -37,10 +37,11 @@ RSpec.describe OTLearn::ContrastPairLearning do
         .and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
-        OTLearn::ContrastPairLearning \
-        .new(output_list, grammar, para_erc_learner: para_erc_learner,
-                                   learning_module: otlearn_module,
-                                   grammar_test_class: grammar_test_class)
+        OTLearn::ContrastPairLearning\
+        .new(para_erc_learner: para_erc_learner,
+             learning_module: otlearn_module,
+             grammar_test_class: grammar_test_class)
+      @contrast_pair_learning.run(output_list, grammar)
     end
     it 'returns the first pair' do
       expect(@contrast_pair_learning.contrast_pair).to eq first_cp
@@ -83,9 +84,10 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning\
-        .new(output_list, grammar, para_erc_learner: para_erc_learner,
-                                   learning_module: otlearn_module,
-                                   grammar_test_class: grammar_test_class)
+        .new(para_erc_learner: para_erc_learner,
+             learning_module: otlearn_module,
+             grammar_test_class: grammar_test_class)
+      @contrast_pair_learning.run(output_list, grammar)
     end
     it 'returns no contrast pair' do
       expect(@contrast_pair_learning.contrast_pair).to be_nil
@@ -129,9 +131,10 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(grammar_test).to receive(:all_correct?).and_return(false)
       @contrast_pair_learning =
         OTLearn::ContrastPairLearning\
-        .new(output_list, grammar, para_erc_learner: para_erc_learner,
-                                   learning_module: otlearn_module,
-                                   grammar_test_class: grammar_test_class)
+        .new(para_erc_learner: para_erc_learner,
+             learning_module: otlearn_module,
+             grammar_test_class: grammar_test_class)
+      @contrast_pair_learning.run(output_list, grammar)
     end
     it 'returns the second pair' do
       expect(@contrast_pair_learning.contrast_pair).to eq second_cp
