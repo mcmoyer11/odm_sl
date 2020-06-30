@@ -22,6 +22,7 @@ RSpec.describe OTLearn::LanguageLearning do
   let(:sfl_step1) { double('sfl_step1') }
   let(:sfl_step2) { double('sfl_step2') }
   let(:cpl_obj) { double('cpl_obj') }
+  let(:cpl_step) { double('cpl_step') }
   let(:il_obj) { double('il_obj') }
   before(:example) do
     allow(phonotactic_learning_class).to receive(:new)
@@ -120,9 +121,9 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(sfl_step2).to receive(:all_correct?).and_return(true)
       allow(contrast_pair_learning_class).to \
         receive(:new).and_return(cpl_obj)
-      allow(cpl_obj).to receive(:run)
-      allow(cpl_obj).to receive(:all_correct?).and_return(false)
-      allow(cpl_obj).to receive(:changed?).and_return(true)
+      allow(cpl_obj).to receive(:run).and_return(cpl_step)
+      allow(cpl_step).to receive(:all_correct?).and_return(false)
+      allow(cpl_step).to receive(:changed?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new
       @language_learning.phonotactic_learning_class =
         phonotactic_learning_class
@@ -144,7 +145,7 @@ RSpec.describe OTLearn::LanguageLearning do
     end
     it 'has PL, SFL, CPL, and SFL learning steps' do
       expect(@result.step_list).to\
-        eq [pl_step, sfl_step1, cpl_obj, sfl_step2]
+        eq [pl_step, sfl_step1, cpl_step, sfl_step2]
     end
     it 'calls contrast pair learning one time' do
       expect(contrast_pair_learning_class).to\
@@ -169,9 +170,9 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(sfl_step2).to receive(:all_correct?).and_return(true)
       allow(contrast_pair_learning_class).to \
         receive(:new).and_return(cpl_obj)
-      allow(cpl_obj).to receive(:run)
-      allow(cpl_obj).to receive(:all_correct?).and_return(false)
-      allow(cpl_obj).to receive(:changed?).and_return(false)
+      allow(cpl_obj).to receive(:run).and_return(cpl_step)
+      allow(cpl_step).to receive(:all_correct?).and_return(false)
+      allow(cpl_step).to receive(:changed?).and_return(false)
       allow(induction_learning_class).to receive(:new).and_return(il_obj)
       allow(il_obj).to receive(:all_correct?).and_return(false)
       allow(il_obj).to receive(:changed?).and_return(true)
@@ -196,7 +197,7 @@ RSpec.describe OTLearn::LanguageLearning do
     end
     it 'has PL, SFL, CPL, IL, and SFL learning steps' do
       expect(@result.step_list).to\
-        eq [pl_step, sfl_step1, cpl_obj, il_obj, sfl_step2]
+        eq [pl_step, sfl_step1, cpl_step, il_obj, sfl_step2]
     end
     it 'calls contrast pair learning one time' do
       expect(contrast_pair_learning_class).to\

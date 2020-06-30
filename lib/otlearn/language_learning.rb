@@ -114,11 +114,11 @@ module OTLearn
 
         # Contrast pair learning
         cpl = @contrast_pair_learning_class.new
-        cpl.run(output_list, grammar)
-        @step_list << cpl
-        break if cpl.all_correct?
+        cpl_step = cpl.run(output_list, grammar)
+        @step_list << cpl_step
+        break if cpl_step.all_correct?
 
-        next if cpl.changed?
+        next if cpl_step.changed?
 
         # No suitable contrast pair, so pursue a step of Induction learning
         il = @induction_learning_class.new(output_list, grammar)

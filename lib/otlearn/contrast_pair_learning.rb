@@ -4,59 +4,33 @@
 
 require 'otlearn/otlearn'
 require 'otlearn/contrast_pair'
+require 'otlearn/contrast_pair_step'
 require 'otlearn/uf_learning'
 require 'otlearn/paradigm_erc_learning'
 require 'otlearn/grammar_test'
 
 module OTLearn
-  # Instantiates contrast pair learning.
-  # Any results of learning are realized as side effect changes to the grammar.
+  # Instantiates contrast pair learning. Any results of learning are
+  # realized as side effect changes to the grammar.
   class ContrastPairLearning
-    # The type of learning step
-    attr_accessor :step_type
-
     # The paradigmatic ERC learner. Default: ParadigmErcLearning.new
     attr_accessor :para_erc_learner
 
-    # The contrast pair found by contrast pair learning.
-    # nil if no pair was found.
-    attr_reader :contrast_pair
-
-    # Grammar test result after the completion of contrast pair learning.
-    attr_reader :test_result
-
     # Constructs a contrast pair learning object.
+    # :call-seq:
+    #   ContrastPairLearning.new -> cp_learner
     #--
     # learning_module and grammar_test_class are dependency injections used
     # for testing.
-    # * +learning_module+ - the module containing #generate_contrast_pair
+    # * learning_module - the module containing #generate_contrast_pair
     #   and #set_uf_values.
-    # * +grammar_test_class+ - the class of the object used to test
+    # * grammar_test_class - the class of the object used to test
     #   the grammar. Used for testing (dependency injection).
-    #++
-    #
-    # :call-seq:
-    #   ContrastPairLearning.new -> obj
-    def initialize(para_erc_learner: ParadigmErcLearning.new,
-                   grammar_test_class: OTLearn::GrammarTest,
+    def initialize(grammar_test_class: OTLearn::GrammarTest,
                    learning_module: OTLearn)
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
-      @para_erc_learner = para_erc_learner
-      @contrast_pair = nil
-      @step_type = CONTRAST_PAIR
-    end
-
-    # Returns true if contrast pair learning changed the grammar
-    # (i.e., it learned anything). Returns false otherwise.
-    def changed?
-      !@contrast_pair.nil?
-    end
-
-    # Returns true if all words are correctly processed by the grammar;
-    # returns false otherwise.
-    def all_correct?
-      @test_result.all_correct?
+      @para_erc_learner = ParadigmErcLearning.new
     end
 
     # Select a contrast pair, and process it, attempting to set underlying
@@ -64,46 +38,44 @@ module OTLearn
     # ranking information. Returns the contrast pair, if one was found,
     # and returns nil otherwise.
     def run(output_list, grammar)
-      @output_list = output_list
-      @grammar = grammar
       # Test the words to see which ones currently fail
-      winner_list = @output_list.map do |out|
-        @grammar.parse_output(out)
+      winner_list = output_list.map do |out|
+        grammar.parse_output(out)
       end
-      prior_result = @grammar_test_class.new(@output_list, @grammar)
+      prior_result = @grammar_test_class.new(output_list, grammar)
       # Create an external iterator which calls generate_contrast_pair()
       # to generate contrast pairs.
+      contrast_pair = nil
+      set_feature_list = []
       cp_gen = Enumerator.new do |result|
         @learning_module.generate_contrast_pair(result, winner_list,
-                                                @grammar, prior_result)
+                                                grammar, prior_result)
       end
       # Process contrast pairs until one is found that sets an underlying
       # feature, or until all contrast pairs have been processed.
+      # NOTE: loop silently rescues StopIteration, so if cp_gen runs out
+      #       of contrast pairs, loop simply terminates, and execution
+      #       continues below it.
       loop do
         contrast_pair = cp_gen.next
         # Process the contrast pair, and return a list of any features
         # that were newly set during the processing.
         set_feature_list = @learning_module.set_uf_values(contrast_pair,
-                                                          @grammar)
-        # For each newly set feature, see if any new ranking information
-        # is now available.
-        set_feature_list.each do |set_f|
-          @para_erc_learner.run(set_f, @grammar, @output_list)
-        end
-        # If an underlying feature was set, return the contrast pair.
-        # Otherwise, keep processing contrast pairs.
-        unless set_feature_list.empty?
-          @contrast_pair = contrast_pair
-          @test_result = @grammar_test_class.new(@output_list, @grammar)
-          return contrast_pair
-        end
+                                                          grammar)
+        # If an underlying feature was set, exit the loop.
+        # Otherwise, continue processing contrast pairs.
+        break unless set_feature_list.empty?
       end
-      @test_result = @grammar_test_class.new(@output_list, @grammar)
-      # No contrast pairs were able to set any features; return nil.
-      # NOTE: loop silently rescues StopIteration, so if cp_gen runs out
-      #       of contrast pairs, loop simply terminates, and execution
-      #       continues below it.
-      nil
+      # For each newly set feature, see if any new ranking information
+      # is now available.
+      set_feature_list.each do |set_f|
+        @para_erc_learner.run(set_f, grammar, output_list)
+      end
+      # No successful contrast pair if no features were set.
+      contrast_pair = nil if set_feature_list.empty?
+      changed = !set_feature_list.empty?
+      test_result = @grammar_test_class.new(output_list, grammar)
+      ContrastPairStep.new(test_result, changed, contrast_pair)
     end
   end
 end
