@@ -50,9 +50,9 @@ module OTLearn
     def get_subtype_image(in_step)
       case in_step.step_subtype
       when FEWEST_SET_FEATURES
-        @fsf_image_maker.get_image(in_step.fsf_step)
+        @fsf_image_maker.get_image(in_step.substep)
       when MAX_MISMATCH_RANKING
-        @mmr_image_maker.get_image(in_step.mmr_step)
+        @mmr_image_maker.get_image(in_step.substep)
       else
         msg1 = 'InductionLearningImageMaker'
         raise RuntimeError "#{msg1}: invalid step subtype #{in_step.subtype}"

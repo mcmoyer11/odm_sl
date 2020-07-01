@@ -13,6 +13,9 @@ module OTLearn
     # The step subtype (FEWEST_SET_FEATURES or MAX_MISMATCH_RANKING)
     attr_reader :step_subtype
 
+    # The substep learning object
+    attr_reader :substep
+
     # The result of grammar testing at the end of the learning step.
     attr_reader :test_result
 
@@ -22,8 +25,9 @@ module OTLearn
     # * changed - a boolean indicating of the step changed the grammar.
     # :call-seq:
     #   ContrastPairStep.new(step_subtype, test_result, changed) -> step
-    def initialize(step_subtype, test_result, changed)
+    def initialize(step_subtype, substep, test_result, changed)
       @step_subtype = step_subtype
+      @substep = substep
       @test_result = test_result
       @changed = changed
       @step_type = OTLearn::INDUCTION

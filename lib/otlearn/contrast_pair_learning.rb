@@ -35,8 +35,9 @@ module OTLearn
 
     # Select a contrast pair, and process it, attempting to set underlying
     # features. If any features are set, check for any newly available
-    # ranking information. Returns the contrast pair, if one was found,
-    # and returns nil otherwise.
+    # ranking information. Returns a contrast pair step.
+    # :call-seq:
+    #   run(output_list, grammar) -> step
     def run(output_list, grammar)
       # Test the words to see which ones currently fail
       winner_list = output_list.map do |out|

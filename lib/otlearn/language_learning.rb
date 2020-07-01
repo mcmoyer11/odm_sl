@@ -122,13 +122,13 @@ module OTLearn
 
         # No suitable contrast pair, so pursue a step of Induction learning
         il = @induction_learning_class.new
-        il.run(output_list, grammar)
-        @step_list << il
-        break if il.all_correct?
+        il_step = il.run(output_list, grammar)
+        @step_list << il_step
+        break if il_step.all_correct?
 
         # if no change has occurred on this iteration, then learning
         # has failed.
-        break unless il.changed?
+        break unless il_step.changed?
       end
       # the last step indicates if learning was ultimately successful
       @step_list[-1].all_correct?

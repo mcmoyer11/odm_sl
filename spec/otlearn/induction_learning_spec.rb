@@ -30,15 +30,9 @@ RSpec.describe OTLearn::InductionLearning do
     it 'raises a RuntimeError' do
       expect do
         @in_learner = OTLearn::InductionLearning\
-                        .new(grammar_test_class: grammar_test_class)
-        @in_learner.run(output_list, grammar)
+                      .new(grammar_test_class: grammar_test_class)
+        @in_step = @in_learner.run(output_list, grammar)
       end.to raise_error(RuntimeError)
-    end
-    it 'defines a substep constant for fewest set features' do
-      expect(defined?(OTLearn::FEWEST_SET_FEATURES)).to be_truthy
-    end
-    it 'defines a substep constant for max mismatch ranking' do
-      expect(defined?(OTLearn::MAX_MISMATCH_RANKING)).to be_truthy
     end
   end
 
@@ -54,7 +48,7 @@ RSpec.describe OTLearn::InductionLearning do
       allow(fsf_class).to receive(:new).and_return(fsf)
       allow(fsf).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
-          with(grammar, [failed_winner_1]).and_return(mrcd)
+        with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_test_class).to receive(:new).and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
     end
@@ -66,32 +60,32 @@ RSpec.describe OTLearn::InductionLearning do
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class)
-        @in_learner.run(output_list, grammar)
+        @in_step = @in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has changed' do
-        expect(@in_learner).to be_changed
+        expect(@in_step).to be_changed
       end
       it 'calls fewest set features' do
         expect(fsf_class).to have_received(:new)
       end
       it 'gives the fsf step object' do
-        expect(@in_learner.fsf_step).to eq fsf
+        expect(@in_step.substep).to eq fsf
       end
       it 'runs a grammar test after learning' do
         expect(grammar_test_class).to have_received(:new).exactly(2).times
       end
       it 'gives the grammar test result' do
-        expect(@in_learner.test_result).to eq grammar_test
+        expect(@in_step.test_result).to eq grammar_test
       end
       it 'indicates that all words are handled correctly' do
-        expect(@in_learner).to be_all_correct
+        expect(@in_step).to be_all_correct
       end
       it 'has step type INDUCTION' do
-        expect(@in_learner.step_type).to \
+        expect(@in_step.step_type).to \
           eq OTLearn::INDUCTION
       end
       it 'has step subtype FEWEST_SET_FEATURES' do
-        expect(@in_learner.step_subtype).to \
+        expect(@in_step.step_subtype).to \
           eq OTLearn::FEWEST_SET_FEATURES
       end
     end
@@ -103,25 +97,25 @@ RSpec.describe OTLearn::InductionLearning do
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class)
-        @in_learner.run(output_list, grammar)
+        @in_step = @in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has not changed' do
-        expect(@in_learner).not_to be_changed
+        expect(@in_step).not_to be_changed
       end
       it 'calls fewest set features' do
         expect(fsf_class).to have_received(:new)
       end
       it 'gives the fsf step object' do
-        expect(@in_learner.fsf_step).to eq fsf
+        expect(@in_step.substep).to eq fsf
       end
       it 'runs a grammar test after learning' do
         expect(grammar_test_class).to have_received(:new).exactly(2).times
       end
       it 'gives the grammar test result' do
-        expect(@in_learner.test_result).to eq grammar_test
+        expect(@in_step.test_result).to eq grammar_test
       end
       it 'indicates that all words are handled correctly' do
-        expect(@in_learner).to be_all_correct
+        expect(@in_step).to be_all_correct
       end
     end
   end
@@ -141,7 +135,7 @@ RSpec.describe OTLearn::InductionLearning do
         receive(:new).with([failed_output_1], grammar).and_return(mmr)
       allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check).
-          with(grammar, [failed_winner_1]).and_return(mrcd)
+        with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_test_class).to receive(:new).
         and_return(prior_result, grammar_test)
       allow(grammar_test).to receive(:all_correct?).and_return(true)
@@ -155,32 +149,32 @@ RSpec.describe OTLearn::InductionLearning do
           grammar_test_class: grammar_test_class,
           fewest_set_features_class: fsf_class,
           max_mismatch_ranking_class: mmr_class)
-        @in_learner.run(output_list, grammar)
+        @in_step = @in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has changed' do
-        expect(@in_learner).to be_changed
+        expect(@in_step).to be_changed
       end
       it 'calls max mismatch ranking' do
         expect(mmr_class).to have_received(:new)
       end
       it 'gives the mmr step object' do
-        expect(@in_learner.mmr_step).to eq mmr
+        expect(@in_step.substep).to eq mmr
       end
       it 'runs a grammar test after learning' do
         expect(grammar_test_class).to have_received(:new).exactly(2).times
       end
       it 'gives the grammar test result' do
-        expect(@in_learner.test_result).to eq grammar_test
+        expect(@in_step.test_result).to eq grammar_test
       end
       it 'indicates that all words are handled correctly' do
-        expect(@in_learner).to be_all_correct
+        expect(@in_step).to be_all_correct
       end
       it 'has step type INDUCTION' do
-        expect(@in_learner.step_type).to \
+        expect(@in_step.step_type).to \
           eq OTLearn::INDUCTION
       end
       it 'has step subtype MAX_MISMATCH_RANKING' do
-        expect(@in_learner.step_subtype).to \
+        expect(@in_step.step_subtype).to \
           eq OTLearn::MAX_MISMATCH_RANKING
       end
     end

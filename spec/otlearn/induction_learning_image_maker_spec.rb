@@ -48,7 +48,7 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
     before(:each) do
       allow(in_step).to\
         receive(:step_subtype).and_return(step_subtype)
-      allow(in_step).to receive(:fsf_step)
+      allow(in_step).to receive(:substep)
       @in_image = @in_image_maker.get_image(in_step)
     end
     it 'indicates the step type' do
@@ -74,7 +74,7 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
     before(:each) do
       allow(in_step).to\
         receive(:step_subtype).and_return(step_subtype)
-      allow(in_step).to receive(:mmr_step)
+      allow(in_step).to receive(:substep)
       @in_image = @in_image_maker.get_image(in_step)
     end
     it 'indicates the step type' do
