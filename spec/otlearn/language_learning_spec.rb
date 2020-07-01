@@ -174,6 +174,7 @@ RSpec.describe OTLearn::LanguageLearning do
       allow(cpl_step).to receive(:all_correct?).and_return(false)
       allow(cpl_step).to receive(:changed?).and_return(false)
       allow(induction_learning_class).to receive(:new).and_return(il_obj)
+      allow(il_obj).to receive(:run)
       allow(il_obj).to receive(:all_correct?).and_return(false)
       allow(il_obj).to receive(:changed?).and_return(true)
       @language_learning = OTLearn::LanguageLearning.new

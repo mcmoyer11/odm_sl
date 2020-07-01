@@ -34,10 +34,9 @@ module OTLearn
     # Grammar test result after the completion of induction learning.
     attr_reader :test_result
 
-    # Creates the induction learning object, and automatically runs
-    # induction learning.
-    # * +output_list+ - the list of grammatical outputs.
-    # * +grammar+ - the grammar that learning will use/modify.
+    # Creates the induction learning object.
+    # :call-seq:
+    #   InductionLearning.new -> inductionlearner
     #--
     # learning_module, grammar_test_class, fewest_set_features_class,
     # and max_mismatch_ranking_class are dependency injections used
@@ -50,17 +49,10 @@ module OTLearn
     #   features.
     # * +max_mismatch_ranking_class+ - the class of object used for max
     #   mismatch ranking.
-    #++
-    #
-    # :call-seq:
-    #   InductionLearning.new(output_list, grammar) -> inductionlearner
-    def initialize(output_list, grammar,
-                   learning_module: OTLearn,
+    def initialize(learning_module: OTLearn,
                    grammar_test_class: OTLearn::GrammarTest,
                    fewest_set_features_class: OTLearn::FewestSetFeatures,
                    max_mismatch_ranking_class: OTLearn::MaxMismatchRanking)
-      @output_list = output_list
-      @grammar = grammar
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
       @fewest_set_features_class = fewest_set_features_class
@@ -69,7 +61,7 @@ module OTLearn
       @step_type = INDUCTION
       @step_subtype = nil
       @fsf_step = nil
-      run_induction_learning
+      @mmr_step = nil
     end
 
     # Returns true if induction learning made a change to the grammar,
@@ -85,7 +77,9 @@ module OTLearn
     end
 
     # Returns true if anything changed about the grammar
-    def run_induction_learning
+    def run(output_list, grammar)
+      @output_list = output_list
+      @grammar = grammar
       # Test the words to see which ones currently fail
       prior_result = @grammar_test_class.new(@output_list, @grammar)
       # If there are no failed winners, raise an exception, because
@@ -124,6 +118,5 @@ module OTLearn
       @test_result = @grammar_test_class.new(@output_list, @grammar)
       @changed
     end
-    protected :run_induction_learning
   end
 end

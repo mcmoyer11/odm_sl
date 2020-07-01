@@ -121,7 +121,8 @@ module OTLearn
         next if cpl_step.changed?
 
         # No suitable contrast pair, so pursue a step of Induction learning
-        il = @induction_learning_class.new(output_list, grammar)
+        il = @induction_learning_class.new
+        il.run(output_list, grammar)
         @step_list << il
         break if il.all_correct?
 
