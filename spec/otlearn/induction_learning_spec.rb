@@ -35,10 +35,10 @@ RSpec.describe OTLearn::InductionLearning do
       end.to raise_error(RuntimeError)
     end
     it 'defines a substep constant for fewest set features' do
-      expect(defined?(OTLearn::InductionLearning::FEWEST_SET_FEATURES)).to be_truthy
+      expect(defined?(OTLearn::FEWEST_SET_FEATURES)).to be_truthy
     end
     it 'defines a substep constant for max mismatch ranking' do
-      expect(defined?(OTLearn::InductionLearning::FEWEST_SET_FEATURES)).to be_truthy
+      expect(defined?(OTLearn::MAX_MISMATCH_RANKING)).to be_truthy
     end
   end
 
@@ -92,7 +92,7 @@ RSpec.describe OTLearn::InductionLearning do
       end
       it 'has step subtype FEWEST_SET_FEATURES' do
         expect(@in_learner.step_subtype).to \
-          eq OTLearn::InductionLearning::FEWEST_SET_FEATURES
+          eq OTLearn::FEWEST_SET_FEATURES
       end
     end
 
@@ -181,7 +181,7 @@ RSpec.describe OTLearn::InductionLearning do
       end
       it 'has step subtype MAX_MISMATCH_RANKING' do
         expect(@in_learner.step_subtype).to \
-          eq OTLearn::InductionLearning::MAX_MISMATCH_RANKING
+          eq OTLearn::MAX_MISMATCH_RANKING
       end
     end
   end

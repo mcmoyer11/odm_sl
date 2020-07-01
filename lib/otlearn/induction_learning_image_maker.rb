@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require 'sheet'
+require 'otlearn/otlearn'
 require 'otlearn/grammar_test_image_maker'
 require 'otlearn/fsf_image_maker'
 require 'otlearn/mmr_image_maker'
@@ -48,9 +49,9 @@ module OTLearn
     # Raises a RuntimeError if the step subtype is unrecognized.
     def get_subtype_image(in_step)
       case in_step.step_subtype
-      when InductionLearning::FEWEST_SET_FEATURES
+      when FEWEST_SET_FEATURES
         @fsf_image_maker.get_image(in_step.fsf_step)
-      when InductionLearning::MAX_MISMATCH_RANKING
+      when MAX_MISMATCH_RANKING
         @mmr_image_maker.get_image(in_step.mmr_step)
       else
         msg1 = 'InductionLearningImageMaker'

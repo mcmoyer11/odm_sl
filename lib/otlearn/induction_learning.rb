@@ -13,12 +13,6 @@ module OTLearn
   # learning fails to fully learn the language. The two inductive methods
   # are Max Mismatch Ranking (MMR) and Fewest Set Features (FSF).
   class InductionLearning
-    # Step subtype constant for fewest set features
-    FEWEST_SET_FEATURES = :fewest_set_features
-
-    # Step subtype constant for max mismatch learning
-    MAX_MISMATCH_RANKING = :max_mismatch_ranking
-
     # The type of learning step
     attr_accessor :step_type
 

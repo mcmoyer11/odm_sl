@@ -16,4 +16,9 @@ module OTLearn
   INDUCTION = :induction
   # indicates an error learning step
   ERROR = :error
+
+  # indicates fewest set features induction substep
+  FEWEST_SET_FEATURES = :fewest_set_features
+  # indicates max mismatch ranking induction substep
+  MAX_MISMATCH_RANKING = :max_mismatch_ranking
 end

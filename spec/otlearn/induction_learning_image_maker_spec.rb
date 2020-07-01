@@ -44,7 +44,7 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
   end
 
   context 'given a step with fewest set features' do
-    let(:step_subtype) { OTLearn::InductionLearning::FEWEST_SET_FEATURES }
+    let(:step_subtype) { OTLearn::FEWEST_SET_FEATURES }
     before(:each) do
       allow(in_step).to\
         receive(:step_subtype).and_return(step_subtype)
@@ -70,7 +70,7 @@ RSpec.describe OTLearn::InductionLearningImageMaker do
   end
 
   context 'given a step with max mismatch ranking' do
-    let(:step_subtype) { OTLearn::InductionLearning::MAX_MISMATCH_RANKING }
+    let(:step_subtype) { OTLearn::MAX_MISMATCH_RANKING }
     before(:each) do
       allow(in_step).to\
         receive(:step_subtype).and_return(step_subtype)
