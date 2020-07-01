@@ -18,23 +18,22 @@ module OTLearn
     # :call-seq:
     #   InductionLearning.new -> induction_learner
     #--
-    # learning_module, grammar_test_class, fewest_set_features_class,
-    # and max_mismatch_ranking_class are dependency injections used
-    # for testing.
+    # learning_module, grammar_test_class, fsf_class, and mmr_class
+    # are dependency injections used for testing.
     # * learning_module - the module containing the method
     #   #mismatch_consistency_check.
     # * grammar_test_class - the class of the object used to test
     #   the grammar.
-    # * fewest_set_features_class - the class of object used for FSF.
-    # * max_mismatch_ranking_class - the class of object used for MMR.
+    # * fsf_class - the class of object used for FSF.
+    # * mmr_class - the class of object used for MMR.
     def initialize(learning_module: OTLearn,
-                   grammar_test_class: OTLearn::GrammarTest,
-                   fewest_set_features_class: OTLearn::FewestSetFeatures,
-                   max_mismatch_ranking_class: OTLearn::MaxMismatchRanking)
+                   grammar_test_class: GrammarTest,
+                   fsf_class: FewestSetFeatures,
+                   mmr_class: MaxMismatchRanking)
       @learning_module = learning_module
       @grammar_test_class = grammar_test_class
-      @fewest_set_features_class = fewest_set_features_class
-      @max_mismatch_ranking_class = max_mismatch_ranking_class
+      @fsf_class = fsf_class
+      @mmr_class = mmr_class
       @step_type = INDUCTION
     end
 
@@ -64,16 +63,14 @@ module OTLearn
         winner_list = output_list.map do |out|
           grammar.parse_output(out)
         end
-        substep = @fewest_set_features_class.new(winner_list, grammar,
-                                                 prior_result)
+        substep = @fsf_class.new(winner_list, grammar, prior_result)
       else
         step_subtype = MAX_MISMATCH_RANKING
         # extract outputs to pass to max_mismatch_ranking
         consistent_output_list = consistent_list.map do |word|
           word.output
         end
-        substep = @max_mismatch_ranking_class.new(consistent_output_list,
-                                                  grammar)
+        substep = @mmr_class.new(consistent_output_list, grammar)
       end
       changed = substep.changed?
       @test_result = @grammar_test_class.new(output_list, grammar)
