@@ -8,9 +8,6 @@ require 'otlearn/contrast_pair_learning'
 require 'otlearn/induction_learning'
 require 'otlearn/error_step'
 require 'otlearn/learning_result'
-require 'compare_consistency'
-require 'loser_selector'
-require 'loser_selector_from_gen'
 
 module OTLearn
   # A LanguageLearning object instantiates a particular instance of
@@ -25,8 +22,8 @@ module OTLearn
   # * Single form learning (one word at a time until no more can be learned).
   # * Repeat until the language is learned or no more progress is made.
   #   * Try a contrast pair; if none are successful, try induction learning.
-  #   * If either of these is successful, and the language is not yet learned,
-  #     run another round of single form learning.
+  #   * If either of these is successful, and the language is not yet
+  #     learned, run another round of single form learning.
   # After each major learning step in which grammar change occurs, an object
   # representing the step is stored. The list of major learning steps
   # is obtainable from the learning result via #step_list.
@@ -36,20 +33,16 @@ module OTLearn
   # Tesar 2014. <em>Output-Driven Phonology</em>.
   class LanguageLearning
     # Phonotactic learner
-    attr_accessor :phonotactic_learning_class
+    attr_accessor :ph_learner
 
     # Single-form learner
-    attr_accessor :single_form_learning_class
+    attr_accessor :sf_learner
 
     # Contrast pair learner
-    attr_accessor :contrast_pair_learning_class
+    attr_accessor :cp_learner
 
     # Induction learner
-    attr_accessor :induction_learning_class
-
-    # Loser selector for forming WL pairs; default value is
-    # an object of class CompareConsistency.
-    attr_accessor :loser_selector
+    attr_accessor :in_learner
 
     # Constructs a language learning simulation object.
     # :call-seq:
@@ -59,22 +52,13 @@ module OTLearn
     # the IO channel to which warnings are written (normally $stderr).
     def initialize(warn_output: $stderr)
       # Set the default values for the learning step objects
-      @phonotactic_learning_class = PhonotacticLearning
-      @single_form_learning_class = SingleFormLearning
-      @contrast_pair_learning_class = ContrastPairLearning
-      @induction_learning_class = InductionLearning
-      @loser_selector = nil # set in #learn
+      @ph_learner = PhonotacticLearning.new
+      @sf_learner = SingleFormLearning.new
+      @cp_learner = ContrastPairLearning.new
+      @in_learner = InductionLearning.new
       # The default output channel for warnings is $stderr.
       @warn_output = warn_output
     end
-
-    # Constructs the default loser selector.
-    def default_loser_selector(system)
-      basic_selector = LoserSelector.new(CompareConsistency.new)
-      @loser_selector =
-        LoserSelectorFromGen.new(system, basic_selector)
-    end
-    private :default_loser_selector
 
     # Runs the learning simulation, and returns a learning result object.
     # :call-seq:
@@ -84,11 +68,10 @@ module OTLearn
       # accessible if an exception is raised, and then caught by
       # #error_protected_execution.
       @step_list = []
-      default_loser_selector(grammar.system) if @loser_selector.nil?
       error_protected_execution(grammar.label) do
         execute_learning(output_list, grammar)
       end
-      OTLearn::LearningResult.new(@step_list, grammar)
+      LearningResult.new(@step_list, grammar)
     end
 
     # The main, top-level method for executing learning. This method is
@@ -98,8 +81,7 @@ module OTLearn
     # Returns true if learning was successful, false otherwise.
     def execute_learning(output_list, grammar)
       # Phonotactic learning
-      pl = @phonotactic_learning_class.new
-      pl_step = pl.run(output_list, grammar)
+      pl_step = @ph_learner.run(output_list, grammar)
       @step_list << pl_step
       return true if pl_step.all_correct?
 
@@ -107,22 +89,19 @@ module OTLearn
       # If learning succeeds, the method will return from inside the loop.
       loop do
         # Single form learning
-        sfl = @single_form_learning_class.new
-        sfl_step = sfl.run(output_list, grammar)
+        sfl_step = @sf_learner.run(output_list, grammar)
         @step_list << sfl_step
         break if sfl_step.all_correct?
 
         # Contrast pair learning
-        cpl = @contrast_pair_learning_class.new
-        cpl_step = cpl.run(output_list, grammar)
+        cpl_step = @cp_learner.run(output_list, grammar)
         @step_list << cpl_step
         break if cpl_step.all_correct?
 
         next if cpl_step.changed?
 
         # No suitable contrast pair, so pursue a step of Induction learning
-        il = @induction_learning_class.new
-        il_step = il.run(output_list, grammar)
+        il_step = @in_learner.run(output_list, grammar)
         @step_list << il_step
         break if il_step.all_correct?
 
