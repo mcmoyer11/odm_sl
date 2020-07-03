@@ -67,4 +67,46 @@ RSpec.describe 'WordSearch' do
       end
     end
   end
+
+  context 'morphemes_to_words' do
+    let(:word1) { double('word1') }
+    let(:mw1) { double('morphword1') }
+    let(:word2) { double('word2') }
+    let(:mw2) { double('morphword2') }
+    let(:morph1) { double('morpheme1') }
+    let(:morph2) { double('morpheme2') }
+    let(:morph3) { double('morpheme3') }
+    before(:example) do
+      allow(word1).to receive(:morphword).and_return(mw1)
+      allow(word2).to receive(:morphword).and_return(mw2)
+    end
+    context 'with one word and one morpheme' do
+      before(:example) do
+        allow(mw1).to receive(:each).and_yield(morph1)
+        @mwhash = @ws.morphemes_to_words([word1])
+      end
+      it 'gets the morphemes for word1' do
+        expect(word1).to have_received(:morphword)
+      end
+      it 'maps morpheme1 to [word1]' do
+        expect(@mwhash[morph1]).to contain_exactly(word1)
+      end
+    end
+    context 'with two words sharing a morpheme' do
+      before(:example) do
+        allow(mw1).to receive(:each).and_yield(morph1).and_yield(morph2)
+        allow(mw2).to receive(:each).and_yield(morph1).and_yield(morph3)
+        @mwhash = @ws.morphemes_to_words([word1, word2])
+      end
+      it 'maps morpheme1 to [word1, word2]' do
+        expect(@mwhash[morph1]).to contain_exactly(word1, word2)
+      end
+      it 'maps morpheme2 to [word1]' do
+        expect(@mwhash[morph2]).to contain_exactly(word1)
+      end
+      it 'maps morpheme3 to [word2]' do
+        expect(@mwhash[morph3]).to contain_exactly(word2)
+      end
+    end
+  end
 end

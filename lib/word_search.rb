@@ -22,4 +22,23 @@ class WordSearch
       cwords << word if uf_feat_inst.value != out_feat_inst.value
     end
   end
+
+  # Returns a hash mapping each morpheme contained in the word list
+  # to an array of words from the list that contain that morpheme.
+  # The word_list can contain any objects responding to #morphword.
+  # :call-seq:
+  #   morphemes_to_words(word_list) -> hash
+  def morphemes_to_words(word_list)
+    m2w_hash = {}
+    word_list.each do |word|
+      word.morphword.each do |morph|
+        m2w_hash[morph] = if m2w_hash.key?(morph)
+                            m2w_hash[morph] << word
+                          else
+                            [word]
+                          end
+      end
+    end
+    m2w_hash
+  end
 end
