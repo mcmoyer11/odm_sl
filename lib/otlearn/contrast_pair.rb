@@ -5,6 +5,7 @@
 require 'otlearn/data_manip'
 require 'otlearn/uf_learning'
 require 'otlearn/contrast_set'
+require 'word_search'
 
 module OTLearn
   # Yields a sequence of contrast pairs. A contrast pair is a ContrastSet
@@ -53,9 +54,10 @@ module OTLearn
           OTLearn.find_unset_features([morph], grammar)
         next(nil) if unset_features.empty? # go to next morpheme
 
-        # Find all words containing that morpheme,
-        # except the original failed winner.
-        containing_words = OTLearn.find_morphemes_in_words(winners)[morph]
+        # Find all words containing that morpheme, except the original
+        # failed winner.
+        morph_to_word_hash = WordSearch.new.morphemes_to_words(winners)
+        containing_words = morph_to_word_hash[morph]
         containing_words = containing_words.delete_if do |cword|
           cword.morphword == failed_winner.morphword
         end
