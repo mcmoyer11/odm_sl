@@ -6,10 +6,6 @@ require 'rspec'
 require 'word_search'
 
 RSpec.describe 'WordSearch' do
-  before(:example) do
-    @ws = WordSearch.new
-  end
-
   context '#find_unfaithful' do
     let(:uf_feat) { double('feature') }
     let(:uf_feat_value) { double('uf_feat_value') }
@@ -25,6 +21,7 @@ RSpec.describe 'WordSearch' do
       allow(uf_feat).to receive(:value).and_return(uf_feat_value)
       allow(out_feat1).to receive(:value).and_return(out_feat1_value)
       allow(out_feat2).to receive(:value).and_return(out_feat2_value)
+      @ws = WordSearch.new
     end
     context 'with no unfaithful words' do
       before(:example) do
@@ -79,6 +76,7 @@ RSpec.describe 'WordSearch' do
     before(:example) do
       allow(word1).to receive(:morphword).and_return(mw1)
       allow(word2).to receive(:morphword).and_return(mw2)
+      @ws = WordSearch.new
     end
     context 'with one word and one morpheme' do
       before(:example) do
@@ -106,6 +104,73 @@ RSpec.describe 'WordSearch' do
       end
       it 'maps morpheme3 to [word2]' do
         expect(@mwhash[morph3]).to contain_exactly(word2)
+      end
+    end
+  end
+
+  context 'find_unset_features_of_morpheme' do
+    let(:finst_class) { double('feature instance class') }
+    let(:morph) { double('morpheme') }
+    let(:grammar) { double('grammar') }
+    let(:under_form) { double('underlying form') }
+    let(:s1) { double('segment1') }
+    let(:s2) { double('segment2') }
+    let(:f1_1) { double('feature1_1') }
+    let(:f1_2) { double('feature1_2') }
+    let(:f2_1) { double('feature2_1') }
+    let(:f2_2) { double('feature2_2') }
+    let(:inst1_1) { double('feat instance 1_1') }
+    let(:inst1_2) { double('feat instance 1_2') }
+    let(:inst2_1) { double('feat instance 2_1') }
+    let(:inst2_2) { double('feat instance 2_2') }
+    before(:example) do
+      allow(grammar).to receive(:get_uf).with(morph).and_return(under_form)
+      allow(under_form).to receive(:each).and_yield(s1).and_yield(s2)
+      allow(s1).to receive(:each_feature).and_yield(f1_1).and_yield(f1_2)
+      allow(s2).to receive(:each_feature).and_yield(f2_1).and_yield(f2_2)
+      allow(finst_class).to receive(:new).with(s1, f1_1).and_return(inst1_1)
+      allow(finst_class).to receive(:new).with(s1, f1_2).and_return(inst1_2)
+      allow(finst_class).to receive(:new).with(s2, f2_1).and_return(inst2_1)
+      allow(finst_class).to receive(:new).with(s2, f2_2).and_return(inst2_2)
+      @ws = WordSearch.new(feat_inst_class: finst_class)
+    end
+    context 'with one unset feature' do
+      before(:example) do
+        allow(f1_1).to receive(:unset?).and_return(false)
+        allow(f1_2).to receive(:unset?).and_return(true)
+        allow(f2_1).to receive(:unset?).and_return(false)
+        allow(f2_2).to receive(:unset?).and_return(false)
+        @unset_features =
+          @ws.find_unset_features_of_morpheme(morph, grammar)
+      end
+      it 'returns a list with the unset feature' do
+        expect(@unset_features).to contain_exactly(inst1_2)
+      end
+    end
+    context 'with no unset features' do
+      before(:example) do
+        allow(f1_1).to receive(:unset?).and_return(false)
+        allow(f1_2).to receive(:unset?).and_return(false)
+        allow(f2_1).to receive(:unset?).and_return(false)
+        allow(f2_2).to receive(:unset?).and_return(false)
+        @unset_features =
+          @ws.find_unset_features_of_morpheme(morph, grammar)
+      end
+      it 'returns an empty list' do
+        expect(@unset_features).to be_empty
+      end
+    end
+    context 'with two unset features' do
+      before(:example) do
+        allow(f1_1).to receive(:unset?).and_return(true)
+        allow(f1_2).to receive(:unset?).and_return(false)
+        allow(f2_1).to receive(:unset?).and_return(false)
+        allow(f2_2).to receive(:unset?).and_return(true)
+        @unset_features =
+          @ws.find_unset_features_of_morpheme(morph, grammar)
+      end
+      it 'returns a list of both features' do
+        expect(@unset_features).to contain_exactly(inst1_1, inst2_2)
       end
     end
   end

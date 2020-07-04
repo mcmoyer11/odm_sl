@@ -51,7 +51,7 @@ module OTLearn
       failed_winner.morphword.each do |morph|
         # Find features of morph that are unset in the lexicon.
         unset_features =
-          OTLearn.find_unset_features([morph], grammar)
+            WordSearch.new.find_unset_features([morph], grammar)
         next(nil) if unset_features.empty? # go to next morpheme
 
         # Find all words containing that morpheme, except the original

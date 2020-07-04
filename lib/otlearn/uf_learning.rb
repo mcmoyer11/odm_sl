@@ -24,7 +24,7 @@ module OTLearn
     # conflicting values in the outputs, and those that do not.
     morph_in_words = WordSearch.new.morphemes_to_words(word_list)
     morpheme_list = morph_in_words.keys
-    unset_features = find_unset_features(morpheme_list, grammar)
+    unset_features = WordSearch.new.find_unset_features(morpheme_list, grammar)
     conflict, no_conflict = unset_features.partition do |f|
       conflicting_output_values?(f, morph_in_words[f.morpheme])
     end
@@ -247,22 +247,6 @@ module OTLearn
     # Extract a list of the morphemes in the words (the keys of the hash)
     morpheme_list = morph_in_words.keys
     # Return a list of the unset features for the morphemes
-    find_unset_features(morpheme_list, grammar)
-  end
-
-  # Returns a list of all the uf features in each of the morphemes in
-  # the given list that are unset in the given grammar.
-  def OTLearn.find_unset_features(morpheme_list, grammar)
-    unset_features = []
-    morpheme_list.each do |morph|
-      # find all of the unset features for that morpheme
-      uf = grammar.get_uf(morph)
-      uf.each do |el| # for each correspondence level element of the uf
-        el.each_feature do |f|
-          unset_features << FeatureInstance.new(el, f) if f.unset?
-        end
-      end
-    end
-    unset_features
+    WordSearch.new.find_unset_features(morpheme_list, grammar)
   end
 end
