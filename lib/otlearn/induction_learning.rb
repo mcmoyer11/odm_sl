@@ -63,7 +63,8 @@ module OTLearn
         winner_list = output_list.map do |out|
           grammar.parse_output(out)
         end
-        substep = @fsf_class.new(winner_list, grammar, prior_result)
+        substep = @fsf_class.new
+        substep.run(winner_list, grammar, prior_result)
       else
         step_subtype = MAX_MISMATCH_RANKING
         # extract outputs to pass to max_mismatch_ranking

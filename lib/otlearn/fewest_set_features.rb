@@ -30,48 +30,34 @@ module OTLearn
   # the learner should evaluate each failed winner, and then select
   # the failed winner requiring the minimal number of set features.
   class FewestSetFeatures
-    # Initializes a new object, and automatically executes
-    # the fewest set features algorithm.
-    # * +prior_result+ is the most recent result of grammar testing, and
-    #   provides a list of the winners failing word evaluation.
-    # * +grammar+ is the current grammar of the learner.
-    # * +word_list+ is a list of all the winners (words) currently stored by
-    #   the learner. It is used when searching for non-phonotactic ranking
-    #   information when a feature has been set.
-    # * +learning_module+ - the module containing the methods
-    #   #find_unset_features_in_words and #mismatch_consistency_check.
-    #   Used for testing (dependency injection).
-    # * +feature_value_pair_class+ - the class of object used to represent
-    #   feature-value pairs. Used for testing (dependency injection).
-    def initialize(word_list, grammar, prior_result,
-                   para_erc_learner: ParadigmErcLearning.new,
-                   learning_module: OTLearn,
-                   feature_value_pair_class: FeatureValuePair)
-      @word_list = word_list
-      @grammar = grammar
-      @prior_result = prior_result
-      @failed_winner = nil
-      @newly_set_features = []
-      # dependency injection defaults
-      @para_erc_learner = para_erc_learner
-      @learning_module = learning_module
-      @feature_value_pair_class = feature_value_pair_class
-      run_fewest_set_features
-    end
-
     # Returns an array of the features that were set by fewest set features.
     # If no feature was set, returns nil.
-    #
     # NOTE: at present, OTLearn::FewestSetFeatures will set at most one
     # feature, but may be extended to return a minimal set of features
     # in the future, so this method returns a list.
-    def newly_set_features
-      @newly_set_features
-    end
+    attr_reader :newly_set_features
 
     # Returns the failed winner that was used with fewest set features.
-    def failed_winner
-      @failed_winner
+    attr_reader :failed_winner
+
+    # The learner for ERC info from newly set features.
+    attr_accessor :para_erc_learner
+
+    # Returns a new FSF object.
+    #--
+    # * learning_module - the module containing the methods
+    #   #find_unset_features_in_words and #mismatch_consistency_check.
+    #   Used for testing (dependency injection).
+    # * feature_value_pair_class - the class of object used to represent
+    #   feature-value pairs. Used for testing (dependency injection).
+    def initialize(learning_module: OTLearn,
+                   feature_value_pair_class: FeatureValuePair)
+      @failed_winner = nil
+      @newly_set_features = []
+      # dependency injection parameters
+      @para_erc_learner = ParadigmErcLearning.new
+      @learning_module = learning_module
+      @feature_value_pair_class = feature_value_pair_class
     end
 
     # Returns true if FewestSetFeatures set at least one feature.
@@ -80,7 +66,12 @@ module OTLearn
     end
 
     # Executes the fewest set features algorithm.
-    #
+    # * prior_result is the most recent result of grammar testing, and
+    #   provides a list of the winners failing word evaluation.
+    # * grammar is the current grammar of the learner.
+    # * word_list is a list of all the winners (words) currently stored by
+    #   the learner. It is used when searching for non-phonotactic ranking
+    #   information when a feature has been set.
     # If a unique single feature is identified
     # among the unset features of a failed winner that rescues that winner,
     # then that feature is set in the grammar. The learner pursues
@@ -92,7 +83,9 @@ module OTLearn
     # for the selected failed winner, then a LearnEx exception is raised,
     # containing a reference to the list of (more than one) successful
     # features.
-    def run_fewest_set_features
+    def run(word_list, grammar, prior_result)
+      @grammar = grammar
+      @prior_result = prior_result
       # Check the failed winners until one is found that can succeed by
       # setting one feature.
       @prior_result.failed_winners.each do |failed_winner|
@@ -102,7 +95,7 @@ module OTLearn
         # Check for any new ranking information based on the newly set features.
         # NOTE: currently, only one feature can be newly set, but it is stored
         # in the list newly_set_features.
-        output_list = @word_list.map { |word| word.output }
+        output_list = word_list.map { |word| word.output }
         newly_set_features.each do |feat|
           @para_erc_learner.run(feat, @grammar, output_list)
         end
@@ -111,7 +104,6 @@ module OTLearn
       @failed_winner = nil if newly_set_features.empty?
       changed?
     end
-    protected :run_fewest_set_features
 
     # Find a previously unset feature of failed_winner such that setting
     # the feature to match its surface correspondent results in the winner
@@ -130,7 +122,7 @@ module OTLearn
       end
       changed?
     end
-    protected :find_and_set_a_succeeding_feature
+    private :find_and_set_a_succeeding_feature
 
     # Finds the unset underlying form feature of failed_winner that,
     # when assigned a value matching its output correspondent,
@@ -170,15 +162,15 @@ module OTLearn
       # Raise a LearnEx exception if more than one successful value is found.
       case consistent_feature_val_list.size
       when 0
-        return nil # nil if no successful value was found
+        nil # nil if no successful value was found
       when 1
-        return consistent_feature_val_list[0] # the single element of the list.
+        consistent_feature_val_list[0] # the single element of the list.
       else
         raise LearnEx.new(consistent_feature_val_list),
               'More than one single matching feature passes error testing.'
       end
     end
-    protected :select_most_restrictive_uf
+    private :select_most_restrictive_uf
 
     # Tests the unset feature +ufeat+ of +tested_winner+ (a testing copy of
     # failed_winner) by assigning, in the lexicon, the unset feature to the
@@ -214,6 +206,6 @@ module OTLearn
       # return the val_pair if it worked, or nil if it didn't
       val_pair
     end
-    protected :test_unset_feature
+    private :test_unset_feature
   end
 end

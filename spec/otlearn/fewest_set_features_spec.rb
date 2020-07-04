@@ -80,11 +80,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result,
+        @fewest_set_features = OTLearn::FewestSetFeatures.new(
           learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class,
-          para_erc_learner: para_erc_learner)
+          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features.para_erc_learner = para_erc_learner
+        @fewest_set_features.run(word_list, grammar, prior_result)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -111,11 +111,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result,
+        @fewest_set_features = OTLearn::FewestSetFeatures.new(
           learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class,
-          para_erc_learner: para_erc_learner)
+          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features.para_erc_learner = para_erc_learner
+        @fewest_set_features.run(word_list, grammar, prior_result)
       end
       it 'does not set a feature' do
         expect(@fewest_set_features.changed?).to be false
@@ -138,11 +138,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, false)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result,
+        @fewest_set_features = OTLearn::FewestSetFeatures.new(
           learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class,
-          para_erc_learner: para_erc_learner)
+          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features.para_erc_learner = para_erc_learner
+        @fewest_set_features.run(word_list, grammar, prior_result)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -169,11 +169,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false, true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result,
+        @fewest_set_features = OTLearn::FewestSetFeatures.new(
           learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class,
-          para_erc_learner: para_erc_learner)
+          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features.para_erc_learner = para_erc_learner
+        @fewest_set_features.run(word_list, grammar, prior_result)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -203,11 +203,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
       it 'raises a LearnEx exception' do
         expect do
           # actually construct the test object, and inject the test dependencies
-          @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-            grammar, prior_result,
+          @fewest_set_features = OTLearn::FewestSetFeatures.new(
             learning_module: learning_module,
-            feature_value_pair_class: feature_value_pair_class,
-            para_erc_learner: para_erc_learner)
+            feature_value_pair_class: feature_value_pair_class)
+          @fewest_set_features.para_erc_learner = para_erc_learner
+          @fewest_set_features.run(word_list, grammar, prior_result)
         end.to raise_error(OTLearn::LearnEx)
       end
     end
@@ -288,11 +288,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(false)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result,
+        @fewest_set_features = OTLearn::FewestSetFeatures.new(
           learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class,
-          para_erc_learner: para_erc_learner)
+          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features.para_erc_learner = para_erc_learner
+        @fewest_set_features.run(word_list, grammar, prior_result)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
@@ -316,11 +316,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(true)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(word_list,
-          grammar, prior_result,
+        @fewest_set_features = OTLearn::FewestSetFeatures.new(
           learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class,
-          para_erc_learner: para_erc_learner)
+          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features.para_erc_learner = para_erc_learner
+        @fewest_set_features.run(word_list, grammar, prior_result)
       end
       it 'sets a feature' do
         expect(@fewest_set_features.changed?).to be true
