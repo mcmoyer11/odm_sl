@@ -31,7 +31,6 @@ module OTLearn
   # the failed winner requiring the minimal number of set features.
   class FewestSetFeatures
     # Returns an array of the features that were set by fewest set features.
-    # If no feature was set, returns nil.
     # NOTE: at present, OTLearn::FewestSetFeatures will set at most one
     # feature, but may be extended to return a minimal set of features
     # in the future, so this method returns a list.
@@ -44,6 +43,8 @@ module OTLearn
     attr_accessor :para_erc_learner
 
     # Returns a new FSF object.
+    # :call-seq:
+    #   FewestSetFeatures.new -> fsf_learner
     #--
     # * learning_module - the module containing the methods
     #   #find_unset_features_in_words and #mismatch_consistency_check.
@@ -52,12 +53,11 @@ module OTLearn
     #   feature-value pairs. Used for testing (dependency injection).
     def initialize(learning_module: OTLearn,
                    feature_value_pair_class: FeatureValuePair)
-      @failed_winner = nil
-      @newly_set_features = []
-      # dependency injection parameters
-      @para_erc_learner = ParadigmErcLearning.new
       @learning_module = learning_module
       @feature_value_pair_class = feature_value_pair_class
+      @para_erc_learner = ParadigmErcLearning.new
+      @failed_winner = nil
+      @newly_set_features = []
     end
 
     # Returns true if FewestSetFeatures set at least one feature.
