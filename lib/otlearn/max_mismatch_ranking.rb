@@ -2,7 +2,6 @@
 
 # Author: Morgan Moyer / Bruce Tesar
 
-require 'word'
 require 'otlearn/mmr_exceptions'
 require 'otlearn/erc_learning'
 
@@ -28,8 +27,8 @@ module OTLearn
   # further maximizes the number of inputs mapping to the output by mapping
   # the max mismatch input, thus enforcing greater restrictiveness.
   #
-  # This assumes that all of the unset features are binary; see the
-  # documentation for Word#mismatch_input_to_output!.
+  # This implementation assumes that all of the unset features are binary;
+  # see the documentation for Word#mismatch_input_to_output!.
   class MaxMismatchRanking
     # The ERC that the algorithm has created.
     attr_reader :newly_added_wl_pairs
@@ -37,11 +36,14 @@ module OTLearn
     # The failed winner that was used with max mismatch ranking.
     attr_reader :failed_winner
 
+    # The learner for getting ERCs (ranking information) from winners.
+    attr_accessor :erc_learner
+
     # Initializes a new object for the max mismatch ranking algorithm.
     # :call-seq:
-    #   MaxMismatchRanking.new -> mmrlearner
-    def initialize(erc_learner: ErcLearning.new)
-      @erc_learner = erc_learner
+    #   MaxMismatchRanking.new -> mmr_learner
+    def initialize
+      @erc_learner = ErcLearning.new
       @newly_added_wl_pairs = []
       @failed_winner = nil
       @changed = false
@@ -62,14 +64,14 @@ module OTLearn
     # Then, MRCD is used to construct the ERCs necessary to make that
     # candidate grammatical.
     #
-    # Returns True if the consistent max mismatch candidate provides
-    # new ranking information. Raises an exception if it does not provide new
-    # ranking information.
+    # Returns true if the consistent max mismatch candidate provides
+    # new ranking information. Raises an MMREx exception if it does not
+    # provide new ranking information.
+    # :call-seq:
+    #   run(output_list, grammar) -> boolean
     def run(output_list, grammar)
-      @grammar = grammar
-      @output_list = output_list
-      @failed_winner = choose_failed_winner
-      mrcd_result = @erc_learner.run([@failed_winner], @grammar)
+      @failed_winner = choose_failed_winner(output_list, grammar)
+      mrcd_result = @erc_learner.run([@failed_winner], grammar)
       @changed = mrcd_result.any_change?
       unless @changed
         msg1 = 'A failed consistent winner'
@@ -83,9 +85,9 @@ module OTLearn
     # Choose, from among the consistent failed winners, the failed winner to
     # use with MMR. Returns a full word with the input initialized so that
     # set features match the lexicon and unset features mismatch the output.
-    def choose_failed_winner
-      chosen_output = @output_list.first
-      chosen_winner = @grammar.parse_output(chosen_output)
+    def choose_failed_winner(output_list, grammar)
+      chosen_output = output_list.first
+      chosen_winner = grammar.parse_output(chosen_output)
       chosen_winner.mismatch_input_to_output!
       chosen_winner
     end
