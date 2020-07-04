@@ -37,23 +37,14 @@ module OTLearn
     # The failed winner that was used with max mismatch ranking.
     attr_reader :failed_winner
 
-    # Initializes a new object, *and* automatically executes
-    # the max mismatch ranking algorithm.
-    # * +output_list+ is the list of outputs of *consistent*
-    #    failed winners that are candidates for use in MMR.
-    # * +grammar+ is the current grammar of the learner.
+    # Initializes a new object for the max mismatch ranking algorithm.
     # :call-seq:
-    #   MaxMismatchRanking.new(output_list, grammar) -> mmrlearner
-    def initialize(output_list, grammar,
-                   erc_learner: ErcLearning.new)
-      @grammar = grammar
-      @output_list = output_list
+    #   MaxMismatchRanking.new -> mmrlearner
+    def initialize(erc_learner: ErcLearning.new)
       @erc_learner = erc_learner
       @newly_added_wl_pairs = []
       @failed_winner = nil
       @changed = false
-      # automatically execute MMR
-      run_max_mismatch_learning
     end
 
     # Returns true if MaxMismatchRanking has found a consistent WL pair
@@ -62,7 +53,9 @@ module OTLearn
     end
 
     # Executes the Max Mismatch Ranking algorithm.
-    #
+    # * output_list is the list of outputs of *consistent*
+    #    failed winners that are candidates for use in MMR.
+    # * grammar is the current grammar of the learner.
     # The learner chooses a single consistent failed winner from the list.
     # For that failed winner, the learner takes the input with all
     # unset features set opposite their surface value and creates a candidate.
@@ -72,7 +65,9 @@ module OTLearn
     # Returns True if the consistent max mismatch candidate provides
     # new ranking information. Raises an exception if it does not provide new
     # ranking information.
-    def run_max_mismatch_learning
+    def run(output_list, grammar)
+      @grammar = grammar
+      @output_list = output_list
       @failed_winner = choose_failed_winner
       mrcd_result = @erc_learner.run([@failed_winner], @grammar)
       @changed = mrcd_result.any_change?
@@ -84,7 +79,6 @@ module OTLearn
       @newly_added_wl_pairs = mrcd_result.added_pairs
       @changed
     end
-    private :run_max_mismatch_learning
 
     # Choose, from among the consistent failed winners, the failed winner to
     # use with MMR. Returns a full word with the input initialized so that

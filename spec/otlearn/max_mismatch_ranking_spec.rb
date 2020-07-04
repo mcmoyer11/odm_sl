@@ -24,8 +24,8 @@ RSpec.describe OTLearn::MaxMismatchRanking do
       allow(mrcd_result).to receive(:any_change?).and_return(true)
       allow(mrcd_result).to receive(:added_pairs).and_return([new_pair])
       @max_mismatch_rankings =
-        OTLearn::MaxMismatchRanking\
-        .new(failed_winner_list, grammar, erc_learner: erc_learner)
+        OTLearn::MaxMismatchRanking.new(erc_learner: erc_learner)
+      @max_mismatch_rankings.run(failed_winner_list, grammar)
     end
     it 'returns a list with the newpair' do
       expect(@max_mismatch_rankings.newly_added_wl_pairs).to eq([new_pair])
@@ -49,8 +49,8 @@ RSpec.describe OTLearn::MaxMismatchRanking do
     it 'should raise an exception' do
       expect do
         @max_mismatch_rankings =
-          OTLearn::MaxMismatchRanking\
-          .new(failed_winner_list, grammar, erc_learner: erc_learner)
+          OTLearn::MaxMismatchRanking.new(erc_learner: erc_learner)
+        @max_mismatch_rankings.run(failed_winner_list, grammar)
       end.to raise_error(RuntimeError)
     end
   end

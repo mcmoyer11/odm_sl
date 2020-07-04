@@ -71,7 +71,8 @@ module OTLearn
         consistent_output_list = consistent_list.map do |word|
           word.output
         end
-        substep = @mmr_class.new(consistent_output_list, grammar)
+        substep = @mmr_class.new
+        substep.run(consistent_output_list, grammar)
       end
       changed = substep.changed?
       @test_result = @grammar_test_class.new(output_list, grammar)

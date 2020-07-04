@@ -70,7 +70,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(@in_step).to be_changed
       end
       it 'calls fewest set features' do
-        expect(fsf_class).to have_received(:new)
+        expect(fsf).to have_received(:run)
       end
       it 'gives the fsf step object' do
         expect(@in_step.substep).to eq fsf
@@ -105,7 +105,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(@in_step).not_to be_changed
       end
       it 'calls fewest set features' do
-        expect(fsf_class).to have_received(:new)
+        expect(fsf).to have_received(:run)
       end
       it 'gives the fsf step object' do
         expect(@in_step.substep).to eq fsf
@@ -134,8 +134,8 @@ RSpec.describe OTLearn::InductionLearning do
       allow(failed_winner_1).to receive(:output).and_return(failed_output_1)
       allow(mrcd_gram).to receive(:consistent?).and_return(true)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
-      allow(mmr_class).to\
-        receive(:new).with([failed_output_1], grammar).and_return(mmr)
+      allow(mmr_class).to receive(:new).and_return(mmr)
+      allow(mmr).to receive(:run)
       allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
@@ -146,6 +146,7 @@ RSpec.describe OTLearn::InductionLearning do
 
     context 'that allows new ranking information' do
       before(:each) do
+        allow(mmr).to receive(:run)
         allow(mmr).to receive(:changed?).and_return(true)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
@@ -158,7 +159,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(@in_step).to be_changed
       end
       it 'calls max mismatch ranking' do
-        expect(mmr_class).to have_received(:new)
+        expect(mmr).to have_received(:run).with([failed_output_1], grammar)
       end
       it 'gives the mmr step object' do
         expect(@in_step.substep).to eq mmr
