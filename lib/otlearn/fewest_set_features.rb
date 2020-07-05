@@ -73,13 +73,13 @@ module OTLearn
     # * prior_result is the most recent result of grammar testing, and
     #   provides a list of the winners failing word evaluation.
     # * grammar is the current grammar of the learner.
-    # * word_list is a list of all the winners (words) currently stored by
+    # * output_list is a list of all the winner outputs currently stored by
     #   the learner. It is used when searching for non-phonotactic ranking
     #   information when a feature has been set.
-    # If a unique single feature is identified
-    # among the unset features of a failed winner that rescues that winner,
-    # then that feature is set in the grammar. The learner pursues
-    # non-phonotactic ranking information for the newly set feature.
+    # If a unique single feature is identified among the unset features of
+    # a failed winner that rescues that winner, then that feature is set in
+    # the grammar. The learner pursues non-phonotactic ranking information
+    # for the newly set feature.
     #
     # Returns true if at least one feature was set, false otherwise.
     #
@@ -87,7 +87,7 @@ module OTLearn
     # for the selected failed winner, then a LearnEx exception is raised,
     # containing a reference to the list of (more than one) successful
     # features.
-    def run(word_list, grammar, prior_result)
+    def run(output_list, grammar, prior_result)
       @grammar = grammar
       @prior_result = prior_result
       # Check the failed winners until one is found that can succeed by
@@ -99,7 +99,6 @@ module OTLearn
         # Check for any new ranking information based on the newly set features.
         # NOTE: currently, only one feature can be newly set, but it is stored
         # in the list newly_set_features.
-        output_list = word_list.map { |word| word.output }
         newly_set_features.each do |feat|
           @para_erc_learner.run(feat, @grammar, output_list)
         end

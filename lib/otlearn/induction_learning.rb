@@ -59,12 +59,8 @@ module OTLearn
       # Otherwise, run FSF.
       if consistent_list.empty?
         step_subtype = FEWEST_SET_FEATURES
-        # Parse the outputs into words
-        winner_list = output_list.map do |out|
-          grammar.parse_output(out)
-        end
         substep = @fsf_class.new
-        substep.run(winner_list, grammar, prior_result)
+        substep.run(output_list, grammar, prior_result)
       else
         step_subtype = MAX_MISMATCH_RANKING
         # extract outputs to pass to max_mismatch_ranking

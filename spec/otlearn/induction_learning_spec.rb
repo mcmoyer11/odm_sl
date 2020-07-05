@@ -6,7 +6,6 @@ require 'otlearn/otlearn'
 require 'otlearn/induction_learning'
 
 RSpec.describe OTLearn::InductionLearning do
-  let(:winner_list) { double('winner_list') }
   let(:output_list) { double('output_list') }
   let(:grammar) { double('grammar') }
   let(:prior_result) { double('prior_result') }
@@ -19,7 +18,6 @@ RSpec.describe OTLearn::InductionLearning do
   let(:grammar_test) { double('grammar_test') }
   before(:each) do
     allow(grammar).to receive(:system)
-    allow(output_list).to receive(:map).and_return(winner_list)
   end
 
   context 'with no failed winners' do
