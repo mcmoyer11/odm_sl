@@ -7,6 +7,7 @@ require 'feature_value_pair'
 require 'word_search'
 require 'otlearn/learning_exceptions'
 require 'otlearn/paradigm_erc_learning'
+require 'otlearn/fsf_substep'
 
 module OTLearn
   # FewestSetFeatures searches for a single unset feature that, when set to
@@ -31,15 +32,6 @@ module OTLearn
   # the learner should evaluate each failed winner, and then select
   # the failed winner requiring the minimal number of set features.
   class FewestSetFeatures
-    # Returns an array of the features that were set by fewest set features.
-    # NOTE: at present, OTLearn::FewestSetFeatures will set at most one
-    # feature, but may be extended to return a minimal set of features
-    # in the future, so this method returns a list.
-    attr_reader :newly_set_features
-
-    # Returns the failed winner that was used with fewest set features.
-    attr_reader :failed_winner
-
     # The learner for ERC info from newly set features.
     attr_accessor :para_erc_learner
 
@@ -60,13 +52,6 @@ module OTLearn
       @feature_value_pair_class = feature_value_pair_class
       @word_search = word_search
       @para_erc_learner = ParadigmErcLearning.new
-      @failed_winner = nil
-      @newly_set_features = []
-    end
-
-    # Returns true if FewestSetFeatures set at least one feature.
-    def changed?
-      !newly_set_features.empty?
     end
 
     # Executes the fewest set features algorithm.
@@ -81,13 +66,17 @@ module OTLearn
     # the grammar. The learner pursues non-phonotactic ranking information
     # for the newly set feature.
     #
-    # Returns true if at least one feature was set, false otherwise.
+    # Returns an FsfSubstep object.
     #
     # If more than one individual unset feature is found that will succeed
     # for the selected failed winner, then a LearnEx exception is raised,
     # containing a reference to the list of (more than one) successful
     # features.
+    # :call-seq:
+    #   run(output_list, grammar, prior_result) -> substep
     def run(output_list, grammar, prior_result)
+      @failed_winner = nil
+      @newly_set_features = []
       @grammar = grammar
       @prior_result = prior_result
       # Check the failed winners until one is found that can succeed by
@@ -99,20 +88,20 @@ module OTLearn
         # Check for any new ranking information based on the newly set features.
         # NOTE: currently, only one feature can be newly set, but it is stored
         # in the list newly_set_features.
-        newly_set_features.each do |feat|
+        @newly_set_features.each do |feat|
           @para_erc_learner.run(feat, @grammar, output_list)
         end
-        break unless newly_set_features.empty?
+        break unless @newly_set_features.empty?
       end
-      @failed_winner = nil if newly_set_features.empty?
-      changed?
+      @failed_winner = nil if @newly_set_features.empty?
+      FsfSubstep.new(@newly_set_features, @failed_winner)
     end
 
     # Find a previously unset feature of failed_winner such that setting
     # the feature to match its surface correspondent results in the winner
     # succeeding (consistent with all of the winners that passed error-testing).
     #
-    # Returns true if the grammar set a feature, false otherwise.
+    # Returns the newly set FeatureValuePair, or nil if none were found.
     def find_and_set_a_succeeding_feature
       # Look for a feature that can make failed_winner succeed.
       # If one is found, store the successful FeatureValuePair.
@@ -120,10 +109,10 @@ module OTLearn
       # If a feature was found, set it in the lexicon, and
       # add it to the list of newly set features.
       unless fv_pair.nil?
-        fv_pair.set_to_alt_value  # Set the feature permanently in the lexicon.
-        newly_set_features << fv_pair.feature_instance
+        fv_pair.set_to_alt_value # Set the feature permanently in the lexicon.
+        @newly_set_features << fv_pair.feature_instance
       end
-      changed?
+      fv_pair
     end
     private :find_and_set_a_succeeding_feature
 
@@ -145,7 +134,7 @@ module OTLearn
     def select_most_restrictive_uf
       # Parse the failed winner's outputs with the grammar to generate
       # distinct candidates in correspondence with the lexicon of the grammar.
-      output = failed_winner.output
+      output = @failed_winner.output
       failed_winner_dup = @grammar.parse_output(output)
       # Find the unset underlying feature instances
       unset_uf_features =

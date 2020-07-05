@@ -82,24 +82,24 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features =
+        fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
           word_search: word_search)
-        @fewest_set_features.para_erc_learner = para_erc_learner
-        @fewest_set_features.run(output_list, grammar, prior_result)
+        fewest_set_features.para_erc_learner = para_erc_learner
+        @substep = fewest_set_features.run(output_list, grammar, prior_result)
       end
       it 'sets a feature' do
-        expect(@fewest_set_features.changed?).to be true
+        expect(@substep.changed?).to be true
       end
       it 'determines the failed winner' do
-        expect(@fewest_set_features.failed_winner).to equal failed_winner
+        expect(@substep.failed_winner).to equal failed_winner
       end
       it 'only sets one feature' do
-        expect(@fewest_set_features.newly_set_features.size).to eq 1
+        expect(@substep.newly_set_features.size).to eq 1
       end
       it 'sets the single unset feature' do
-        expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat1
+        expect(@substep.newly_set_features[0]).to eq unset_feat1
       end
       it 'checks for new ranking information for the unset feature' do
         expect(para_erc_learner).to\
@@ -114,21 +114,21 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features =
+        fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
                                          word_search: word_search)
-        @fewest_set_features.para_erc_learner = para_erc_learner
-        @fewest_set_features.run(output_list, grammar, prior_result)
+        fewest_set_features.para_erc_learner = para_erc_learner
+        @substep = fewest_set_features.run(output_list, grammar, prior_result)
       end
       it 'does not set a feature' do
-        expect(@fewest_set_features.changed?).to be false
+        expect(@substep.changed?).to be false
       end
       it 'does not return a failed winner' do
-        expect(@fewest_set_features.failed_winner).to be_nil
+        expect(@substep.failed_winner).to be_nil
       end
       it 'sets zero features' do
-        expect(@fewest_set_features.newly_set_features.size).to eq 0
+        expect(@substep.newly_set_features.size).to eq 0
       end
       it 'does not check for new ranking information' do
         expect(para_erc_learner).not_to have_received(:run)
@@ -142,24 +142,24 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, false)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features =
+        fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
                                          word_search: word_search)
-        @fewest_set_features.para_erc_learner = para_erc_learner
-        @fewest_set_features.run(output_list, grammar, prior_result)
+        fewest_set_features.para_erc_learner = para_erc_learner
+        @substep = fewest_set_features.run(output_list, grammar, prior_result)
       end
       it 'sets a feature' do
-        expect(@fewest_set_features.changed?).to be true
+        expect(@substep.changed?).to be true
       end
       it 'determines the failed winner' do
-        expect(@fewest_set_features.failed_winner).to equal failed_winner
+        expect(@substep.failed_winner).to equal failed_winner
       end
       it 'only sets one feature' do
-        expect(@fewest_set_features.newly_set_features.size).to eq 1
+        expect(@substep.newly_set_features.size).to eq 1
       end
       it 'sets the consistent unset feature' do
-        expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat1
+        expect(@substep.newly_set_features[0]).to eq unset_feat1
       end
       it 'checks for new ranking information for the consistent unset feature' do
         expect(para_erc_learner).to \
@@ -174,24 +174,24 @@ RSpec.describe OTLearn::FewestSetFeatures do
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false, true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features =
+        fewest_set_features =
             OTLearn::FewestSetFeatures.new(learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
                                            word_search: word_search)
-        @fewest_set_features.para_erc_learner = para_erc_learner
-        @fewest_set_features.run(output_list, grammar, prior_result)
+        fewest_set_features.para_erc_learner = para_erc_learner
+        @substep = fewest_set_features.run(output_list, grammar, prior_result)
       end
       it 'sets a feature' do
-        expect(@fewest_set_features.changed?).to be true
+        expect(@substep.changed?).to be true
       end
       it 'determines the failed winner' do
-        expect(@fewest_set_features.failed_winner).to equal failed_winner
+        expect(@substep.failed_winner).to equal failed_winner
       end
       it 'only sets one feature' do
-        expect(@fewest_set_features.newly_set_features.size).to eq 1
+        expect(@substep.newly_set_features.size).to eq 1
       end
       it 'sets the consistent unset feature' do
-        expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat2
+        expect(@substep.newly_set_features[0]).to eq unset_feat2
       end
       it 'checks for new ranking information for the consistent unset feature' do
         expect(para_erc_learner).to\
@@ -209,12 +209,12 @@ RSpec.describe OTLearn::FewestSetFeatures do
       it 'raises a LearnEx exception' do
         expect do
           # actually construct the test object, and inject the test dependencies
-          @fewest_set_features =
+          fewest_set_features =
             OTLearn::FewestSetFeatures.new(learning_module: learning_module,
             feature_value_pair_class: feature_value_pair_class,
                                            word_search: word_search)
-          @fewest_set_features.para_erc_learner = para_erc_learner
-          @fewest_set_features.run(output_list, grammar, prior_result)
+          fewest_set_features.para_erc_learner = para_erc_learner
+          @substep = fewest_set_features.run(output_list, grammar, prior_result)
         end.to raise_error(OTLearn::LearnEx)
       end
     end
@@ -295,24 +295,24 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(false)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features =
+        fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
                                          word_search: word_search)
-        @fewest_set_features.para_erc_learner = para_erc_learner
-        @fewest_set_features.run(output_list, grammar, prior_result)
+        fewest_set_features.para_erc_learner = para_erc_learner
+        @substep = fewest_set_features.run(output_list, grammar, prior_result)
       end
       it 'sets a feature' do
-        expect(@fewest_set_features.changed?).to be true
+        expect(@substep.changed?).to be true
       end
       it 'determines the failed winner' do
-        expect(@fewest_set_features.failed_winner).to equal failed_winner_2
+        expect(@substep.failed_winner).to equal failed_winner_2
       end
       it 'only sets one feature' do
-        expect(@fewest_set_features.newly_set_features.size).to eq 1
+        expect(@substep.newly_set_features.size).to eq 1
       end
       it 'sets the consistent unset feature' do
-        expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat2
+        expect(@substep.newly_set_features[0]).to eq unset_feat2
       end
       it 'checks for new ranking information for the unset feature' do
         expect(para_erc_learner).to \
@@ -324,24 +324,24 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(true)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features =
+        fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
           feature_value_pair_class: feature_value_pair_class,
                                          word_search: word_search)
-        @fewest_set_features.para_erc_learner = para_erc_learner
-        @fewest_set_features.run(output_list, grammar, prior_result)
+        fewest_set_features.para_erc_learner = para_erc_learner
+        @substep = fewest_set_features.run(output_list, grammar, prior_result)
       end
       it 'sets a feature' do
-        expect(@fewest_set_features.changed?).to be true
+        expect(@substep.changed?).to be true
       end
       it 'determines the failed winner' do
-        expect(@fewest_set_features.failed_winner).to equal failed_winner_1
+        expect(@substep.failed_winner).to equal failed_winner_1
       end
       it 'only sets one feature' do
-        expect(@fewest_set_features.newly_set_features.size).to eq 1
+        expect(@substep.newly_set_features.size).to eq 1
       end
       it 'sets the consistent unset feature' do
-        expect(@fewest_set_features.newly_set_features[0]).to eq unset_feat1
+        expect(@substep.newly_set_features[0]).to eq unset_feat1
       end
       it 'checks for new ranking information for the unset feature' do
         expect(para_erc_learner).to\

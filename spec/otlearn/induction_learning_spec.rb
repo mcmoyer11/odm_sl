@@ -9,8 +9,9 @@ RSpec.describe OTLearn::InductionLearning do
   let(:output_list) { double('output_list') }
   let(:grammar) { double('grammar') }
   let(:prior_result) { double('prior_result') }
-  let(:fsf) { double('fsf') }
   let(:fsf_class) { double('FSF_class') }
+  let(:fsf) { double('fsf') }
+  let(:fsf_substep) { double('fsf_substep') }
   let(:mmr_class) { double('MMR_class') }
   let(:mmr) { double('mmr') }
   let(:otlearn_module) { double('otlearn_module') }
@@ -46,8 +47,8 @@ RSpec.describe OTLearn::InductionLearning do
       allow(mrcd_gram).to receive(:consistent?).and_return(false)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
       allow(fsf_class).to receive(:new).and_return(fsf)
-      allow(fsf).to receive(:run)
-      allow(fsf).to receive(:changed?)
+      allow(fsf).to receive(:run).and_return(fsf_substep)
+      allow(fsf_substep).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_test_class).to\
@@ -57,7 +58,7 @@ RSpec.describe OTLearn::InductionLearning do
 
     context 'that allows a feature to be set' do
       before(:each) do
-        allow(fsf).to receive(:changed?).and_return(true)
+        allow(fsf_substep).to receive(:changed?).and_return(true)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
                                          grammar_test_class: grammar_test_class,
@@ -70,8 +71,8 @@ RSpec.describe OTLearn::InductionLearning do
       it 'calls fewest set features' do
         expect(fsf).to have_received(:run)
       end
-      it 'gives the fsf step object' do
-        expect(@in_step.substep).to eq fsf
+      it 'gives the fsf substep object' do
+        expect(@in_step.substep).to eq fsf_substep
       end
       it 'runs a grammar test after learning' do
         expect(grammar_test_class).to have_received(:new).exactly(2).times
@@ -92,7 +93,7 @@ RSpec.describe OTLearn::InductionLearning do
 
     context ' that does not allow a feature to be set' do
       before(:each) do
-        allow(fsf).to receive(:changed?).and_return(false)
+        allow(fsf_substep).to receive(:changed?).and_return(false)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
                                          grammar_test_class: grammar_test_class,
@@ -106,7 +107,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(fsf).to have_received(:run)
       end
       it 'gives the fsf step object' do
-        expect(@in_step.substep).to eq fsf
+        expect(@in_step.substep).to eq fsf_substep
       end
       it 'runs a grammar test after learning' do
         expect(grammar_test_class).to have_received(:new).exactly(2).times

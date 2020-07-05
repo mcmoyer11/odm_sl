@@ -12,6 +12,9 @@ module OTLearn
     attr_reader :subtype
 
     # The list of features newly set by FSF.
+    # NOTE: at present, OTLearn::FewestSetFeatures will set at most one
+    # feature, but may be extended to return a minimal set of features
+    # in the future, so this attribute is a list.
     attr_reader :newly_set_features
 
     # The failed winner that was used with FSF.
