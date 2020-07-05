@@ -65,9 +65,8 @@ module OTLearn
   def OTLearn.test_unset_feature(f_uf_instance, word_list,
                                  conflict_list, grammar)
     # Find the consistent values for the feature.
-    consistent_values =
-      OTLearn.consistent_feature_values(f_uf_instance, word_list,
-                                        conflict_list, grammar)
+    consistent_values = consistent_feature_values(f_uf_instance, word_list,
+                                                  conflict_list, grammar)
     if consistent_values.size > 1 # feature cannot be set
       false
     elsif consistent_values.size == 1
@@ -129,20 +128,20 @@ module OTLearn
     feat_values_list = FeatureValuePair.all_values_pairs(c_features)
     # Generate all combinations of values for the conflict features.
     # By default, a single combination of zero conflict features
-    conflicting_feature_combinations = [[]]
+    conflict_feature_comb = [[]]
     # Create the cartesian product of the sets of possible feature values.
     unless feat_values_list.empty?
-      conflicting_feature_combinations =
+      conflict_feature_comb =
         feat_values_list[0].product(*feat_values_list[1..-1])
     end
     # Test each combination, returning _true_ on the first consistent one.
-    conflicting_feature_combinations.each do |feat_comb|
+    conflict_feature_comb.each do |feat_comb|
       # Set conflict input features to the feature values in the combination
       feat_comb.each do |feat_pair|
         # Set every occurrence of the feature in the contrast set to
         # the alternative value.
-        OTLearn.set_input_features(feat_pair.feature_instance,
-                                   feat_pair.alt_value, contrast_set)
+        set_input_features(feat_pair.feature_instance,
+                           feat_pair.alt_value, contrast_set)
       end
       # Test the contrast set, using the conflicting feature combination
       mrcd_result = Mrcd.new(contrast_set, grammar, loser_selector)
