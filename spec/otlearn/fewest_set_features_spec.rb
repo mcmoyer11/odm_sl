@@ -13,9 +13,11 @@ RSpec.describe OTLearn::FewestSetFeatures do
   let(:para_erc_learner) { double('para_erc_learner') }
   let(:learning_module) { double('learning_module') }
   let(:feature_value_pair_class) { double('FeatureValuePair class') }
+  let(:word_search) { double('word_search') }
   before(:example) do
     allow(grammar).to receive(:parse_output)
     allow(para_erc_learner).to receive(:run)
+    allow(word_search).to receive(:find_unset_features_in_words)
   end
 
   context 'given a failed winner' do
@@ -75,14 +77,15 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
     context 'with one consistent unset feature' do
       before(:example) do
-        allow(learning_module).to \
+        allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(
-          learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features =
+          OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+          feature_value_pair_class: feature_value_pair_class,
+          word_search: word_search)
         @fewest_set_features.para_erc_learner = para_erc_learner
         @fewest_set_features.run(word_list, grammar, prior_result)
       end
@@ -106,14 +109,15 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
     context 'with one inconsistent unset feature' do
       before(:example) do
-        allow(learning_module).to \
+        allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(
-          learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features =
+          OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+          feature_value_pair_class: feature_value_pair_class,
+                                         word_search: word_search)
         @fewest_set_features.para_erc_learner = para_erc_learner
         @fewest_set_features.run(word_list, grammar, prior_result)
       end
@@ -133,14 +137,15 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
     context 'with one consistent and one inconsistent unset feature' do
       before(:example) do
-        allow(learning_module).to \
+        allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, false)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(
-          learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features =
+          OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+          feature_value_pair_class: feature_value_pair_class,
+                                         word_search: word_search)
         @fewest_set_features.para_erc_learner = para_erc_learner
         @fewest_set_features.run(word_list, grammar, prior_result)
       end
@@ -164,14 +169,15 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
     context 'with one inconsistent and one consistent unset feature' do
       before(:example) do
-        allow(learning_module).to \
+        allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(false, true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(
-          learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features =
+            OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+          feature_value_pair_class: feature_value_pair_class,
+                                           word_search: word_search)
         @fewest_set_features.para_erc_learner = para_erc_learner
         @fewest_set_features.run(word_list, grammar, prior_result)
       end
@@ -195,7 +201,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
 
     context 'with two consistent features' do
       before(:example) do
-        allow(learning_module).to \
+        allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
         allow(mrcd_grammar).to receive(:consistent?).and_return(true, true)
@@ -203,9 +209,10 @@ RSpec.describe OTLearn::FewestSetFeatures do
       it 'raises a LearnEx exception' do
         expect do
           # actually construct the test object, and inject the test dependencies
-          @fewest_set_features = OTLearn::FewestSetFeatures.new(
-            learning_module: learning_module,
-            feature_value_pair_class: feature_value_pair_class)
+          @fewest_set_features =
+            OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+            feature_value_pair_class: feature_value_pair_class,
+                                           word_search: word_search)
           @fewest_set_features.para_erc_learner = para_erc_learner
           @fewest_set_features.run(word_list, grammar, prior_result)
         end.to raise_error(OTLearn::LearnEx)
@@ -245,7 +252,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(learning_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1_dup]).and_return(mrcd_result_1)
       allow(mrcd_result_1).to receive(:grammar).and_return(mrcd_grammar_1)
-      allow(learning_module).to receive(:find_unset_features_in_words)\
+      allow(word_search).to receive(:find_unset_features_in_words)\
         .with([failed_winner_1_dup], grammar).and_return([unset_feat1])
       allow(failed_winner_1_dup).to \
         receive(:out_feat_corr_of_uf)\
@@ -259,7 +266,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(learning_module).to receive(:mismatch_consistency_check).
         with(grammar, [failed_winner_2_dup]).and_return(mrcd_result_2)
       allow(mrcd_result_2).to receive(:grammar).and_return(mrcd_grammar_2)
-      allow(learning_module).to receive(:find_unset_features_in_words).
+      allow(word_search).to receive(:find_unset_features_in_words).
         with([failed_winner_2_dup], grammar).and_return([unset_feat2])
       allow(failed_winner_2_dup).to \
         receive(:out_feat_corr_of_uf).with(unset_feat2)\
@@ -288,9 +295,10 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(false)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(
-          learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features =
+          OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+          feature_value_pair_class: feature_value_pair_class,
+                                         word_search: word_search)
         @fewest_set_features.para_erc_learner = para_erc_learner
         @fewest_set_features.run(word_list, grammar, prior_result)
       end
@@ -316,9 +324,10 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(mrcd_grammar_1).to receive(:consistent?).and_return(true)
         allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
-        @fewest_set_features = OTLearn::FewestSetFeatures.new(
-          learning_module: learning_module,
-          feature_value_pair_class: feature_value_pair_class)
+        @fewest_set_features =
+          OTLearn::FewestSetFeatures.new(learning_module: learning_module,
+          feature_value_pair_class: feature_value_pair_class,
+                                         word_search: word_search)
         @fewest_set_features.para_erc_learner = para_erc_learner
         @fewest_set_features.run(word_list, grammar, prior_result)
       end

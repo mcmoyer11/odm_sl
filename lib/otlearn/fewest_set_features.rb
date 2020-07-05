@@ -4,6 +4,7 @@
 
 require 'otlearn/data_manip'
 require 'feature_value_pair'
+require 'word_search'
 require 'otlearn/learning_exceptions'
 require 'otlearn/paradigm_erc_learning'
 
@@ -46,15 +47,18 @@ module OTLearn
     # :call-seq:
     #   FewestSetFeatures.new -> fsf_learner
     #--
-    # * learning_module - the module containing the methods
-    #   #find_unset_features_in_words and #mismatch_consistency_check.
+    # * learning_module - the module containing the method
+    #   #mismatch_consistency_check.
     #   Used for testing (dependency injection).
     # * feature_value_pair_class - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
+    # * word_search: search object containing #find_unset_features_in_words.
     def initialize(learning_module: OTLearn,
-                   feature_value_pair_class: FeatureValuePair)
+                   feature_value_pair_class: FeatureValuePair,
+                   word_search: WordSearch.new)
       @learning_module = learning_module
       @feature_value_pair_class = feature_value_pair_class
+      @word_search = word_search
       @para_erc_learner = ParadigmErcLearning.new
       @failed_winner = nil
       @newly_set_features = []
@@ -132,7 +136,7 @@ module OTLearn
     # with the other unset features given input values opposite of their
     #
     # Returns the successful underlying feature (and value) if exactly
-    # one of them succeeds. The return value is a +FeatureValuePair+:
+    # one of them succeeds. The return value is a FeatureValuePair:
     # the underlying feature instance and its successful value (the one
     # matching its output correspondent in the previously failed winner).
     #
@@ -146,8 +150,8 @@ module OTLearn
       failed_winner_dup = @grammar.parse_output(output)
       # Find the unset underlying feature instances
       unset_uf_features =
-        @learning_module.find_unset_features_in_words([failed_winner_dup],
-                                                      @grammar)
+        @word_search.find_unset_features_in_words([failed_winner_dup],
+                                                  @grammar)
       # Assign, in turn, each unset feature to match its output correspondent.
       # Then test the modified failed winner along with
       # the success winners for collective consistency with the grammar.
@@ -174,14 +178,14 @@ module OTLearn
 
     # Tests the unset feature +ufeat+ of +tested_winner+ (a testing copy of
     # failed_winner) by assigning, in the lexicon, the unset feature to the
-    # value matching its surface realization in +tested_winner+, and then
-    # running a mismatch consistency check on +tested_winner+ jointly with
+    # value matching its surface realization in tested_winner, and then
+    # running a mismatch consistency check on tested_winner jointly with
     # all of the previously successful winners.
     # If the check comes back consistent, then the feature is successful.
     # In any event, the tested feature is unset at the end of the test.
     #
     # Returns a feature-value pair (the feature, along with the value matching
-    # the surface realization in +tested_winner+) if the feature is successful.
+    # the surface realization in tested_winner) if the feature is successful.
     # Returns nil if the feature is not successful.
     def test_unset_feature(tested_winner, ufeat)
       # set (temporarily) the tested feature to the value of its output

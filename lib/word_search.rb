@@ -46,6 +46,16 @@ class WordSearch
     m2w_hash
   end
 
+  # Returns an array of unset features for the morphemes in the word list.
+  def find_unset_features_in_words(word_list, grammar)
+    # Build hash of morphemes and the words in the list that contain them
+    morph_in_words = morphemes_to_words(word_list)
+    # Extract a list of the morphemes in the words (the keys of the hash)
+    morpheme_list = morph_in_words.keys
+    # Return a list of the unset features for the morphemes
+    find_unset_features(morpheme_list, grammar)
+  end
+
   # Returns an array of unset features for the morpheme.
   def find_unset_features_of_morpheme(morpheme, grammar)
     unset_features = []
