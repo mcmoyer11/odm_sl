@@ -14,7 +14,7 @@ RSpec.describe OTLearn::InductionLearning do
   let(:fsf_substep) { double('fsf_substep') }
   let(:mmr_class) { double('MMR_class') }
   let(:mmr) { double('mmr') }
-  let(:mmr_substep) { double('mmr_substep')}
+  let(:mmr_substep) { double('mmr_substep') }
   let(:otlearn_module) { double('otlearn_module') }
   let(:grammar_test_class) { double('grammar_test_class') }
   let(:grammar_test) { double('grammar_test') }
@@ -24,12 +24,12 @@ RSpec.describe OTLearn::InductionLearning do
     allow(fsf).to receive(:run).and_return(fsf_substep)
     allow(fsf_substep).to receive(:changed?)
     allow(fsf_substep).to\
-          receive(:subtype).and_return(OTLearn::FEWEST_SET_FEATURES)
+      receive(:subtype).and_return(OTLearn::FEWEST_SET_FEATURES)
     allow(mmr_class).to receive(:new).and_return(mmr)
     allow(mmr).to receive(:run).and_return(mmr_substep)
     allow(mmr_substep).to receive(:changed?)
     allow(mmr_substep).to\
-          receive(:subtype).and_return(OTLearn::MAX_MISMATCH_RANKING)
+      receive(:subtype).and_return(OTLearn::MAX_MISMATCH_RANKING)
   end
 
   context 'with no failed winners' do
