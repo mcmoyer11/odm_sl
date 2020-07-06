@@ -23,22 +23,21 @@ RSpec.describe OTLearn::MaxMismatchRanking do
     before(:example) do
       allow(mrcd_result).to receive(:any_change?).and_return(true)
       allow(mrcd_result).to receive(:added_pairs).and_return([new_pair])
-      @max_mismatch_rankings = OTLearn::MaxMismatchRanking.new
-      @max_mismatch_rankings.erc_learner = erc_learner
-      @max_mismatch_rankings.run(failed_winner_list, grammar)
+      @max_mismatch_ranking = OTLearn::MaxMismatchRanking.new
+      @max_mismatch_ranking.erc_learner = erc_learner
+      @mmr_step = @max_mismatch_ranking.run(failed_winner_list, grammar)
     end
     it 'returns a list with the newpair' do
-      expect(@max_mismatch_rankings.newly_added_wl_pairs).to eq([new_pair])
+      expect(@mmr_step.newly_added_wl_pairs).to eq([new_pair])
     end
     it 'indicates a change has occurred' do
-      expect(@max_mismatch_rankings.changed?).to be true
+      expect(@mmr_step.changed?).to be true
     end
     it 'runs the ERC learner' do
-      expect(erc_learner).to\
-        have_received(:run).with([mismatch], grammar)
+      expect(erc_learner).to have_received(:run).with([mismatch], grammar)
     end
     it 'determines the failed winner' do
-      expect(@max_mismatch_rankings.failed_winner).to eq(mismatch)
+      expect(@mmr_step.failed_winner).to eq(mismatch)
     end
   end
 
@@ -48,9 +47,9 @@ RSpec.describe OTLearn::MaxMismatchRanking do
     end
     it 'should raise an exception' do
       expect do
-        @max_mismatch_rankings = OTLearn::MaxMismatchRanking.new
-        @max_mismatch_rankings.erc_learner = erc_learner
-        @max_mismatch_rankings.run(failed_winner_list, grammar)
+        @max_mismatch_ranking = OTLearn::MaxMismatchRanking.new
+        @max_mismatch_ranking.erc_learner = erc_learner
+        @mmr_step = @max_mismatch_ranking.run(failed_winner_list, grammar)
       end.to raise_error(RuntimeError)
     end
   end

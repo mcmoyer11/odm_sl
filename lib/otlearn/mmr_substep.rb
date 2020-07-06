@@ -2,6 +2,8 @@
 
 # Author: Bruce Tesar
 
+require 'otlearn/otlearn'
+
 module OTLearn
   # Represents the results of a Max Mismatch Ranking substep of
   # induction learning.

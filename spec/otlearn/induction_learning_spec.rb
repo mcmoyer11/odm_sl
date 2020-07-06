@@ -14,11 +14,22 @@ RSpec.describe OTLearn::InductionLearning do
   let(:fsf_substep) { double('fsf_substep') }
   let(:mmr_class) { double('MMR_class') }
   let(:mmr) { double('mmr') }
+  let(:mmr_substep) { double('mmr_substep')}
   let(:otlearn_module) { double('otlearn_module') }
   let(:grammar_test_class) { double('grammar_test_class') }
   let(:grammar_test) { double('grammar_test') }
   before(:each) do
     allow(grammar).to receive(:system)
+    allow(fsf_class).to receive(:new).and_return(fsf)
+    allow(fsf).to receive(:run).and_return(fsf_substep)
+    allow(fsf_substep).to receive(:changed?)
+    allow(fsf_substep).to\
+          receive(:subtype).and_return(OTLearn::FEWEST_SET_FEATURES)
+    allow(mmr_class).to receive(:new).and_return(mmr)
+    allow(mmr).to receive(:run).and_return(mmr_substep)
+    allow(mmr_substep).to receive(:changed?)
+    allow(mmr_substep).to\
+          receive(:subtype).and_return(OTLearn::MAX_MISMATCH_RANKING)
   end
 
   context 'with no failed winners' do
@@ -46,9 +57,6 @@ RSpec.describe OTLearn::InductionLearning do
         receive(:failed_winners).and_return([failed_winner_1])
       allow(mrcd_gram).to receive(:consistent?).and_return(false)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
-      allow(fsf_class).to receive(:new).and_return(fsf)
-      allow(fsf).to receive(:run).and_return(fsf_substep)
-      allow(fsf_substep).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_test_class).to\
@@ -133,9 +141,6 @@ RSpec.describe OTLearn::InductionLearning do
       allow(failed_winner_1).to receive(:output).and_return(failed_output_1)
       allow(mrcd_gram).to receive(:consistent?).and_return(true)
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
-      allow(mmr_class).to receive(:new).and_return(mmr)
-      allow(mmr).to receive(:run)
-      allow(mmr).to receive(:changed?)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_test_class).to\
@@ -145,8 +150,8 @@ RSpec.describe OTLearn::InductionLearning do
 
     context 'that allows new ranking information' do
       before(:each) do
-        allow(mmr).to receive(:run)
-        allow(mmr).to receive(:changed?).and_return(true)
+        # allow(mmr).to receive(:run)
+        allow(mmr_substep).to receive(:changed?).and_return(true)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
                                          grammar_test_class: grammar_test_class,
@@ -161,7 +166,7 @@ RSpec.describe OTLearn::InductionLearning do
         expect(mmr).to have_received(:run).with([failed_output_1], grammar)
       end
       it 'gives the mmr step object' do
-        expect(@in_step.substep).to eq mmr
+        expect(@in_step.substep).to eq mmr_substep
       end
       it 'runs a grammar test after learning' do
         expect(grammar_test_class).to have_received(:new).exactly(2).times

@@ -58,18 +58,16 @@ module OTLearn
       # If there are consistent failed winners, run MMR on them.
       # Otherwise, run FSF.
       if consistent_list.empty?
-        step_subtype = FEWEST_SET_FEATURES
         substep = @fsf_class.new.run(output_list, grammar, prior_result)
       else
-        step_subtype = MAX_MISMATCH_RANKING
         # extract outputs to pass to max_mismatch_ranking
         consistent_output_list = consistent_list.map do |word|
           word.output
         end
-        substep = @mmr_class.new
-        substep.run(consistent_output_list, grammar)
+        substep = @mmr_class.new.run(consistent_output_list, grammar)
       end
       changed = substep.changed?
+      step_subtype = substep.subtype
       @test_result = @grammar_test_class.new(output_list, grammar)
       InductionStep.new(step_subtype, substep, @test_result, changed)
     end

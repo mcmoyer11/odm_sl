@@ -4,6 +4,7 @@
 
 require 'otlearn/mmr_exceptions'
 require 'otlearn/erc_learning'
+require 'otlearn/mmr_substep'
 
 module OTLearn
   # MaxMismatchRanking takes a list of outputs of winners that are failing
@@ -30,12 +31,6 @@ module OTLearn
   # This implementation assumes that all of the unset features are binary;
   # see the documentation for Word#mismatch_input_to_output!.
   class MaxMismatchRanking
-    # The ERC that the algorithm has created.
-    attr_reader :newly_added_wl_pairs
-
-    # The failed winner that was used with max mismatch ranking.
-    attr_reader :failed_winner
-
     # The learner for getting ERCs (ranking information) from winners.
     attr_accessor :erc_learner
 
@@ -44,14 +39,6 @@ module OTLearn
     #   MaxMismatchRanking.new -> mmr_learner
     def initialize
       @erc_learner = ErcLearning.new
-      @newly_added_wl_pairs = []
-      @failed_winner = nil
-      @changed = false
-    end
-
-    # Returns true if MaxMismatchRanking has found a consistent WL pair
-    def changed?
-      @changed
     end
 
     # Executes the Max Mismatch Ranking algorithm.
@@ -64,22 +51,20 @@ module OTLearn
     # Then, MRCD is used to construct the ERCs necessary to make that
     # candidate grammatical.
     #
-    # Returns true if the consistent max mismatch candidate provides
-    # new ranking information. Raises an MMREx exception if it does not
-    # provide new ranking information.
+    # Returns a MmrSubstep object.
     # :call-seq:
-    #   run(output_list, grammar) -> boolean
+    #   run(output_list, grammar) -> substep
     def run(output_list, grammar)
-      @failed_winner = choose_failed_winner(output_list, grammar)
-      mrcd_result = @erc_learner.run([@failed_winner], grammar)
-      @changed = mrcd_result.any_change?
-      unless @changed
+      failed_winner = choose_failed_winner(output_list, grammar)
+      mrcd_result = @erc_learner.run([failed_winner], grammar)
+      changed = mrcd_result.any_change?
+      unless changed
         msg1 = 'A failed consistent winner'
         msg2 = 'did not provide new ranking information.'
-        raise MMREx.new(@failed_winner), "#{msg1} #{msg2}"
+        raise MMREx.new(failed_winner), "#{msg1} #{msg2}"
       end
-      @newly_added_wl_pairs = mrcd_result.added_pairs
-      @changed
+      newly_added_wl_pairs = mrcd_result.added_pairs
+      MmrSubstep.new(newly_added_wl_pairs, failed_winner, changed)
     end
 
     # Choose, from among the consistent failed winners, the failed winner to
