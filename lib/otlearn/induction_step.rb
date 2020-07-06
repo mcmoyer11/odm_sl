@@ -20,13 +20,13 @@ module OTLearn
     attr_reader :test_result
 
     # Returns a new step object for induction learning.
-    # * step_subtype - constant indicating the induction substep type.
+    # * substep - the substep learning object.
     # * test_result - the test result run at the end of the step.
     # * changed - a boolean indicating of the step changed the grammar.
     # :call-seq:
-    #   ContrastPairStep.new(step_subtype, test_result, changed) -> step
-    def initialize(step_subtype, substep, test_result, changed)
-      @step_subtype = step_subtype
+    #   ContrastPairStep.new(substep, test_result, changed) -> step
+    def initialize(substep, test_result, changed)
+      @step_subtype = substep.subtype
       @substep = substep
       @test_result = test_result
       @changed = changed

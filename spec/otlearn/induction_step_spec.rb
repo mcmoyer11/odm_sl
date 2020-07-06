@@ -12,8 +12,9 @@ RSpec.describe 'OTLearn::InductionStep' do
   context 'with a changed grammar that is not all correct' do
     before(:example) do
       allow(test_result).to receive(:all_correct?).and_return(false)
-      @step = OTLearn::InductionStep.new(OTLearn::FEWEST_SET_FEATURES,
-                                         substep, test_result, true)
+      allow(substep).to\
+        receive(:subtype).and_return(OTLearn::FEWEST_SET_FEATURES)
+      @step = OTLearn::InductionStep.new(substep, test_result, true)
     end
     it 'indicates a step type of INDUCTION' do
       expect(@step.step_type).to eq OTLearn::INDUCTION
@@ -37,8 +38,9 @@ RSpec.describe 'OTLearn::InductionStep' do
   context 'with an unchanged grammar that is all correct' do
     before(:example) do
       allow(test_result).to receive(:all_correct?).and_return(true)
-      @step = OTLearn::InductionStep.new(OTLearn::MAX_MISMATCH_RANKING,
-                                         substep, test_result, false)
+      allow(substep).to\
+        receive(:subtype).and_return(OTLearn::MAX_MISMATCH_RANKING)
+      @step = OTLearn::InductionStep.new(substep, test_result, false)
     end
     it 'indicates a step type of INDUCTION' do
       expect(@step.step_type).to eq OTLearn::INDUCTION

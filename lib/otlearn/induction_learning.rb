@@ -67,9 +67,8 @@ module OTLearn
         substep = @mmr_class.new.run(consistent_output_list, grammar)
       end
       changed = substep.changed?
-      step_subtype = substep.subtype
       @test_result = @grammar_test_class.new(output_list, grammar)
-      InductionStep.new(step_subtype, substep, @test_result, changed)
+      InductionStep.new(substep, @test_result, changed)
     end
   end
 end
