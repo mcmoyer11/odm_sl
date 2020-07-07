@@ -17,23 +17,24 @@ module OTLearn
     # The grammar testing object.
     attr_accessor :grammar_tester
 
+    # The Fewest Set Features learning object.
+    attr_accessor :fsf_learner
+
+    # The Max Mismatch Ranking learning object.
+    attr_accessor :mmr_learner
+
     # Creates the induction learning object.
     # :call-seq:
     #   InductionLearning.new -> induction_learner
     #--
-    # learning_module, fsf_class, and mmr_class
-    # are dependency injections used for testing.
+    # learning_module is a dependency injection used for testing.
     # * learning_module - the module containing the method
     #   #mismatch_consistency_check.
-    # * fsf_class - the class of object used for FSF.
-    # * mmr_class - the class of object used for MMR.
-    def initialize(learning_module: OTLearn,
-                   fsf_class: FewestSetFeatures,
-                   mmr_class: MaxMismatchRanking)
+    def initialize(learning_module: OTLearn)
       @learning_module = learning_module
       @grammar_tester = GrammarTest.new
-      @fsf_class = fsf_class
-      @mmr_class = mmr_class
+      @fsf_learner = FewestSetFeatures.new
+      @mmr_learner = MaxMismatchRanking.new
       @step_type = INDUCTION
     end
 
@@ -58,13 +59,13 @@ module OTLearn
       # If there are consistent failed winners, run MMR on them.
       # Otherwise, run FSF.
       if consistent_list.empty?
-        substep = @fsf_class.new.run(output_list, grammar, prior_result)
+        substep = @fsf_learner.run(output_list, grammar, prior_result)
       else
         # extract outputs to pass to max_mismatch_ranking
         consistent_output_list = consistent_list.map do |word|
           word.output
         end
-        substep = @mmr_class.new.run(consistent_output_list, grammar)
+        substep = @mmr_learner.run(consistent_output_list, grammar)
       end
       changed = substep.changed?
       @test_result = @grammar_tester.run(output_list, grammar)

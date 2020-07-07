@@ -9,10 +9,8 @@ RSpec.describe OTLearn::InductionLearning do
   let(:output_list) { double('output_list') }
   let(:grammar) { double('grammar') }
   let(:prior_result) { double('prior_result') }
-  let(:fsf_class) { double('FSF_class') }
   let(:fsf) { double('fsf') }
   let(:fsf_substep) { double('fsf_substep') }
-  let(:mmr_class) { double('MMR_class') }
   let(:mmr) { double('mmr') }
   let(:mmr_substep) { double('mmr_substep') }
   let(:otlearn_module) { double('otlearn_module') }
@@ -20,12 +18,10 @@ RSpec.describe OTLearn::InductionLearning do
   let(:test_result) { double('test_result') }
   before(:each) do
     allow(grammar).to receive(:system)
-    allow(fsf_class).to receive(:new).and_return(fsf)
     allow(fsf).to receive(:run).and_return(fsf_substep)
     allow(fsf_substep).to receive(:changed?)
     allow(fsf_substep).to\
       receive(:subtype).and_return(OTLearn::FEWEST_SET_FEATURES)
-    allow(mmr_class).to receive(:new).and_return(mmr)
     allow(mmr).to receive(:run).and_return(mmr_substep)
     allow(mmr_substep).to receive(:changed?)
     allow(mmr_substep).to\
@@ -40,9 +36,9 @@ RSpec.describe OTLearn::InductionLearning do
     end
     it 'raises a RuntimeError' do
       expect do
-        @in_learner = OTLearn::InductionLearning.new
-        @in_learner.grammar_tester = grammar_tester
-        @in_step = @in_learner.run(output_list, grammar)
+        in_learner = OTLearn::InductionLearning.new
+        in_learner.grammar_tester = grammar_tester
+        @in_step = in_learner.run(output_list, grammar)
       end.to raise_error(RuntimeError)
     end
   end
@@ -67,11 +63,11 @@ RSpec.describe OTLearn::InductionLearning do
     context 'that allows a feature to be set' do
       before(:each) do
         allow(fsf_substep).to receive(:changed?).and_return(true)
-        @in_learner =
-          OTLearn::InductionLearning.new(learning_module: otlearn_module,
-                                         fsf_class: fsf_class)
-        @in_learner.grammar_tester = grammar_tester
-        @in_step = @in_learner.run(output_list, grammar)
+        in_learner =
+          OTLearn::InductionLearning.new(learning_module: otlearn_module)
+        in_learner.grammar_tester = grammar_tester
+        in_learner.fsf_learner = fsf
+        @in_step = in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has changed' do
         expect(@in_step).to be_changed
@@ -102,11 +98,11 @@ RSpec.describe OTLearn::InductionLearning do
     context ' that does not allow a feature to be set' do
       before(:each) do
         allow(fsf_substep).to receive(:changed?).and_return(false)
-        @in_learner =
-          OTLearn::InductionLearning.new(learning_module: otlearn_module,
-                                         fsf_class: fsf_class)
-        @in_learner.grammar_tester = grammar_tester
-        @in_step = @in_learner.run(output_list, grammar)
+        in_learner =
+          OTLearn::InductionLearning.new(learning_module: otlearn_module)
+        in_learner.grammar_tester = grammar_tester
+        in_learner.fsf_learner = fsf
+        @in_step = in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has not changed' do
         expect(@in_step).not_to be_changed
@@ -152,12 +148,12 @@ RSpec.describe OTLearn::InductionLearning do
       before(:each) do
         # allow(mmr).to receive(:run)
         allow(mmr_substep).to receive(:changed?).and_return(true)
-        @in_learner =
-          OTLearn::InductionLearning.new(learning_module: otlearn_module,
-                                         fsf_class: fsf_class,
-                                         mmr_class: mmr_class)
-        @in_learner.grammar_tester = grammar_tester
-        @in_step = @in_learner.run(output_list, grammar)
+        in_learner =
+          OTLearn::InductionLearning.new(learning_module: otlearn_module)
+        in_learner.grammar_tester = grammar_tester
+        in_learner.fsf_learner = fsf
+        in_learner.mmr_learner = mmr
+        @in_step = in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has changed' do
         expect(@in_step).to be_changed
