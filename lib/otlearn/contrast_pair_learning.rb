@@ -16,6 +16,9 @@ module OTLearn
     # The paradigmatic ERC learner. Default: ParadigmErcLearning.new
     attr_accessor :para_erc_learner
 
+    # The grammar testing object. Default: GrammarTest.new.
+    attr_accessor :grammar_tester
+
     # Constructs a contrast pair learning object.
     # :call-seq:
     #   ContrastPairLearning.new -> cp_learner
@@ -24,12 +27,9 @@ module OTLearn
     # for testing.
     # * learning_module - the module containing #generate_contrast_pair
     #   and #set_uf_values.
-    # * grammar_test_class - the class of the object used to test
-    #   the grammar. Used for testing (dependency injection).
-    def initialize(grammar_test_class: OTLearn::GrammarTest,
-                   learning_module: OTLearn)
+    def initialize(learning_module: OTLearn)
       @learning_module = learning_module
-      @grammar_test_class = grammar_test_class
+      @grammar_tester = GrammarTest.new
       @para_erc_learner = ParadigmErcLearning.new
     end
 
@@ -43,7 +43,7 @@ module OTLearn
       winner_list = output_list.map do |out|
         grammar.parse_output(out)
       end
-      prior_result = @grammar_test_class.new(output_list, grammar)
+      prior_result = @grammar_tester.run(output_list, grammar)
       # Create an external iterator which calls generate_contrast_pair()
       # to generate contrast pairs.
       contrast_pair = nil
@@ -75,7 +75,7 @@ module OTLearn
       # No successful contrast pair if no features were set.
       contrast_pair = nil if set_feature_list.empty?
       changed = !set_feature_list.empty?
-      test_result = @grammar_test_class.new(output_list, grammar)
+      test_result = @grammar_tester.run(output_list, grammar)
       ContrastPairStep.new(test_result, changed, contrast_pair)
     end
   end

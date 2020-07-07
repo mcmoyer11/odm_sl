@@ -4,15 +4,14 @@
 
 require 'otlearn/otlearn'
 require 'otlearn/phonotactic_learning'
-require 'otlearn/language_learning'
 
 RSpec.describe OTLearn::PhonotacticLearning do
   let(:winner_list) { double('winner_list') }
   let(:output_list) { double('output_list') }
   let(:grammar) { double('grammar') }
   let(:mrcd_result) { double('mrcd_result') }
-  let(:gtest_class) { double('gtest_class') }
-  let(:grammar_test) { double('grammar_test') }
+  let(:grammar_tester) { double('grammar_tester') }
+  let(:test_result) { double('test_result') }
   let(:erc_learner) { double('erc_learner') }
   context 'with a phonotactically learnable winner list and a grammar' do
     before(:example) do
@@ -22,10 +21,10 @@ RSpec.describe OTLearn::PhonotacticLearning do
       allow(winner_list).to receive(:each)
       allow(erc_learner).to receive(:run).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(true)
-      allow(gtest_class).to receive(:new).and_return(grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(true)
-      phonotactic_learning =
-        OTLearn::PhonotacticLearning.new(gtest_class: gtest_class)
+      allow(grammar_tester).to receive(:run).and_return(test_result)
+      allow(test_result).to receive(:all_correct?).and_return(true)
+      phonotactic_learning = OTLearn::PhonotacticLearning.new
+      phonotactic_learning.grammar_tester = grammar_tester
       phonotactic_learning.erc_learner = erc_learner
       @step = phonotactic_learning.run(output_list, grammar)
     end
@@ -36,7 +35,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
       expect(@step).to be_changed
     end
     it 'gives the grammar test result' do
-      expect(@step.test_result).to eq grammar_test
+      expect(@step.test_result).to eq test_result
     end
     it 'indicates that all words are handled correctly' do
       expect(@step).to be_all_correct
@@ -54,10 +53,10 @@ RSpec.describe OTLearn::PhonotacticLearning do
       allow(winner_list).to receive(:each)
       allow(erc_learner).to receive(:run).and_return(mrcd_result)
       allow(mrcd_result).to receive(:any_change?).and_return(false)
-      allow(gtest_class).to receive(:new).and_return(grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(false)
-      phonotactic_learning =
-        OTLearn::PhonotacticLearning.new(gtest_class: gtest_class)
+      allow(grammar_tester).to receive(:run).and_return(test_result)
+      allow(test_result).to receive(:all_correct?).and_return(false)
+      phonotactic_learning = OTLearn::PhonotacticLearning.new
+      phonotactic_learning.grammar_tester = grammar_tester
       phonotactic_learning.erc_learner = erc_learner
       @step = phonotactic_learning.run(output_list, grammar)
     end
@@ -68,7 +67,7 @@ RSpec.describe OTLearn::PhonotacticLearning do
       expect(@step).not_to be_changed
     end
     it 'gives the grammar test result' do
-      expect(@step.test_result).to eq grammar_test
+      expect(@step.test_result).to eq test_result
     end
     it 'indicates that not all words are handled correctly' do
       expect(@step).not_to be_all_correct

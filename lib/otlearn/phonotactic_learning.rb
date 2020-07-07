@@ -3,7 +3,6 @@
 # Author: Bruce Tesar
 
 require 'otlearn/grammar_test'
-require 'otlearn/language_learning'
 require 'otlearn/erc_learning'
 require 'otlearn/phonotactic_step'
 
@@ -16,13 +15,14 @@ module OTLearn
     # Default value is OTLearn::ErcLearning.new.
     attr_accessor :erc_learner
 
+    # The grammar testing object. Default value is OTLearn::GrammarTest.new.
+    attr_accessor :grammar_tester
+
     # Creates a phonotactic learning object.
     # :call-seq:
     #   PhonotacticLearning.new -> phonotactic_learner
-    #--
-    # gtest_class is a dependency injection used for testing.
-    def initialize(gtest_class: GrammarTest)
-      @gtest_class = gtest_class
+    def initialize
+      @grammar_tester = GrammarTest.new
       @erc_learner = ErcLearning.new
     end
 
@@ -32,7 +32,7 @@ module OTLearn
     def run(output_list, grammar)
       winner_list = construct_winners(output_list, grammar)
       mrcd_result = @erc_learner.run(winner_list, grammar)
-      test_result = @gtest_class.new(output_list, grammar)
+      test_result = @grammar_tester.run(output_list, grammar)
       PhonotacticStep.new(test_result, mrcd_result.any_change?)
     end
 

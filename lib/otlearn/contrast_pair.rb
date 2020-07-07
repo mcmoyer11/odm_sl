@@ -5,6 +5,7 @@
 require 'otlearn/data_manip'
 require 'otlearn/uf_learning'
 require 'otlearn/contrast_set'
+require 'otlearn/grammar_test'
 require 'word_search'
 
 module OTLearn
@@ -38,7 +39,8 @@ module OTLearn
   #   between the forms of the pair beyond processing each in isolation.
   def OTLearn.generate_contrast_pair(cp_return, winners, grammar,
                                      test_result = nil)
-    test_result ||= GrammarTest.new(winners, grammar)
+    grammar_tester = GrammarTest.new
+    test_result ||= grammar_tester.run(winners, grammar)
     # The failed winners of the test are connected to a different
     # lexicon. Parse the outputs with +grammar+ to generate distinct
     # candidates in correspondence with the lexicon of +grammar+.

@@ -15,17 +15,19 @@ module OTLearn
     # Paradigmatic ERC learner. Default value: ParadigmErcLearning.new
     attr_accessor :para_erc_learner
 
+    # The tester used to test the grammar.
+    attr_accessor :grammar_tester
+
     # Creates a new single form learner.
     #--
-    # learning_module and gtest_class are dependency injections used for
-    # testing.
+    # learning_module is a dependency injections used for testing.
     # * learning_module - the module containing #set_uf_values
     #++
     # :call-seq:
     #   SingleFormLearning.new -> singleformlearner
-    def initialize(learning_module: OTLearn, gtest_class: GrammarTest)
+    def initialize(learning_module: OTLearn)
       @learning_module = learning_module
-      @gtest_class = gtest_class
+      @grammar_tester = GrammarTest.new
       @para_erc_learner = ParadigmErcLearning.new
     end
 
@@ -44,7 +46,7 @@ module OTLearn
         changed = true if grammar_changed_on_pass
         break unless grammar_changed_on_pass
       end
-      test_result = @gtest_class.new(output_list, grammar)
+      test_result = @grammar_tester.run(output_list, grammar)
       SingleFormStep.new(test_result, changed)
     end
 

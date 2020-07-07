@@ -16,8 +16,8 @@ RSpec.describe OTLearn::InductionLearning do
   let(:mmr) { double('mmr') }
   let(:mmr_substep) { double('mmr_substep') }
   let(:otlearn_module) { double('otlearn_module') }
-  let(:grammar_test_class) { double('grammar_test_class') }
-  let(:grammar_test) { double('grammar_test') }
+  let(:grammar_tester) { double('grammar_tester') }
+  let(:test_result) { double('test_result') }
   before(:each) do
     allow(grammar).to receive(:system)
     allow(fsf_class).to receive(:new).and_return(fsf)
@@ -34,14 +34,14 @@ RSpec.describe OTLearn::InductionLearning do
 
   context 'with no failed winners' do
     before(:each) do
-      allow(grammar_test_class).to\
-        receive(:new).and_return(prior_result, grammar_test)
+      allow(grammar_tester).to\
+        receive(:run).and_return(prior_result, test_result)
       allow(prior_result).to receive(:failed_winners).and_return([])
     end
     it 'raises a RuntimeError' do
       expect do
-        @in_learner = OTLearn::InductionLearning\
-                      .new(grammar_test_class: grammar_test_class)
+        @in_learner = OTLearn::InductionLearning.new
+        @in_learner.grammar_tester = grammar_tester
         @in_step = @in_learner.run(output_list, grammar)
       end.to raise_error(RuntimeError)
     end
@@ -59,9 +59,9 @@ RSpec.describe OTLearn::InductionLearning do
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
-      allow(grammar_test_class).to\
-        receive(:new).and_return(prior_result, grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(true)
+      allow(grammar_tester).to\
+        receive(:run).and_return(prior_result, test_result)
+      allow(test_result).to receive(:all_correct?).and_return(true)
     end
 
     context 'that allows a feature to be set' do
@@ -69,8 +69,8 @@ RSpec.describe OTLearn::InductionLearning do
         allow(fsf_substep).to receive(:changed?).and_return(true)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
-                                         grammar_test_class: grammar_test_class,
                                          fsf_class: fsf_class)
+        @in_learner.grammar_tester = grammar_tester
         @in_step = @in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has changed' do
@@ -83,10 +83,10 @@ RSpec.describe OTLearn::InductionLearning do
         expect(@in_step.substep).to eq fsf_substep
       end
       it 'runs a grammar test after learning' do
-        expect(grammar_test_class).to have_received(:new).exactly(2).times
+        expect(grammar_tester).to have_received(:run).exactly(2).times
       end
       it 'gives the grammar test result' do
-        expect(@in_step.test_result).to eq grammar_test
+        expect(@in_step.test_result).to eq test_result
       end
       it 'indicates that all words are handled correctly' do
         expect(@in_step).to be_all_correct
@@ -104,8 +104,8 @@ RSpec.describe OTLearn::InductionLearning do
         allow(fsf_substep).to receive(:changed?).and_return(false)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
-                                         grammar_test_class: grammar_test_class,
                                          fsf_class: fsf_class)
+        @in_learner.grammar_tester = grammar_tester
         @in_step = @in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has not changed' do
@@ -118,10 +118,10 @@ RSpec.describe OTLearn::InductionLearning do
         expect(@in_step.substep).to eq fsf_substep
       end
       it 'runs a grammar test after learning' do
-        expect(grammar_test_class).to have_received(:new).exactly(2).times
+        expect(grammar_tester).to have_received(:run).exactly(2).times
       end
       it 'gives the grammar test result' do
-        expect(@in_step.test_result).to eq grammar_test
+        expect(@in_step.test_result).to eq test_result
       end
       it 'indicates that all words are handled correctly' do
         expect(@in_step).to be_all_correct
@@ -143,9 +143,9 @@ RSpec.describe OTLearn::InductionLearning do
       allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
-      allow(grammar_test_class).to\
-        receive(:new).and_return(prior_result, grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(true)
+      allow(grammar_tester).to\
+        receive(:run).and_return(prior_result, test_result)
+      allow(test_result).to receive(:all_correct?).and_return(true)
     end
 
     context 'that allows new ranking information' do
@@ -154,9 +154,9 @@ RSpec.describe OTLearn::InductionLearning do
         allow(mmr_substep).to receive(:changed?).and_return(true)
         @in_learner =
           OTLearn::InductionLearning.new(learning_module: otlearn_module,
-                                         grammar_test_class: grammar_test_class,
                                          fsf_class: fsf_class,
                                          mmr_class: mmr_class)
+        @in_learner.grammar_tester = grammar_tester
         @in_step = @in_learner.run(output_list, grammar)
       end
       it 'reports that the grammar has changed' do
@@ -169,10 +169,10 @@ RSpec.describe OTLearn::InductionLearning do
         expect(@in_step.substep).to eq mmr_substep
       end
       it 'runs a grammar test after learning' do
-        expect(grammar_test_class).to have_received(:new).exactly(2).times
+        expect(grammar_tester).to have_received(:run).exactly(2).times
       end
       it 'gives the grammar test result' do
-        expect(@in_step.test_result).to eq grammar_test
+        expect(@in_step.test_result).to eq test_result
       end
       it 'indicates that all words are handled correctly' do
         expect(@in_step).to be_all_correct

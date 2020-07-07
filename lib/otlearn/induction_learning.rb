@@ -14,24 +14,24 @@ module OTLearn
   # learning fails to fully learn the language. The two inductive methods
   # are Max Mismatch Ranking (MMR) and Fewest Set Features (FSF).
   class InductionLearning
+    # The grammar testing object.
+    attr_accessor :grammar_tester
+
     # Creates the induction learning object.
     # :call-seq:
     #   InductionLearning.new -> induction_learner
     #--
-    # learning_module, grammar_test_class, fsf_class, and mmr_class
+    # learning_module, fsf_class, and mmr_class
     # are dependency injections used for testing.
     # * learning_module - the module containing the method
     #   #mismatch_consistency_check.
-    # * grammar_test_class - the class of the object used to test
-    #   the grammar.
     # * fsf_class - the class of object used for FSF.
     # * mmr_class - the class of object used for MMR.
     def initialize(learning_module: OTLearn,
-                   grammar_test_class: GrammarTest,
                    fsf_class: FewestSetFeatures,
                    mmr_class: MaxMismatchRanking)
       @learning_module = learning_module
-      @grammar_test_class = grammar_test_class
+      @grammar_tester = GrammarTest.new
       @fsf_class = fsf_class
       @mmr_class = mmr_class
       @step_type = INDUCTION
@@ -42,7 +42,7 @@ module OTLearn
     #   run(output_list, grammar) -> step
     def run(output_list, grammar)
       # Test the words to see which ones currently fail
-      prior_result = @grammar_test_class.new(output_list, grammar)
+      prior_result = @grammar_tester.run(output_list, grammar)
       # If there are no failed winners, raise an exception, because
       # induction learning shouldn't be called unless there are failed
       # winners to work on.
@@ -67,7 +67,7 @@ module OTLearn
         substep = @mmr_class.new.run(consistent_output_list, grammar)
       end
       changed = substep.changed?
-      @test_result = @grammar_test_class.new(output_list, grammar)
+      @test_result = @grammar_tester.run(output_list, grammar)
       InductionStep.new(substep, @test_result, changed)
     end
   end

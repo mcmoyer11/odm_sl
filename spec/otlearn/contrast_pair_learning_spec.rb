@@ -13,8 +13,8 @@ RSpec.describe OTLearn::ContrastPairLearning do
   let(:otlearn_module) { double('OTLearn module') }
   let(:first_cp) { double('first_cp') }
   let(:second_cp) { double('second_cp') }
-  let(:grammar_test_class) { double('grammar_test_class') }
-  let(:grammar_test) { double('grammar_test') }
+  let(:grammar_tester) { double('grammar_tester') }
+  let(:test_result) { double('test_result') }
   let(:para_erc_learner) { double('para_erc_learner') }
   before(:each) do
     allow(grammar).to receive(:system)
@@ -33,13 +33,13 @@ RSpec.describe OTLearn::ContrastPairLearning do
       end
       allow(otlearn_module).to\
         receive(:set_uf_values).with(first_cp, grammar).and_return(['feat1'])
-      allow(grammar_test_class).to\
-        receive(:new).and_return(prior_result, grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(false)
+      allow(grammar_tester).to\
+        receive(:run).and_return(prior_result, test_result)
+      allow(test_result).to receive(:all_correct?).and_return(false)
       cp_learner = OTLearn::ContrastPairLearning\
-                   .new(learning_module: otlearn_module,
-                        grammar_test_class: grammar_test_class)
+                   .new(learning_module: otlearn_module)
       cp_learner.para_erc_learner = para_erc_learner
+      cp_learner.grammar_tester = grammar_tester
       @cp_step = cp_learner.run(output_list, grammar)
     end
     it 'returns the first pair' do
@@ -53,10 +53,10 @@ RSpec.describe OTLearn::ContrastPairLearning do
       expect(@cp_step).to be_changed
     end
     it 'runs a grammar test before and after learning' do
-      expect(grammar_test_class).to have_received(:new).exactly(2).times
+      expect(grammar_tester).to have_received(:run).exactly(2).times
     end
     it 'gives the grammar test result' do
-      expect(@cp_step.test_result).to eq grammar_test
+      expect(@cp_step.test_result).to eq test_result
     end
     it 'indicates that not all words are handled correctly' do
       expect(@cp_step).not_to be_all_correct
@@ -78,13 +78,13 @@ RSpec.describe OTLearn::ContrastPairLearning do
       end
       allow(otlearn_module).to\
         receive(:set_uf_values).with(first_cp, grammar).and_return([])
-      allow(grammar_test_class).to\
-        receive(:new).and_return(prior_result, grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(false)
+      allow(grammar_tester).to\
+        receive(:run).and_return(prior_result, test_result)
+      allow(test_result).to receive(:all_correct?).and_return(false)
       cp_learner = OTLearn::ContrastPairLearning\
-                   .new(learning_module: otlearn_module,
-                        grammar_test_class: grammar_test_class)
+                   .new(learning_module: otlearn_module)
       cp_learner.para_erc_learner = para_erc_learner
+      cp_learner.grammar_tester = grammar_tester
       @cp_step = cp_learner.run(output_list, grammar)
     end
     it 'returns no contrast pair' do
@@ -97,10 +97,10 @@ RSpec.describe OTLearn::ContrastPairLearning do
       expect(@cp_step).not_to be_changed
     end
     it 'runs a grammar test before and after learning' do
-      expect(grammar_test_class).to have_received(:new).exactly(2).times
+      expect(grammar_tester).to have_received(:run).exactly(2).times
     end
     it 'gives the grammar test result' do
-      expect(@cp_step.test_result).to eq grammar_test
+      expect(@cp_step.test_result).to eq test_result
     end
     it 'indicates that not all words are handled correctly' do
       expect(@cp_step).not_to be_all_correct
@@ -125,13 +125,13 @@ RSpec.describe OTLearn::ContrastPairLearning do
       allow(otlearn_module).to\
         receive(:set_uf_values).with(second_cp, grammar)\
                                .and_return(['feat1'])
-      allow(grammar_test_class).to\
-        receive(:new).and_return(prior_result, grammar_test)
-      allow(grammar_test).to receive(:all_correct?).and_return(false)
+      allow(grammar_tester).to\
+        receive(:run).and_return(prior_result, test_result)
+      allow(test_result).to receive(:all_correct?).and_return(false)
       cp_learner = OTLearn::ContrastPairLearning\
-                   .new(learning_module: otlearn_module,
-                        grammar_test_class: grammar_test_class)
+                   .new(learning_module: otlearn_module)
       cp_learner.para_erc_learner = para_erc_learner
+      cp_learner.grammar_tester = grammar_tester
       @cp_step = cp_learner.run(output_list, grammar)
     end
     it 'returns the second pair' do
@@ -145,10 +145,10 @@ RSpec.describe OTLearn::ContrastPairLearning do
       expect(@cp_step).to be_changed
     end
     it 'runs a grammar test before and after learning' do
-      expect(grammar_test_class).to have_received(:new).exactly(2).times
+      expect(grammar_tester).to have_received(:run).exactly(2).times
     end
     it 'gives the grammar test result' do
-      expect(@cp_step.test_result).to eq grammar_test
+      expect(@cp_step.test_result).to eq test_result
     end
     it 'indicates that not all words are handled correctly' do
       expect(@cp_step).not_to be_all_correct
