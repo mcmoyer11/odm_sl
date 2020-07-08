@@ -54,9 +54,6 @@ module OTLearn
       @any_change = run_mrcd
     end
 
-    # Returns the list of words treated as winners.
-    def word_list() @word_list end
-
     # Returns true if the internal grammar is consistent, false otherwise.
     def consistent?
       @grammar.consistent?
