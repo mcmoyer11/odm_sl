@@ -25,6 +25,9 @@ module OTLearn
   # to the original word list, and can obtain via Mrcd#added_pairs the
   # winner-loser pairs that were additionally constructed by MRCD.
   class Mrcd
+    # The winner-loser pairs added to the grammar by this execution of Mrcd.
+    attr_reader :added_pairs
+
     # Returns a new Mrcd object containing the results of executing
     # MultiRecursive Constraint Demotion (MRCD) on +word_list+ starting
     # from +grammar+. Both +word_list+ and +grammar+ are duplicated
@@ -58,9 +61,6 @@ module OTLearn
     def consistent?
       @grammar.consistent?
     end
-
-    # The winner-loser pairs added to the grammar by this execution of Mrcd.
-    def added_pairs() @added_pairs end
 
     # Returns true if any change at all was made to the grammar
     # by MRCD. Returns false otherwise.
