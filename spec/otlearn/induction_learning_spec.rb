@@ -46,13 +46,11 @@ RSpec.describe OTLearn::InductionLearning do
   context 'with one inconsistent failed winner' do
     let(:failed_winner_1) { double('failed_winner_1') }
     # doubles relevant to checking failed winners for consistency
-    let(:mrcd_gram) { double('mrcd_grammar') }
     let(:mrcd) { double('mrcd') }
     before(:each) do
       allow(prior_result).to\
         receive(:failed_winners).and_return([failed_winner_1])
-      allow(mrcd_gram).to receive(:consistent?).and_return(false)
-      allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
+      allow(mrcd).to receive(:consistent?).and_return(false)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_tester).to\
@@ -129,14 +127,12 @@ RSpec.describe OTLearn::InductionLearning do
     let(:failed_winner_1) { double('failed_winner_1') }
     let(:failed_output_1) { double('failed_output_1') }
     # doubles relevant to checking failed winners for consistency
-    let(:mrcd_gram) { double('mrcd_grammar') }
     let(:mrcd) { double('mrcd') }
     before(:each) do
       allow(prior_result).to\
         receive(:failed_winners).and_return([failed_winner_1])
       allow(failed_winner_1).to receive(:output).and_return(failed_output_1)
-      allow(mrcd_gram).to receive(:consistent?).and_return(true)
-      allow(mrcd).to receive(:grammar).and_return(mrcd_gram)
+      allow(mrcd).to receive(:consistent?).and_return(true)
       allow(otlearn_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1]).and_return(mrcd)
       allow(grammar_tester).to\

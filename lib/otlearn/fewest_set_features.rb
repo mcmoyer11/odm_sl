@@ -189,7 +189,7 @@ module OTLearn
         @learning_module.mismatch_consistency_check(@grammar, word_list)
       # If result is consistent, add the UF value to the list.
       val_pair = nil
-      if mrcd_result.grammar.consistent?
+      if mrcd_result.consistent?
         val_pair = @feature_value_pair_class.new(ufeat, ufeat.value)
       end
       # Unset the tested feature in any event.

@@ -54,7 +54,7 @@ module OTLearn
       # Check failed winners for consistency, and collect the consistent ones
       consistent_list = prior_result.failed_winners.select do |word|
         @learning_module\
-          .mismatch_consistency_check(grammar, [word]).grammar.consistent?
+          .mismatch_consistency_check(grammar, [word]).consistent?
       end
       # If there are consistent failed winners, run MMR on them.
       # Otherwise, run FSF.

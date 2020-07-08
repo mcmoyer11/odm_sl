@@ -25,7 +25,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
     let(:failed_winner) { double('failed_winner') }
     let(:failed_winner_dup) { double('failed_winner_dup') }
     let(:mrcd_result) { double('mrcd_result') }
-    let(:mrcd_grammar) { double('mrcd_grammar') }
     let(:out_feat_instance1) { double('out_feat_instance1') }
     let(:out_feat_value1) { double('out_feat_value1') }
     let(:out_feat_instance2) { double('out_feat_instance2') }
@@ -40,7 +39,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
       allow(prior_result).to receive(:failed_winners).and_return([failed_winner])
       allow(prior_result).to receive(:success_winners).and_return([])
       # mrcd_result is returned when a feature is tested for consistency
-      allow(mrcd_result).to receive(:grammar).and_return(mrcd_grammar)
+      allow(mrcd_result).to receive(:consistent?)
       # the value of the target features' output correspondents
       allow(out_feat_instance1).to receive(:value).and_return(out_feat_value1)
       allow(out_feat_instance2).to receive(:value).and_return(out_feat_value2)
@@ -80,7 +79,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
-        allow(mrcd_grammar).to receive(:consistent?).and_return(true)
+        allow(mrcd_result).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
         fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
@@ -112,7 +111,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1])
-        allow(mrcd_grammar).to receive(:consistent?).and_return(false)
+        allow(mrcd_result).to receive(:consistent?).and_return(false)
         # actually construct the test object, and inject the test dependencies
         fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
@@ -140,7 +139,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
-        allow(mrcd_grammar).to receive(:consistent?).and_return(true, false)
+        allow(mrcd_result).to receive(:consistent?).and_return(true, false)
         # actually construct the test object, and inject the test dependencies
         fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
@@ -172,7 +171,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
-        allow(mrcd_grammar).to receive(:consistent?).and_return(false, true)
+        allow(mrcd_result).to receive(:consistent?).and_return(false, true)
         # actually construct the test object, and inject the test dependencies
         fewest_set_features =
             OTLearn::FewestSetFeatures.new(learning_module: learning_module,
@@ -204,7 +203,7 @@ RSpec.describe OTLearn::FewestSetFeatures do
         allow(word_search).to \
           receive(:find_unset_features_in_words)\
           .with([failed_winner_dup], grammar).and_return([unset_feat1, unset_feat2])
-        allow(mrcd_grammar).to receive(:consistent?).and_return(true, true)
+        allow(mrcd_result).to receive(:consistent?).and_return(true, true)
       end
       it 'raises a LearnEx exception' do
         expect do
@@ -229,8 +228,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
     let(:fw_output_2) { double('fw_output_2') }
     let(:mrcd_result_1) { double('mrcd_result_1') }
     let(:mrcd_result_2) { double('mrcd_result_2') }
-    let(:mrcd_grammar_1) { double('mrcd_grammar_1') }
-    let(:mrcd_grammar_2) { double('mrcd_grammar_2') }
     let(:out_feat_instance1) { double('out_feat_instance1') }
     let(:out_feat_value1) { double('out_feat_value1') }
     let(:out_feat_instance2) { double('out_feat_instance2') }
@@ -251,7 +248,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
         .with(fw_output_1).and_return(failed_winner_1_dup)
       allow(learning_module).to receive(:mismatch_consistency_check)\
         .with(grammar, [failed_winner_1_dup]).and_return(mrcd_result_1)
-      allow(mrcd_result_1).to receive(:grammar).and_return(mrcd_grammar_1)
       allow(word_search).to receive(:find_unset_features_in_words)\
         .with([failed_winner_1_dup], grammar).and_return([unset_feat1])
       allow(failed_winner_1_dup).to \
@@ -265,7 +261,6 @@ RSpec.describe OTLearn::FewestSetFeatures do
         .and_return(failed_winner_2_dup)
       allow(learning_module).to receive(:mismatch_consistency_check).
         with(grammar, [failed_winner_2_dup]).and_return(mrcd_result_2)
-      allow(mrcd_result_2).to receive(:grammar).and_return(mrcd_grammar_2)
       allow(word_search).to receive(:find_unset_features_in_words).
         with([failed_winner_2_dup], grammar).and_return([unset_feat2])
       allow(failed_winner_2_dup).to \
@@ -292,8 +287,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
     context 'with the first failed winner inconsistent' do
       before(:example) do
-        allow(mrcd_grammar_1).to receive(:consistent?).and_return(false)
-        allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
+        allow(mrcd_result_1).to receive(:consistent?).and_return(false)
+        allow(mrcd_result_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
         fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
@@ -321,8 +316,8 @@ RSpec.describe OTLearn::FewestSetFeatures do
     end
     context 'with the first failed winner consistent' do
       before(:example) do
-        allow(mrcd_grammar_1).to receive(:consistent?).and_return(true)
-        allow(mrcd_grammar_2).to receive(:consistent?).and_return(true)
+        allow(mrcd_result_1).to receive(:consistent?).and_return(true)
+        allow(mrcd_result_2).to receive(:consistent?).and_return(true)
         # actually construct the test object, and inject the test dependencies
         fewest_set_features =
           OTLearn::FewestSetFeatures.new(learning_module: learning_module,
