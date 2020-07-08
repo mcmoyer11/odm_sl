@@ -32,16 +32,14 @@ module OTLearn
     # MultiRecursive Constraint Demotion (MRCD) on +word_list+ starting
     # from +grammar+. Both +word_list+ and +grammar+ are duplicated
     # internally before use.
-    #
     # ==== Parameters
-    #
-    # * +word_list+ - list of words to be used as winners (positive data)
-    # * +grammar+ - the grammar to use in learning (not modified internally)
-    # * +selector+ - loser selection object.
-    # * +single_mrcd_class+ - dependency injection parameter for testing.
-    #
+    # * word_list - list of words to be used as winners (positive data)
+    # * grammar - the grammar to use in learning (not modified internally)
+    # * selector - loser selection object.
     # :call-seq:
     #   Mrcd.new(word_list, grammar, selector) -> mrcd
+    #--
+    # * single_mrcd_class - dependency injection parameter for testing.
     def initialize(word_list, grammar, selector,
                    single_mrcd_class: OTLearn::MrcdSingle)
       # Make a duplicate copy of each word, so that components of Win-Lose
@@ -99,7 +97,7 @@ module OTLearn
         mrcd_single = @single_mrcd_class.new(winner, @grammar, @selector)
         # retrieve any added winner-loser pairs
         local_added_pairs = mrcd_single.added_pairs
-        change = true if local_added_pairs.size > 0
+        change = true unless local_added_pairs.empty?
         local_added_pairs.each do |p|
           @added_pairs << p
           @grammar.add_erc(p)
