@@ -2,7 +2,7 @@
 
 # Author: Bruce Tesar
 
-require 'otlearn/data_manip'
+require 'otlearn/consistency_checker'
 require 'feature_value_pair'
 require 'word_search'
 require 'otlearn/learning_exceptions'
@@ -39,16 +39,13 @@ module OTLearn
     # :call-seq:
     #   FewestSetFeatures.new -> fsf_learner
     #--
-    # * learning_module - the module containing the method
-    #   #mismatch_consistency_check.
-    #   Used for testing (dependency injection).
     # * feature_value_pair_class - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
     # * word_search: search object containing #find_unset_features_in_words.
-    def initialize(learning_module: OTLearn,
+    def initialize(consistency_checker: ConsistencyChecker.new,
                    feature_value_pair_class: FeatureValuePair,
                    word_search: WordSearch.new)
-      @learning_module = learning_module
+      @consistency_checker = consistency_checker
       @feature_value_pair_class = feature_value_pair_class
       @word_search = word_search
       @para_erc_learner = ParadigmErcLearning.new
@@ -185,11 +182,10 @@ module OTLearn
       word_list << tested_winner
       # Check the list of words for consistency, using the main grammar,
       # with each word's unset features mismatching their output correspondents.
-      mrcd_result =
-        @learning_module.mismatch_consistency_check(@grammar, word_list)
       # If result is consistent, add the UF value to the list.
+      output_list = word_list.map &:output
       val_pair = nil
-      if mrcd_result.consistent?
+      if @consistency_checker.mismatch_consistent?(output_list, @grammar)
         val_pair = @feature_value_pair_class.new(ufeat, ufeat.value)
       end
       # Unset the tested feature in any event.
