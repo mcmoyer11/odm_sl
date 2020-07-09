@@ -13,7 +13,7 @@ RSpec.describe OTLearn::InductionLearning do
   let(:fsf_substep) { double('fsf_substep') }
   let(:mmr) { double('mmr') }
   let(:mmr_substep) { double('mmr_substep') }
-  let(:otlearn_module) { double('otlearn_module') }
+  let(:consistency_checker) { double('consistency_checker') }
   let(:grammar_tester) { double('grammar_tester') }
   let(:test_result) { double('test_result') }
   before(:each) do
@@ -45,14 +45,13 @@ RSpec.describe OTLearn::InductionLearning do
 
   context 'with one inconsistent failed winner' do
     let(:failed_winner_1) { double('failed_winner_1') }
-    # doubles relevant to checking failed winners for consistency
-    let(:mrcd) { double('mrcd') }
+    let(:failed_output_1) { double('output1') }
     before(:each) do
       allow(prior_result).to\
         receive(:failed_winners).and_return([failed_winner_1])
-      allow(mrcd).to receive(:consistent?).and_return(false)
-      allow(otlearn_module).to receive(:mismatch_consistency_check)\
-        .with(grammar, [failed_winner_1]).and_return(mrcd)
+      allow(failed_winner_1).to receive(:output).and_return(failed_output_1)
+      allow(consistency_checker).to receive(:mismatch_consistent?)\
+        .with([failed_output_1], grammar).and_return(false)
       allow(grammar_tester).to\
         receive(:run).and_return(prior_result, test_result)
       allow(test_result).to receive(:all_correct?).and_return(true)
@@ -61,8 +60,8 @@ RSpec.describe OTLearn::InductionLearning do
     context 'that allows a feature to be set' do
       before(:each) do
         allow(fsf_substep).to receive(:changed?).and_return(true)
-        in_learner =
-          OTLearn::InductionLearning.new(learning_module: otlearn_module)
+        in_learner = OTLearn::InductionLearning.new
+        in_learner.consistency_checker = consistency_checker
         in_learner.grammar_tester = grammar_tester
         in_learner.fsf_learner = fsf
         @in_step = in_learner.run(output_list, grammar)
@@ -96,8 +95,8 @@ RSpec.describe OTLearn::InductionLearning do
     context ' that does not allow a feature to be set' do
       before(:each) do
         allow(fsf_substep).to receive(:changed?).and_return(false)
-        in_learner =
-          OTLearn::InductionLearning.new(learning_module: otlearn_module)
+        in_learner = OTLearn::InductionLearning.new
+        in_learner.consistency_checker = consistency_checker
         in_learner.grammar_tester = grammar_tester
         in_learner.fsf_learner = fsf
         @in_step = in_learner.run(output_list, grammar)
@@ -126,15 +125,12 @@ RSpec.describe OTLearn::InductionLearning do
   context 'with one consistent failed winner' do
     let(:failed_winner_1) { double('failed_winner_1') }
     let(:failed_output_1) { double('failed_output_1') }
-    # doubles relevant to checking failed winners for consistency
-    let(:mrcd) { double('mrcd') }
     before(:each) do
       allow(prior_result).to\
         receive(:failed_winners).and_return([failed_winner_1])
       allow(failed_winner_1).to receive(:output).and_return(failed_output_1)
-      allow(mrcd).to receive(:consistent?).and_return(true)
-      allow(otlearn_module).to receive(:mismatch_consistency_check)\
-        .with(grammar, [failed_winner_1]).and_return(mrcd)
+      allow(consistency_checker).to receive(:mismatch_consistent?)\
+        .with([failed_output_1], grammar).and_return(true)
       allow(grammar_tester).to\
         receive(:run).and_return(prior_result, test_result)
       allow(test_result).to receive(:all_correct?).and_return(true)
@@ -144,8 +140,8 @@ RSpec.describe OTLearn::InductionLearning do
       before(:each) do
         # allow(mmr).to receive(:run)
         allow(mmr_substep).to receive(:changed?).and_return(true)
-        in_learner =
-          OTLearn::InductionLearning.new(learning_module: otlearn_module)
+        in_learner = OTLearn::InductionLearning.new
+        in_learner.consistency_checker = consistency_checker
         in_learner.grammar_tester = grammar_tester
         in_learner.fsf_learner = fsf
         in_learner.mmr_learner = mmr

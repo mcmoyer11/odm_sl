@@ -7,13 +7,16 @@ require 'otlearn/fewest_set_features'
 require 'otlearn/max_mismatch_ranking'
 require 'otlearn/grammar_test'
 require 'otlearn/induction_step'
-require 'otlearn/data_manip'
+require 'otlearn/consistency_checker'
 
 module OTLearn
   # This performs certain inductive learning methods when contrast pair
   # learning fails to fully learn the language. The two inductive methods
   # are Max Mismatch Ranking (MMR) and Fewest Set Features (FSF).
   class InductionLearning
+    # The object for checking consistency of words with the grammar.
+    attr_accessor :consistency_checker
+
     # The grammar testing object.
     attr_accessor :grammar_tester
 
@@ -26,12 +29,8 @@ module OTLearn
     # Creates the induction learning object.
     # :call-seq:
     #   InductionLearning.new -> induction_learner
-    #--
-    # learning_module is a dependency injection used for testing.
-    # * learning_module - the module containing the method
-    #   #mismatch_consistency_check.
-    def initialize(learning_module: OTLearn)
-      @learning_module = learning_module
+    def initialize
+      @consistency_checker = ConsistencyChecker.new
       @grammar_tester = GrammarTest.new
       @fsf_learner = FewestSetFeatures.new
       @mmr_learner = MaxMismatchRanking.new
@@ -53,8 +52,7 @@ module OTLearn
 
       # Check failed winners for consistency, and collect the consistent ones
       consistent_list = prior_result.failed_winners.select do |word|
-        @learning_module\
-          .mismatch_consistency_check(grammar, [word]).consistent?
+        @consistency_checker.mismatch_consistent?([word.output], grammar)
       end
       # If there are consistent failed winners, run MMR on them.
       # Otherwise, run FSF.
