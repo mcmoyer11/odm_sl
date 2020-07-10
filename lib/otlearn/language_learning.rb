@@ -12,24 +12,20 @@ require 'otlearn/learning_result'
 module OTLearn
   # A LanguageLearning object instantiates a particular instance of
   # language learning. Learning is executed via the method #learn,
-  # given a set of outputs (the data to be learned from), and
-  # a starting grammar (which will likely be altered
-  # during the course of learning).
+  # given a set of outputs (the data to be learned from), and a starting
+  # grammar (which will likely be altered during the course of learning).
   # The method #learn returns a learning result object.
   #
   # The learning proceeds in the following stages, in order:
   # * Phonotactic learning.
-  # * Single form learning (one word at a time until no more can be learned).
-  # * Repeat until the language is learned or no more progress is made.
-  #   * Try a contrast pair; if none are successful, try induction learning.
-  #   * If either of these is successful, and the language is not yet
-  #     learned, run another round of single form learning.
-  # After each major learning step in which grammar change occurs, an object
-  # representing the step is stored. The list of major learning steps
-  # is obtainable from the learning result via #step_list.
-  #
+  # * Repeat until the language is learned or no further change can be made.
+  #   * Single form learning. If learning is completed, stop looping.
+  #   * Contrast pair learning.
+  #   * If contrast pair learning fails, try induction learning.
+  # After each learning step, a learning step object is stored.
+  # The ordered list of learning steps is obtainable from
+  # the learning result via #step_list.
   # ===References
-  #
   # Tesar 2014. <em>Output-Driven Phonology</em>.
   class LanguageLearning
     # Phonotactic learner
@@ -48,7 +44,7 @@ module OTLearn
     # :call-seq:
     #   LanguageLearning.new -> language_learning
     #--
-    # +warn_output+ is a dependency injection used for testing. It is
+    # warn_output is a dependency injection used for testing. It is
     # the IO channel to which warnings are written (normally $stderr).
     def initialize(warn_output: $stderr)
       # Set the default values for the learning step objects
@@ -85,30 +81,28 @@ module OTLearn
     end
     private :execute_learning
 
-    # Loop until there is no change:
+    # Loop paradigmatic learning until learning is complete or there is
+    # no change:
     # * single form learning
     # * contrast pair learning
     # * if no contrast pair, induction learning
-    # If learning succeeds, the method will return from inside the loop.
     def paradigmatic_loop(output_list, grammar)
       loop do
         @step_list << @sf_learner.run(output_list, grammar)
         break if last_step.all_correct?
 
         @step_list << @cp_learner.run(output_list, grammar)
+        # If CP learning failed, try induction learning.
+        unless last_step.changed?
+          @step_list << @in_learner.run(output_list, grammar)
+          # CP and induction learning failed, so quit looping
+          break unless last_step.changed?
+        end
+        # Stop looping if learning is complete
         break if last_step.all_correct?
-
-        # If a contrast pair succeeded, go back to single form learning.
-        next if last_step.changed?
-
-        @step_list << @in_learner.run(output_list, grammar)
-        break if last_step.all_correct?
-
-        # if no change has occurred on this iteration, then learning
-        # has failed.
-        break unless last_step.changed?
       end
     end
+    private :paradigmatic_loop
 
     # Returns the most recent learning step.
     def last_step
