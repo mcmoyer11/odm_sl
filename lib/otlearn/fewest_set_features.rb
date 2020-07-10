@@ -39,14 +39,14 @@ module OTLearn
     # :call-seq:
     #   FewestSetFeatures.new -> fsf_learner
     #--
-    # * feature_value_pair_class - the class of object used to represent
+    # * fv_pair_class - the class of object used to represent
     #   feature-value pairs. Used for testing (dependency injection).
     # * word_search: search object containing #find_unset_features_in_words.
     def initialize(consistency_checker: ConsistencyChecker.new,
-                   feature_value_pair_class: FeatureValuePair,
+                   fv_pair_class: FeatureValuePair,
                    word_search: WordSearch.new)
       @consistency_checker = consistency_checker
-      @feature_value_pair_class = feature_value_pair_class
+      @fv_pair_class = fv_pair_class
       @word_search = word_search
       @para_erc_learner = ParadigmErcLearning.new
     end
@@ -183,10 +183,10 @@ module OTLearn
       # Check the list of words for consistency, using the main grammar,
       # with each word's unset features mismatching their output correspondents.
       # If result is consistent, add the UF value to the list.
-      output_list = word_list.map &:output
+      output_list = word_list.map(&:output)
       val_pair = nil
       if @consistency_checker.mismatch_consistent?(output_list, @grammar)
-        val_pair = @feature_value_pair_class.new(ufeat, ufeat.value)
+        val_pair = @fv_pair_class.new(ufeat, ufeat.value)
       end
       # Unset the tested feature in any event.
       # TODO: need a proper "unset" method for features
