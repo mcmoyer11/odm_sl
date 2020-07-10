@@ -74,45 +74,47 @@ module OTLearn
       LearningResult.new(@step_list, grammar)
     end
 
-    # The main, top-level method for executing learning. This method is
-    # protected, and called by the constructor #initialize, so learning
-    # is automatically executed whenever a LanguageLearning object is
-    # created.
+    # Coordinates the execution of the learning steps. First, it executes
+    # phonotactic learning. If learning is not yet complete, then it
+    # proceeds to paradigmatic learning.
     # Returns true if learning was successful, false otherwise.
     def execute_learning(output_list, grammar)
-      # Phonotactic learning
-      pl_step = @ph_learner.run(output_list, grammar)
-      @step_list << pl_step
-      return true if pl_step.all_correct?
+      @step_list << @ph_learner.run(output_list, grammar)
+      paradigmatic_loop(output_list, grammar) unless last_step.all_correct?
+      last_step.all_correct?
+    end
+    private :execute_learning
 
-      # Loop until there is no change.
-      # If learning succeeds, the method will return from inside the loop.
+    # Loop until there is no change:
+    # * single form learning
+    # * contrast pair learning
+    # * if no contrast pair, induction learning
+    # If learning succeeds, the method will return from inside the loop.
+    def paradigmatic_loop(output_list, grammar)
       loop do
-        # Single form learning
-        sfl_step = @sf_learner.run(output_list, grammar)
-        @step_list << sfl_step
-        break if sfl_step.all_correct?
+        @step_list << @sf_learner.run(output_list, grammar)
+        break if last_step.all_correct?
 
-        # Contrast pair learning
-        cpl_step = @cp_learner.run(output_list, grammar)
-        @step_list << cpl_step
-        break if cpl_step.all_correct?
+        @step_list << @cp_learner.run(output_list, grammar)
+        break if last_step.all_correct?
 
-        next if cpl_step.changed?
+        # If a contrast pair succeeded, go back to single form learning.
+        next if last_step.changed?
 
-        # No suitable contrast pair, so pursue a step of Induction learning
-        il_step = @in_learner.run(output_list, grammar)
-        @step_list << il_step
-        break if il_step.all_correct?
+        @step_list << @in_learner.run(output_list, grammar)
+        break if last_step.all_correct?
 
         # if no change has occurred on this iteration, then learning
         # has failed.
-        break unless il_step.changed?
+        break unless last_step.changed?
       end
-      # the last step indicates if learning was ultimately successful
-      @step_list[-1].all_correct?
     end
-    private :execute_learning
+
+    # Returns the most recent learning step.
+    def last_step
+      @step_list[-1]
+    end
+    private :last_step
 
     # Calls provided block, and rescues an exception if one arises.
     # Returns the value returned by block if no exception is raised,
