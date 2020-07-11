@@ -1,5 +1,6 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
-# 
 
 # A FeatureValuePair is a specific feature instance, paired with
 # a *possible* value for the feature, called the _alt_value_.
@@ -12,14 +13,16 @@
 # multiple such combinations. At any desired time, a feature instance
 # can be set to the associated alt_value with #set_to_alt_value.
 class FeatureValuePair
+  # The feature instance represented by this pair.
+  attr_reader :feature_instance
+
+  # The feature value represented by this pair.
+  attr_reader :alt_value
+
   # Returns a FeatureValuePair with feature instance _feature_instance_ and
   # alt_value _value_.
   def initialize(feature_instance, value)
-    # Verify that _value_ is a possible value of _feature_instance_.
-    fvs=[]; feature_instance.feature.each_value{|val| fvs<<val}
-    unless fvs.member?(value)
-      raise "Feature value #{value} is not a possible value for #{feature_instance.feature.type}"
-    end
+    verify_value(feature_instance, value)
     @feature_instance = feature_instance
     @alt_value = value
   end
@@ -29,26 +32,16 @@ class FeatureValuePair
   # The list for each feature is a list of FeatureValuePairs, all having
   # the given feature instance, with one pair for each possible value of
   # the feature.
-  def FeatureValuePair.all_values_pairs(feature_list)
+  def self.all_values_pairs(feature_list)
     feat_values_list = []
     feature_list.each do |feat_inst|
       feat_values = []
       feat_inst.feature.each_value do |alt_value|
-        feat_values << FeatureValuePair.new(feat_inst, alt_value)
+        feat_values << new(feat_inst, alt_value)
       end
       feat_values_list << feat_values
     end
-    return feat_values_list
-  end
-
-  # Returns the feature instance of this Feature Value Pair.
-  def feature_instance
-    @feature_instance
-  end
-
-  # Returns the alt_value of this Feature Value Pair.
-  def alt_value
-    @alt_value
+    feat_values_list
   end
 
   # Sets the value of the feature instance of this pair to the alt_value
@@ -57,9 +50,14 @@ class FeatureValuePair
     @feature_instance.feature.value = @alt_value
   end
 
-  # Make it easy to read what the features are that are causing learning to fail
-  def to_s
-    "Feature #{@feature_instance} with hypothesized value #{@alt_value} is consistent."
+  # Verify that _value_ is a possible value of _feature_instance_.
+  # Raises a RuntimeError exception if the value is not valid.
+  def verify_value(feature_instance, value)
+    fvs = []
+    feature_instance.feature.each_value { |val| fvs << val }
+    msg1 = "Feature value #{value}"
+    msg2 = "is not a possible value for #{feature_instance.feature.type}"
+    raise "#{msg1} #{msg2}" unless fvs.member?(value)
   end
-  
+  private :verify_value
 end
