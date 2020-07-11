@@ -53,11 +53,10 @@ class FeatureValuePair
   # Verify that _value_ is a possible value of _feature_instance_.
   # Raises a RuntimeError exception if the value is not valid.
   def verify_value(feature_instance, value)
-    fvs = []
-    feature_instance.feature.each_value { |val| fvs << val }
+    feature = feature_instance.feature
     msg1 = "Feature value #{value}"
-    msg2 = "is not a possible value for #{feature_instance.feature.type}"
-    raise "#{msg1} #{msg2}" unless fvs.member?(value)
+    msg2 = "is not a possible value for #{feature.type}"
+    raise "#{msg1} #{msg2}" unless feature.valid_value?(value)
   end
   private :verify_value
 end

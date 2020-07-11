@@ -17,7 +17,7 @@ RSpec.describe 'FeatureValuePair' do
 
   context 'given a feature instance and a valid value' do
     before(:example) do
-      allow(feature).to receive(:each_value).and_yield(value)
+      allow(feature).to receive(:valid_value?).with(value).and_return(true)
       @fvp = FeatureValuePair.new(f_inst, value)
     end
     it 'returns the feature instance' do
@@ -39,7 +39,7 @@ RSpec.describe 'FeatureValuePair' do
   context 'given an invalid value' do
     let(:other_value) { double('other_value') }
     before(:example) do
-      allow(feature).to receive(:each_value).and_yield(other_value)
+      allow(feature).to receive(:valid_value?).with(value).and_return(false)
     end
     it 'raises a RuntimeError' do
       expect { FeatureValuePair.new(f_inst, value) }.to\
