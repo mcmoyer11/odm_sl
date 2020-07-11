@@ -1,17 +1,17 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
-#
 
 # This is the base class for features; subclasses will provide the specific
 # properties (like possible values) for specific feature types.
 class Feature
-  
-  # the value for this particular instance of the feature
+  # The value of the feature.
   attr_accessor :value
 
-  # the feature type
+  # The feature type.
   attr_accessor :type
 
-  # constant representing the feature value for an unset feature
+  # The feature value for an unset feature.
   UNSET = nil
 
   # A feature type is set to _type_. The feature value is initialized
@@ -26,15 +26,14 @@ class Feature
   def ==(other)
     (@type == other.type) && (@value == other.value)
   end
-  
+
   # The same as ==(_other_).
   def eql?(other)
-    self==other
+    self == other
   end
 
   # Returns true if a feature is unset; false otherwise.
   def unset?
-    @value==UNSET
+    @value == UNSET
   end
-  
 end

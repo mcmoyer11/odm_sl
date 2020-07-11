@@ -1,20 +1,20 @@
-# Author: Bruce Tesar
-# 
+# frozen_string_literal: true
 
-require_relative '../feature'
+# Author: Bruce Tesar
+
+require 'feature'
 
 module SL
-
   # A length feature is a Feature of type LENGTH.
   # It has two possible feature values, represented
   # by the constants LONG and SHORT.
   class Length_feat < Feature
-    #-- Symbols are used as lightweight, readable constants ++
-
     # Feature type vowel length
     LENGTH = :length
+
     # Feature value long vowel
     LONG = :long
+
     # Feature value short vowel
     SHORT = :short
 
@@ -25,12 +25,12 @@ module SL
 
     # Returns true if the feature instance is long; false otherwise.
     def long?
-      self.value == LONG
+      value == LONG
     end
 
     # Returns true if the feature instance is short; false otherwise.
     def short?
-      self.value == SHORT
+      value == SHORT
     end
 
     # Sets the feature to the value LONG.
@@ -48,9 +48,10 @@ module SL
     # Returns a string representation of the feature:
     # "length=<value>"
     def to_s
-      return "length=unset" if unset?
-      return "length=long" if long?
-      return "length=short" if short?
+      return 'length=long' if long?
+      return 'length=short' if short?
+
+      'length=unset'
     end
 
     #-- Generic interface ++
@@ -66,10 +67,8 @@ module SL
     # Returns true if _val_ is a valid value for the feature. Returns
     # false otherwise.
     def valid_value?(val)
-      each_value{|v| return true if val==v}
-      return false
+      each_value { |v| return true if val == v }
+      false
     end
-    
-  end # class Length_feat
-
-end # module SL
+  end
+end
