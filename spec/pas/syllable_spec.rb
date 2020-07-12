@@ -41,7 +41,7 @@ RSpec.describe PAS::Syllable do
         expect(@features.size).to eq(2)
       end
       it "should yield a length feature" do
-        expect(@features[0].type).to eq(PAS::Length_feat::LENGTH)
+        expect(@features[0].type).to eq(PAS::Length::LENGTH)
       end
       it "should yield a stress feature" do
         expect(@features[1].type).to eq(PAS::Stress_feat::STRESS)
@@ -64,10 +64,10 @@ RSpec.describe PAS::Syllable do
       end
       context "#get_feature returns a length feature" do
         before(:each) do
-          @s_feat = @syllable.get_feature(PAS::Length_feat::LENGTH)
+          @s_feat = @syllable.get_feature(PAS::Length::LENGTH)
         end
         it "returns a length feature that is of type LENGTH" do
-          expect(@s_feat.type).to eq(PAS::Length_feat::LENGTH)
+          expect(@s_feat.type).to eq(PAS::Length::LENGTH)
         end
         it "returns a length feature that is short" do
           expect(@s_feat.short?).to be true
@@ -94,7 +94,7 @@ RSpec.describe PAS::Syllable do
       expect{@syllable.set_feature("invalid", "value")}.to raise_exception(RuntimeError)
     end
     it "#set_feature does not raise an invalid feature exception when given an unset feature value" do
-      expect{@syllable.set_feature(PAS::Length_feat::LENGTH, Feature::UNSET)}.not_to raise_exception
+      expect{@syllable.set_feature(PAS::Length::LENGTH, Feature::UNSET)}.not_to raise_exception
     end
     
     context "when set to main stress" do

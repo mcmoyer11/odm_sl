@@ -4,7 +4,7 @@
 #
  
 require_relative 'stress_feat'
-require_relative 'length_feat'
+require_relative 'length'
 
 module PAS
 
@@ -23,7 +23,7 @@ module PAS
     # morpheme.
     def initialize
       @stress = Stress_feat.new
-      @length = Length_feat.new
+      @length = Length.new
       @morpheme = "" # label of the morpheme this syllable is affiliated with.
     end
 
