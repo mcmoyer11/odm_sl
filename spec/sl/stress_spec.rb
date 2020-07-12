@@ -5,15 +5,15 @@
 require 'sl/stress'
 
 RSpec.describe SL::Stress do
-  STRESS = SL::Stress::STRESS
-  UNSTRESSED = SL::Stress::UNSTRESSED
-  MAIN_STRESS = SL::Stress::MAIN_STRESS
-  context 'A new Stress' do
+  let(:stress) { SL::Stress::STRESS }
+  let(:unstressed) { SL::Stress::UNSTRESSED }
+  let(:main_stress) { SL::Stress::MAIN_STRESS }
+  context 'A new stress' do
     before(:each) do
       @stress_feat = SL::Stress.new
     end
     it 'has type STRESS' do
-      expect(@stress_feat.type).to eq STRESS
+      expect(@stress_feat.type).to eq stress
     end
     it 'should be unset' do
       expect(@stress_feat.unset?).to be true
@@ -27,18 +27,18 @@ RSpec.describe SL::Stress do
     it 'should return a string value of stress=unset' do
       expect(@stress_feat.to_s).to eq('stress=unset')
     end
-    it 'should accept UNSTRESSED as a valid value' do
-      expect(@stress_feat.valid_value?(UNSTRESSED)).to be true
+    it 'should accept unstressed as a valid value' do
+      expect(@stress_feat.valid_value?(unstressed)).to be true
     end
-    it 'should accept MAIN_STRESS as a valid value' do
-      expect(@stress_feat.valid_value?(MAIN_STRESS)).to be true
+    it 'should accept main_stress as a valid value' do
+      expect(@stress_feat.valid_value?(main_stress)).to be true
     end
     it 'should not accept :invalid as a valid value' do
       expect(@stress_feat.valid_value?(:invalid)).to be false
     end
     it 'iterates over the feature values' do
       expect { |probe| @stress_feat.each_value(&probe) }.to\
-        yield_successive_args(UNSTRESSED, MAIN_STRESS)
+        yield_successive_args(unstressed, main_stress)
     end
 
     context 'set to unstressed' do

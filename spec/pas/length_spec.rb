@@ -5,15 +5,15 @@
 require 'pas/length'
 
 RSpec.describe PAS::Length do
-  LENGTH = PAS::Length::LENGTH
-  SHORT = PAS::Length::SHORT
-  LONG = PAS::Length::LONG
+  let(:length) { PAS::Length::LENGTH }
+  let(:short) { PAS::Length::SHORT }
+  let(:long) { PAS::Length::LONG }
   context '' do
     before(:each) do
       @length = PAS::Length.new
     end
     it 'has type LENGTH' do
-      expect(@length.type).to eq LENGTH
+      expect(@length.type).to eq length
     end
     it 'should be unset' do
       expect(@length.unset?).to be true
@@ -27,18 +27,18 @@ RSpec.describe PAS::Length do
     it 'should return a string value of length=unset' do
       expect(@length.to_s).to eq('length=unset')
     end
-    it 'should accept SHORT as a valid value' do
-      expect(@length.valid_value?(SHORT)).to be true
+    it 'should accept short as a valid value' do
+      expect(@length.valid_value?(short)).to be true
     end
-    it 'should accept LONG as a valid value' do
-      expect(@length.valid_value?(LONG)).to be true
+    it 'should accept long as a valid value' do
+      expect(@length.valid_value?(long)).to be true
     end
     it 'should not accept :invalid as a valid value' do
       expect(@length.valid_value?(:invalid)).to be false
     end
     it 'iterates over the feature values' do
       expect { |probe| @length.each_value(&probe) }.to\
-        yield_successive_args(SHORT, LONG)
+        yield_successive_args(short, long)
     end
 
     context 'set to short' do
