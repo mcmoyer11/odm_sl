@@ -3,7 +3,7 @@
 require 'pas/stress_feat'
 
 RSpec.describe PAS::Stress_feat do
-  context "A new Stress_feat" do
+  context "A new Stress" do
     before(:each) do
       @stress_feat = PAS::Stress_feat.new
     end
@@ -66,4 +66,4 @@ RSpec.describe PAS::Stress_feat do
       end
     end
   end
-end # describe PAS::Stress_feat
+end # describe PAS::Stress

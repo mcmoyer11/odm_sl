@@ -6,7 +6,7 @@ require 'feature'
 
 module SL
   # A length feature has type LENGTH. The two feature values are
-  # represented by the constants LONG and SHORT.
+  # represented by the constants SHORT and LONG.
   # The class mixes in Feature, providing most of the functionality.
   class Length
     include Feature

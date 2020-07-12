@@ -3,7 +3,7 @@
 # Author: Bruce Tesar
 #
  
-require_relative 'stress_feat'
+require_relative 'stress'
 require_relative 'length'
 
 module SL
@@ -22,7 +22,7 @@ module SL
     # returns a syllable with unset features, and an empty string for the
     # morpheme.
     def initialize
-      @stress = Stress_feat.new
+      @stress = Stress.new
       @length = Length.new
       @morpheme = "" # label of the morpheme this syllable is affiliated with.
     end

@@ -33,12 +33,12 @@ RSpec.describe SL::Length do
     it 'should accept LONG as a valid value' do
       expect(@length.valid_value?(LONG)).to be true
     end
-    it 'should not accept INVALID as a valid value' do
-      expect(@length.valid_value?('INVALID')).to be false
+    it 'should not accept :invalid as a valid value' do
+      expect(@length.valid_value?(:invalid)).to be false
     end
     it 'iterates over the feature values' do
       expect { |probe| @length.each_value(&probe) }.to\
-      yield_successive_args(SHORT, LONG)
+        yield_successive_args(SHORT, LONG)
     end
 
     context 'set to short' do

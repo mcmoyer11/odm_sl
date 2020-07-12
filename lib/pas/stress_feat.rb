@@ -70,6 +70,6 @@ module PAS
       return false
     end
     
-  end # class Stress_feat
+  end # class Stress
 
 end # module PAS
