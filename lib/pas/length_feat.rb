@@ -70,6 +70,6 @@ module PAS
       return false
     end
     
-  end # class Length_feat
+  end # class Length
 
 end # module PAS

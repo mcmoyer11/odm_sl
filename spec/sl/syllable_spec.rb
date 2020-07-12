@@ -41,7 +41,7 @@ RSpec.describe SL::Syllable do
         expect(@features.size).to eq(2)
       end
       it "should yield a length feature" do
-        expect(@features[0].type).to eq(SL::Length_feat::LENGTH)
+        expect(@features[0].type).to eq(SL::Length::LENGTH)
       end
       it "should yield a stress feature" do
         expect(@features[1].type).to eq(SL::Stress_feat::STRESS)
@@ -64,10 +64,10 @@ RSpec.describe SL::Syllable do
       end
       context "#get_feature returns a length feature" do
         before(:each) do
-          @s_feat = @syllable.get_feature(SL::Length_feat::LENGTH)
+          @s_feat = @syllable.get_feature(SL::Length::LENGTH)
         end
         it "returns a length feature that is of type LENGTH" do
-          expect(@s_feat.type).to eq(SL::Length_feat::LENGTH)
+          expect(@s_feat.type).to eq(SL::Length::LENGTH)
         end
         it "returns a length feature that is short" do
           expect(@s_feat.short?).to be true
@@ -98,7 +98,7 @@ RSpec.describe SL::Syllable do
         "SL::Syllable#get_feature(): parameter invalid is not a valid feature type.")
     end
     it "#set_feature does not raise an invalid feature exception when given an unset feature value" do
-      expect{@syllable.set_feature(SL::Length_feat::LENGTH, Feature::UNSET)}.not_to raise_exception
+      expect{@syllable.set_feature(SL::Length::LENGTH, Feature::UNSET)}.not_to raise_exception
     end
     
     context "when set to main stress" do
