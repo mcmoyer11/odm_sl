@@ -44,7 +44,7 @@ RSpec.describe PAS::Syllable do
         expect(@features[0].type).to eq(PAS::Length::LENGTH)
       end
       it "should yield a stress feature" do
-        expect(@features[1].type).to eq(PAS::Stress_feat::STRESS)
+        expect(@features[1].type).to eq(PAS::Stress::STRESS)
       end
     end
     context "when set to unstressed and short" do
@@ -53,10 +53,10 @@ RSpec.describe PAS::Syllable do
       end
       context "#get_feature returns a stress feature" do
         before(:each) do
-          @s_feat = @syllable.get_feature(PAS::Stress_feat::STRESS)
+          @s_feat = @syllable.get_feature(PAS::Stress::STRESS)
         end
         it "returns a stress feature that is of type STRESS" do
-          expect(@s_feat.type).to eq(PAS::Stress_feat::STRESS)
+          expect(@s_feat.type).to eq(PAS::Stress::STRESS)
         end
         it "returns a stress feature that is unstressed" do
           expect(@s_feat.unstressed?).to be true
@@ -79,7 +79,7 @@ RSpec.describe PAS::Syllable do
     end
     context "when #set_feature sets stress with value main stress" do
       before(:each) do
-        s_feat = PAS::Stress_feat.new
+        s_feat = PAS::Stress.new
         s_feat.set_main_stress
         @syllable.set_feature(s_feat.type, s_feat.value)
       end
