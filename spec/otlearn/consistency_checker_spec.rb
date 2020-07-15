@@ -20,6 +20,35 @@ RSpec.describe 'OTLearn::ConsistencyChecker' do
     @checker.loser_selector = loser_selector
   end
 
+  context 'given words that are consistent' do
+    let(:word_list) { double('word_list') }
+    before(:example) do
+      allow(mrcd_result).to receive(:consistent?).and_return(true)
+      @result = @checker.consistent?(word_list, grammar)
+    end
+    it 'calls Mrcd on the word list and grammar' do
+      expect(mrcd_class).to\
+        have_received(:new).with(word_list, grammar, loser_selector)
+    end
+    it 'indicates consistency' do
+      expect(@result).to be true
+    end
+  end
+  context 'given words that are inconsistent' do
+    let(:word_list) { double('word_list') }
+    before(:example) do
+      allow(mrcd_result).to receive(:consistent?).and_return(false)
+      @result = @checker.consistent?(word_list, grammar)
+    end
+    it 'calls Mrcd on the word list and grammar' do
+      expect(mrcd_class).to\
+        have_received(:new).with(word_list, grammar, loser_selector)
+    end
+    it 'indicates inconsistency' do
+      expect(@result).to be false
+    end
+  end
+
   context 'given outputs that are mismatch consistent' do
     before(:example) do
       output_list = [output]

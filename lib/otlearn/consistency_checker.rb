@@ -34,16 +34,27 @@ module OTLearn
     # different words, depending on the outputs of those words.
     # Returns true if the candidates are collectively consistent,
     # false otherwise.
-    # :call_seq:
+    # :call-seq:
     #   mismatch_consistent?(output_list, grammar) -> boolean
     def mismatch_consistent?(output_list, grammar)
-      default_loser_selector(grammar.system) if @loser_selector.nil?
       mismatch_list = output_list.map do |output|
         word = grammar.parse_output(output)
         word.mismatch_input_to_output!
       end
+      consistent?(mismatch_list, grammar)
+    end
+
+    # Tests the list of words for consistency with the grammar.
+    # The words are presumed to be full candidates, with fully
+    # determined inputs (all input features have been assigned values).
+    # Returns true if the words are collectively consistent, false
+    # otherwise.
+    # :call-seq:
+    #   consistent?(word_list, grammar) -> boolean
+    def consistent?(word_list, grammar)
+      default_loser_selector(grammar.system) if @loser_selector.nil?
       # Use Mrcd to determine collective consistency.
-      mrcd_result = @mrcd_class.new(mismatch_list, grammar, @loser_selector)
+      mrcd_result = @mrcd_class.new(word_list, grammar, @loser_selector)
       mrcd_result.consistent?
     end
 

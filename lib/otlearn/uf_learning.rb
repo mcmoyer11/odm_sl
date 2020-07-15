@@ -4,9 +4,7 @@
 
 require 'feature_value_pair'
 require 'word_search'
-require 'compare_consistency'
-require 'loser_selector'
-require 'loser_selector_from_gen'
+require 'otlearn/consistency_checker'
 
 module OTLearn
   # Using the given list of words, check each unset underlying feature in
@@ -121,10 +119,8 @@ module OTLearn
   # mrcd, and returns the result (consistency: true/false).
   def OTLearn.eval_over_conflict_features(c_features, contrast_set,
                                           grammar)
-    # Create a loser selector for Mrcd
-    basic_selector = LoserSelector.new(CompareConsistency.new)
-    loser_selector = LoserSelectorFromGen.new(grammar.system,
-                                              basic_selector)
+    # Create a consistency checker
+    checker = ConsistencyChecker.new
     # Generate a list of feature-value pairs, one for each possible value
     # of each conflict feature.
     feat_values_list = FeatureValuePair.all_values_pairs(c_features)
@@ -146,8 +142,7 @@ module OTLearn
                               feat_pair.alt_value, contrast_set)
       end
       # Test the contrast set, using the conflicting feature combination
-      mrcd_result = Mrcd.new(contrast_set, grammar, loser_selector)
-      return true if mrcd_result.consistent?
+      return true if checker.consistent?(contrast_set, grammar)
     end
     false # none of the combinations were consistent.
   end
