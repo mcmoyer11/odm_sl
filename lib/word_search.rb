@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require 'feature_instance'
+require 'set'
 
 # Provides a collection of methods for searching a list of words
 # with special criteria.
@@ -75,5 +76,20 @@ class WordSearch
       unset_features.concat find_unset_features_of_morpheme(morph, grammar)
     end
     unset_features
+  end
+
+  # Finds, within the words of word_list, all of the surface correspondents
+  # of the underlying feature instance uf_feat. Return false if the surface
+  # correspondents all have the same value; return true otherwise.
+  def conflicting_output_values?(uf_feat, word_list)
+    # Get output correspondents of the underlying feature
+    out_feature_list = word_list.map { |w| w.out_feat_corr_of_uf(uf_feat) }
+    # Remove occurrences of nil (from words with no output correspondent)
+    out_feature_list = out_feature_list.reject(&:nil?)
+    # Count the number of distinct output values for the feature.
+    value_set = Set.new
+    out_feature_list.each { |feat| value_set.add(feat.value) }
+    # If there is more than one feature value present, return true.
+    value_set.size > 1
   end
 end

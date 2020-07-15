@@ -174,4 +174,58 @@ RSpec.describe 'WordSearch' do
       end
     end
   end
+
+  context 'conflicting_output_values?' do
+    let(:uf_feat) { double('UF feature') }
+    let(:word1) { double('word1') }
+    let(:word2) { double('word2') }
+    let(:out_feat1) { double('out_feat1') }
+    let(:out_feat2) { double('out_feat2') }
+    before(:example) do
+      allow(word1).to receive(:out_feat_corr_of_uf).with(uf_feat)\
+                                                   .and_return(out_feat1)
+      allow(word2).to receive(:out_feat_corr_of_uf).with(uf_feat)\
+                                                   .and_return(out_feat2)
+      @ws = WordSearch.new
+    end
+    context 'given conflictng output values' do
+      before(:example) do
+        allow(out_feat1).to receive(:nil?).and_return(false)
+        allow(out_feat2).to receive(:nil?).and_return(false)
+        allow(out_feat1).to receive(:value).and_return('value A')
+        allow(out_feat2).to receive(:value).and_return('value B')
+        word_list = [word1, word2]
+        @conflict = @ws.conflicting_output_values?(uf_feat, word_list)
+      end
+      it 'returns true' do
+        expect(@conflict).to be true
+      end
+    end
+    context 'given non-conflicting output values' do
+      before(:example) do
+        allow(out_feat1).to receive(:nil?).and_return(false)
+        allow(out_feat2).to receive(:nil?).and_return(false)
+        allow(out_feat1).to receive(:value).and_return('value A')
+        allow(out_feat2).to receive(:value).and_return('value A')
+        word_list = [word1, word2]
+        @conflict = @ws.conflicting_output_values?(uf_feat, word_list)
+      end
+      it 'returns false' do
+        expect(@conflict).to be false
+      end
+    end
+    context 'given a word lacking an output correspondent' do
+      before(:example) do
+        allow(out_feat1).to receive(:nil?).and_return(true)
+        allow(out_feat2).to receive(:nil?).and_return(false)
+        allow(out_feat1).to receive(:value).and_return('value X')
+        allow(out_feat2).to receive(:value).and_return('value A')
+        word_list = [word1, word2]
+        @conflict = @ws.conflicting_output_values?(uf_feat, word_list)
+      end
+      it 'it ignores that word' do
+        expect(@conflict).to be false
+      end
+    end
+  end
 end
