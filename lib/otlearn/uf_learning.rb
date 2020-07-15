@@ -10,6 +10,7 @@ module OTLearn
   # Using the given list of words, check each unset underlying feature in
   # each morpheme of the word list to see if it can be set.
   def OTLearn.set_uf_values(words, grammar)
+    wordsearch = WordSearch.new
     # Duplicate the words (working copies for this method)
     word_list = words.map do |word|
       grammar.parse_output(word.output)
@@ -18,12 +19,12 @@ module OTLearn
     word_list.each &:match_input_to_output!
     # Construct two lists of unset underlying features: those that have
     # conflicting values in the outputs, and those that do not.
-    morph_in_words = WordSearch.new.morphemes_to_words(word_list)
+    morph_in_words = wordsearch.morphemes_to_words(word_list)
     morpheme_list = morph_in_words.keys
-    unset_features = WordSearch.new.find_unset_features(morpheme_list,
+    unset_features = wordsearch.find_unset_features(morpheme_list,
                                                         grammar)
     conflict, no_conflict = unset_features.partition do |f|
-      conflicting_output_values?(f, morph_in_words[f.morpheme])
+      wordsearch.conflicting_output_values?(f, morph_in_words[f.morpheme])
     end
     # Test conflicting unset features to see if any can be set
     set_feature_list = []
@@ -168,23 +169,5 @@ module OTLearn
       word.eval # reassess constraint violations due to modified input
     end
     value # can't think of anything better to return at the moment
-  end
-
-  # Checks all of the output correspondents, within the given word list,
-  # of the given underlying feature instance. If the output correspondents
-  # do not all have the same value for the given feature type, then they
-  # conflict, and true is returned; otherwise, false is returned.
-  def OTLearn.conflicting_output_values?(uf_feat_inst, word_list)
-    out_feature_list =
-      word_list.map { |w| w.out_feat_corr_of_uf(uf_feat_inst) }
-    # Remove occurrences of nil (resulting from words in which
-    # _uf_feat_inst_ has no output correspondent).
-    out_feature_list = out_feature_list.reject { |feat| feat.nil? }
-    conflict_flag = false
-    out_feature_list.inject do |first_f, f|
-      conflict_flag = true if first_f.value != f.value
-      f
-    end
-    conflict_flag
   end
 end

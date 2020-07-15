@@ -39,6 +39,7 @@ module OTLearn
   #   between the forms of the pair beyond processing each in isolation.
   def OTLearn.generate_contrast_pair(cp_return, winners, grammar,
                                      test_result = nil)
+    wordsearch = WordSearch.new
     grammar_tester = GrammarTest.new
     test_result ||= grammar_tester.run(winners, grammar)
     # The failed winners of the test are connected to a different
@@ -53,12 +54,12 @@ module OTLearn
       failed_winner.morphword.each do |morph|
         # Find features of morph that are unset in the lexicon.
         unset_features =
-            WordSearch.new.find_unset_features([morph], grammar)
+          wordsearch.find_unset_features([morph], grammar)
         next(nil) if unset_features.empty? # go to next morpheme
 
         # Find all words containing that morpheme, except the original
         # failed winner.
-        morph_to_word_hash = WordSearch.new.morphemes_to_words(winners)
+        morph_to_word_hash = wordsearch.morphemes_to_words(winners)
         containing_words = morph_to_word_hash[morph]
         containing_words = containing_words.delete_if do |cword|
           cword.morphword == failed_winner.morphword
@@ -67,8 +68,8 @@ module OTLearn
           # Find an unset feature of morph that alternates between
           # failed_winner and word.
           alternating_feature = unset_features.find do |feat_inst|
-            OTLearn.conflicting_output_values?(feat_inst,
-                                               [failed_winner, word])
+            wordsearch.conflicting_output_values?(feat_inst,
+                                                  [failed_winner, word])
           end
           # If an alternating feature was found, yield the contrast pair
           # to the calling iterator.
