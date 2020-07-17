@@ -16,6 +16,7 @@ RSpec.describe OTLearn::ContrastPairLearning do
   let(:grammar_tester) { double('grammar_tester') }
   let(:test_result) { double('test_result') }
   let(:para_erc_learner) { double('para_erc_learner') }
+  let(:feature_learner) { double('feature_learner') }
   before(:each) do
     allow(grammar).to receive(:system)
     allow(output_list).to receive(:map).and_return(winner_list)
@@ -31,14 +32,17 @@ RSpec.describe OTLearn::ContrastPairLearning do
         |result, win_list, grammar, p_result|
         result.yield first_cp
       end
-      allow(otlearn_module).to\
-        receive(:set_uf_values).with(first_cp, grammar).and_return(['feat1'])
+      # allow(otlearn_module).to\
+      #   receive(:set_uf_values).with(first_cp, grammar).and_return(['feat1'])
+      allow(feature_learner).to\
+        receive(:run).with(first_cp, grammar).and_return(['feat1'])
       allow(grammar_tester).to\
         receive(:run).and_return(prior_result, test_result)
       allow(test_result).to receive(:all_correct?).and_return(false)
       cp_learner = OTLearn::ContrastPairLearning\
                    .new(learning_module: otlearn_module)
       cp_learner.para_erc_learner = para_erc_learner
+      cp_learner.feature_learner = feature_learner
       cp_learner.grammar_tester = grammar_tester
       @cp_step = cp_learner.run(output_list, grammar)
     end
@@ -62,8 +66,7 @@ RSpec.describe OTLearn::ContrastPairLearning do
       expect(@cp_step).not_to be_all_correct
     end
     it 'has step type CONTRAST_PAIR' do
-      expect(@cp_step.step_type).to \
-        eq OTLearn::CONTRAST_PAIR
+      expect(@cp_step.step_type).to eq OTLearn::CONTRAST_PAIR
     end
   end
 
@@ -76,14 +79,17 @@ RSpec.describe OTLearn::ContrastPairLearning do
         |result, win_list, grammar, p_result|
         result.yield first_cp
       end
-      allow(otlearn_module).to\
-        receive(:set_uf_values).with(first_cp, grammar).and_return([])
+      # allow(otlearn_module).to\
+      #   receive(:set_uf_values).with(first_cp, grammar).and_return([])
+      allow(feature_learner).to\
+        receive(:run).with(first_cp, grammar).and_return([])
       allow(grammar_tester).to\
         receive(:run).and_return(prior_result, test_result)
       allow(test_result).to receive(:all_correct?).and_return(false)
       cp_learner = OTLearn::ContrastPairLearning\
                    .new(learning_module: otlearn_module)
       cp_learner.para_erc_learner = para_erc_learner
+      cp_learner.feature_learner = feature_learner
       cp_learner.grammar_tester = grammar_tester
       @cp_step = cp_learner.run(output_list, grammar)
     end
@@ -122,15 +128,18 @@ RSpec.describe OTLearn::ContrastPairLearning do
       end
       allow(otlearn_module).to\
         receive(:set_uf_values).with(first_cp, grammar).and_return([])
-      allow(otlearn_module).to\
-        receive(:set_uf_values).with(second_cp, grammar)\
-                               .and_return(['feat1'])
+      # allow(otlearn_module).to\
+      #   receive(:set_uf_values).with(second_cp, grammar)\
+      #                          .and_return(['feat1'])
+      allow(feature_learner).to\
+        receive(:run).with(second_cp, grammar).and_return(['feat1'])
       allow(grammar_tester).to\
         receive(:run).and_return(prior_result, test_result)
       allow(test_result).to receive(:all_correct?).and_return(false)
       cp_learner = OTLearn::ContrastPairLearning\
                    .new(learning_module: otlearn_module)
       cp_learner.para_erc_learner = para_erc_learner
+      cp_learner.feature_learner = feature_learner
       cp_learner.grammar_tester = grammar_tester
       @cp_step = cp_learner.run(output_list, grammar)
     end

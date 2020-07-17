@@ -5,9 +5,10 @@
 require 'otlearn/otlearn'
 require 'otlearn/contrast_pair'
 require 'otlearn/contrast_pair_step'
-require 'otlearn/uf_learning'
 require 'otlearn/paradigm_erc_learning'
+require 'otlearn/feature_value_learning'
 require 'otlearn/grammar_test'
+require 'otlearn/uf_learning'
 
 module OTLearn
   # Instantiates contrast pair learning. Any results of learning are
@@ -16,21 +17,23 @@ module OTLearn
     # The paradigmatic ERC learner. Default: ParadigmErcLearning.new
     attr_accessor :para_erc_learner
 
+    # The feature value learner. Default: FeatureValueLearning.new
+    attr_accessor :feature_learner
+
     # The grammar testing object. Default: GrammarTest.new.
     attr_accessor :grammar_tester
 
     # Constructs a contrast pair learning object.
     # :call-seq:
-    #   ContrastPairLearning.new -> cp_learner
+    #   ContrastPairLearning.new -> learner
     #--
-    # learning_module and grammar_test_class are dependency injections used
-    # for testing.
-    # * learning_module - the module containing #generate_contrast_pair
-    #   and #set_uf_values.
+    # learning_module is a dependency injection used for testing.
+    # * learning_module - the module containing #generate_contrast_pair.
     def initialize(learning_module: OTLearn)
       @learning_module = learning_module
       @grammar_tester = GrammarTest.new
       @para_erc_learner = ParadigmErcLearning.new
+      @feature_learner = FeatureValueLearning.new
     end
 
     # Select a contrast pair, and process it, attempting to set underlying
@@ -61,8 +64,7 @@ module OTLearn
         contrast_pair = cp_gen.next
         # Process the contrast pair, and return a list of any features
         # that were newly set during the processing.
-        set_feature_list = @learning_module.set_uf_values(contrast_pair,
-                                                          grammar)
+        set_feature_list = @feature_learner.run(contrast_pair, grammar)
         # If an underlying feature was set, exit the loop.
         # Otherwise, continue processing contrast pairs.
         break unless set_feature_list.empty?
