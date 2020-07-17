@@ -2,10 +2,10 @@
 
 # Author: Bruce Tesar
 
-require 'otlearn/otlearn'
-require 'otlearn/grammar_test'
 require 'otlearn/single_form_step'
+require 'otlearn/feature_value_learning'
 require 'otlearn/paradigm_erc_learning'
+require 'otlearn/grammar_test'
 
 module OTLearn
   # This processes all of the outputs in the grammatical output list, one at a
@@ -15,20 +15,20 @@ module OTLearn
     # Paradigmatic ERC learner. Default value: ParadigmErcLearning.new
     attr_accessor :para_erc_learner
 
+    # Feature value learner. Default value: FeatureValueLearner.new
+    attr_accessor :feature_learner
+
     # The tester used to test the grammar.
     attr_accessor :grammar_tester
 
     # Creates a new single form learner.
-    #--
-    # learning_module is a dependency injections used for testing.
-    # * learning_module - the module containing #set_uf_values
-    #++
     # :call-seq:
-    #   SingleFormLearning.new -> singleformlearner
-    def initialize(learning_module: OTLearn)
-      @learning_module = learning_module
-      @grammar_tester = GrammarTest.new
+    #   SingleFormLearning.new -> learner
+    def initialize
+      # Set default values for external dependencies.
       @para_erc_learner = ParadigmErcLearning.new
+      @feature_learner = FeatureValueLearning.new
+      @grammar_tester = GrammarTest.new
     end
 
     # Runs single form learning, and returns a single form learning step.
@@ -59,7 +59,7 @@ module OTLearn
     def process_winner(output, output_list, grammar)
       # Attempt to set each unset feature of winner.
       winner = grammar.parse_output(output)
-      set_feature_list = @learning_module.set_uf_values([winner], grammar)
+      set_feature_list = @feature_learner.run([winner], grammar)
       # For each newly set feature, check words unfaithfully mapping that
       # feature for new ranking information.
       set_feature_list.each do |set_f|

@@ -8,7 +8,7 @@ require 'otlearn/feature_value_learning'
 RSpec.describe 'OTLearn::FeatureValueLearning' do
   let(:grammar) { double('grammar') }
   let(:word1) { double('word1') }
-  let(:out1) { double('output1')}
+  let(:out1) { double('output1') }
   let(:w1) { double('w1') }
   let(:word_search) { double('word search') }
   let(:learn_module) { double('learn_module') }
@@ -28,7 +28,7 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
     before(:example) do
       words = [word1]
       allow(word_search).to receive(:morphemes_to_words).with([w1])\
-        .and_return(m_in_w)
+                                                        .and_return(m_in_w)
       allow(m_in_w).to receive(:keys).and_return([morph1, morph2])
       allow(word_search).to receive(:find_unset_features)\
         .and_return([target_feature])
