@@ -47,6 +47,15 @@ class WordSearch
     m2w_hash
   end
 
+  # Returns an array of words from _word_list_ that contain the morpheme
+  # _morph_.
+  # :call-seq:
+  #   words_containing_morpheme(morph, word_list) -> array
+  def words_containing_morpheme(morph, word_list)
+    m2w_hash = morphemes_to_words(word_list)
+    m2w_hash[morph]
+  end
+
   # Returns an array of unset features for the morphemes in the word list.
   def find_unset_features_in_words(word_list, grammar)
     # Build hash of morphemes and the words in the list that contain them

@@ -43,7 +43,7 @@ module OTLearn
     # these are the only ones that need to have their inputs altered for
     # testing.
     containing_words =
-      word_list.find_all { |word| word.morphword.member?(f_uf_inst.morpheme) }
+      WordSearch.new.words_containing_morpheme(f_uf_inst.morpheme, word_list)
     # Test every value of the target feature; store the consistent values
     consistent_values = []
     f_uf_inst.feature.each_value do |test_val|
