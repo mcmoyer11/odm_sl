@@ -7,53 +7,6 @@ require 'word_search'
 require 'otlearn/consistency_checker'
 
 module OTLearn
-  # Using the given list of words, check each unset underlying feature in
-  # each morpheme of the word list to see if it can be set.
-  def OTLearn.set_uf_values(words, grammar)
-    wordsearch = WordSearch.new
-    # Duplicate the words (working copies for this method)
-    word_list = words.map do |word|
-      grammar.parse_output(word.output)
-    end
-    # Set all unset input features to match their output correspondents
-    word_list.each &:match_input_to_output!
-    # Construct two lists of unset underlying features: those that have
-    # conflicting values in the outputs, and those that do not.
-    morph_in_words = wordsearch.morphemes_to_words(word_list)
-    morpheme_list = morph_in_words.keys
-    unset_features = wordsearch.find_unset_features(morpheme_list,
-                                                        grammar)
-    conflict, no_conflict = unset_features.partition do |f|
-      wordsearch.conflicting_output_values?(f, morph_in_words[f.morpheme])
-    end
-    # Test conflicting unset features to see if any can be set
-    set_feature_list = []
-    conflict_still_unset = []
-    until conflict.empty?
-      f_uf_instance_c = conflict.shift # take the next conflict feature
-      # combine remaining conflict features
-      conflict_rest = conflict_still_unset + conflict
-      f_was_set =
-        OTLearn.test_unset_feature(f_uf_instance_c, word_list,
-                                   conflict_rest, grammar)
-      if f_was_set
-        # add to list of newly set features
-        set_feature_list << f_uf_instance_c
-      else
-        conflict_still_unset << f_uf_instance_c # feature cannot be set
-      end
-    end
-    conflict = conflict_still_unset
-    # Test each non-conflicting unset feature to see if it can be set
-    no_conflict.each do |f_uf_instance|
-      f_was_set =
-        OTLearn.test_unset_feature(f_uf_instance, word_list,
-                                   conflict, grammar)
-      set_feature_list << f_uf_instance if f_was_set
-    end
-    set_feature_list
-  end
-
   # Tests the given unset feature to see if it can be set relative to the
   # given word list, grammar, and list of conflicting features in the
   # word list. If the feature can be set (it has only one value that is

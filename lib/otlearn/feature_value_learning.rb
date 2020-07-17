@@ -26,17 +26,24 @@ module OTLearn
     # objects in _words_ are not modified (working copies are made).
     # Returns an array of underlying features that were set during
     # execution; returns an empty array if no features were set.
+    #
+    # NOTE: technically, this method only attempts to set the values
+    # of features that do not alternate across _words_. If there is
+    # only one word, it is not possible to have an alternating feature.
+    # Given two words, if there is only one alternating feature
+    # then evaluating the words together is no different than evaluating
+    # each one in isolation (single form learning).
+    # At limit of current understanding, not attempting to set features
+    # that alternate could only miss a settable feature if either:
+    # * a contrast pair has multiple alternating unset features;
+    # * the list of words contains more than two words.
     # :call-seq:
     #   run(words, grammar) -> array
     def run(words, grammar)
       word_list = create_match_words(words, grammar)
       conflict, no_conflict = partition_unset_features(word_list, grammar)
-      # TODO: Test conflicting features
-      set_conflict_features = []
-      set_no_conflict_features =
-        test_non_conflicting_features(word_list, grammar, conflict,
-                                      no_conflict)
-      set_conflict_features + set_no_conflict_features
+      test_non_conflicting_features(word_list, grammar, conflict,
+                                    no_conflict)
     end
 
     # Create duplicates of the _words_ for working purposes, and
