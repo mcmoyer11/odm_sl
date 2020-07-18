@@ -21,13 +21,10 @@ class Word
   #   Word.new(system, input, output) -> word
   #--
   # * +candidate_class+ - dependency injection, used for testing.
-  # * +feature_instance_class+ - dependency injection, used for testing.
   def initialize(system, input = Input.new, output = Output.new,
-                 candidate_class: Candidate,
-                 feature_instance_class: FeatureInstance)
+                 candidate_class: Candidate)
     @system = system
     @candidate = candidate_class.new(input, output, @system.constraints)
-    @feature_instance_class = feature_instance_class
     @io_corr = IOCorrespondence.new
   end
 
