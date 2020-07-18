@@ -37,29 +37,21 @@ module OTLearn
   # in their output realizations in the word list; all combinations of
   # values of them must be considered as local lexica when evaluating
   # a given feature value for consistency.
-  def OTLearn.consistent_feature_values(f_uf_inst, word_list,
+  def OTLearn.consistent_feature_values(f_uf_inst, words,
                                         conflict_features, grammar)
-    # Find the words of the list containing the target feature's morpheme;
-    # these are the only ones that need to have their inputs altered for
-    # testing.
-    containing_words =
-      WordSearch.new.words_containing_morpheme(f_uf_inst.morpheme, word_list)
+    # Duplicate the words, so that there are no side effects of
+    # assigning different input feature values.
+    word_list = words.map(&:dup)
     # Test every value of the target feature; store the consistent values
     consistent_values = []
     f_uf_inst.feature.each_value do |test_val|
       # Assign the current loop feature value to the input features
-      assign_input_features(f_uf_inst, test_val, containing_words)
+      assign_input_features(f_uf_inst, test_val, word_list)
       # see if a combination of conflict features consistent with test_val
       # exists
       consistent_combination_exists =
         eval_over_conflict_features(conflict_features, word_list, grammar)
       consistent_values << test_val if consistent_combination_exists
-    end
-    # reset input values to match their output values in any event.
-    containing_words.each do |word|
-      in_f_inst = word.in_feat_corr_of_uf(f_uf_inst)
-      out_f_inst = word.out_feat_corr_of_in(in_f_inst)
-      in_f_inst.value = out_f_inst.value
     end
     consistent_values
   end
