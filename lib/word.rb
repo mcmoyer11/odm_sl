@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 
-require_relative 'input'
-require_relative 'output'
-require_relative 'io_correspondence'
-require_relative 'candidate'
-require_relative 'feature_instance'
+require 'input'
+require 'output'
+require 'io_correspondence'
+require 'candidate'
+require 'feature_instance'
 
 # A Word is a candidate (input, output, constraints), combined with
 # an IO correspondence relation and a reference to the linguistic system.
@@ -41,7 +43,7 @@ class Word
     super
   end
 
-  # Adds a new IO correspondence pair, with +in_el+ corresponding to +out_el+.
+  # Adds a new IO correspondence pair, with _in_el_ corresponding to _out_el_.
   def add_to_io_corr(in_el, out_el)
     @io_corr.add_corr(in_el, out_el)
   end

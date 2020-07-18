@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 # Author: Bruce Tesar
 
+require 'rspec'
 require 'word'
 
 RSpec.describe Word do
@@ -30,7 +33,7 @@ RSpec.describe Word do
     end
   end
 
-  context 'with a single input segment with one set and one unset feature, ' do
+  context 'with a single input segment with one set and one unset feature' do
     let(:inseg1) { double('inseg1') }
     let(:outseg1) { double('outseg1') }
     let(:set_feat) { double('set_feat') }
@@ -153,8 +156,10 @@ RSpec.describe Word do
       allow(candidate2).to receive(:input).and_return(input2)
       allow(candidate2).to receive(:output).and_return(output2)
       allow(candidate).to receive(:==).with(candidate2).and_return(true)
-      @word1 = Word.new(system, input, output, candidate_class: candidate_class)
-      @word2 = Word.new(system, input2, output2, candidate_class: candidate_class)
+      @word1 = Word.new(system, input, output,
+                        candidate_class: candidate_class)
+      @word2 = Word.new(system, input2, output2,
+                        candidate_class: candidate_class)
     end
     it 'they are equivalent' do
       expect(@word1 == @word2).to be true
