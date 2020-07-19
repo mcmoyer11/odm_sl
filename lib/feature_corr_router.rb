@@ -49,4 +49,47 @@ class FeatureCorrRouter
     out_feature = out_element.get_feature(in_finst.feature.type)
     @feat_inst_class.new(out_element, out_feature)
   end
+
+  # Given an input feature instance _in_finst_, this returns the
+  # corresponding underlying feature instance.
+  # Returns nil if _in_finst_ is not a member of the word's input.
+  # Returns nil if _in_finst_ has no underlying correspondent in the word.
+  def uf_feat_corr_of_in(in_finst)
+    # Ensure the parameter belongs to the input
+    return nil unless @word.input.member?(in_finst.element)
+
+    uf_element = @word.ui_corr.under_corr(in_finst.element)
+    return nil if uf_element.nil?
+
+    uf_feature = uf_element.get_feature(in_finst.feature.type)
+    @feat_inst_class.new(uf_element, uf_feature)
+  end
+
+  # Given a UF feature instance _uf_finst_, this returns the
+  # corresponding input feature instance.
+  # Returns nil if _uf_finst_ is not a member of the word's UF.
+  # Returns nil if _uf_finst_ has no input correspondent in the word.
+  def in_feat_corr_of_uf(uf_finst)
+    # Ensure the parameter belongs to the UF
+    return nil unless @word.ui_corr.in_corr?(uf_finst.element)
+
+    in_element = @word.ui_corr.in_corr(uf_finst.element)
+    return nil if in_element.nil?
+
+    in_feature = in_element.get_feature(uf_finst.feature.type)
+    @feat_inst_class.new(in_element, in_feature)
+  end
+
+  # Given a UF feature instance _uf_finst_, this returns the
+  # corresponding output feature instance.
+  # Returns nil if _uf_finst_ is not a member of the word's UF.
+  # Returns nil if _uf_finst_ has no input correspondent in the word.
+  def out_feat_corr_of_uf(uf_feat_inst)
+    in_feat_inst = in_feat_corr_of_uf(uf_feat_inst)
+    # If uf feat has no input correspondent, then it has no output
+    # correspondent.
+    return nil if in_feat_inst.nil?
+
+    out_feat_corr_of_in(in_feat_inst)
+  end
 end
