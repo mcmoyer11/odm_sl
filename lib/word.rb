@@ -20,7 +20,7 @@ class Word
   #   Word.new(system) -> word
   #   Word.new(system, input, output) -> word
   #--
-  # * +candidate_class+ - dependency injection, used for testing.
+  # * candidate_class - dependency injection, used for testing.
   def initialize(system, input = Input.new, output = Output.new,
                  candidate_class: Candidate)
     @system = system
