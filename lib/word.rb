@@ -6,7 +6,7 @@ require 'input'
 require 'output'
 require 'io_correspondence'
 require 'candidate'
-require 'feature_instance'
+require 'feature_corr_router'
 
 # A Word is a candidate (input, output, constraints), combined with
 # an IO correspondence relation and a reference to the linguistic system.
@@ -21,10 +21,14 @@ class Word
   #   Word.new(system, input, output) -> word
   #--
   # * candidate_class - dependency injection, used for testing.
+  # * corr_router - dependency injection, used for testing.
   def initialize(system, input = Input.new, output = Output.new,
-                 candidate_class: Candidate)
+                 candidate_class: Candidate,
+                 corr_router: FeatureCorrRouter.new)
     @system = system
     @candidate = candidate_class.new(input, output, @system.constraints)
+    @corr_router = corr_router
+    @corr_router.word = self
     @io_corr = IOCorrespondence.new
   end
 
@@ -61,16 +65,7 @@ class Word
   # Returns nil if the output feature does not belong to the output
   # of *this* word, or if the output feature has no input correspondent.
   def in_feat_corr_of_out(out_feat_inst)
-    # Make sure the parameter really is a feature instance of an output
-    # segment of *this* word.
-    return nil unless output.member?(out_feat_inst.element)
-
-    # Get the corresponding input element and feature for the output element.
-    in_corr_element = io_corr.in_corr(out_feat_inst.element)
-    return nil if in_corr_element.nil?
-
-    in_corr_feat = in_corr_element.get_feature(out_feat_inst.feature.type)
-    FeatureInstance.new(in_corr_element, in_corr_feat)
+    @corr_router.in_feat_corr_of_out(out_feat_inst)
   end
 
   # Given an input feature instance of this word, return the feature
@@ -78,17 +73,7 @@ class Word
   # Returns nil if the input feature does not belong to the input
   # of *this* word, or if the input feature has no output correspondent.
   def out_feat_corr_of_in(in_feat_inst)
-    # Make sure the parameter really is a feature instance of an input
-    # segment of *this* word.
-    # TODO: this should raise an exception, not return nil
-    return nil unless input.member?(in_feat_inst.element)
-
-    # Get the corresponding output element and feature for the input element.
-    out_corr_element = io_corr.out_corr(in_feat_inst.element)
-    return nil if out_corr_element.nil?
-
-    out_corr_feat = out_corr_element.get_feature(in_feat_inst.feature.type)
-    FeatureInstance.new(out_corr_element, out_corr_feat)
+    @corr_router.out_feat_corr_of_in(in_feat_inst)
   end
 
   # Given an input feature instance of this word, return the feature
@@ -96,16 +81,7 @@ class Word
   # Returns nil if the input feature does not belong to the input
   # of *this* word, or if the input feature has no uf correspondent.
   def uf_feat_corr_of_in(in_feat_inst)
-    # Make sure the parameter really is a feature instance of an input
-    # segment of *this* word.
-    return nil unless input.member?(in_feat_inst.element)
-
-    # Get the corresponding uf element and feature for the input element.
-    uf_corr_element = ui_corr.under_corr(in_feat_inst.element)
-    return nil if uf_corr_element.nil?
-
-    uf_corr_feat = uf_corr_element.get_feature(in_feat_inst.feature.type)
-    FeatureInstance.new(uf_corr_element, uf_corr_feat)
+    @corr_router.uf_feat_corr_of_in(in_feat_inst)
   end
 
   # Given a uf feature instance of this word, return the feature
@@ -113,16 +89,7 @@ class Word
   # Returns nil if the uf feature does not belong to an underlying form
   # of *this* word, or if the uf feature has no input correspondent.
   def in_feat_corr_of_uf(uf_feat_inst)
-    # Make sure the parameter really is a feature instance of a uf for
-    # a morpheme of *this* word.
-    return nil unless ui_corr.in_corr?(uf_feat_inst.element)
-
-    # Get the corresponding input element and feature for the uf element.
-    in_corr_element = ui_corr.in_corr(uf_feat_inst.element)
-    return nil if in_corr_element.nil?
-
-    in_corr_feat = in_corr_element.get_feature(uf_feat_inst.feature.type)
-    FeatureInstance.new(in_corr_element, in_corr_feat)
+    @corr_router.in_feat_corr_of_uf(uf_feat_inst)
   end
 
   # Returns the output feature instance corresponding to the underlying
@@ -130,12 +97,7 @@ class Word
   # Returns nil if the uf feature has no input correspondent, or if its
   # input correspondent has no output correspondent.
   def out_feat_corr_of_uf(uf_feat_inst)
-    in_feat_inst = in_feat_corr_of_uf(uf_feat_inst)
-    # If uf feat has no input correspondent, then it has no output
-    # correspondent.
-    return nil if in_feat_inst.nil?
-
-    out_feat_corr_of_in(in_feat_inst)
+    @corr_router.out_feat_corr_of_uf(uf_feat_inst)
   end
 
   # Assign each *unset* feature of the input the value of its counterpart

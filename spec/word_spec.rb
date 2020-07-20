@@ -8,6 +8,7 @@ require 'word'
 RSpec.describe Word do
   let(:system) { double('system') }
   let(:candidate_class) { double('candidate_class') }
+  let(:router) { double('feature corr router') }
   let(:candidate) { double('candidate') }
   let(:input) { double('input') }
   let(:output) { double('output') }
@@ -16,11 +17,13 @@ RSpec.describe Word do
     allow(system).to receive(:constraints)
     allow(candidate).to receive(:input).and_return(input)
     allow(candidate).to receive(:output).and_return(output)
+    allow(router).to receive(:word=)
   end
 
   context 'given empty input and output' do
     before(:example) do
-      @word = Word.new(system, input, output, candidate_class: candidate_class)
+      @word = Word.new(system, input, output,
+                       candidate_class: candidate_class, corr_router: router)
     end
     it 'gives an empty IO correspondence' do
       expect(@word.io_corr.size).to eq 0
@@ -34,45 +37,33 @@ RSpec.describe Word do
   end
 
   context 'with a single input segment with one set and one unset feature' do
-    let(:inseg1) { double('inseg1') }
-    let(:outseg1) { double('outseg1') }
-    let(:set_feat) { double('set_feat') }
-    let(:unset_feat) { double('unset_feat') }
-    let(:unset_feat_type) { double('unset_feat_type') }
-    let(:unset_feat_out) { double('unset_feat_out') }
-    let(:unset_feat_out_value) { double('unset_feat_out_value') }
     let(:finst_1) { double('finst_1') }
     let(:finst_2) { double('finst_2') }
+    let(:in_feat1) { double('in_feat1') }
+    let(:in_feat2) { double('in_feat2') }
+    let(:out_value2) { double('out_value2') }
+    let(:out_finst2) { double('out feature instance 2') }
     before(:example) do
-      allow(input).to receive(:<<).with(inseg1)
-      allow(input).to receive(:each).and_yield(inseg1)
       allow(input).to receive(:each_feature).and_yield(finst_1) \
                                             .and_yield(finst_2)
-      allow(input).to receive(:member?).with(inseg1).and_return(true)
-      allow(finst_1).to receive(:element).and_return(inseg1)
-      allow(finst_1).to receive(:feature).and_return(set_feat)
-      allow(finst_2).to receive(:element).and_return(inseg1)
-      allow(finst_2).to receive(:feature).and_return(unset_feat)
-      allow(set_feat).to receive(:unset?).and_return(false)
-      allow(unset_feat).to receive(:unset?).and_return(true)
-      allow(unset_feat).to receive(:type).and_return(unset_feat_type)
-      allow(unset_feat_out).to receive(:type).and_return(unset_feat_type)
-      # required for internals of FeatureInstance
-      allow(outseg1).to receive(:get_feature).with(unset_feat_type) \
-                                             .and_return(unset_feat_out)
-      allow(unset_feat_out).to receive(:value).and_return(unset_feat_out_value)
-
-      @word = Word.new(system, input, output, candidate_class: candidate_class)
+      allow(finst_1).to receive(:feature).and_return(in_feat1)
+      allow(finst_2).to receive(:feature).and_return(in_feat2)
+      allow(in_feat1).to receive(:unset?).and_return(false)
+      allow(in_feat2).to receive(:unset?).and_return(true)
+      allow(router).to receive(:out_feat_corr_of_in).with(finst_2)\
+                                                    .and_return(out_finst2)
+      @word = Word.new(system, input, output,
+                       candidate_class: candidate_class, corr_router: router)
       allow(@word).to receive(:eval)
-      @word.add_to_io_corr(inseg1, outseg1)
     end
     context '#match_input_to_output' do
       before(:example) do
-        allow(finst_2).to receive(:value=).with(unset_feat_out_value)
+        allow(out_finst2).to receive(:value).and_return(out_value2)
+        allow(finst_2).to receive(:value=).with(out_value2)
         @ret_value = @word.match_input_to_output!
       end
       it 'assigns the unset feature the value of the output correspondent' do
-        expect(finst_2).to have_received(:value=).with(unset_feat_out_value)
+        expect(finst_2).to have_received(:value=).with(out_value2)
       end
       it 're-evaluates the constraint violations' do
         expect(@word).to have_received(:eval)
@@ -84,14 +75,15 @@ RSpec.describe Word do
     context '#mismatch_input_to_output' do
       let(:unset_feat_oppout_value) { double('unset_feat_oppout_value') }
       before(:example) do
+        allow(out_finst2).to receive(:value).and_return(out_value2)
         allow(finst_2).to receive(:value=).with(unset_feat_oppout_value)
-        allow(unset_feat).to receive(:each_value) \
-          .and_yield(unset_feat_out_value) \
+        allow(in_feat2).to receive(:each_value)\
+          .and_yield(out_value2)\
           .and_yield(unset_feat_oppout_value)
         @ret_value = @word.mismatch_input_to_output!
       end
-      it 'assigns the unset feature the value opposite the output correspondent' do
-        expect(finst_2).to \
+      it 'assigns the value opposite the output correspondent' do
+        expect(finst_2).to\
           have_received(:value=).with(unset_feat_oppout_value)
       end
       it 're-evaluates the constraint violations' do
@@ -103,42 +95,25 @@ RSpec.describe Word do
     end
   end
 
-  context 'with a single input segment with a suprabinary feature, ' do
-    let(:inseg1) { double('inseg1') }
-    let(:outseg1) { double('outseg1') }
+  context 'with a single input segment with a suprabinary feature' do
+    let(:finst_1) { double('finst_1') }
     let(:suprabinary_feat) { double('suprabinary_feat') }
-    let(:suprabinary_feat_type) { double('suprabinary_feat_type') }
-    let(:suprabinary_feat_out) { double('suprabinary_feat_out') }
-    let(:suprabinary_feat_out_value) { double('suprabinary_feat_out_value') }
+    let(:suprabinary_feat_value1) { double('suprabinary_feat_value1') }
     let(:suprabinary_feat_value2) { double('suprabinary_feat_value2') }
     let(:suprabinary_feat_value3) { double('suprabinary_feat_value3') }
-    let(:finst_1) { double('finst_1') }
     before(:example) do
-      allow(input).to receive(:<<).with(inseg1)
-      allow(input).to receive(:each).and_yield(inseg1)
       allow(input).to receive(:each_feature).and_yield(finst_1)
-      allow(input).to receive(:member?).with(inseg1).and_return(true)
-      allow(finst_1).to receive(:element).and_return(inseg1)
       allow(finst_1).to receive(:feature).and_return(suprabinary_feat)
       allow(suprabinary_feat).to receive(:unset?).and_return(true)
-      allow(suprabinary_feat).to receive(:type) \
-        .and_return(suprabinary_feat_type)
-      allow(suprabinary_feat_out).to receive(:type) \
-        .and_return(suprabinary_feat_type)
-      # required for internals of FeatureInstance
-      allow(outseg1).to receive(:get_feature).with(suprabinary_feat_type) \
-                                             .and_return(suprabinary_feat_out)
-      allow(suprabinary_feat_out).to receive(:value) \
-        .and_return(suprabinary_feat_out_value)
-      @word = Word.new(system, input, output, candidate_class: candidate_class)
+      @word = Word.new(system, input, output,
+                       candidate_class: candidate_class, corr_router: router)
       allow(@word).to receive(:eval)
-      @word.add_to_io_corr(inseg1, outseg1)
     end
     context '#mismatch_input_to_output!' do
       before(:example) do
-        allow(suprabinary_feat).to receive(:each_value) \
-          .and_yield(suprabinary_feat_out_value) \
-          .and_yield(suprabinary_feat_value2) \
+        allow(suprabinary_feat).to receive(:each_value)\
+          .and_yield(suprabinary_feat_value1)\
+          .and_yield(suprabinary_feat_value2)\
           .and_yield(suprabinary_feat_value3)
       end
       it 'raises a RuntimeError indicating a suprabinary feature' do
@@ -157,9 +132,9 @@ RSpec.describe Word do
       allow(candidate2).to receive(:output).and_return(output2)
       allow(candidate).to receive(:==).with(candidate2).and_return(true)
       @word1 = Word.new(system, input, output,
-                        candidate_class: candidate_class)
+                        candidate_class: candidate_class, corr_router: router)
       @word2 = Word.new(system, input2, output2,
-                        candidate_class: candidate_class)
+                        candidate_class: candidate_class, corr_router: router)
     end
     it 'they are equivalent' do
       expect(@word1 == @word2).to be true
