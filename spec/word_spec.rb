@@ -90,6 +90,40 @@ RSpec.describe Word do
         expect(@ret_value).to eq @word
       end
     end
+    context 'with UI correspondence' do
+      let(:ui_corr) { double('UI corr') }
+      let(:uf_el1) { double('UF element 1') }
+      let(:uf_el2) { double('UF element 2') }
+      let(:in_el1) { double('UF element 1') }
+      let(:in_el2) { double('UF element 2') }
+      before(:example) do
+        allow(input).to receive(:ui_corr).and_return(ui_corr)
+        allow(ui_corr).to receive(:under_corr).with(in_el1).and_return(uf_el1)
+        allow(ui_corr).to receive(:under_corr?).with(in_el1).and_return(true)
+        allow(ui_corr).to receive(:under_corr?).with(in_el2).and_return(false)
+        allow(ui_corr).to receive(:in_corr).with(uf_el1).and_return(in_el1)
+        allow(ui_corr).to receive(:in_corr?).with(uf_el1).and_return(true)
+        allow(ui_corr).to receive(:in_corr?).with(uf_el2).and_return(false)
+      end
+      it 'returns uf_el1 as correspondent of in_el1' do
+        expect(@word.ui_under_corr(in_el1)).to eq uf_el1
+      end
+      it 'shows that in_el1 has a UF correspondent' do
+        expect(@word.ui_under_corr?(in_el1)).to be true
+      end
+      it 'shows that in_el2 has no UF correspondent' do
+        expect(@word.ui_under_corr?(in_el2)).to be false
+      end
+      it 'returns in_el1 as correspondent of uf_el1' do
+        expect(@word.ui_in_corr(uf_el1)).to eq in_el1
+      end
+      it 'shows that uf_el1 has an input correspondent' do
+        expect(@word.ui_in_corr?(uf_el1)).to be true
+      end
+      it 'shows that uf_el1 has no input correspondent' do
+        expect(@word.ui_in_corr?(uf_el2)).to be false
+      end
+    end
   end
 
   context 'with a single input segment with a suprabinary feature' do

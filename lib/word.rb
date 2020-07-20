@@ -83,6 +83,28 @@ class Word
     input.ui_corr
   end
 
+  # Returns the underlying correspondent of _in_element_.
+  def ui_under_corr(in_element)
+    ui_corr.under_corr(in_element)
+  end
+
+  # Returns true if _in_element_ has an underlying correspondent;
+  # false otherwise.
+  def ui_under_corr?(in_element)
+    ui_corr.under_corr?(in_element)
+  end
+
+  # Returns the input correspondent of _under_element_.
+  def ui_in_corr(under_element)
+    ui_corr.in_corr(under_element)
+  end
+
+  # Returns true if _under_element_ has an input correspondent;
+  # false otherwise.
+  def ui_in_corr?(under_element)
+    ui_corr.in_corr?(under_element)
+  end
+
   # Given an output feature instance of this word, return the feature
   # instance for the same feature type of the input correspondent.
   # Returns nil if the output feature does not belong to the output
