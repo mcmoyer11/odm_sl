@@ -28,7 +28,7 @@ class FeatureCorrRouter
     # Ensure the parameter belongs to the output
     return nil unless @word.output.member?(out_finst.element)
 
-    in_element = @word.io_corr.in_corr(out_finst.element)
+    in_element = @word.io_in_corr(out_finst.element)
     return nil if in_element.nil?
 
     in_feature = in_element.get_feature(out_finst.feature.type)
@@ -43,7 +43,7 @@ class FeatureCorrRouter
     # Ensure the parameter belongs to the input
     return nil unless @word.input.member?(in_finst.element)
 
-    out_element = @word.io_corr.out_corr(in_finst.element)
+    out_element = @word.io_out_corr(in_finst.element)
     return nil if out_element.nil?
 
     out_feature = out_element.get_feature(in_finst.feature.type)

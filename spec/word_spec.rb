@@ -25,9 +25,6 @@ RSpec.describe Word do
       @word = Word.new(system, input, output,
                        candidate_class: candidate_class, corr_router: router)
     end
-    it 'gives an empty IO correspondence' do
-      expect(@word.io_corr.size).to eq 0
-    end
     it 'gives the input' do
       expect(@word.input).to eq input
     end
@@ -188,10 +185,10 @@ RSpec.describe Word do
       expect(@word_dup.output[1]).to equal out_2_dup
     end
     it 'has corresponding first elements' do
-      expect(@word_dup.io_corr.out_corr(in_1_dup)).to equal out_1_dup
+      expect(@word_dup.io_out_corr(in_1_dup)).to equal out_1_dup
     end
     it 'has corresponding second elements' do
-      expect(@word_dup.io_corr.out_corr(in_2_dup)).to equal out_2_dup
+      expect(@word_dup.io_out_corr(in_2_dup)).to equal out_2_dup
     end
   end
 
@@ -223,7 +220,7 @@ RSpec.describe Word do
       expect(@word_dup_gen.input[1]).to equal in_2
     end
     it 'has no output correspondent for input element 3' do
-      expect(@word_dup_gen.io_corr.out_corr?(in_3)).to be false
+      expect(@word_dup_gen.io_out_corr?(in_3)).to be false
     end
     it 'has the same output element 0' do
       expect(@word_dup_gen.output[0]).to equal out_1
@@ -232,11 +229,11 @@ RSpec.describe Word do
       expect(@word_dup_gen.output[1]).to equal out_2
     end
     it 'has corresponding first elements' do
-      expect(@word_dup_gen.io_corr.out_corr(in_1)).to equal out_1
-      expect(@word_dup_gen.io_corr.in_corr(out_1)).to equal in_1
+      expect(@word_dup_gen.io_out_corr(in_1)).to equal out_1
+      expect(@word_dup_gen.io_in_corr(out_1)).to equal in_1
     end
     it 'has corresponding second elements' do
-      expect(@word_dup_gen.io_corr.out_corr(in_2)).to equal out_2
+      expect(@word_dup_gen.io_out_corr(in_2)).to equal out_2
     end
   end
 end

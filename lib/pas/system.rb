@@ -1,6 +1,6 @@
 # Author: Morgan Moyer
 #
- 
+
 require 'singleton'
 require 'REXML/syncenumerator'
 require_relative 'syllable'
@@ -85,7 +85,7 @@ module PAS
       input = Input.new
       input.morphword = mw
       mw.each do |m| # for each morpheme in the morph_word, in order
-        lex_entry = lexicon.find{|entry| entry.morpheme==m} # get the lexical entry
+        lex_entry = lexicon.find{|entry| entry.morpheme == m} # get the lexical entry
         raise "Morpheme #{m.label} has no lexical entry." if lex_entry.nil?
         uf = lex_entry.uf
         raise "The lexical entry for morpheme #{m.label} has no underlying form." if uf.nil?
@@ -151,10 +151,10 @@ module PAS
       # If any morphemes aren't currently in the lexicon, create new entries, with
       # the same number of syllables as in the output, and all features unset.
       mw.each do |m|
-        unless lexicon.any?{|entry| entry.morpheme==m} then
+        unless lexicon.any?{|entry| entry.morpheme == m} then
           under = Underlying.new
           # create a new UF syllable for each syllable of m in the output
-          syls_of_m = output.find_all{|syl| syl.morpheme==m}
+          syls_of_m = output.find_all{|syl| syl.morpheme == m}
           syls_of_m.each { |x| under << Syllable.new.set_morpheme(m) }
           lexicon << Lexical_Entry.new(m,under)
         end
@@ -179,21 +179,21 @@ module PAS
     end
 
     private
-    
+
     # This defines the constraints, and stores each in the appropriate
     # class variable.
     def initialize_constraints
-      @nolong = Constraint.new("NoLong", 1, MARK) do |cand|
+      @nolong = Constraint.new('NoLong', 1, MARK) do |cand|
         cand.output.inject(0) do |sum, syl|
-          if syl.long? then sum+1 else sum end
+          if syl.long? then sum + 1 else sum end
         end
       end
-      @wsp = Constraint.new("WSP", 2, MARK) do |cand|
+      @wsp = Constraint.new('WSP', 2, MARK) do |cand|
         cand.output.inject(0) do |sum, syl|
-          if syl.long? && syl.unstressed? then sum+1 else sum end
+          if syl.long? && syl.unstressed? then sum + 1 else sum end
         end
       end
-      @ml = Constraint.new("ML", 3, MARK) do |cand|
+      @ml = Constraint.new('ML', 3, MARK) do |cand|
         viol_count = 0
         # only apply when there's a main stress in the cand
         main_stress_found = cand.output.main_stress?
@@ -205,7 +205,7 @@ module PAS
         end
         viol_count
       end
-      @mr = Constraint.new("MR", 4, MARK) do |cand|
+      @mr = Constraint.new('MR', 4, MARK) do |cand|
         viol_count = 0
         stress_found = false
         for syl in cand.output do
@@ -214,32 +214,32 @@ module PAS
         end
         viol_count
       end
-      @idstress = Constraint.new("IDStress", 5, FAITH) do |cand|
+      @idstress = Constraint.new('IDStress', 5, FAITH) do |cand|
         viol_count = 0
         cand.input.each do |in_syl|
-          unless in_syl.stress_unset? then
-            out_syl = cand.io_corr.out_corr(in_syl)
-            viol_count+=1 if (in_syl.main_stress?!=out_syl.main_stress?)
+          unless in_syl.stress_unset?
+            out_syl = cand.io_out_corr(in_syl)
+            viol_count += 1 if (in_syl.main_stress? != out_syl.main_stress?)
           end
         end
         viol_count
       end
-      @idlength = Constraint.new("IDLength", 6, FAITH) do |cand|
+      @idlength = Constraint.new('IDLength', 6, FAITH) do |cand|
         viol_count = 0
         cand.input.each do |in_syl|
-          unless in_syl.length_unset? then
-            out_syl = cand.io_corr.out_corr(in_syl)
-            viol_count+=1 if (in_syl.long?!=out_syl.long?)
+          unless in_syl.length_unset?
+            out_syl = cand.io_out_corr(in_syl)
+            viol_count += 1 if (in_syl.long? != out_syl.long?)
           end
         end
         viol_count
       end
       # this only give a single violation to stress-less outputs
-      @culm = Constraint.new("Culm", 7, MARK) do |cand|
+      @culm = Constraint.new('Culm', 7, MARK) do |cand|
         not_violated = cand.output.main_stress?
-        if not_violated then 
+        if not_violated then
           viol_count = 0
-        else 
+        else
           viol_count = 1
         end
         viol_count

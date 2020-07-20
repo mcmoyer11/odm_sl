@@ -8,7 +8,6 @@ require 'feature_corr_router'
 RSpec.describe 'FeatureCorrRouter' do
   let(:fi_class) { double('feature instance class') }
   let(:word) { double('word') }
-  let(:io_corr) { double('io_corr') }
   let(:result_finst) { double('result feature instance') }
   let(:ftype) { double('feature type') }
   let(:output) { double('output') }
@@ -25,7 +24,6 @@ RSpec.describe 'FeatureCorrRouter' do
   let(:uf_feature) { double('uf_feature') }
   before(:example) do
     allow(fi_class).to receive(:new)
-    allow(word).to receive(:io_corr).and_return(io_corr)
     allow(word).to receive(:ui_corr).and_return(ui_corr)
     allow(word).to receive(:output).and_return(output)
     allow(word).to receive(:input).and_return(input)
@@ -48,7 +46,7 @@ RSpec.describe 'FeatureCorrRouter' do
     context 'with an input correspondent' do
       before(:example) do
         allow(output).to receive(:member?).and_return(true)
-        allow(io_corr).to receive(:in_corr).and_return(in_element)
+        allow(word).to receive(:io_in_corr).and_return(in_element)
         allow(fi_class).to receive(:new).and_return(result_finst)
         @router.word = word
         @finst = @router.in_feat_corr_of_out(out_finst)
@@ -57,7 +55,7 @@ RSpec.describe 'FeatureCorrRouter' do
         expect(output).to have_received(:member?).with(out_element)
       end
       it 'gets the corresponding input element' do
-        expect(io_corr).to have_received(:in_corr).with(out_element)
+        expect(word).to have_received(:io_in_corr).with(out_element)
       end
       it 'gets the input feature' do
         expect(in_element).to have_received(:get_feature).with(ftype)
@@ -82,7 +80,7 @@ RSpec.describe 'FeatureCorrRouter' do
     context 'with no input correspondent' do
       before(:example) do
         allow(output).to receive(:member?).and_return(true)
-        allow(io_corr).to receive(:in_corr).and_return(nil)
+        allow(word).to receive(:io_in_corr).and_return(nil)
         @router.word = word
         @finst = @router.in_feat_corr_of_out(out_finst)
       end
@@ -96,7 +94,7 @@ RSpec.describe 'FeatureCorrRouter' do
     context 'with an output correspondent' do
       before(:example) do
         allow(input).to receive(:member?).and_return(true)
-        allow(io_corr).to receive(:out_corr).and_return(out_element)
+        allow(word).to receive(:io_out_corr).and_return(out_element)
         allow(fi_class).to receive(:new).and_return(result_finst)
         @router.word = word
         @finst = @router.out_feat_corr_of_in(in_finst)
@@ -105,7 +103,7 @@ RSpec.describe 'FeatureCorrRouter' do
         expect(input).to have_received(:member?).with(in_element)
       end
       it 'gets the corresponding output element' do
-        expect(io_corr).to have_received(:out_corr).with(in_element)
+        expect(word).to have_received(:io_out_corr).with(in_element)
       end
       it 'gets the output feature' do
         expect(out_element).to have_received(:get_feature).with(ftype)
@@ -130,7 +128,7 @@ RSpec.describe 'FeatureCorrRouter' do
     context 'with no output correspondent' do
       before(:example) do
         allow(input).to receive(:member?).and_return(true)
-        allow(io_corr).to receive(:out_corr).and_return(nil)
+        allow(word).to receive(:io_out_corr).and_return(nil)
         @router.word = word
         @finst = @router.out_feat_corr_of_in(in_finst)
       end
@@ -242,7 +240,7 @@ RSpec.describe 'FeatureCorrRouter' do
         allow(ui_corr).to receive(:in_corr?).and_return(true)
         allow(ui_corr).to receive(:in_corr).and_return(in_element)
         allow(input).to receive(:member?).and_return(true)
-        allow(io_corr).to receive(:out_corr).and_return(out_element)
+        allow(word).to receive(:io_out_corr).and_return(out_element)
         allow(fi_class).to receive(:new).with(in_element, in_feature)\
                                         .and_return(in_finst)
         allow(fi_class).to receive(:new).with(out_element, out_feature)\

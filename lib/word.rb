@@ -53,6 +53,29 @@ class Word
   def io_corr
     @io_corr
   end
+  protected :io_corr
+
+  # Returns the input correspondent of _out_element_.
+  def io_in_corr(out_element)
+    @io_corr.in_corr(out_element)
+  end
+
+  # Returns true if _out_element_ has an input correspondent;
+  # false otherwise.
+  def io_in_corr?(out_element)
+    @io_corr.in_corr?(out_element)
+  end
+
+  # Returns the output correspondent of _in_element_.
+  def io_out_corr(in_element)
+    @io_corr.out_corr(in_element)
+  end
+
+  # Returns true if _in_element_ has an output correspondent;
+  # false otherwise.
+  def io_out_corr?(in_element)
+    @io_corr.out_corr?(in_element)
+  end
 
   # Returns a reference to the input's underlying - input
   # correspondence relation.
@@ -178,7 +201,7 @@ class Word
     output.each do |old_out_el|
       new_out_el = old_out_el.dup # duplicate the old output element
       c_output << new_out_el # add the element copy to the output copy
-      old_in_el = io_corr.in_corr(old_out_el) # old input correspondent
+      old_in_el = io_in_corr(old_out_el) # old input correspondent
       unless old_in_el.nil?
         new_in_el = input_dup_map[old_in_el]
         c_io_corr.add_corr(new_in_el, new_out_el)
@@ -202,8 +225,8 @@ class Word
     # use clone() method for a shallow copy of output.
     copy = Word.new(@system, input, output.clone)
     input.each do |in_el|
-      out_el = io_corr.out_corr(in_el) # output correspondent (if it exists)
-      copy.io_corr.add_corr(in_el, out_el) unless out_el.nil?
+      out_el = io_out_corr(in_el) # output correspondent (if it exists)
+      copy.add_to_io_corr(in_el, out_el) unless out_el.nil?
     end
     copy
   end
