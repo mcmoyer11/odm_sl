@@ -156,7 +156,7 @@ class Word
       uf_feat_inst = uf_feat_corr_of_in(finst)
       finst.value = uf_feat_inst.value
     end
-    eval
+    eval # re-evaluate constraint violations b/c changed input
     self
   end
 
@@ -164,10 +164,10 @@ class Word
   # feature in the output. Returns a reference to this word.
   def match_input_to_output!
     input.each_feature do |finst|
-      if finst.feature.unset?
-        out_feat_instance = out_feat_corr_of_in(finst)
-        finst.value = out_feat_instance.value
-      end
+      next unless finst.feature.unset?
+
+      out_feat_instance = out_feat_corr_of_in(finst)
+      finst.value = out_feat_instance.value
     end
     eval # re-evaluate constraint violations b/c changed input
     self
@@ -180,9 +180,9 @@ class Word
   # not the output value will be assigned.
   def mismatch_input_to_output!
     input.each_feature do |finst|
-      next unless finst.feature.unset?
-
       feature = finst.feature
+      next unless feature.unset?
+
       feature_arity_check(feature)
       out_feat_instance = out_feat_corr_of_in(finst)
       feature.each_value do |val|
