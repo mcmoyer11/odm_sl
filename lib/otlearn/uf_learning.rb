@@ -104,7 +104,7 @@ module OTLearn
     # For each word, reset it's corresp. input element to the given
     # feature value
     word_list.each do |word|
-      el_in = word.ui_corr.in_corr(el_uf) # get the corresp. input element
+      el_in = word.ui_in_corr(el_uf) # get the corresp. input element
       # skip this word if it does not contain the relevant morpheme
       next if el_in.nil?
 

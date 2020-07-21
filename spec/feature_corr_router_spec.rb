@@ -18,13 +18,11 @@ RSpec.describe 'FeatureCorrRouter' do
   let(:in_finst) { double('input feature instance') }
   let(:in_element) { double('in_element') }
   let(:in_feature) { double('in_feature') }
-  let(:ui_corr) { double('ui_corr') }
   let(:uf_finst) { double('uf feature instance') }
   let(:uf_element) { double('uf_element') }
   let(:uf_feature) { double('uf_feature') }
   before(:example) do
     allow(fi_class).to receive(:new)
-    allow(word).to receive(:ui_corr).and_return(ui_corr)
     allow(word).to receive(:output).and_return(output)
     allow(word).to receive(:input).and_return(input)
     allow(out_finst).to receive(:element).and_return(out_element)
@@ -142,7 +140,7 @@ RSpec.describe 'FeatureCorrRouter' do
     context 'with a UF correspondent' do
       before(:example) do
         allow(input).to receive(:member?).and_return(true)
-        allow(ui_corr).to receive(:under_corr).and_return(uf_element)
+        allow(word).to receive(:ui_under_corr).and_return(uf_element)
         allow(fi_class).to receive(:new).and_return(result_finst)
         @router.word = word
         @finst = @router.uf_feat_corr_of_in(in_finst)
@@ -151,7 +149,7 @@ RSpec.describe 'FeatureCorrRouter' do
         expect(input).to have_received(:member?).with(in_element)
       end
       it 'gets the corresponding uf element' do
-        expect(ui_corr).to have_received(:under_corr).with(in_element)
+        expect(word).to have_received(:ui_under_corr).with(in_element)
       end
       it 'gets the uf feature' do
         expect(uf_element).to have_received(:get_feature).with(ftype)
@@ -176,7 +174,7 @@ RSpec.describe 'FeatureCorrRouter' do
     context 'with no UF correspondent' do
       before(:example) do
         allow(input).to receive(:member?).and_return(true)
-        allow(ui_corr).to receive(:under_corr).and_return(nil)
+        allow(word).to receive(:ui_under_corr).and_return(nil)
         @router.word = word
         @finst = @router.uf_feat_corr_of_in(in_finst)
       end
@@ -189,17 +187,17 @@ RSpec.describe 'FeatureCorrRouter' do
   context 'uf -> in' do
     context 'with an input correspondent' do
       before(:example) do
-        allow(ui_corr).to receive(:in_corr?).and_return(true)
-        allow(ui_corr).to receive(:in_corr).and_return(in_element)
+        allow(word).to receive(:ui_in_corr?).and_return(true)
+        allow(word).to receive(:ui_in_corr).and_return(in_element)
         allow(fi_class).to receive(:new).and_return(result_finst)
         @router.word = word
         @finst = @router.in_feat_corr_of_uf(uf_finst)
       end
       it 'ensures the parameter belongs to the UF' do
-        expect(ui_corr).to have_received(:in_corr?).with(uf_element)
+        expect(word).to have_received(:ui_in_corr?).with(uf_element)
       end
       it 'gets the corresponding input element' do
-        expect(ui_corr).to have_received(:in_corr).with(uf_element)
+        expect(word).to have_received(:ui_in_corr).with(uf_element)
       end
       it 'gets the input feature' do
         expect(in_element).to have_received(:get_feature).with(ftype)
@@ -213,7 +211,7 @@ RSpec.describe 'FeatureCorrRouter' do
     end
     context 'with non-member UF finst' do
       before(:example) do
-        allow(ui_corr).to receive(:in_corr?).and_return(false)
+        allow(word).to receive(:ui_in_corr?).and_return(false)
         @router.word = word
         @finst = @router.in_feat_corr_of_uf(uf_finst)
       end
@@ -223,8 +221,8 @@ RSpec.describe 'FeatureCorrRouter' do
     end
     context 'with no input correspondent' do
       before(:example) do
-        allow(ui_corr).to receive(:in_corr?).and_return(true)
-        allow(ui_corr).to receive(:in_corr).and_return(nil)
+        allow(word).to receive(:ui_in_corr?).and_return(true)
+        allow(word).to receive(:ui_in_corr).and_return(nil)
         @router.word = word
         @finst = @router.in_feat_corr_of_uf(uf_finst)
       end
@@ -237,8 +235,8 @@ RSpec.describe 'FeatureCorrRouter' do
   context 'uf -> out' do
     context 'with a corresponding input finst' do
       before(:example) do
-        allow(ui_corr).to receive(:in_corr?).and_return(true)
-        allow(ui_corr).to receive(:in_corr).and_return(in_element)
+        allow(word).to receive(:ui_in_corr?).and_return(true)
+        allow(word).to receive(:ui_in_corr).and_return(in_element)
         allow(input).to receive(:member?).and_return(true)
         allow(word).to receive(:io_out_corr).and_return(out_element)
         allow(fi_class).to receive(:new).with(in_element, in_feature)\

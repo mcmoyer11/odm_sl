@@ -215,7 +215,7 @@ class Word
     input.each do |old_in_el|
       new_in_el = input_dup_map[old_in_el]
       c_input << new_in_el # add the element copy to the input copy
-      under_el = ui_corr.under_corr(old_in_el) # UF correspondent
+      under_el = ui_under_corr(old_in_el) # UF correspondent
       c_input.ui_corr.add_corr(under_el, new_in_el) unless under_el.nil?
     end
     # Fill the copy output with copies of the output elements, and fill the

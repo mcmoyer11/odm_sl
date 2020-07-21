@@ -58,7 +58,7 @@ class FeatureCorrRouter
     # Ensure the parameter belongs to the input
     return nil unless @word.input.member?(in_finst.element)
 
-    uf_element = @word.ui_corr.under_corr(in_finst.element)
+    uf_element = @word.ui_under_corr(in_finst.element)
     return nil if uf_element.nil?
 
     uf_feature = uf_element.get_feature(in_finst.feature.type)
@@ -71,9 +71,9 @@ class FeatureCorrRouter
   # Returns nil if _uf_finst_ has no input correspondent in the word.
   def in_feat_corr_of_uf(uf_finst)
     # Ensure the parameter belongs to the UF
-    return nil unless @word.ui_corr.in_corr?(uf_finst.element)
+    return nil unless @word.ui_in_corr?(uf_finst.element)
 
-    in_element = @word.ui_corr.in_corr(uf_finst.element)
+    in_element = @word.ui_in_corr(uf_finst.element)
     return nil if in_element.nil?
 
     in_feature = in_element.get_feature(uf_finst.feature.type)
