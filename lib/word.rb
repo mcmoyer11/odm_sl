@@ -82,6 +82,7 @@ class Word
   def ui_corr
     input.ui_corr
   end
+  protected :ui_corr
 
   # Returns the underlying correspondent of _in_element_.
   def ui_under_corr(in_element)
