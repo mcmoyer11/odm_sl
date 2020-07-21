@@ -13,8 +13,8 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
   let(:word_search) { double('word search') }
   let(:learn_module) { double('learn_module') }
   before(:example) do
-    allow(word1).to receive(:output).and_return(out1)
-    allow(grammar).to receive(:parse_output).with(out1).and_return(w1)
+    allow(word1).to receive(:dup).and_return(w1)
+    allow(w1).to receive(:sync_with_lexicon!)
     allow(w1).to receive(:match_input_to_output!)
     @learner = OTLearn::FeatureValueLearning.new(word_search: word_search,
                                                  learn_module: learn_module)
@@ -40,10 +40,16 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
         .with(target_feature, [w1], [], grammar).and_return(true)
       @set_features = @learner.run(words, grammar)
     end
-    it 'parses the output of the word' do
-      expect(grammar).to have_received(:parse_output).with(out1)
+    # it 'parses the output of the word' do
+    #   expect(grammar).to have_received(:parse_output).with(out1)
+    # end
+    it 'duplicates the word' do
+      expect(word1).to have_received(:dup)
     end
-    it 'matches the input to the output' do
+    it 'matches the input to the UF' do
+      expect(w1).to have_received(:sync_with_lexicon!)
+    end
+    it 'matches unset input features to the output' do
       expect(w1).to have_received(:match_input_to_output!)
     end
     it 'checks the words for conflicting values of the target feature' do

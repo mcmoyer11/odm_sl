@@ -40,7 +40,7 @@ module OTLearn
     # :call-seq:
     #   run(words, grammar) -> array
     def run(words, grammar)
-      word_list = create_match_words(words, grammar)
+      word_list = create_match_words(words)
       conflict, no_conflict = partition_unset_features(word_list, grammar)
       test_non_conflicting_features(word_list, grammar, conflict,
                                     no_conflict)
@@ -48,13 +48,14 @@ module OTLearn
 
     # Create duplicates of the _words_ for working purposes, and
     # match the unset input feature values to their corresponding
-    # outputs.
-    def create_match_words(words, grammar)
+    # outputs (the set features match their UF correspondents).
+    # Returns an array of the duplicate words.
+    def create_match_words(words)
       # Duplicate the words (working copies for this method)
-      word_list = words.map do |word|
-        grammar.parse_output(word.output)
-      end
-      # Set all unset input features to match their output correspondents
+      word_list = words.map(&:dup)
+      # Make all input features match their UF correspondents, and then
+      # assign all unset input features their corresponding output values.
+      word_list.each(&:sync_with_lexicon!)
       word_list.each(&:match_input_to_output!)
       word_list
     end
