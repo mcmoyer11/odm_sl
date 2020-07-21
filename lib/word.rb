@@ -146,6 +146,20 @@ class Word
     @corr_router.out_feat_corr_of_uf(uf_feat_inst)
   end
 
+  # Assigns each input feature instance the same value as its underlying
+  # correspondent. This method explicitly overwrites whatever prior
+  # values the input features had. If the underlying correspondent is
+  # currently unset, the input feature is assigned unset.
+  # Returns a reference to this word.
+  def sync_with_lexicon!
+    input.each_feature do |finst|
+      uf_feat_inst = uf_feat_corr_of_in(finst)
+      finst.value = uf_feat_inst.value
+    end
+    eval
+    self
+  end
+
   # Assign each *unset* feature of the input the value of its counterpart
   # feature in the output. Returns a reference to this word.
   def match_input_to_output!

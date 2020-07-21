@@ -40,6 +40,10 @@ RSpec.describe Word do
     let(:in_feat2) { double('in_feat2') }
     let(:out_value2) { double('out_value2') }
     let(:out_finst2) { double('out feature instance 2') }
+    let(:uf_finst1) { double('UF feature instance 1') }
+    let(:uf_finst2) { double('UF feature instance 2') }
+    let(:uf_value1) { double('uf_value1') }
+    let(:uf_value2) { double('uf_value2') }
     before(:example) do
       allow(input).to receive(:each_feature).and_yield(finst_1) \
                                             .and_yield(finst_2)
@@ -49,11 +53,36 @@ RSpec.describe Word do
       allow(in_feat2).to receive(:unset?).and_return(true)
       allow(router).to receive(:out_feat_corr_of_in).with(finst_2)\
                                                     .and_return(out_finst2)
+      allow(router).to receive(:uf_feat_corr_of_in).with(finst_1)\
+                                                    .and_return(uf_finst1)
+      allow(router).to receive(:uf_feat_corr_of_in).with(finst_2)\
+                                                    .and_return(uf_finst2)
       @word = Word.new(system, input, output,
                        candidate_class: candidate_class, corr_router: router)
       allow(@word).to receive(:eval)
     end
-    context '#match_input_to_output' do
+    context 'sync_with_lexicon!' do
+      before(:example) do
+        allow(uf_finst1).to receive(:value).and_return(uf_value1)
+        allow(uf_finst2).to receive(:value).and_return(uf_value2)
+        allow(finst_1).to receive(:value=)
+        allow(finst_2).to receive(:value=)
+        @ret_value = @word.sync_with_lexicon!
+      end
+      it 'assigns the first input feature its corresponding UF value' do
+        expect(finst_1).to have_received(:value=).with(uf_value1)
+      end
+      it 'assigns the second input feature its corresponding UF value' do
+        expect(finst_2).to have_received(:value=).with(uf_value2)
+      end
+      it 're-evaluates the constraint violations' do
+        expect(@word).to have_received(:eval)
+      end
+      it 'returns a reference to the word' do
+        expect(@ret_value).to eq @word
+      end
+    end
+    context '#match_input_to_output!' do
       before(:example) do
         allow(out_finst2).to receive(:value).and_return(out_value2)
         allow(finst_2).to receive(:value=).with(out_value2)
@@ -69,7 +98,7 @@ RSpec.describe Word do
         expect(@ret_value).to eq @word
       end
     end
-    context '#mismatch_input_to_output' do
+    context '#mismatch_input_to_output!' do
       let(:unset_feat_oppout_value) { double('unset_feat_oppout_value') }
       before(:example) do
         allow(out_finst2).to receive(:value).and_return(out_value2)
