@@ -22,7 +22,8 @@ RSpec.describe 'Running ODL on SL', :acceptance do
   (1..24).each do |num|
     context "on language L#{num}" do
       before(:example) do
-        @success = system "diff #{@sl_fixture_dir}/LgL#{num}.csv #{@generated_dir}/LgL#{num}.csv"
+        # TODO: find a less brittle way to access diff.
+        @success = system "c:/Programs/Git/usr/bin/diff #{@sl_fixture_dir}/LgL#{num}.csv #{@generated_dir}/LgL#{num}.csv"
       end
 
       it 'produces output that matches its test fixture' do
