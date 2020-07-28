@@ -3,15 +3,13 @@
 # Author: Bruce Tesar
 
 require 'feature_value_pair'
-require 'word_search'
 require 'otlearn/consistency_checker'
 
 module OTLearn
   # Tests the given unset feature to see if it can be set relative to the
   # given word list, grammar, and list of conflicting features in the
   # word list. If the feature can be set (it has only one value that is
-  # consistent), then the feature is set in the lexicon, the inputs of the
-  # words in the word list are changed to match the newly set feature, and
+  # consistent), then the feature is set in the lexicon and
   # a value of true is returned. Otherwise, false is returned.
   def OTLearn.test_unset_feature(f_uf_instance, word_list,
                                  conflict_list, grammar)
@@ -21,10 +19,8 @@ module OTLearn
     if consistent_values.size > 1 # feature cannot be set
       false
     elsif consistent_values.size == 1
-      # Set the uf value, and reassign all inputs with that feature.
+      # Set the uf value.
       f_uf_instance.value = consistent_values.first
-      assign_input_features(f_uf_instance, consistent_values.first,
-                            word_list)
       true
     else # There must be at least one consistent value.
       raise "No feature value for #{f_uf_instance} is consistent."
@@ -37,11 +33,10 @@ module OTLearn
   # in their output realizations in the word list; all combinations of
   # values of them must be considered as local lexica when evaluating
   # a given feature value for consistency.
-  def OTLearn.consistent_feature_values(f_uf_inst, words,
+  # NOTE: the words of _word_list_ may exhibit side effects in their
+  # input feature values.
+  def OTLearn.consistent_feature_values(f_uf_inst, word_list,
                                         conflict_features, grammar)
-    # Duplicate the words, so that there are no side effects of
-    # assigning different input feature values.
-    word_list = words.map(&:dup)
     # Test every value of the target feature; store the consistent values
     consistent_values = []
     f_uf_inst.feature.each_value do |test_val|
@@ -60,9 +55,9 @@ module OTLearn
   # Call Mrcd for successive combinations of conflict feature values.
   # If a consistent combination is found, return true, otherwise continue
   # checking combinations. Return false if no combinations are consistent.
-  # NOTE: if there are no conflicting features, then the method simply
-  # tests the word list as is (with all input features already set) using
-  # mrcd, and returns the result (consistency: true/false).
+  # NOTE: if there are no conflicting features, then the method simply tests
+  # the word list as is (with all input features assumed to be already
+  # assigned) using mrcd, and returns the result (consistency: true/false).
   def OTLearn.eval_over_conflict_features(c_features, contrast_set,
                                           grammar)
     # Create a consistency checker
