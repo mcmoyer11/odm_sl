@@ -40,26 +40,15 @@ module OTLearn
     # :call-seq:
     #   run(words, grammar) -> array
     def run(words, grammar)
-      word_list = create_match_words(words)
+      # Create duplicates of the the _words_, to avoid side effects of testing
+      # on the original words.
+      word_list = words.map(&:dup)
+      # Partition the unset features, and attempt to set each
+      # non-conflicting feature.
       conflict, no_conflict = partition_unset_features(word_list, grammar)
       test_non_conflicting_features(word_list, grammar, conflict,
                                     no_conflict)
     end
-
-    # Create duplicates of the _words_ for working purposes, and
-    # match the unset input feature values to their corresponding
-    # outputs (the set features match their UF correspondents).
-    # Returns an array of the duplicate words.
-    def create_match_words(words)
-      # Duplicate the words (working copies for this method)
-      word_list = words.map(&:dup)
-      # Make all input features match their UF correspondents, and then
-      # assign all unset input features their corresponding output values.
-      word_list.each(&:sync_with_lexicon!)
-      word_list.each(&:match_input_to_output!)
-      word_list
-    end
-    private :create_match_words
 
     # Returns two lists of unset underlying features: those that have
     # conflicting values in the outputs, and those that do not.
@@ -74,10 +63,15 @@ module OTLearn
     end
     private :partition_unset_features
 
-    # Test each non-conflicting unset feature to see if it can be set
+    # Test each non-conflicting unset feature, and set it if possible.
     def test_non_conflicting_features(word_list, grammar, conflict, no_conflict)
       set_feature_list = []
       no_conflict.each do |f_uf_instance|
+        # Synchronize each input with the lexicon, and then assign any unset
+        # input features the value matching their output correspondent.
+        # This re-initializes the inputs before each feature test.
+        word_list.each(&:sync_with_lexicon!)
+        word_list.each(&:match_input_to_output!)
         f_was_set =
           @learn_module.test_unset_feature(f_uf_instance, word_list,
                                            conflict, grammar)
