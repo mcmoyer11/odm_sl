@@ -72,13 +72,33 @@ module OTLearn
         # This re-initializes the inputs before each feature test.
         word_list.each(&:sync_with_lexicon!)
         word_list.each(&:match_input_to_output!)
-        f_was_set =
-          @learn_module.test_unset_feature(f_uf_instance, word_list,
-                                           conflict, grammar)
-        set_feature_list << f_uf_instance if f_was_set
+        consistent_values =
+          @learn_module.consistent_feature_values(f_uf_instance, word_list,
+                                                  conflict, grammar)
+        process_consistent_values(consistent_values, f_uf_instance,
+                                  set_feature_list)
       end
       set_feature_list
     end
     private :test_non_conflicting_features
+
+    # If the set of consistent values has more than one element, then the
+    # target feature cannot be determined at this point, and it returns
+    # false. If the set has exactly one element, then the target feature
+    # is sent to that (sole) consistent value in the lexicon, and the
+    # target feature is added to _set_feature_list_.
+    # If there are no consistent values, then an exception is raised.
+    def process_consistent_values(consistent_values, f_uf_instance,
+                                  set_feature_list)
+      if consistent_values.size.zero?
+        raise "No feature value for #{f_uf_instance} is consistent."
+      end
+      return false if consistent_values.size > 1
+
+      f_uf_instance.value = consistent_values.first
+      set_feature_list << f_uf_instance
+      true
+    end
+    private :process_consistent_values
   end
 end

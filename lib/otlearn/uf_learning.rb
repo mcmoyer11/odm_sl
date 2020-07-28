@@ -6,27 +6,6 @@ require 'feature_value_pair'
 require 'otlearn/consistency_checker'
 
 module OTLearn
-  # Tests the given unset feature to see if it can be set relative to the
-  # given word list, grammar, and list of conflicting features in the
-  # word list. If the feature can be set (it has only one value that is
-  # consistent), then the feature is set in the lexicon and
-  # a value of true is returned. Otherwise, false is returned.
-  def OTLearn.test_unset_feature(f_uf_instance, word_list,
-                                 conflict_list, grammar)
-    # Find the consistent values for the feature.
-    consistent_values = consistent_feature_values(f_uf_instance, word_list,
-                                                  conflict_list, grammar)
-    if consistent_values.size > 1 # feature cannot be set
-      false
-    elsif consistent_values.size == 1
-      # Set the uf value.
-      f_uf_instance.value = consistent_values.first
-      true
-    else # There must be at least one consistent value.
-      raise "No feature value for #{f_uf_instance} is consistent."
-    end
-  end
-
   # Tests all possible values of the given underlying feature for
   # consistency with respect to the given word list, using the given
   # grammar. Conflict_features is a list of unset features which conflict

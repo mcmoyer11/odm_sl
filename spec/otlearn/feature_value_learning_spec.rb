@@ -25,6 +25,7 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
     let(:morph1) { double('morpheme1') }
     let(:morph2) { double('morpheme2') }
     let(:target_feature) { double('target_feature') }
+    let(:target_value) { double('target_value') }
     before(:example) do
       words = [word1]
       allow(word_search).to receive(:morphemes_to_words).with([w1])\
@@ -33,11 +34,12 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
       allow(word_search).to receive(:find_unset_features)\
         .and_return([target_feature])
       allow(target_feature).to receive(:morpheme).and_return(morph1)
+      allow(target_feature).to receive(:value=)
       allow(m_in_w).to receive(:[]).with(morph1).and_return([w1])
       allow(word_search).to receive(:conflicting_output_values?)\
         .with(target_feature, [w1]).and_return(false)
-      allow(learn_module).to receive(:test_unset_feature)\
-        .with(target_feature, [w1], [], grammar).and_return(true)
+      allow(learn_module).to receive(:consistent_feature_values)\
+        .with(target_feature, [w1], [], grammar).and_return([target_value])
       @set_features = @learner.run(words, grammar)
     end
     # it 'parses the output of the word' do
@@ -57,6 +59,9 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
         .with(target_feature, [w1])
     end
     it 'sets the feature' do
+      expect(target_feature).to have_received(:value=).with(target_value)
+    end
+    it 'returns a list of newly set features' do
       expect(@set_features).to contain_exactly(target_feature)
     end
   end
