@@ -17,8 +17,23 @@ module Feature
   # The value of the feature.
   attr_accessor :value
 
-  # Inner module containing methods to be added as class methods.
+  # Inner module of the mixin Feature containing methods to be added as
+  # class methods to any class that mixes in Feature.
   module ClassMethods
+    # Creates two methods based on the feature value name parameter _name_.
+    # * a boolean method #name? which returns true if this feature
+    #   has the value matching _name_.
+    # * a setter method #set_name which sets the value of the feature to
+    #   the value _name_.
+    #
+    # === Example
+    # Given a concrete class defining a length feature, the class mixes
+    # in Feature, and then declares the possible values of the feature:
+    #   feature_value SHORT
+    #   feature_value LONG
+    # where the constants define the actual representations of the values.
+    # The above two lines result in the concrete length feature class
+    # having the following methods: #short?, #set_short, #long?, #set_long.
     def feature_value(name)
       define_method("#{name}?") { value == name }
       define_method("set_#{name}") do
