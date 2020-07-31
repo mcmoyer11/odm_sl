@@ -4,6 +4,7 @@
 
 require 'feature_value_pair'
 require 'otlearn/consistency_checker'
+require 'otlearn/input_feature_assigner'
 
 module OTLearn
   # Tests all possible values of the given underlying feature for
@@ -16,11 +17,12 @@ module OTLearn
   # input feature values.
   def OTLearn.consistent_feature_values(f_uf_inst, word_list,
                                         conflict_features, grammar)
+    assigner = InputFeatureAssigner.new
     # Test every value of the target feature; store the consistent values
     consistent_values = []
     f_uf_inst.feature.each_value do |test_val|
       # Assign the current loop feature value to the input features
-      assign_input_features(f_uf_inst, test_val, word_list)
+      assigner.assign_input_features(f_uf_inst, test_val, word_list)
       # see if a combination of conflict features consistent with test_val
       # exists
       consistent_combination_exists =
@@ -41,6 +43,7 @@ module OTLearn
                                           grammar)
     # Create a consistency checker
     checker = ConsistencyChecker.new
+    assigner = InputFeatureAssigner.new
     # Generate a list of feature-value pairs, one for each possible value
     # of each conflict feature.
     feat_values_list = FeatureValuePair.all_values_pairs(c_features)
@@ -58,35 +61,12 @@ module OTLearn
       feat_comb.each do |feat_pair|
         # Assign the alternative value to every occurrence of the feature
         # in the contrast set.
-        assign_input_features(feat_pair.feature_instance,
-                              feat_pair.alt_value, contrast_set)
+        assigner.assign_input_features(feat_pair.feature_instance,
+                                       feat_pair.alt_value, contrast_set)
       end
       # Test the contrast set, using the conflicting feature combination
       return true if checker.consistent?(contrast_set, grammar)
     end
     false # none of the combinations were consistent.
-  end
-
-  # Assigns the given feature value to the input feature corresponding
-  # to the given underlying feature, for each word in the given word list.
-  # This method does *not* set any feature values in the lexicon.
-  def OTLearn.assign_input_features(f_uf_inst, value, word_list)
-    # unpack the underlying feature instance's containing element and
-    # actual feature
-    el_uf = f_uf_inst.element
-    f_uf = f_uf_inst.feature
-    # For each word, reset it's corresp. input element to the given
-    # feature value
-    word_list.each do |word|
-      el_in = word.ui_in_corr(el_uf) # get the corresp. input element
-      # skip this word if it does not contain the relevant morpheme
-      next if el_in.nil?
-
-      # get the appropriate feature of the input element
-      f_in = el_in.get_feature(f_uf.type)
-      f_in.value = value # assign the given value
-      word.eval # reassess constraint violations due to modified input
-    end
-    value # can't think of anything better to return at the moment
   end
 end

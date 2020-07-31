@@ -4,6 +4,8 @@
 
 module OTLearn
   # Used to assign a specified value to specified input features of words.
+  # NOTE: an assigner does *not* set (in the lexicon) any underlying
+  # features.
   class InputFeatureAssigner
     # Creates a new assigner.
     # :call-seq:
