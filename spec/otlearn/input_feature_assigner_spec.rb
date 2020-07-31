@@ -21,6 +21,8 @@ RSpec.describe 'OTLearn::InputFeatureAssigner' do
     allow(f_uf_inst).to receive(:element).and_return(uf_el)
     allow(f_uf_inst).to receive(:feature).and_return(uf_feat)
     allow(uf_feat).to receive(:type).and_return(f_type)
+    allow(in_feat1).to receive(:value=)
+    allow(in_feat2).to receive(:value=)
     allow(word1).to receive(:eval)
     allow(word2).to receive(:eval)
     @assigner = OTLearn::InputFeatureAssigner.new
@@ -34,8 +36,6 @@ RSpec.describe 'OTLearn::InputFeatureAssigner' do
                                             .and_return(in_feat1)
       allow(in_el2).to receive(:get_feature).with(f_type)\
                                             .and_return(in_feat2)
-      allow(in_feat1).to receive(:value=)
-      allow(in_feat2).to receive(:value=)
       word_list = [word1, word2]
       @return_value =
         @assigner.assign_input_features(f_uf_inst, assigned_value, word_list)
@@ -62,8 +62,6 @@ RSpec.describe 'OTLearn::InputFeatureAssigner' do
                                             .and_return(in_feat1)
       allow(in_el2).to receive(:get_feature).with(f_type)\
                                             .and_return(in_feat2)
-      allow(in_feat1).to receive(:value=)
-      allow(in_feat2).to receive(:value=)
       word_list = [word1, word2]
       @return_value =
         @assigner.assign_input_features(f_uf_inst, assigned_value, word_list)
