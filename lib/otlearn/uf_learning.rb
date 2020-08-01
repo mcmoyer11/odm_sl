@@ -45,17 +45,8 @@ module OTLearn
     checker = ConsistencyChecker.new
     assigner = InputFeatureAssigner.new
     combiner = FeatureValueCombiner.new
-    # Generate a list of feature-value pairs, one for each possible value
-    # of each conflict feature.
-    feat_values_list = combiner.values_by_feature(c_features)
     # Generate all combinations of values for the conflict features.
-    # By default, a single combination of zero conflict features
-    conflict_feature_comb = [[]]
-    # Create the cartesian product of the sets of possible feature values.
-    unless feat_values_list.empty?
-      conflict_feature_comb =
-        feat_values_list[0].product(*feat_values_list[1..-1])
-    end
+    conflict_feature_comb = combiner.feature_value_combinations(c_features)
     # Test each combination, returning _true_ on the first consistent one.
     conflict_feature_comb.each do |feat_comb|
       # Set conflict input features to the feature values in the combination

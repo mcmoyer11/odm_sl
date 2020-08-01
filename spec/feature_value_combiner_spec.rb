@@ -37,7 +37,7 @@ RSpec.describe 'FeatureValueCombiner' do
     @combiner = FeatureValueCombiner.new(fvp_class: fvp_class)
   end
 
-  context 'with one feature' do
+  context 'values_by_feature with one feature' do
     before(:example) do
       feature_instance_list = [finst1]
       @avp_list = @combiner.values_by_feature(feature_instance_list)
@@ -50,7 +50,7 @@ RSpec.describe 'FeatureValueCombiner' do
       expect(@fvp_list).to contain_exactly(fvp11, fvp12)
     end
   end
-  context 'with two features' do
+  context 'values_by_feature with two features' do
     before(:example) do
       feature_instance_list = [finst1, finst2]
       @avp_list = @combiner.values_by_feature(feature_instance_list)
@@ -65,6 +65,45 @@ RSpec.describe 'FeatureValueCombiner' do
     end
     it 'returns an entry of two value pairs for the second feature' do
       expect(@fvp_list2).to contain_exactly(fvp21, fvp22)
+    end
+  end
+
+  context 'feature_value_combinations with one feature' do
+    before(:example) do
+      feature_instance_list = [finst1]
+      @comb_list =
+        @combiner.feature_value_combinations(feature_instance_list)
+    end
+    it 'returns a list with two combinations' do
+      expect(@comb_list.size).to eq(2)
+    end
+    it 'returns a combination with the first feature value' do
+      expect(@comb_list[0]).to contain_exactly(fvp11)
+    end
+    it 'returns a combination with the second feature value' do
+      expect(@comb_list[1]).to contain_exactly(fvp12)
+    end
+  end
+  context 'feature_value_combinations with two features' do
+    before(:example) do
+      feature_instance_list = [finst1, finst2]
+      @comb_list =
+        @combiner.feature_value_combinations(feature_instance_list)
+    end
+    it 'returns a list with four combinations' do
+      expect(@comb_list.size).to eq(4)
+    end
+    it 'returns a combination with values 11 and 21' do
+      expect(@comb_list[0]).to contain_exactly(fvp11, fvp21)
+    end
+    it 'returns a combination with values 11 and 22' do
+      expect(@comb_list[1]).to contain_exactly(fvp11, fvp22)
+    end
+    it 'returns a combination with values 12 and 21' do
+      expect(@comb_list[2]).to contain_exactly(fvp12, fvp21)
+    end
+    it 'returns a combination with values 12 and 22' do
+      expect(@comb_list[3]).to contain_exactly(fvp12, fvp22)
     end
   end
 end

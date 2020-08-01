@@ -28,4 +28,22 @@ class FeatureValueCombiner
       feat_values_list << fv_pairs
     end
   end
+
+  # Takes a list of feature instances, and returns an array of
+  # combinations of feature values, where each combination is an array
+  # of feature value pairs, one for a possible value of each of the
+  # features.
+  # If the provided list of feature instances is empty, then an array
+  # containing a single empty array is returned, representing the
+  # single possible combination of values of zero features: [[]].
+  def feature_value_combinations(feat_inst_list)
+    values = values_by_feature(feat_inst_list)
+    if values.empty?
+      [[]]
+    else
+      # Compute the cartesian product of the lists of possible values
+      # of the features.
+      values[0].product(*values[1..-1])
+    end
+  end
 end
