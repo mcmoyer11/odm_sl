@@ -2,9 +2,9 @@
 
 # Author: Bruce Tesar
 
-require 'feature_value_pair'
 require 'otlearn/consistency_checker'
 require 'otlearn/input_feature_assigner'
+require 'feature_value_combiner'
 
 module OTLearn
   # Tests all possible values of the given underlying feature for
@@ -44,9 +44,10 @@ module OTLearn
     # Create a consistency checker
     checker = ConsistencyChecker.new
     assigner = InputFeatureAssigner.new
+    combiner = FeatureValueCombiner.new
     # Generate a list of feature-value pairs, one for each possible value
     # of each conflict feature.
-    feat_values_list = FeatureValuePair.all_values_pairs(c_features)
+    feat_values_list = combiner.values_by_feature(c_features)
     # Generate all combinations of values for the conflict features.
     # By default, a single combination of zero conflict features
     conflict_feature_comb = [[]]

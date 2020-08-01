@@ -46,33 +46,4 @@ RSpec.describe 'FeatureValuePair' do
         raise_error(RuntimeError)
     end
   end
-
-  context '.all_values_pairs' do
-    let(:finst1) { double('feature instance 1') }
-    let(:feat1) { double('feature 1') }
-    let(:value11) { double('feature value 11') }
-    let(:value12) { double('feature value 12') }
-    let(:type1) { double('feature type 1') }
-    before(:example) do
-      allow(finst1).to receive(:feature).and_return(feat1)
-      allow(feat1).to receive(:each_value).and_yield(value11)\
-                                          .and_yield(value12)
-      allow(feat1).to receive(:type).and_return(type1)
-      allow(feat1).to receive(:valid_value?).with(value11).and_return(true)
-      allow(feat1).to receive(:valid_value?).with(value12).and_return(true)
-    end
-    context 'with one feature' do
-      before(:example) do
-        feature_instance_list = [finst1]
-        @avp_list = FeatureValuePair.all_values_pairs(feature_instance_list)
-        @fvp_list = @avp_list[0]
-      end
-      it 'returns a list of entries for one feature' do
-        expect(@avp_list.size).to eq(1)
-      end
-      it 'returns a pair list of two values for the feature' do
-        expect(@fvp_list.size).to eq(2)
-      end
-    end
-  end
 end

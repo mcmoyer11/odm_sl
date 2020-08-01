@@ -27,21 +27,6 @@ class FeatureValuePair
     @alt_value = value
   end
 
-  # This class method accepts a list of feature instances _featinst_list_
-  # and returns an array of lists, one list for each feature instance.
-  # The list for each feature is a list of FeatureValuePairs, all having
-  # the given feature instance, with one pair for each possible value of
-  # the feature.
-  def self.all_values_pairs(feat_inst_list)
-    feat_inst_list.each_with_object([]) do |feat_inst, feat_values_list|
-      feat_values = []
-      feat_inst.feature.each_value do |alt_value|
-        feat_values << new(feat_inst, alt_value)
-      end
-      feat_values_list << feat_values
-    end
-  end
-
   # Sets the value of the feature instance of this pair to the alt_value
   # of this pair.
   def set_to_alt_value
