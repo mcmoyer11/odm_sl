@@ -2,9 +2,8 @@
 
 # Author: Bruce Tesar
 
-require 'otlearn/consistency_checker'
 require 'otlearn/input_feature_assigner'
-require 'feature_value_combiner'
+require 'otlearn/conflict_feature_evaluator'
 
 module OTLearn
   # Tests all possible values of the given underlying feature for
@@ -18,6 +17,7 @@ module OTLearn
   def OTLearn.consistent_feature_values(f_uf_inst, word_list,
                                         conflict_features, grammar)
     assigner = InputFeatureAssigner.new
+    evaluator = OTLearn::ConflictFeatureEvaluator.new
     # Test every value of the target feature; store the consistent values
     consistent_values = []
     f_uf_inst.feature.each_value do |test_val|
@@ -26,39 +26,9 @@ module OTLearn
       # see if a combination of conflict features consistent with test_val
       # exists
       consistent_combination_exists =
-        eval_over_conflict_features(conflict_features, word_list, grammar)
+        evaluator.run(conflict_features, word_list, grammar)
       consistent_values << test_val if consistent_combination_exists
     end
     consistent_values
-  end
-
-  # Given: contrast_set, grammar, conflict_features
-  # Call Mrcd for successive combinations of conflict feature values.
-  # If a consistent combination is found, return true, otherwise continue
-  # checking combinations. Return false if no combinations are consistent.
-  # NOTE: if there are no conflicting features, then the method simply tests
-  # the word list as is (with all input features assumed to be already
-  # assigned) using mrcd, and returns the result (consistency: true/false).
-  def OTLearn.eval_over_conflict_features(c_features, contrast_set,
-                                          grammar)
-    # Create a consistency checker
-    checker = ConsistencyChecker.new
-    assigner = InputFeatureAssigner.new
-    combiner = FeatureValueCombiner.new
-    # Generate all combinations of values for the conflict features.
-    conflict_feature_comb = combiner.feature_value_combinations(c_features)
-    # Test each combination, returning _true_ on the first consistent one.
-    conflict_feature_comb.each do |feat_comb|
-      # Set conflict input features to the feature values in the combination
-      feat_comb.each do |feat_pair|
-        # Assign the alternative value to every occurrence of the feature
-        # in the contrast set.
-        assigner.assign_input_features(feat_pair.feature_instance,
-                                       feat_pair.alt_value, contrast_set)
-      end
-      # Test the contrast set, using the conflicting feature combination
-      return true if checker.consistent?(contrast_set, grammar)
-    end
-    false # none of the combinations were consistent.
   end
 end
