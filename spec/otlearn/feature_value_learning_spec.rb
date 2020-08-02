@@ -11,13 +11,13 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
   let(:out1) { double('output1') }
   let(:w1) { double('w1') }
   let(:word_search) { double('word search') }
-  let(:learn_module) { double('learn_module') }
+  let(:value_finder) { double('consistent value finder') }
   before(:example) do
     allow(word1).to receive(:dup).and_return(w1)
     allow(w1).to receive(:sync_with_lexicon!)
     allow(w1).to receive(:match_input_to_output!)
-    @learner = OTLearn::FeatureValueLearning.new(word_search: word_search,
-                                                 learn_module: learn_module)
+    @learner = OTLearn::FeatureValueLearning.new(word_search: word_search)
+    @learner.value_finder = value_finder
   end
 
   context 'with one settable feature' do
@@ -38,7 +38,7 @@ RSpec.describe 'OTLearn::FeatureValueLearning' do
       allow(m_in_w).to receive(:[]).with(morph1).and_return([w1])
       allow(word_search).to receive(:conflicting_output_values?)\
         .with(target_feature, [w1]).and_return(false)
-      allow(learn_module).to receive(:consistent_feature_values)\
+      allow(value_finder).to receive(:run)\
         .with(target_feature, [w1], [], grammar).and_return([target_value])
       @set_features = @learner.run(words, grammar)
     end

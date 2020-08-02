@@ -8,7 +8,6 @@ require 'otlearn/contrast_pair_step'
 require 'otlearn/paradigm_erc_learning'
 require 'otlearn/feature_value_learning'
 require 'otlearn/grammar_test'
-require 'otlearn/uf_learning'
 
 module OTLearn
   # Instantiates contrast pair learning. Any results of learning are

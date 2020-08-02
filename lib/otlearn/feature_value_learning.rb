@@ -3,6 +3,7 @@
 # Author: Bruce Tesar
 
 require 'word_search'
+require 'otlearn/consistent_value_finder'
 
 module OTLearn
   # Learning of the values of underlying features via inconsistency
@@ -12,13 +13,17 @@ module OTLearn
   # value for the feature permits all of the words to simultaneously
   # be optimal.
   class FeatureValueLearning
+    # Finder of consistent values for a target feature instance.
+    # Default value: OTLearn::ConsistentValueFinder.new
+    attr_accessor :value_finder
+
     # Returns a new FeatureValueLearning object.
     #--
     # The named parameter _word_search_ is a dependency injection used
     # for testing.
-    def initialize(word_search: WordSearch.new, learn_module: OTLearn)
+    def initialize(word_search: WordSearch.new)
       @word_search = word_search
-      @learn_module = learn_module
+      @value_finder = OTLearn::ConsistentValueFinder.new
     end
 
     # Attempt to set the underlying values of unset features in
@@ -73,8 +78,7 @@ module OTLearn
         word_list.each(&:sync_with_lexicon!)
         word_list.each(&:match_input_to_output!)
         consistent_values =
-          @learn_module.consistent_feature_values(f_uf_instance, word_list,
-                                                  conflict, grammar)
+          @value_finder.run(f_uf_instance, word_list, conflict, grammar)
         process_consistent_values(consistent_values, f_uf_instance,
                                   set_feature_list)
       end

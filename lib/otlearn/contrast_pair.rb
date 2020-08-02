@@ -3,7 +3,6 @@
 # Author: Bruce Tesar
 
 require 'otlearn/data_manip'
-require 'otlearn/uf_learning'
 require 'otlearn/contrast_set'
 require 'otlearn/grammar_test'
 require 'word_search'
