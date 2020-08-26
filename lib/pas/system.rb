@@ -1,15 +1,15 @@
-# Author: Morgan Moyer
-#
+# frozen_string_literal: true
+
+# Author: Morgan Moyer / Bruce Tesar
 
 require 'singleton'
-require 'REXML/syncenumerator'
-require_relative 'syllable'
-require_relative '../constraint'
-require_relative '../input'
-require_relative '../ui_correspondence'
-require_relative '../word'
-require_relative '../underlying'
-require_relative '../lexical_entry'
+require 'pas/syllable'
+require 'constraint'
+require 'input'
+require 'ui_correspondence'
+require 'word'
+require 'underlying'
+require 'lexical_entry'
 
 # Module PAS contains the linguistic system elements defining the
 # Pitch Accent Stress (PAS) linguistic system. PAS builds words from syllables,
@@ -17,7 +17,6 @@ require_relative '../lexical_entry'
 # Each output has at most one stress-bearing syllable (stressless outputs
 # are possible).
 module PAS
-
   # Contains the core elements of the PAS (pitch accent stress) linguistic system.
   # It defines the constraints of the system, provides the #gen(_input_) method
   # generating the candidates for _input_, provides a method for
@@ -51,7 +50,7 @@ module PAS
     def initialize
       initialize_constraints
       @constraints = constraint_list # private method creating the list
-      @constraints.each {|con| con.freeze} # freeze the constraints
+      @constraints.each(&:freeze) # freeze the constraints
       @constraints.freeze # freeze the constraint list
     end
 
@@ -85,24 +84,24 @@ module PAS
       input = Input.new
       input.morphword = mw
       mw.each do |m| # for each morpheme in the morph_word, in order
-        lex_entry = lexicon.find{|entry| entry.morpheme == m} # get the lexical entry
+        lex_entry = lexicon.find { |entry| entry.morpheme == m } # get the lexical entry
         raise "Morpheme #{m.label} has no lexical entry." if lex_entry.nil?
         uf = lex_entry.uf
         raise "The lexical entry for morpheme #{m.label} has no underlying form." if uf.nil?
         uf.each do |syl| # for each syllable of the underlying form
           in_syl = syl.dup
           input.push(in_syl) # add a duplicate of the underlying syllable to input.
-          input.ui_corr.add_corr(syl,in_syl) # create a correspondence between underlying and input syllables.
+          input.ui_corr.add_corr(syl, in_syl) # create a correspondence between underlying and input syllables.
         end
       end
-      return input
+      input
     end
 
     # gen takes an input, generates all candidate words for that input, and
     # returns the candidates in an array. All candidates share the same input
     # object. The outputs may also share some of their syllable objects.
     def gen(input)
-      start_rep = Word.new(self,input) # full input, but empty output, io_corr
+      start_rep = Word.new(self, input) # full input, but empty output, io_corr
       start_rep.output.morphword = input.morphword
       # create two lists of partial candidates, distinguished by whether or
       # not they contain a syllable with main stress.
@@ -115,30 +114,37 @@ module PAS
         # copy the partial candidate lists to old_*, and reset the lists to empty.
         old_no_stress_yet = no_stress_yet
         old_main_stress_assigned = main_stress_assigned
-        no_stress_yet = []; main_stress_assigned = []
+        no_stress_yet = []
+        main_stress_assigned = []
         # iterate over old_no_stress_yet, for each member create a new candidate
         # for each of the ways of adding the next syllable.
         old_no_stress_yet.each do |w|
-          no_stress_yet << extend_word_output(w, isyl){|s| s.set_unstressed.set_short}
-          main_stress_assigned << extend_word_output(w, isyl){|s| s.set_main_stress.set_short}
-          no_stress_yet << extend_word_output(w, isyl){|s| s.set_unstressed.set_long}
-          main_stress_assigned << extend_word_output(w, isyl){|s| s.set_main_stress.set_long}
+          no_stress_yet << extend_word_output(w, isyl) { |s| s.set_unstressed.set_short }
+          main_stress_assigned << extend_word_output(w, isyl) { |s| s.set_main_stress.set_short }
+          no_stress_yet << extend_word_output(w, isyl) { |s| s.set_unstressed.set_long }
+          main_stress_assigned << extend_word_output(w, isyl) { |s| s.set_main_stress.set_long }
         end
         # iterate over old_main_stress_assigned, for each member create
         # a new candidate for each of the ways of adding the next syllable.
         old_main_stress_assigned.each do |w|
-          main_stress_assigned << extend_word_output(w, isyl){|s| s.set_unstressed.set_short}
-          main_stress_assigned << extend_word_output(w, isyl){|s| s.set_unstressed.set_long}
+          main_stress_assigned << extend_word_output(w, isyl) { |s| s.set_unstressed.set_short }
+          main_stress_assigned << extend_word_output(w, isyl) { |s| s.set_unstressed.set_long }
         end
       end
 
       # Put actual candidates into an array, calling eval on each to set
       # the constraint violations.
       candidates = []
-      main_stress_assigned.each{|c| c.eval; candidates.push(c)}
-      #also evaluate the candidates without main stress
-      no_stress_yet.each{|c| c.eval; candidates.push(c)}
-      return candidates
+      main_stress_assigned.each do |c|
+        c.eval
+        candidates.push(c)
+      end
+      # also evaluate the candidates without main stress
+      no_stress_yet.each do |c|
+        c.eval
+        candidates.push(c)
+      end
+      candidates
     end
 
     # Constructs a full structural description for the given output using the
@@ -151,31 +157,34 @@ module PAS
       # If any morphemes aren't currently in the lexicon, create new entries, with
       # the same number of syllables as in the output, and all features unset.
       mw.each do |m|
-        unless lexicon.any?{|entry| entry.morpheme == m} then
+        unless lexicon.any? { |entry| entry.morpheme == m }
           under = Underlying.new
           # create a new UF syllable for each syllable of m in the output
-          syls_of_m = output.find_all{|syl| syl.morpheme == m}
+          syls_of_m = output.find_all { |syl| syl.morpheme == m }
           syls_of_m.each { |x| under << Syllable.new.set_morpheme(m) }
-          lexicon << Lexical_Entry.new(m,under)
+          lexicon << Lexical_Entry.new(m, under)
         end
       end
       # Construct the input form
       input = input_from_morphword(mw, lexicon)
-      word = Word.new(self,input,output)
+      word = Word.new(self, input, output)
       # create 1-to-1 IO correspondence
-      if input.size != output.size then
+      if input.size != output.size
         raise "Input size #{input.size} not equal to output size #{output.size}."
       end
-      gen = REXML::SyncEnumerator.new(input, output)
-      gen.each do |in_syl,out_syl|
-        word.add_to_io_corr(in_syl,out_syl)
-        if in_syl.morpheme != out_syl.morpheme then
+
+      # Iterate over successive input and output syllables, adding each
+      # pair to the word's correspondence relation.
+      input.each_with_index do |in_syl, idx|
+        out_syl = output[idx]
+        word.add_to_io_corr(in_syl, out_syl)
+        if in_syl.morpheme != out_syl.morpheme
           raise "Input syllable morph #{in_syl.morpheme.label} != " +
-            "output syllable morph #{out_syl.morpheme.label}"
+                "output syllable morph #{out_syl.morpheme.label}"
         end
       end
-      word.eval
-      return word
+      word.eval # compute the number of violations of each constraint
+      word
     end
 
     private
@@ -197,7 +206,7 @@ module PAS
         viol_count = 0
         # only apply when there's a main stress in the cand
         main_stress_found = cand.output.main_stress?
-        if main_stress_found then
+        if main_stress_found
           for syl in cand.output do
             break if syl.main_stress?
             viol_count += 1
@@ -237,7 +246,7 @@ module PAS
       # this only give a single violation to stress-less outputs
       @culm = Constraint.new('Culm', 7, MARK) do |cand|
         not_violated = cand.output.main_stress?
-        if not_violated then
+        if not_violated
           viol_count = 0
         else
           viol_count = 1
@@ -245,6 +254,7 @@ module PAS
         viol_count
       end
     end
+
     # Define the constraint list.
     def constraint_list
       list = []
@@ -255,7 +265,7 @@ module PAS
       list << @idstress
       list << @idlength
       list << @culm
-      return list
+      list
     end
 
     # Takes a word partial description (full input, partial output), along with
@@ -272,13 +282,11 @@ module PAS
       new_w = word.dup_for_gen
       out_syl = yield(in_syl.dup) # block sets features of new output syllable.
       new_w.output << out_syl
-      new_w.add_to_io_corr(in_syl,out_syl)
-      return new_w
+      new_w.add_to_io_corr(in_syl, out_syl)
+      new_w
     end
-
-  end # class PAS::System
+  end
 
   # The system object for the linguistic system PAS (pitch-accent/stress).
   SYSTEM = System.instance
-
-end # module PAS
+end

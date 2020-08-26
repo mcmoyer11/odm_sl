@@ -3,7 +3,6 @@
 # Author: Bruce Tesar
 
 require 'singleton'
-require 'REXML/syncenumerator'
 require 'sl/syllable'
 require 'constraint'
 require 'input'
@@ -50,7 +49,7 @@ module SL
     def initialize
       initialize_constraints
       @constraints = constraint_list # private method creating the list
-      @constraints.each { |con| con.freeze } # freeze the constraints
+      @constraints.each(&:freeze) # freeze the constraints
       @constraints.freeze # freeze the constraint list
     end
 
@@ -157,7 +156,10 @@ module SL
       # Put actual candidates into an array, calling eval on each to set
       # the constraint violations.
       candidates = []
-      main_stress_assigned.each { |c| c.eval; candidates.push(c) }
+      main_stress_assigned.each do |c|
+        c.eval
+        candidates.push(c)
+      end
       candidates
     end
 
@@ -187,15 +189,17 @@ module SL
         raise "Input size #{input.size} not equal to output size #{output.size}."
       end
 
-      gen = REXML::SyncEnumerator.new(input, output)
-      gen.each do |in_syl, out_syl|
+      # Iterate over successive input and output syllables, adding each
+      # pair to the word's correspondence relation.
+      input.each_with_index do |in_syl, idx|
+        out_syl = output[idx]
         word.add_to_io_corr(in_syl, out_syl)
         if in_syl.morpheme != out_syl.morpheme
           raise "Input syllable morph #{in_syl.morpheme.label} != " +
                 "output syllable morph #{out_syl.morpheme.label}"
         end
       end
-      word.eval
+      word.eval # compute the number of violations of each constraint
       word
     end
 
